@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Compilation;
@@ -12,6 +15,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
     /// <summary>
     /// Options for the compilation mode Project Auditor should use when performing code analysis
     /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum CompilationMode
     {
         /// <summary>
@@ -37,7 +41,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
     /// <summary>
     /// Options for selecting the code optimization level to be used during code analysis
     /// </summary>
-
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum CodeOptimization
     {
         /// <summary>

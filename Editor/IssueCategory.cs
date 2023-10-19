@@ -1,3 +1,7 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
+
 namespace Unity.ProjectAuditor.Editor
 {
     /// <summary>
@@ -7,12 +11,13 @@ namespace Unity.ProjectAuditor.Editor
     /// As Project Auditor's remit has expanded, so has the definition of what constitutes an issue category.
     /// For example, categories relating to assets, shaders or build reports represent categories of information about the project's content but do not necessarily qualify as issues that should be addressed.
     /// </remarks>
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum IssueCategory
     {
         /// <summary>
         /// Category for General statistics about the analysis process and its results.
         /// </summary>
-        MetaData,
+        Metadata,
 
         /// <summary>
         /// Issues relating to asset data or asset import settings

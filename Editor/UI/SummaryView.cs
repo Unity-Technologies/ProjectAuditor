@@ -3,6 +3,7 @@ using System.Linq;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.Modules;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 
@@ -26,7 +27,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         Stats m_Stats;
 
-        public override string description => $"Summary of the analysis.";
+        public override string Description => $"Summary of the analysis.";
 
         public SummaryView(ViewManager viewManager) : base(viewManager)
         {
@@ -113,18 +114,28 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public override void DrawContent(bool showDetails = false)
         {
+            if (m_ViewManager.Report == null)
+                return;
+
             EditorGUILayout.Space();
             EditorGUILayout.BeginVertical();
 
             EditorGUILayout.LabelField("Session Information", SharedStyles.BoldLabel);
             EditorGUI.indentLevel++;
 
-            // note that m_Issues might change during background analysis.
-            int itemIndex = 0;
-            foreach (var issue in m_Issues.ToArray())
-            {
-                DrawKeyValue(issue.description, issue.GetCustomProperty(MetaDataProperty.Value), itemIndex++);
-            }
+            var sessionInfo = m_ViewManager.Report.SessionInfo;
+            var itemIndex = 0;
+            DrawKeyValue("Date and Time", Formatting.FormatDateTime(Json.DeserializeDateTime(sessionInfo.DateTime)), itemIndex++);
+            DrawKeyValue("Host Name", sessionInfo.HostName, itemIndex++);
+            DrawKeyValue("Host Platform", sessionInfo.HostPlatform, itemIndex++);
+            DrawKeyValue("Company Name", sessionInfo.CompanyName, itemIndex++);
+            if (!string.IsNullOrEmpty(sessionInfo.ProjectId))
+                DrawKeyValue("Project Id", sessionInfo.ProjectId, itemIndex++);
+            DrawKeyValue("Project Name", sessionInfo.ProjectName, itemIndex++);
+            DrawKeyValue("Project Revision", sessionInfo.ProjectRevision, itemIndex++);
+            DrawKeyValue("Unity Version", sessionInfo.UnityVersion, itemIndex++);
+            DrawKeyValue("Project Auditor Version", sessionInfo.ProjectAuditorVersion, itemIndex++);
+
             EditorGUI.indentLevel--;
             EditorGUILayout.EndVertical();
         }

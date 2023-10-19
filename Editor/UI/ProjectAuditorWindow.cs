@@ -27,17 +27,20 @@ namespace Unity.ProjectAuditor.Editor.UI
         }
 
         [Flags]
-        enum BuiltInModules
+        enum ProjectAreaFlags
         {
             None = 0,
             Code = 1 << 0,
             Settings = 1 << 1,
-            Shaders = 1 << 2,
-            Resources = 1 << 3,
-            BuildReport = 1 << 4,
+            Assets = 1 << 2,
+            Shaders = 1 << 3,
+            Build = 1 << 4,
 
-            Everything = ~0
+            // this is just helper enum to display Default instead of Every
+            Default = ~None
         }
+
+        const ProjectAreaFlags k_ProjectAreaDefaultFlags = ProjectAreaFlags.Code | ProjectAreaFlags.Settings | ProjectAreaFlags.Build;
 
         const string k_ProjectAuditorName = "Project Auditor";
 
@@ -69,7 +72,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         // Serialized fields
         [SerializeField] BuildTarget m_Platform = BuildTarget.NoTarget;
         [SerializeField] CompilationMode m_CompilationMode = CompilationMode.Player;
-        [SerializeField] BuiltInModules m_SelectedModules = BuiltInModules.Everything;
+        [SerializeField] ProjectAreaFlags m_SelectedProjectAreas = k_ProjectAreaDefaultFlags;
         [SerializeField] string m_AreaSelectionSummary;
         [SerializeField] string[] m_AssemblyNames;
         [SerializeField] string m_AssemblySelectionSummary;
@@ -109,11 +112,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             new Tab
             {
-                id = TabId.Summary, name = "Summary",
-                modules = new[]
-                {
-                    typeof(MetaDataModule)
-                }
+                id = TabId.Summary, name = "Summary", allCategories = new[] { IssueCategory.Metadata }
             },
             new Tab
             {
@@ -178,7 +177,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             // - is not muted, if enabled
             // - critical context, if enabled/applicable
 
-            var viewDesc = activeView.desc;
+            var viewDesc = activeView.Desc;
 
             Profiler.BeginSample("MatchAssembly");
             var matchAssembly = !viewDesc.showAssemblySelection ||
@@ -243,15 +242,16 @@ namespace Unity.ProjectAuditor.Editor.UI
                 // Create a default params just to use the default rules it contains to initialize the views
                 var projectAuditorParams = new ProjectAuditorParams();
 
-                InitializeViews(GetAllSupportedCategories(), projectAuditorParams.rules, true);
+                InitializeViews(GetAllSupportedCategories(), projectAuditorParams.Rules, true);
 
                 Profiler.BeginSample("Views Update");
-                m_ViewManager.AddIssues(m_ProjectReport.GetAllIssues());
+                m_ViewManager.OnAnalysisRestored(m_ProjectReport);
                 m_AnalysisState = currentState;
                 Profiler.EndSample();
             }
             else
             {
+                m_ActiveTabIndex = 0;
                 m_AnalysisState = AnalysisState.Initialized;
             }
 
@@ -279,7 +279,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ViewManager.OnActiveViewChanged += i =>
             {
-                var viewDesc = m_ViewManager.GetView(i).desc;
+                var viewDesc = m_ViewManager.GetView(i).Desc;
                 ProjectAuditorAnalytics.SendEvent(
                     (ProjectAuditorAnalytics.UIButton)viewDesc.analyticsEvent,
                     ProjectAuditorAnalytics.BeginAnalytic());
@@ -287,7 +287,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ViewManager.OnActiveViewChanged += i =>
             {
-                var viewDesc = m_ViewManager.GetView(i).desc;
+                var viewDesc = m_ViewManager.GetView(i).Desc;
                 SyncTabOnViewChange(viewDesc.category);
             };
 
@@ -364,7 +364,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 if (view == null)
                     continue;
 
-                var displayName = view.IsDiagnostic() ? "Diagnostics" : view.desc.displayName;
+                var displayName = view.IsDiagnostic() ? "Diagnostics" : view.Desc.displayName;
 
                 dropDownItems.Add(new Utility.DropdownItem
                 {
@@ -427,7 +427,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     DrawPanels();
 
-                    if (m_ViewManager.GetActiveView().desc.category != IssueCategory.MetaData)
+                    if (m_ViewManager.GetActiveView().Desc.category != IssueCategory.Metadata)
                     {
                         DrawStatusBar();
                     }
@@ -444,7 +444,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.MetaData,
+                category = IssueCategory.Metadata,
                 displayName = "Summary",
                 menuOrder = -1,
                 showInfoPanel = true,
@@ -500,7 +500,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.ShaderCompilerMessage,
-                displayName = "Shader Messages",
+                displayName = "Compiler Messages",
                 menuLabel = "Assets/Shaders/Compiler Messages",
                 menuOrder = 4,
                 descriptionWithIcon = true,
@@ -661,7 +661,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 analyticsEvent = (int)ProjectAuditorAnalytics.UIButton.AvatarMasks
             });
 
-            if (UserPreferences.developerMode)
+            if (UserPreferences.DeveloperMode)
             {
                 ViewDescriptor.Register(new ViewDescriptor
                 {
@@ -811,24 +811,26 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             var projectAuditorParams = new ProjectAuditorParams
             {
-                categories = m_SelectedModules == BuiltInModules.Everything ? null : GetSelectedCategories(),
-                compilationMode = m_CompilationMode,
-                platform = m_Platform,
-                onIncomingIssues = issues =>
+                Categories = GetSelectedCategories(),
+                CompilationMode = m_CompilationMode,
+                Platform = m_Platform,
+                OnIncomingIssues = issues =>
                 {
                     // add batch of issues
                     m_ViewManager.AddIssues(issues.ToList());
                 },
-                onCompleted = projectReport =>
+                OnCompleted = report =>
                 {
-                    m_AnalysisState = AnalysisState.Completed;
-                    m_ProjectReport = projectReport;
+                    m_ViewManager.OnAnalysisCompleted(report);
 
                     m_ShouldRefresh = true;
+                    m_AnalysisState = AnalysisState.Completed;
+
+                    m_ProjectReport = report;
                 }
             };
 
-            InitializeViews(GetAllSupportedCategories(), projectAuditorParams.rules, false);
+            InitializeViews(GetAllSupportedCategories(), projectAuditorParams.Rules, false);
 
             m_ProjectAuditor.AuditAsync(projectAuditorParams, new ProgressBar());
         }
@@ -868,31 +870,31 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             var projectAuditorParams = new ProjectAuditorParams
             {
-                categories = actualCategories,
-                compilationMode = m_CompilationMode,
-                onIncomingIssues = issues =>
+                Categories = actualCategories,
+                CompilationMode = m_CompilationMode,
+                OnIncomingIssues = issues =>
                 {
                     foreach (var view in views)
                     {
                         view.AddIssues(issues);
                     }
                 },
-                existingReport = m_ProjectReport,
-                onCompleted = projectReport =>
+                Platform = m_ProjectReport.SessionInfo.Platform,
+                ExistingReport = m_ProjectReport,
+                OnCompleted = report =>
                 {
+                    m_ViewManager.OnAnalysisCompleted(report);
+
                     m_ShouldRefresh = true;
                     m_AnalysisState = AnalysisState.Completed;
                 }
             };
 
-            var platform = m_ProjectReport.FindByCategory(IssueCategory.MetaData).FirstOrDefault(i => i.description.Equals(MetaDataModule.k_KeyAnalysisTarget));
-            if (platform != null)
-                projectAuditorParams.platform = (BuildTarget)Enum.Parse(typeof(BuildTarget), platform.GetCustomProperty(MetaDataProperty.Value));
             m_ProjectAuditor.Audit(projectAuditorParams, new ProgressBar());
 
             if (refreshSummaryView)
             {
-                var summaryView = m_ViewManager.GetView(IssueCategory.MetaData);
+                var summaryView = m_ViewManager.GetView(IssueCategory.Metadata);
                 if (summaryView != null)
                 {
                     summaryView.Clear();
@@ -953,20 +955,17 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         IssueCategory[] GetSelectedCategories()
         {
-            if (m_SelectedModules == BuiltInModules.Everything)
-                return m_ProjectAuditor.GetCategories();
-
-            var requestedCategories = new List<IssueCategory>(new[] {IssueCategory.MetaData});
-            if ((m_SelectedModules.HasFlag(BuiltInModules.Code)))
-                requestedCategories.AddRange(m_ProjectAuditor.GetModule<CodeModule>().categories);
-            if (m_SelectedModules.HasFlag(BuiltInModules.Settings))
-                requestedCategories.AddRange(m_ProjectAuditor.GetModule<SettingsModule>().categories);
-            if ((m_SelectedModules.HasFlag(BuiltInModules.Shaders)))
-                requestedCategories.AddRange(m_ProjectAuditor.GetModule<ShadersModule>().categories);
-            if ((m_SelectedModules.HasFlag(BuiltInModules.Resources)))
-                requestedCategories.AddRange(m_ProjectAuditor.GetModule<AssetsModule>().categories);
-            if ((m_SelectedModules.HasFlag(BuiltInModules.BuildReport)))
-                requestedCategories.AddRange(m_ProjectAuditor.GetModule<BuildReportModule>().categories);
+            var requestedCategories = new List<IssueCategory>(new[] {IssueCategory.Metadata});
+            if (m_SelectedProjectAreas.HasFlag(ProjectAreaFlags.Code))
+                requestedCategories.AddRange(GetTabCategories(TabId.Code));
+            if (m_SelectedProjectAreas.HasFlag(ProjectAreaFlags.Settings))
+                requestedCategories.AddRange(GetTabCategories(TabId.Settings));
+            if (m_SelectedProjectAreas.HasFlag(ProjectAreaFlags.Assets))
+                requestedCategories.AddRange(GetTabCategories(TabId.Assets));
+            if (m_SelectedProjectAreas.HasFlag(ProjectAreaFlags.Shaders))
+                requestedCategories.AddRange(GetTabCategories(TabId.Shaders));
+            if (m_SelectedProjectAreas.HasFlag(ProjectAreaFlags.Build))
+                requestedCategories.AddRange(GetTabCategories(TabId.Build));
 
             return requestedCategories.ToArray();
         }
@@ -981,6 +980,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
 
             return allTabCategories.Distinct().ToArray();
+        }
+
+        IssueCategory[] GetTabCategories(TabId tabId)
+        {
+            return GetTabCategories(m_Tabs.First(t => t.id == tabId));
         }
 
         IssueCategory[] GetTabCategories(Tab tab)
@@ -1020,7 +1024,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void DrawAssemblyFilter()
         {
-            if (!activeView.desc.showAssemblySelection)
+            if (!activeView.Desc.showAssemblySelection)
                 return;
 
             using (new EditorGUILayout.HorizontalScope())
@@ -1137,7 +1141,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void DrawFilters()
         {
-            if (!activeView.desc.showFilters)
+            if (!activeView.Desc.showFilters)
                 return;
 
             using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
@@ -1184,7 +1188,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             EditorGUILayout.Space();
 
-            m_SelectedModules = (BuiltInModules)EditorGUILayout.EnumFlagsField(Contents.ModulesSelection, m_SelectedModules, GUILayout.ExpandWidth(true));
+            m_SelectedProjectAreas = (ProjectAreaFlags)EditorGUILayout.EnumFlagsField(Contents.ProjectAreaSelection, m_SelectedProjectAreas, GUILayout.ExpandWidth(true));
+            if (m_SelectedProjectAreas == ProjectAreaFlags.Default)
+            {
+                // this is a workaround for the fact that EnumFlagsField doesn't support a default value
+                m_SelectedProjectAreas = k_ProjectAreaDefaultFlags;
+            }
 
             var selectedTarget = Array.IndexOf(m_SupportedBuildTargets, m_Platform);
             selectedTarget = EditorGUILayout.Popup(Contents.PlatformSelection, selectedTarget, m_PlatformContents);
@@ -1200,7 +1209,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 GUILayout.FlexibleSpace();
 
-                using (new EditorGUI.DisabledScope(m_SelectedModules == BuiltInModules.None))
+                using (new EditorGUI.DisabledScope(m_SelectedProjectAreas == ProjectAreaFlags.None))
                 {
                     if (GUILayout.Button(Contents.AnalyzeButton, GUILayout.Width(100), GUILayout.Height(height)))
                     {
@@ -1230,7 +1239,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_Draw2D.DrawEnd();
             }
         }
-        
+
         void DrawPanels()
         {
             DrawReport();
@@ -1241,7 +1250,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             using (new EditorGUILayout.HorizontalScope(GUILayout.Height(20)))
             {
                 var selectedIssues = activeView.GetSelection();
-                var info = selectedIssues.Length + " / " + activeView.numFilteredIssues + " Items selected";
+                var info = selectedIssues.Length + " / " + activeView.NumFilteredIssues + " Items selected";
                 EditorGUILayout.LabelField(info, GUILayout.ExpandWidth(true), GUILayout.Width(200));
 
                 GUILayout.FlexibleSpace();
@@ -1251,14 +1260,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 var fontSize = (int)GUILayout.HorizontalSlider(m_ViewStates.fontSize, ViewStates.k_MinFontSize,
                     ViewStates.k_MaxFontSize, GUILayout.ExpandWidth(false),
-                    GUILayout.Width(AnalysisView.toolbarButtonSize));
+                    GUILayout.Width(AnalysisView.ToolbarButtonSize));
                 if (fontSize != m_ViewStates.fontSize)
                 {
                     m_ViewStates.fontSize = fontSize;
                     SharedStyles.SetFontDynamicSize(m_ViewStates.fontSize);
                 }
 
-                EditorGUILayout.LabelField("Ver. " + ProjectAuditor.s_PackageVersion, EditorStyles.label, GUILayout.Width(120));
+                EditorGUILayout.LabelField("Ver. " + ProjectAuditor.PackageVersion, EditorStyles.label, GUILayout.Width(120));
             }
         }
 
@@ -1279,9 +1288,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                             var category = m_Tabs[m_ActiveTabIndex]
                                 .availableCategories[categoryIndex];
-                            if (!m_ProjectReport.HasCategory(category))
+                            if (category != IssueCategory.Metadata && !m_ProjectReport.HasCategory(category))
                             {
-                                var displayName = m_ViewManager.GetView(category).desc.displayName;
+                                var displayName = m_ViewManager.GetView(category).Desc.displayName;
                                 if (!EditorUtility.DisplayDialog(k_ProjectAuditorName,
                                     $"'{displayName}' analysis will now begin.", "Ok",
                                     "Cancel"))
@@ -1324,7 +1333,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             using (new GUILayout.HorizontalScope(GUI.skin.box))
             {
-                GUILayout.Label(activeView.description, GUILayout.MinWidth(360), GUILayout.ExpandWidth(true));
+                GUILayout.Label(activeView.Description, GUILayout.MinWidth(360), GUILayout.ExpandWidth(true));
                 DrawViewSelection();
 
                 GUILayout.FlexibleSpace();
@@ -1442,12 +1451,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
             {
 #if UNITY_2019_1_OR_NEWER
-                GUILayout.Label(Utility.GetPlatformIcon(BuildPipeline.GetBuildTargetGroup(m_Platform)), SharedStyles.IconLabel, GUILayout.Width(AnalysisView.toolbarIconSize));
+                GUILayout.Label(Utility.GetPlatformIcon(BuildPipeline.GetBuildTargetGroup(m_Platform)), SharedStyles.IconLabel, GUILayout.Width(AnalysisView.ToolbarIconSize));
 #endif
 
                 if (m_AnalysisState == AnalysisState.InProgress)
                 {
-                    GUILayout.Label(Utility.GetIcon(Utility.IconType.StatusWheel), SharedStyles.IconLabel, GUILayout.Width(AnalysisView.toolbarIconSize));
+                    GUILayout.Label(Utility.GetIcon(Utility.IconType.StatusWheel), SharedStyles.IconLabel, GUILayout.Width(AnalysisView.ToolbarIconSize));
                 }
 
                 EditorGUILayout.Space();
@@ -1470,6 +1479,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     {
                         if (EditorUtility.DisplayDialog(k_Discard, k_DiscardQuestion, "Ok", "Cancel"))
                         {
+                            m_ActiveTabIndex = 0;
                             m_AnalysisState = AnalysisState.Initialized;
                         }
                     }
@@ -1593,11 +1603,11 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void SaveReport()
         {
-            var path = EditorUtility.SaveFilePanel(k_SaveToFile, UserPreferences.loadSavePath, "project-auditor-report.json", "json");
+            var path = EditorUtility.SaveFilePanel(k_SaveToFile, UserPreferences.LoadSavePath, "project-auditor-report.json", "json");
             if (path.Length != 0)
             {
                 m_ProjectReport.Save(path);
-                UserPreferences.loadSavePath = Path.GetDirectoryName(path);
+                UserPreferences.LoadSavePath = Path.GetDirectoryName(path);
 
                 EditorUtility.RevealInFinder(path);
                 ProjectAuditorAnalytics.SendEvent(ProjectAuditorAnalytics.UIButton.Save, ProjectAuditorAnalytics.BeginAnalytic());
@@ -1608,7 +1618,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void LoadReport()
         {
-            var path = EditorUtility.OpenFilePanel(k_LoadFromFile, UserPreferences.loadSavePath, "json");
+            var path = EditorUtility.OpenFilePanel(k_LoadFromFile, UserPreferences.LoadSavePath, "json");
             if (path.Length != 0)
             {
                 m_ProjectReport = ProjectReport.Load(path);
@@ -1622,7 +1632,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 m_LoadButtonAnalytic =  ProjectAuditorAnalytics.BeginAnalytic();
                 m_AnalysisState = AnalysisState.Valid;
-                UserPreferences.loadSavePath = Path.GetDirectoryName(path);
+                UserPreferences.LoadSavePath = Path.GetDirectoryName(path);
                 m_ViewManager = null; // make sure ViewManager is reinitialized
 
                 OnEnable();
@@ -1631,7 +1641,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 UpdateAssemblySelection();
 
                 // switch to summary view after loading
-                m_ViewManager.ChangeView(IssueCategory.MetaData);
+                m_ViewManager.ChangeView(IssueCategory.Metadata);
             }
 
             GUIUtility.ExitGUI();
@@ -1685,8 +1695,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             public static readonly GUIContent AnalyzeButton =
                 new GUIContent("Analyze", "Analyze Project and list all issues found.");
-            public static readonly GUIContent ModulesSelection =
-                new GUIContent("Modules", $"Select {k_ProjectAuditorName} modules.");
+            public static readonly GUIContent ProjectAreaSelection =
+                new GUIContent("Project Area", $"Select project area to analyze.");
             public static readonly GUIContent PlatformSelection =
                 new GUIContent("Platform", "Select the target platform.");
             public static readonly GUIContent CompilationModeSelection =

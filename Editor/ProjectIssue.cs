@@ -1,10 +1,8 @@
 using System;
-using System.Linq;
 using Newtonsoft.Json;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -114,18 +112,11 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// This issue's category
         /// </summary>
-        [JsonIgnore]
+        [JsonProperty("category")]
         public IssueCategory category
         {
             get => m_Category;
             internal set => m_Category = value;
-        }
-
-        [JsonProperty("category")]
-        internal string categoryForJson
-        {
-            get => m_Category.ToString();
-            set => m_Category = (IssueCategory)Enum.Parse(typeof(IssueCategory), value);
         }
 
         /// <summary>

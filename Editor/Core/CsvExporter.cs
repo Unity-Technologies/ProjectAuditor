@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
-    class CSVExporter : Exporter
+    class CsvExporter : Exporter
     {
-        public CSVExporter(string path, IssueLayout layout) : base(path, layout) {}
+        public CsvExporter(string path, IssueLayout layout) : base(path, layout) {}
 
         public override void WriteHeader()
         {

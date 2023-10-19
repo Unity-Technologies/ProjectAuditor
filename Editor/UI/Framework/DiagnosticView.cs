@@ -11,7 +11,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     internal class DiagnosticView : AnalysisView
     {
-        public override string description => $"A list of {m_Desc.displayName} issues found in the project.";
+        public override string Description => $"A list of {m_Desc.displayName} issues found in the project.";
 
         Vector2 m_DetailsScrollPos;
         Vector2 m_RecommendationScrollPos;
@@ -226,11 +226,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         protected override void Export(Func<ProjectIssue, bool> predicate = null)
         {
-            var path = EditorUtility.SaveFilePanel("Save to CSV file", UserPreferences.loadSavePath, string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
+            var path = EditorUtility.SaveFilePanel("Save to CSV file", UserPreferences.LoadSavePath, string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
                 "csv");
             if (path.Length != 0)
             {
-                using (var exporter = new CSVExporter(path, m_Layout))
+                using (var exporter = new CsvExporter(path, m_Layout))
                 {
                     exporter.WriteHeader();
 
@@ -243,7 +243,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 m_ViewManager.OnViewExportCompleted?.Invoke();
 
-                UserPreferences.loadSavePath = Path.GetDirectoryName(path);
+                UserPreferences.LoadSavePath = Path.GetDirectoryName(path);
             }
         }
 

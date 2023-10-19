@@ -41,7 +41,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Line number
         /// </summary>
-        [JsonProperty("line")]
+        [JsonProperty("line", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public int Line => m_Line;
 
         /// <summary>

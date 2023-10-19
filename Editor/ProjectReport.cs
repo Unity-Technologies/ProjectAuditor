@@ -7,10 +7,37 @@ using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEngine;
 using Newtonsoft.Json;
-using Formatting = Newtonsoft.Json.Formatting;
+using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor
 {
+    [Serializable]
+    internal class SessionInfo : ProjectAuditorParams
+    {
+        // for serialization purposes only
+        public SessionInfo()
+            : base(new ProjectAuditorParams(BuildTarget.NoTarget, UserPreferences.RulesAssetPath))
+        {}
+
+        public SessionInfo(ProjectAuditorParams projectAuditorParams)
+            : base(projectAuditorParams)
+        {}
+
+        public string ProjectAuditorVersion;
+        public string UnityVersion;
+
+        public string CompanyName;
+        public string ProjectId;
+        public string ProjectName;
+        public string ProjectRevision;
+
+        public string DateTime;
+        public string HostName;
+        public string HostPlatform;
+
+        public bool UseRoslynAnalyzers;
+    }
+
     /// <summary>
     /// ProjectReport contains a list of all issues found by ProjectAuditor
     /// </summary>
@@ -29,39 +56,15 @@ namespace Unity.ProjectAuditor.Editor
             public string name;
 
             // this is used by HasCategory
-            [JsonIgnore]
             public IssueCategory[] categories;
+            public IReadOnlyCollection<IssueLayout> layouts;
 
-            [JsonProperty("categories")]
-            internal string[] categoryStrings
-            {
-                get
-                {
-                    if (categories == null) return null;
-
-                    var catStrings = new string[categories.Length];
-                    for (int i = 0; i < categories.Length; ++i)
-                    {
-                        catStrings[i] = categories[i].ToString();
-                    }
-                    return catStrings;
-                }
-                set
-                {
-                    if (value != null)
-                    {
-                        categories = new IssueCategory[value.Length];
-                        for (int i = 0; i < value.Length; ++i)
-                        {
-                            categories[i] = (IssueCategory)Enum.Parse(typeof(IssueCategory), value[i]);
-                        }
-                    }
-                }
-            }
-
-            public DateTime startTime;
-            public DateTime endTime;
+            public string startTime;
+            public string endTime;
         }
+
+        [JsonProperty("sessionInfo")]
+        SessionInfo m_SessionInfo;
 
         [SerializeField]
         [JsonProperty("moduleMetadata")]
@@ -73,6 +76,9 @@ namespace Unity.ProjectAuditor.Editor
         [JsonIgnore]
         [SerializeField]
         List<ProjectIssue> m_Issues = new List<ProjectIssue>();
+
+        [JsonIgnore]
+        public SessionInfo SessionInfo => m_SessionInfo;
 
         [JsonProperty("issues")]
         internal ProjectIssue[] UnfixedIssues
@@ -107,10 +113,30 @@ namespace Unity.ProjectAuditor.Editor
         [JsonIgnore]
         public string Version => m_Version;
 
-
-        // for internal use only
+        // for serialization purposes only
         internal ProjectReport()
         {}
+
+        // for internal use only
+        internal ProjectReport(ProjectAuditorParams projectAuditorParams)
+        {
+            m_SessionInfo = new SessionInfo(projectAuditorParams)
+            {
+                ProjectAuditorVersion = ProjectAuditor.PackageVersion,
+
+                ProjectId = Application.cloudProjectId,
+                ProjectName = Application.productName,
+                ProjectRevision = "Unknown",
+                CompanyName = Application.companyName,
+                UnityVersion = Application.unityVersion,
+
+                DateTime = Utils.Json.SerializeDateTime(DateTime.Now),
+                HostName = SystemInfo.deviceName,
+                HostPlatform = SystemInfo.operatingSystem,
+
+                UseRoslynAnalyzers = UserPreferences.UseRoslynAnalyzers
+            };
+        }
 
         public void RecordModuleInfo(ProjectAuditorModule module, DateTime startTime, DateTime endTime)
         {
@@ -118,10 +144,8 @@ namespace Unity.ProjectAuditor.Editor
             var info = m_ModuleInfos.FirstOrDefault(m => m.name.Equals(name));
             if (info != null)
             {
-                info.name = module.name;
-                info.categories = module.categories;
-                info.startTime = startTime;
-                info.endTime = endTime;
+                info.startTime = Utils.Json.SerializeDateTime(startTime);
+                info.endTime = Utils.Json.SerializeDateTime(endTime);
             }
             else
             {
@@ -129,15 +153,16 @@ namespace Unity.ProjectAuditor.Editor
                 {
                     name = module.name,
                     categories = module.categories,
-                    startTime = startTime,
-                    endTime = endTime
+                    layouts = module.supportedLayouts,
+                    startTime = Utils.Json.SerializeDateTime(startTime),
+                    endTime = Utils.Json.SerializeDateTime(endTime)
                 });
             }
         }
 
         public bool HasCategory(IssueCategory category)
         {
-            return m_ModuleInfos.Any(m => m.categories.Contains(category));
+            return category == IssueCategory.Metadata || m_ModuleInfos.Any(m => m.categories.Contains(category));
         }
 
         public IReadOnlyCollection<ProjectIssue> GetAllIssues()
@@ -211,7 +236,7 @@ namespace Unity.ProjectAuditor.Editor
         public void ExportToCSV(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
         {
             var issues = m_Issues.Where(i => i.category == layout.category && (predicate == null || predicate(i))).ToArray();
-            using (var exporter = new CSVExporter(path, layout))
+            using (var exporter = new CsvExporter(path, layout))
             {
                 exporter.WriteHeader();
                 exporter.WriteIssues(issues);
@@ -226,7 +251,7 @@ namespace Unity.ProjectAuditor.Editor
         public void ExportToHTML(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
         {
             var issues = m_Issues.Where(i => i.category == layout.category && (predicate == null || predicate(i))).ToArray();
-            using (var exporter = new HTMLExporter(path, layout))
+            using (var exporter = new HtmlExporter(path, layout))
             {
                 exporter.WriteHeader();
                 exporter.WriteIssues(issues);
@@ -237,8 +262,11 @@ namespace Unity.ProjectAuditor.Editor
         public void Save(string path)
         {
             File.WriteAllText(path,
-                JsonConvert.SerializeObject(this, UserPreferences.prettifyJsonOutput ? Formatting.Indented : Formatting.None,
-                    new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore}));
+                JsonConvert.SerializeObject(this, UserPreferences.PrettifyJsonOutput ? Formatting.Indented : Formatting.None,
+                    new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore
+                    }));
         }
 
         public static ProjectReport Load(string path)

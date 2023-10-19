@@ -54,10 +54,10 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var projectAuditorParams = new ProjectAuditorParams();
 
-            Assert.IsNull(projectAuditorParams.categories);
-            Assert.IsNull(projectAuditorParams.assemblyNames);
-            Assert.AreEqual(EditorUserBuildSettings.activeBuildTarget, projectAuditorParams.platform);
-            Assert.AreEqual(CodeOptimization.Release, projectAuditorParams.codeOptimization);
+            Assert.IsNull(projectAuditorParams.Categories);
+            Assert.IsNull(projectAuditorParams.AssemblyNames);
+            Assert.AreEqual(EditorUserBuildSettings.activeBuildTarget, projectAuditorParams.Platform);
+            Assert.AreEqual(CodeOptimization.Release, projectAuditorParams.CodeOptimization);
         }
 
         [Test]
@@ -67,20 +67,20 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var originalParams = new ProjectAuditorParams
             {
-                categories = new[] { IssueCategory.Code },
-                assemblyNames = new[] { "Test" },
-                platform = BuildTarget.Android,
-                codeOptimization = CodeOptimization.Debug,
-                rules = rules
+                Categories = new[] { IssueCategory.Code },
+                AssemblyNames = new[] { "Test" },
+                Platform = BuildTarget.Android,
+                CodeOptimization = CodeOptimization.Debug,
+                Rules = rules
             };
 
             var projectAuditorParams = new ProjectAuditorParams(originalParams);
 
-            Assert.IsNotNull(projectAuditorParams.categories);
-            Assert.IsNotNull(projectAuditorParams.assemblyNames);
-            Assert.AreEqual(BuildTarget.Android, projectAuditorParams.platform);
-            Assert.AreEqual(CodeOptimization.Debug, projectAuditorParams.codeOptimization);
-            Assert.AreEqual(rules, projectAuditorParams.rules);
+            Assert.IsNotNull(projectAuditorParams.Categories);
+            Assert.IsNotNull(projectAuditorParams.AssemblyNames);
+            Assert.AreEqual(BuildTarget.Android, projectAuditorParams.Platform);
+            Assert.AreEqual(CodeOptimization.Debug, projectAuditorParams.CodeOptimization);
+            Assert.AreEqual(rules, projectAuditorParams.Rules);
         }
 
         [Test]
@@ -93,16 +93,16 @@ namespace Unity.ProjectAuditor.EditorTests
 
             projectAuditor.Audit(new ProjectAuditorParams
             {
-                categories = new[] { IssueCategory.ProjectSetting },
-                onModuleCompleted = () => numModules++,
-                onCompleted = report =>
+                Categories = new[] { IssueCategory.ProjectSetting },
+                OnModuleCompleted = () => numModules++,
+                OnCompleted = report =>
                 {
                     Assert.Null(projectReport);
                     Assert.NotNull(report);
 
                     projectReport = report;
                 },
-                compilationMode = CompilationMode.Player
+                CompilationMode = CompilationMode.Player
             });
 
             Assert.AreEqual(1, numModules);
@@ -118,7 +118,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var report = projectAuditor.Audit(new ProjectAuditorParams
             {
-                categories = new[] { IssueCategory.ProjectSetting}
+                Categories = new[] { IssueCategory.ProjectSetting}
             });
 
             Assert.True(report.HasCategory(IssueCategory.ProjectSetting));
@@ -131,8 +131,8 @@ namespace Unity.ProjectAuditor.EditorTests
 
             projectAuditor.Audit(new ProjectAuditorParams
             {
-                categories = new[] { IssueCategory.ProjectSetting},
-                existingReport = report
+                Categories = new[] { IssueCategory.ProjectSetting},
+                ExistingReport = report
             });
 
             Assert.True(report.HasCategory(IssueCategory.ProjectSetting));

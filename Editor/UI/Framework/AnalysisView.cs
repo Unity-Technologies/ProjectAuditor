@@ -39,32 +39,17 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         int m_SortPropertyIndex = -1;
         bool m_SortAscending = true;
 
-        public ViewDescriptor desc
-        {
-            get { return m_Desc; }
-        }
+        public ViewDescriptor Desc => m_Desc;
 
-        public virtual string description => $"A list of {m_Desc.displayName} found in the project.";
+        public virtual string Description => $"A list of {m_Desc.displayName} found in the project.";
 
-        public string documentationUrl => Documentation.GetPageUrl(new string(m_Desc.displayName.Where(char.IsLetterOrDigit).ToArray()));
+        public string DocumentationUrl => Documentation.GetPageUrl(new string(m_Desc.displayName.Where(char.IsLetterOrDigit).ToArray()));
 
-        public int numIssues
-        {
-            get
-            {
-                return m_Issues.Count();
-            }
-        }
+        public int NumIssues => m_Issues.Count();
 
-        public int numFilteredIssues
-        {
-            get
-            {
-                return m_Table.GetNumMatchingIssues();
-            }
-        }
+        public int NumFilteredIssues => m_Table.GetNumMatchingIssues();
 
-        internal ViewManager viewManager
+        internal ViewManager ViewManager
         {
             get { return m_ViewManager; }
         }
@@ -83,6 +68,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_ViewStates = viewStates;
             m_BaseFilter = filter;
             m_Layout = layout;
+
+            if (layout.properties == null || layout.properties.Length == 0)
+                return;
 
             m_GroupDropdownItems = m_Layout.properties.Select(p => new Utility.DropdownItem
             {
@@ -168,6 +156,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public virtual void Clear()
         {
+            if (m_Table == null)
+                return;
+
             m_Issues.Clear();
             m_Table.Clear();
 
@@ -199,7 +190,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public bool IsValid()
         {
-            return m_Table != null;
+            return m_Layout.properties.Length == 0 || m_Table != null;
         }
 
         public virtual void DrawFilters()
@@ -239,7 +230,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
             {
                 if (drawDescription)
-                    EditorGUILayout.LabelField(description);
+                    EditorGUILayout.LabelField(Description);
 
                 // Add a bit of space to improve readability
                 EditorGUILayout.Space();
@@ -292,7 +283,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             EditorGUI.BeginChangeCheck();
 
-            if (UserPreferences.developerMode && m_Desc.showDependencyView)
+            if (UserPreferences.DeveloperMode && m_Desc.showDependencyView)
             {
                 // this is only available in developer mode because it is still too slow at the moment
                 m_TextFilter.searchDependencies = EditorGUILayout.ToggleLeft("Dependencies (slow)",
@@ -357,7 +348,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                                 m_Table.AddIssues(m_Issues);
                                 m_Table.Reload();
                             }
-                        }, GUILayout.Width(toolbarButtonSize * 2));
+                        }, GUILayout.Width(ToolbarButtonSize * 2));
 
                     // collapse/expand buttons
                     DrawToolbarButton(Contents.CollapseAllButton,  () => SetRowsExpanded(false));
@@ -391,7 +382,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             });
                             return;
                     }
-                }, GUILayout.Width(toolbarButtonSize)))
+                }, GUILayout.Width(ToolbarButtonSize)))
             {
                 Export();
 
@@ -492,11 +483,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         protected virtual void Export(Func<ProjectIssue, bool> predicate = null)
         {
-            var path = EditorUtility.SaveFilePanel("Save to CSV file", UserPreferences.loadSavePath, string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
+            var path = EditorUtility.SaveFilePanel("Save to CSV file", UserPreferences.LoadSavePath, string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
                 "csv");
             if (path.Length != 0)
             {
-                using (var exporter = new CSVExporter(path, m_Layout))
+                using (var exporter = new CsvExporter(path, m_Layout))
                 {
                     exporter.WriteHeader();
 
@@ -509,7 +500,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 if (m_ViewManager.OnViewExportCompleted != null)
                     m_ViewManager.OnViewExportCompleted();
 
-                UserPreferences.loadSavePath = Path.GetDirectoryName(path);
+                UserPreferences.LoadSavePath = Path.GetDirectoryName(path);
             }
         }
 
@@ -525,6 +516,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public virtual void LoadSettings()
         {
+            if (m_Table == null)
+                return;
+
             var columns = m_Table.multiColumnHeader.state.columns;
             for (int i = 0; i < m_Layout.properties.Length; i++)
             {
@@ -547,6 +541,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public virtual void SaveSettings()
         {
+            if (m_Table == null)
+                return;
+
             var columns = m_Table.multiColumnHeader.state.columns;
             for (int i = 0; i < m_Layout.properties.Length; i++)
             {
@@ -581,7 +578,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             if (GUILayout.Button(
                 guiContent, EditorStyles.toolbarButton,
-                GUILayout.Width(toolbarButtonSize)))
+                GUILayout.Width(ToolbarButtonSize)))
             {
                 onClick();
             }
@@ -624,8 +621,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected const string k_AnalysisIsRequiredText = "<Missing Data: Please Analyze>";
         protected const string k_MultipleSelectionText = "<Multiple selection>";
 
-        public static int toolbarButtonSize => LayoutSize.ToolbarButtonSize;
-        public static int toolbarIconSize => LayoutSize.ToolbarIconSize;
+        public static int ToolbarButtonSize => LayoutSize.ToolbarButtonSize;
+        public static int ToolbarIconSize => LayoutSize.ToolbarIconSize;
 
         static readonly string[] k_ExportModeStrings =
         {

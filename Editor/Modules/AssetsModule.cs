@@ -75,8 +75,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 AnalyzeStreamingAssets(projectAuditorParams, issues);
 
             if (issues.Any())
-                projectAuditorParams.onIncomingIssues(issues);
-            projectAuditorParams.onModuleCompleted?.Invoke();
+                projectAuditorParams.OnIncomingIssues(issues);
+            projectAuditorParams.OnModuleCompleted?.Invoke();
         }
 
         static void AnalyzeResources(IList<ProjectIssue> issues)
@@ -119,7 +119,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
 
                 var folderSizeLimitMB =
-                    projectAuditorParams.rules.GetParameter("StreamingAssetsFolderSizeLimit");
+                    projectAuditorParams.Rules.GetParameter("StreamingAssetsFolderSizeLimit");
 
                 if (totalBytes > folderSizeLimitMB * 1024 * 1024)
                 {

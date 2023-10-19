@@ -155,7 +155,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Consider reorganizing your texture atlas in order to reduce the amount of empty space."
         )
         {
-            messageFormat = "Texture Atlas '{0}' has too much empty space ({1} %)"
+            messageFormat = "Texture Atlas '{0}' has too much empty space ({1})"
         };
 
         public void Initialize(ProjectAuditorModule module)
@@ -179,7 +179,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             TextureFormat format = (TextureFormat)platformSettings.format;
             if (platformSettings.format == TextureImporterFormat.Automatic)
             {
-                format = (TextureFormat)textureImporter.GetAutomaticFormat(projectAuditorParams.platform.ToString());
+                format = (TextureFormat)textureImporter.GetAutomaticFormat(projectAuditorParams.Platform.ToString());
             }
 
             var size = UnityEngine.Experimental.Rendering.GraphicsFormatUtility.ComputeMipChainSize(texture.width, texture.height, TextureUtils.GetTextureDepth(texture), format, texture.mipmapCount);
@@ -230,7 +230,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithLocation(textureImporter.assetPath);
             }
 
-            if (textureImporter.mipmapEnabled && !textureImporter.streamingMipmaps && size > Mathf.Pow(projectAuditorParams.rules.GetParameter("TextureStreamingMipmapsSizeLimit"), 2))
+            if (textureImporter.mipmapEnabled && !textureImporter.streamingMipmaps && size > Mathf.Pow(projectAuditorParams.Rules.GetParameter("TextureStreamingMipmapsSizeLimit"), 2))
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureStreamingMipMapEnabledDescriptor.id, textureName)
                     .WithLocation(textureImporter.assetPath);
@@ -255,9 +255,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 var emptyPercent = TextureUtils.GetEmptyPixelsPercent(texture2D);
                 if (emptyPercent >
-                    projectAuditorParams.rules.GetParameter("SpriteAtlasEmptySpaceLimit"))
+                    projectAuditorParams.Rules.GetParameter("SpriteAtlasEmptySpaceLimit"))
                 {
-                    yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureAtlasEmptyDescriptor.id, textureName, emptyPercent)
+                    yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureAtlasEmptyDescriptor.id, textureName, Formatting.FormatPercentage(emptyPercent / 100.0f))
                         .WithLocation(textureImporter.assetPath);
                 }
             }

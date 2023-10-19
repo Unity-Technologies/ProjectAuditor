@@ -23,10 +23,26 @@ namespace Unity.ProjectAuditor.EditorTests
             var loadedReport = ProjectReport.Load(k_ReportPath);
 
             Assert.AreEqual(report.Version, loadedReport.Version);
+            Assert.AreEqual(report.SessionInfo.ProjectAuditorVersion, loadedReport.SessionInfo.ProjectAuditorVersion);
+            Assert.AreEqual(report.SessionInfo.UnityVersion, loadedReport.SessionInfo.UnityVersion);
+
+            Assert.AreEqual(report.SessionInfo.CompanyName, loadedReport.SessionInfo.CompanyName);
+            Assert.AreEqual(report.SessionInfo.ProjectId, loadedReport.SessionInfo.ProjectId);
+            Assert.AreEqual(report.SessionInfo.ProjectName, loadedReport.SessionInfo.ProjectName);
+            Assert.AreEqual(report.SessionInfo.ProjectRevision, loadedReport.SessionInfo.ProjectRevision);
+
+            Assert.AreEqual(report.SessionInfo.DateTime, loadedReport.SessionInfo.DateTime);
+
+            Assert.AreEqual(report.SessionInfo.Platform, loadedReport.SessionInfo.Platform);
+
             Assert.AreEqual(report.NumTotalIssues, loadedReport.NumTotalIssues);
+
             Assert.IsTrue(report.IsValid());
             Assert.IsTrue(report.HasCategory(IssueCategory.Code));
             Assert.IsTrue(report.HasCategory(IssueCategory.ProjectSetting));
+
+            Assert.AreEqual(report.GetNumIssues(IssueCategory.Code), loadedReport.GetNumIssues(IssueCategory.Code));
+            Assert.AreEqual(report.GetNumIssues(IssueCategory.ProjectSetting), loadedReport.GetNumIssues(IssueCategory.ProjectSetting));
         }
 
         void AssertForbiddenProperty(JObject jobject, string propertyName)
@@ -81,7 +97,16 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProjectReportSerialization_Report_CanSerialize()
         {
-            var report = m_ProjectAuditor.Audit();
+            var report = m_ProjectAuditor.Audit(new ProjectAuditorParams
+            {
+                Categories = new[]
+                {
+                    IssueCategory.Code,
+                    IssueCategory.ProjectSetting,
+                    IssueCategory.AssetDiagnostic,
+                }
+            });
+
             report.Save(k_ReportPath);
 
             var serializedReport = File.ReadAllText(k_ReportPath);
@@ -134,16 +159,16 @@ namespace Unity.ProjectAuditor.EditorTests
                     {
                         Assert.IsTrue(descriptor.ContainsKey("id"));
 
-                        AssertRequiredPropertyIsValid(descriptor, "defaultSeverity");
+                        AssertForbiddenProperty(descriptor, "defaultSeverity");
                         AssertRequiredArrayIsValid(descriptor, "areas");
-                        AssertOptionalPropertyIsValid(descriptor, "messageFormat");
-                        AssertOptionalPropertyIsValid(descriptor, "type");
-                        AssertOptionalPropertyIsValid(descriptor, "method");
-                        AssertOptionalPropertyIsValid(descriptor, "value");
+                        AssertForbiddenProperty(descriptor, "messageFormat");
+                        AssertForbiddenProperty(descriptor, "type");
+                        AssertForbiddenProperty(descriptor, "method");
+                        AssertForbiddenProperty(descriptor, "value");
                         AssertOptionalArrayIsValid(descriptor, "platforms");
                         AssertOptionalPropertyIsValid(descriptor, "documentationUrl");
-                        AssertOptionalPropertyIsValid(descriptor, "minimumVersion");
-                        AssertOptionalPropertyIsValid(descriptor, "maximumVersion");
+                        AssertForbiddenProperty(descriptor, "minimumVersion");
+                        AssertForbiddenProperty(descriptor, "maximumVersion");
                     }
                     else
                     {

@@ -58,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            var analyzers = GetPlatformAnalyzers(projectAuditorParams.platform);
+            var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
             var GUIDsAudioClip = AssetDatabase.FindAssets("t:AudioClip, a:assets");
 
             progress?.Start("Finding AudioClips", "Search in Progress...", GUIDsAudioClip.Length);
@@ -74,7 +74,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var analyzer in analyzers)
                 {
-                    projectAuditorParams.onIncomingIssues(analyzer.Analyze(projectAuditorParams, audioImporter));
+                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(projectAuditorParams, audioImporter));
                 }
 
                 progress?.Advance();
@@ -82,7 +82,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             progress?.Clear();
 
-            projectAuditorParams.onModuleCompleted?.Invoke();
+            projectAuditorParams.OnModuleCompleted?.Invoke();
         }
     }
 }

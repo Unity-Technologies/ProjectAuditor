@@ -16,16 +16,16 @@ namespace Unity.ProjectAuditor.EditorTests
         public IEnumerator Documentation_Pages_Exist()
         {
             var viewManager = new ViewManager((IssueCategory[])Enum.GetValues(typeof(IssueCategory)));
-            viewManager.Create(new Editor.ProjectAuditor(), new ProjectAuditorParams().rules, new ViewStates());
+            viewManager.Create(new Editor.ProjectAuditor(), new ProjectAuditorParams().Rules, new ViewStates());
 
             for (var i = 0; i < viewManager.NumViews; i++)
             {
-                if (viewManager.GetView(i).desc.category == IssueCategory.MetaData)
+                if (viewManager.GetView(i).Desc.category == IssueCategory.Metadata)
                     continue;
-                if (viewManager.GetView(i).desc.category == IssueCategory.FirstCustomCategory)
+                if (viewManager.GetView(i).Desc.category == IssueCategory.FirstCustomCategory)
                     continue;
 
-                var documentationUrl = viewManager.GetView(i).documentationUrl;
+                var documentationUrl = viewManager.GetView(i).DocumentationUrl;
                 var request = UnityWebRequest.Get(documentationUrl);
                 yield return request.SendWebRequest();
 

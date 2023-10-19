@@ -44,7 +44,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            var analyzers = GetPlatformAnalyzers(projectAuditorParams.platform);
+            var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
             var allMeshes = AssetDatabase.FindAssets("t:mesh, a:assets");
 
             progress?.Start("Finding Meshes", "Search in Progress...", allMeshes.Length);
@@ -56,7 +56,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var analyzer in analyzers)
                 {
-                    projectAuditorParams.onIncomingIssues(analyzer.Analyze(projectAuditorParams, importer));
+                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(projectAuditorParams, importer));
                 }
 
                 progress?.Advance();
@@ -64,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             progress?.Clear();
 
-            projectAuditorParams.onModuleCompleted?.Invoke();
+            projectAuditorParams.OnModuleCompleted?.Invoke();
         }
     }
 }

@@ -53,13 +53,24 @@ namespace Unity.ProjectAuditor.Editor.Utils
             bool isTooBig = false;
 
             // For non-readable textures, make it readable to use some functions (GetPixels())
+            // For crunched textures, we need to convert them since a copy requires a size match, or skip the test
             switch (texture.dimension)
             {
                 case UnityEngine.Rendering.TextureDimension.Tex2D:
                 {
                     Texture2D texture2D = texture as Texture2D;
 
-                    if (textureImporter.isReadable)
+                    if (textureImporter.crunchedCompression)
+                    {
+                        Texture2D convertTexture = new Texture2D(texture2D.width, texture2D.height, GetUncrunchedFormat(texture2D.format), false);
+                        convertTexture.name = texture2D.name + " (temp)";
+                        if (Graphics.ConvertTexture(texture2D, convertTexture))
+                        {
+                            isTooBig = IsSolidColor(convertTexture);
+                        }
+                        Object.DestroyImmediate(convertTexture);
+                    }
+                    else if (textureImporter.isReadable)
                     {
                         isTooBig = IsSolidColor(texture2D);
                     }
@@ -78,7 +89,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 {
                     Texture2DArray texture2DArray = texture as Texture2DArray;
 
-                    if (textureImporter.isReadable)
+                    if (textureImporter.crunchedCompression)
+                    {
+                        // Can't call Graphics.ConvertTexture with a src of Texture2DArray, so skip until/if we write a custom convert function
+                    }
+                    else if (textureImporter.isReadable)
                     {
                         isTooBig = IsSolidColor(texture2DArray);
                     }
@@ -96,7 +111,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 {
                     Texture3D texture3D = texture as Texture3D;
 
-                    if (textureImporter.isReadable)
+                    if (textureImporter.crunchedCompression)
+                    {
+                        // Can't call Graphics.ConvertTexture with a src of Texture3D, so skip until/if we write a custom convert function
+                    }
+                    else if (textureImporter.isReadable)
                     {
                         isTooBig = IsSolidColor(texture3D);
                     }
@@ -114,7 +133,17 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 {
                     Cubemap textureCube = texture as Cubemap;
 
-                    if (textureImporter.isReadable)
+                    if (textureImporter.crunchedCompression)
+                    {
+                        Cubemap convertTexture = new Cubemap(textureCube.width, GetUncrunchedFormat(textureCube.format), false);
+                        convertTexture.name = textureCube.name + " (temp)";
+                        if (Graphics.ConvertTexture(textureCube, convertTexture))
+                        {
+                            isTooBig = IsSolidColor(convertTexture);
+                        }
+                        Object.DestroyImmediate(convertTexture);
+                    }
+                    else if (textureImporter.isReadable)
                     {
                         isTooBig = IsSolidColor(textureCube);
                     }
@@ -343,7 +372,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         /// </summary>
         /// <param name="spriteAtlas">The Sprite Atlas to check.</param>
         /// <returns>The percent of empty space.</returns>
-        public static int GetEmptySpacePercentage(SpriteAtlas spriteAtlas)
+        public static float GetEmptySpacePercentage(SpriteAtlas spriteAtlas)
         {
             var method = typeof(SpriteAtlasExtensions).GetMethod("GetPreviewTextures", BindingFlags.Static | BindingFlags.NonPublic);
             object obj = method.Invoke(null, new object[] { spriteAtlas });
@@ -367,7 +396,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return emptyPercent;
         }
 
-        public static int GetEmptyPixelsPercent(Texture2D texture2D)
+        public static float GetEmptyPixelsPercent(Texture2D texture2D)
         {
             Color32[] pixels;
 
@@ -432,8 +461,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 }
             }
 
-            double percent = (double)transparencyPixelsCount / (double)pixelCount;
-            return ((int)Math.Round(percent * 100));
+            var percent = (float)transparencyPixelsCount / (float)pixelCount;
+            return Mathf.Round(percent * 100);
         }
 
         static Texture2D CopyTexture(Texture2D texture)
@@ -497,6 +526,44 @@ namespace Unity.ProjectAuditor.Editor.Utils
         }
 
 #endif
+
+        static TextureFormat GetUncrunchedFormat(TextureFormat format)
+        {
+            TextureFormat localFormat = format;
+
+            switch (localFormat)
+            {
+                case TextureFormat.DXT1Crunched:
+                {
+                    localFormat = TextureFormat.DXT1;
+
+                    break;
+                }
+
+                case TextureFormat.DXT5Crunched:
+                {
+                    localFormat = TextureFormat.DXT5;
+
+                    break;
+                }
+
+                case TextureFormat.ETC2_RGBA8Crunched:
+                {
+                    localFormat = TextureFormat.ETC2_RGBA8;
+
+                    break;
+                }
+
+                case TextureFormat.ETC_RGB4Crunched:
+                {
+                    localFormat = TextureFormat.ETC_RGB4;
+
+                    break;
+                }
+            }
+
+            return localFormat;
+        }
 
         public static int GetTextureDepth(Texture texture)
         {

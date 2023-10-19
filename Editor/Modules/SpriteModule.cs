@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            var analyzers = GetPlatformAnalyzers(projectAuditorParams.platform);
+            var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
             var allSpriteAtlases = AssetDatabase.FindAssets("t:SpriteAtlas, a:assets");
             //var currentPlatformString = projectAuditorParams.platform.ToString();
 
@@ -29,7 +29,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var analyzer in analyzers)
                 {
-                    projectAuditorParams.onIncomingIssues(analyzer.Analyze(projectAuditorParams, assetPath));
+                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(projectAuditorParams, assetPath));
                 }
 
                 progress?.Advance();
@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             progress?.Clear();
 
-            projectAuditorParams.onModuleCompleted.Invoke();
+            projectAuditorParams.OnModuleCompleted.Invoke();
         }
     }
 }

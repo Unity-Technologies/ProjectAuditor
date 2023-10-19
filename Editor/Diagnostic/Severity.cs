@@ -1,8 +1,12 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
 namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
     /// <summary>
     /// Severity of an issue
     /// </summary>
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum Severity
     {
         /// <summary>

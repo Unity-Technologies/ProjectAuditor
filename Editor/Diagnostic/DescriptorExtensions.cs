@@ -41,7 +41,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 
         public static bool IsApplicable(this Descriptor desc, ProjectAuditorParams projectAuditorParams)
         {
-            return desc.IsVersionCompatible() && desc.IsPlatformCompatible(projectAuditorParams.platform);
+            return desc.IsVersionCompatible() && desc.IsPlatformCompatible(projectAuditorParams.Platform);
         }
 
         /// <summary>

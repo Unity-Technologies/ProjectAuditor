@@ -258,32 +258,32 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
         {
             k_ShaderLayout,
-            k_MaterialLayout,
             k_ShaderVariantLayout,
-            AssetsModule.k_IssueLayout,
 
 #if PA_CAN_USE_IPREPROCESSCOMPUTESHADERS
             k_ComputeShaderVariantLayout,
 #endif
 
 #if UNITY_2019_1_OR_NEWER
-            k_ShaderCompilerMessageLayout
+            k_ShaderCompilerMessageLayout,
 #endif
+            k_MaterialLayout,
+            AssetsModule.k_IssueLayout
         };
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var shaderPathMap = CollectShaders();
-            ProcessShaders(projectAuditorParams, shaderPathMap, projectAuditorParams.onIncomingIssues);
+            ProcessShaders(projectAuditorParams, shaderPathMap, projectAuditorParams.OnIncomingIssues);
 
-            ProcessComputeShaders(projectAuditorParams.platform, projectAuditorParams.onIncomingIssues);
+            ProcessComputeShaders(projectAuditorParams.Platform, projectAuditorParams.OnIncomingIssues);
 
-            ProcessMaterials(projectAuditorParams.onIncomingIssues);
+            ProcessMaterials(projectAuditorParams.OnIncomingIssues);
 
             // clear collected variants before next build
             ClearBuildData();
 
-            projectAuditorParams.onModuleCompleted?.Invoke();
+            projectAuditorParams.OnModuleCompleted?.Invoke();
         }
 
         Dictionary<Shader, string> CollectShaders()
@@ -385,7 +385,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         void ProcessShaders(ProjectAuditorParams projectAuditorParams, Dictionary<Shader, string> shaderPathMap,
             Action<IEnumerable<ProjectIssue>> onIncomingIssues)
         {
-            BuildTarget platform = projectAuditorParams.platform;
+            BuildTarget platform = projectAuditorParams.Platform;
             var alwaysIncludedShaders = GetAlwaysIncludedShaders();
             var buildReportInfoAvailable = false;
 #if BUILD_REPORT_API_SUPPORT

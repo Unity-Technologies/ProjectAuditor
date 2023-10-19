@@ -43,8 +43,8 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         [OneTimeSetUp]
         public void FixtureSetUp()
         {
-            m_SavedAnalyzeInBackground = UserPreferences.analyzeInBackground;
-            UserPreferences.analyzeInBackground = false;
+            m_SavedAnalyzeInBackground = UserPreferences.AnalyzeInBackground;
+            UserPreferences.AnalyzeInBackground = false;
 
             m_ProjectAuditor = new ProjectAuditor();
 
@@ -77,7 +77,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
             TestAsset.Cleanup();
 
-            UserPreferences.analyzeInBackground = m_SavedAnalyzeInBackground;
+            UserPreferences.AnalyzeInBackground = m_SavedAnalyzeInBackground;
         }
 
         protected ProjectIssue[] Analyze(Func<ProjectIssue, bool> predicate = null)
@@ -88,12 +88,12 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
             var projectAuditorParams = new ProjectAuditorParams
             {
-                codeOptimization = m_CodeOptimization,
-                onIncomingIssues = issues =>
+                CodeOptimization = m_CodeOptimization,
+                OnIncomingIssues = issues =>
                 {
                     foundIssues.AddRange(predicate == null ? issues : issues.Where(predicate));
                 },
-                platform = m_Platform
+                Platform = m_Platform
             };
             m_ProjectAuditor.Audit(projectAuditorParams);
 
@@ -108,15 +108,15 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             var projectAuditor = new ProjectAuditor();
             var projectAuditorParams = new ProjectAuditorParams
             {
-                assemblyNames = new[] { "Assembly-CSharp" },
-                categories = new[] { category},
-                onIncomingIssues = issues =>
+                AssemblyNames = new[] { "Assembly-CSharp" },
+                Categories = new[] { category},
+                OnIncomingIssues = issues =>
                 {
                     var categoryIssues = issues.Where(issue => issue.category == category);
 
                     foundIssues.AddRange(predicate == null ? categoryIssues : categoryIssues.Where(predicate));
                 },
-                platform = m_Platform
+                Platform = m_Platform
             };
 
             projectAuditor.Audit(projectAuditorParams);

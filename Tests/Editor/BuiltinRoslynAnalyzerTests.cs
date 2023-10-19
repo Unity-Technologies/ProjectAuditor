@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.EditorTests
         bool m_SavedUseRoslynAnalyzers;
 
         string m_Path =
-            PathUtils.Combine(ProjectAuditor.Editor.ProjectAuditor.s_PackagePath, "RoslynAnalyzers");
+            PathUtils.Combine(ProjectAuditor.Editor.ProjectAuditor.PackagePath, "RoslynAnalyzers");
 
 #pragma warning disable 0414
         TestAsset m_ScriptWithStaticMember;
@@ -22,15 +22,15 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void EnableAnalyzers()
         {
-            m_SavedUseRoslynAnalyzers = UserPreferences.useRoslynAnalyzers;
+            m_SavedUseRoslynAnalyzers = UserPreferences.UseRoslynAnalyzers;
 
-            UserPreferences.useRoslynAnalyzers = true;
+            UserPreferences.UseRoslynAnalyzers = true;
         }
 
         [OneTimeTearDown]
         public void RestoreEnableAnalyzers()
         {
-            UserPreferences.useRoslynAnalyzers = m_SavedUseRoslynAnalyzers;
+            UserPreferences.UseRoslynAnalyzers = m_SavedUseRoslynAnalyzers;
         }
 
         [OneTimeSetUp]

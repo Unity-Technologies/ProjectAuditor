@@ -156,12 +156,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            ProcessAnimatorControllers(projectAuditorParams.onIncomingIssues, progress);
-            ProcessAnimationClips(projectAuditorParams.onIncomingIssues, progress);
-            ProcessAvatars(projectAuditorParams.onIncomingIssues, progress);
-            ProcessAvatarMasks(projectAuditorParams.onIncomingIssues, progress);
+            ProcessAnimatorControllers(projectAuditorParams.OnIncomingIssues, progress);
+            ProcessAnimationClips(projectAuditorParams.OnIncomingIssues, progress);
+            ProcessAvatars(projectAuditorParams.OnIncomingIssues, progress);
+            ProcessAvatarMasks(projectAuditorParams.OnIncomingIssues, progress);
 
-            projectAuditorParams.onModuleCompleted?.Invoke();
+            projectAuditorParams.OnModuleCompleted?.Invoke();
         }
 
         void ProcessAnimatorControllers(Action<IEnumerable<ProjectIssue>> onIncomingIssues, IProgress progress)

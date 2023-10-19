@@ -12,14 +12,14 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void RulesAsset_DefaultAsset_IsCreated()
         {
-            Assert.IsTrue(File.Exists(Editor.UserPreferences.rulesAssetPath));
+            Assert.IsTrue(File.Exists(Editor.UserPreferences.RulesAssetPath));
         }
 
         [Test]
         public void RulesAsset_CustomAsset_IsCreated()
         {
             var assetPath = Path.Combine(TestAsset.TempAssetsFolder, "MyRules.asset");
-            new ProjectAuditorParams(assetPath);
+            new ProjectAuditorParams(EditorUserBuildSettings.activeBuildTarget, assetPath);
             Assert.True(File.Exists(assetPath));
 
             AssetDatabase.DeleteAsset(assetPath);

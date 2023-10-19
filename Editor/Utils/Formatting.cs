@@ -69,7 +69,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         /// </summary>
         /// <param name="number">The decimal number to format.</param>
         /// <returns>A string representation of the decimal number as a percentage.</returns>
-        public static string FormatPercentage(float number, int numDecimalPlaces)
+        public static string FormatPercentage(float number, int numDecimalPlaces = 0)
         {
             string formatString = $"{{0:F{numDecimalPlaces}}}";
             return String.Format(CultureInfo.InvariantCulture.NumberFormat, formatString, (100.0f * number)) + "%";

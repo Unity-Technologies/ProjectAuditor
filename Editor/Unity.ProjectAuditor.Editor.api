@@ -3,7 +3,7 @@
 // make sure the XML doc file is present and located next to the scraped dll
 namespace Unity.ProjectAuditor.Editor
 {
-    public enum IssueCategory
+    [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))] public enum IssueCategory
     {
         AnimationClip = 23,
         AnimatorController = 22,
@@ -41,7 +41,7 @@ namespace Unity.ProjectAuditor.Editor
         [Newtonsoft.Json.JsonIgnore] public string Filename { get; }
         [Newtonsoft.Json.JsonIgnore] public string FormattedFilename { get; }
         [Newtonsoft.Json.JsonIgnore] public string FormattedPath { get; }
-        [Newtonsoft.Json.JsonProperty(@"line")] public int Line { get; }
+        [Newtonsoft.Json.JsonProperty(@"line", DefaultValueHandling = Newtonsoft.Json.DefaultValueHandling.Ignore)] public int Line { get; }
         [Newtonsoft.Json.JsonIgnore] public string Path { get; }
         public Location(string path) {}
         [Newtonsoft.Json.JsonConstructor] public Location(string path, int line) {}
@@ -89,7 +89,7 @@ namespace Unity.ProjectAuditor.Editor
     public class ProjectIssue
     {
         [Newtonsoft.Json.JsonIgnore] [UnityEngine.SerializeField] public bool wasFixed = false;
-        [Newtonsoft.Json.JsonIgnore] public IssueCategory category { get; }
+        public IssueCategory category { get; }
         [Newtonsoft.Json.JsonProperty(@"properties")] public string[] customProperties { get; }
         [Newtonsoft.Json.JsonProperty(@"description")] public string description { get; }
         [Newtonsoft.Json.JsonIgnore] public string filename { get; }
@@ -160,13 +160,13 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
     public sealed class Descriptor : System.IEquatable<Descriptor>
     {
         [Newtonsoft.Json.JsonRequired] public string[] areas;
-        [Newtonsoft.Json.JsonRequired] public Severity defaultSeverity;
+        [Newtonsoft.Json.JsonIgnore] public Severity defaultSeverity;
         [Newtonsoft.Json.JsonRequired] public string description;
         [Newtonsoft.Json.JsonIgnore] public string documentationUrl;
         [Newtonsoft.Json.JsonIgnore] public System.Action<ProjectIssue> fixer;
         [Newtonsoft.Json.JsonRequired] public string id;
         [Newtonsoft.Json.JsonIgnore] public string maximumVersion;
-        public string messageFormat;
+        [Newtonsoft.Json.JsonIgnore] public string messageFormat;
         [Newtonsoft.Json.JsonIgnore] public string method;
         [Newtonsoft.Json.JsonIgnore] public string minimumVersion;
         [Newtonsoft.Json.JsonProperty] public string[] platforms;
@@ -208,7 +208,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public static bool RegisterDescriptor(DescriptorID id, Descriptor descriptor);
     }
 
-    public enum Severity
+    [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))] public enum Severity
     {
         Critical = 2,
         Default = 0,

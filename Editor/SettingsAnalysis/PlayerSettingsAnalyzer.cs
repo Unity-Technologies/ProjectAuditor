@@ -128,7 +128,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                     .WithLocation("Project/Player");
             }
 
-            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(projectAuditorParams.platform);
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(projectAuditorParams.Platform);
             if (CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration.Master, projectAuditorParams))
             {
                 yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_IL2CPPCompilerConfigurationMasterDescriptor.id)
@@ -185,7 +185,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         internal static bool CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration compilerConfiguration, ProjectAuditorParams projectAuditorParams)
         {
-            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(projectAuditorParams.platform);
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(projectAuditorParams.Platform);
             if (PlayerSettings.GetScriptingBackend(buildTargetGroup) !=
                 ScriptingImplementation.IL2CPP)
             {

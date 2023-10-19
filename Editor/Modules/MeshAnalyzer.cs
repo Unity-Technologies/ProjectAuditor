@@ -57,10 +57,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 if (mesh == null)
                     continue;
 
+                var meshName = mesh.name;
+                if (string.IsNullOrEmpty(meshName))
+                    meshName = Path.GetFileNameWithoutExtension(assetPath);
+
                 // TODO: the size returned by the profiler is not the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(mesh);
 
-                yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.Mesh, mesh.name)
+                yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.Mesh, meshName)
                     .WithCustomProperties(
                         new object[((int)MeshProperty.Num)]
                         {
@@ -75,7 +79,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 if (mesh.isReadable)
                 {
-                    yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_MeshReadWriteEnabledDescriptor.id, mesh.name)
+                    yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_MeshReadWriteEnabledDescriptor.id, meshName)
                         .WithLocation(assetPath);
                 }
 
@@ -83,7 +87,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     mesh.vertexCount <= 65535)
                 {
                     yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
-                        k_Mesh32BitIndexFormatUsedDescriptor.id, mesh.name)
+                        k_Mesh32BitIndexFormatUsedDescriptor.id, meshName)
                         .WithLocation(assetPath);
                 }
             }
