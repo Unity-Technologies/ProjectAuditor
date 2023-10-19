@@ -77,10 +77,10 @@ class MyClass : MonoBehaviour
             switch (format)
             {
                 case "csv":
-                    projectReport.ExportToCSV(path, layout, predicate);
+                    projectReport.ExportToCsv(path, layout, predicate);
                     break;
                 case "html":
-                    projectReport.ExportToHTML(path, layout, predicate);
+                    projectReport.ExportToHtml(path, layout, predicate);
                     break;
                 default:
                     break;

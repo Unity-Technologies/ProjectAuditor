@@ -233,7 +233,7 @@ namespace Unity.ProjectAuditor.Editor
             s_Mutex.ReleaseMutex();
         }
 
-        public void ExportToCSV(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
+        public void ExportToCsv(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
         {
             var issues = m_Issues.Where(i => i.category == layout.category && (predicate == null || predicate(i))).ToArray();
             using (var exporter = new CsvExporter(path, layout))
@@ -248,7 +248,7 @@ namespace Unity.ProjectAuditor.Editor
             return m_Issues.All(i => i.IsValid());
         }
 
-        public void ExportToHTML(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
+        public void ExportToHtml(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
         {
             var issues = m_Issues.Where(i => i.category == layout.category && (predicate == null || predicate(i))).ToArray();
             using (var exporter = new HtmlExporter(path, layout))

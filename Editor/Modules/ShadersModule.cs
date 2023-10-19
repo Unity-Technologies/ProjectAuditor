@@ -718,7 +718,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         }
 
-        public static void ExportSVC(string svcName, string path, ProjectIssue[] variants)
+        public static void ExportVariantsToSvc(string svcName, string path, ProjectIssue[] variants)
         {
             var svc = new ShaderVariantCollection();
             svc.name = svcName;
