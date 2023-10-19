@@ -19,7 +19,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
             var allSpriteAtlases = AssetDatabase.FindAssets("t:SpriteAtlas, a:assets");
-            //var currentPlatformString = projectAuditorParams.platform.ToString();
 
             progress?.Start("Finding Sprite Atlas", "Search in Progress...", allSpriteAtlases.Length);
 
