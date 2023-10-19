@@ -23,11 +23,16 @@ namespace Unity.ProjectAuditor.EditorTests
         [SerializeField]
         ProjectAuditorRules m_SerializedRules;
 
+        ProjectAuditorRules m_Rules;
+
         [OneTimeSetUp]
         public void SetUp()
         {
             m_TestAsset = new TestAsset("MyClass.cs",
                 "using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(Camera.allCameras.Length.ToString()); } }");
+
+            m_Rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
+            m_Rules.Initialize();
         }
 
 #if UNITY_2019_4_OR_NEWER

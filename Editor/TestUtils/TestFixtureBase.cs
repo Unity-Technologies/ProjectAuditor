@@ -18,7 +18,6 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
         protected CodeOptimization m_CodeOptimization = CodeOptimization.Release;
         protected BuildTarget m_Platform = GetStandaloneBuildTarget();
-        protected ProjectAuditorRules m_Rules;
         protected string m_BuildPath;
         protected ProjectAuditor m_ProjectAuditor;
         protected AndroidArchitecture m_OriginalTargetArchitecture;
