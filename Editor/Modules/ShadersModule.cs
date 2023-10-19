@@ -289,11 +289,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Dictionary<Shader, string> CollectShaders()
         {
             var shaderPathMap = new Dictionary<Shader, string>();
-            var shaderGuids = AssetDatabase.FindAssets("t:shader");
-            foreach (var guid in shaderGuids)
+            var assetPaths = GetAssetPathsByFilter("t:shader");
+            foreach (var assetPath in assetPaths)
             {
-                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
-
                 // skip editor shaders
                 if (assetPath.IndexOf("/editor/", StringComparison.OrdinalIgnoreCase) != -1)
                     continue;
@@ -330,11 +328,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Dictionary<Material, string> CollectMaterials()
         {
             var materialPathMap = new Dictionary<Material, string>();
-            var materialGuids = AssetDatabase.FindAssets("t:material");
-            foreach (var guid in materialGuids)
+            var assetPaths = GetAssetPathsByFilter("t:material");
+            foreach (var assetPath in assetPaths)
             {
-                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
-
                 var material = AssetDatabase.LoadAssetAtPath<Material>(assetPath);
                 if (material == null)
                 {

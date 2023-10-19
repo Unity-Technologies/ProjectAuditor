@@ -59,13 +59,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
-            var GUIDsAudioClip = AssetDatabase.FindAssets("t:AudioClip, a:assets");
+            var assetPaths = GetAssetPathsByFilter("t:AudioClip, a:assets");
 
-            progress?.Start("Finding AudioClips", "Search in Progress...", GUIDsAudioClip.Length);
+            progress?.Start("Finding AudioClips", "Search in Progress...", assetPaths.Length);
 
-            foreach (var guid in GUIDsAudioClip)
+            foreach (var assetPath in assetPaths)
             {
-                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
                 var audioImporter = AssetImporter.GetAtPath(assetPath) as AudioImporter;
                 if (audioImporter == null)
                 {

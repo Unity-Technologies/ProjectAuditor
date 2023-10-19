@@ -18,14 +18,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
-            var allSpriteAtlases = AssetDatabase.FindAssets("t:SpriteAtlas, a:assets");
+            var assetPaths = GetAssetPathsByFilter("t:SpriteAtlas, a:assets");
 
-            progress?.Start("Finding Sprite Atlas", "Search in Progress...", allSpriteAtlases.Length);
+            progress?.Start("Finding Sprite Atlas", "Search in Progress...", assetPaths.Length);
 
-            foreach (var guid in allSpriteAtlases)
+            foreach (var assetPath in assetPaths)
             {
-                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
-
                 foreach (var analyzer in analyzers)
                 {
                     projectAuditorParams.OnIncomingIssues(analyzer.Analyze(projectAuditorParams, assetPath));
