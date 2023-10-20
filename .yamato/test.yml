@@ -44,21 +44,45 @@ validate_{{ platform.name }}_{{ editor.version }}:
 {% endfor -%}
 {% endfor -%}
 
+# This trigger runs tests and validations on all editor versions and platforms but only on the 'master' branch and its pull requests.
 test_trigger:
   name: Package Tests Trigger
   triggers:
     branches:
       only:
-        - "/.*/"
+        - master
     pull_requests:
       - targets:
           only:
-            - "/.*/"
+            - master
+    recurring:
+      - branch: master
+        frequency: daily    
   dependencies:
     - .yamato/pack.yml#pack
 {% for editor in test_editors -%}
 {% for platform in test_platforms -%}
-    - .yamato/test.yml#test_{{platform.name}}_{{editor.version}}
-    - .yamato/test.yml#validate_{{platform.name}}_{{editor.version}}
+    - .yamato/test.yml#test_{{ platform.name }}_{{editor.version }}
+    - .yamato/test.yml#validate_{{ platform.name }}_{{editor.version }}
+    - .yamato/coverage.yml#test_coverage_{{ platform.name }}_{{ editor.version }}
+{% endfor -%}
+{% endfor -%}
+
+# This lightweight trigger runs tests only on LTS versions and only on Mac. It excludes the 'master' branch.
+test_trigger_lightweight:
+  name: Package Tests Trigger - Lightweight
+  triggers:
+    branches:
+      only:
+        - "/.*/"
+      except:
+        - master
+  dependencies:
+    - .yamato/pack.yml#pack
+{% for editor in test_editors_lts -%}
+{% for platform in test_platforms -%}
+{% if platform.name == "mac" -%}
+    - .yamato/test.yml#test_{{ platform.name }}_{{ editor.version }}
+{% endif -%}
 {% endfor -%}
 {% endfor -%}
