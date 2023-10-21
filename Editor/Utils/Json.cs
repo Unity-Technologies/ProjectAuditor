@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
         /// <returns>A JSON-formatted string representing the DateTime object in UTC.</returns>
         public static string SerializeDateTime(DateTime dateTime)
         {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(dateTime.ToUniversalTime(), k_JsonSerializerSettings);
+            return JsonConvert.SerializeObject(dateTime.ToUniversalTime(), k_JsonSerializerSettings);
         }
 
         /// <summary>
@@ -29,31 +29,31 @@ namespace Unity.ProjectAuditor.Editor.Utils
         /// <returns>A DateTime object converted to local time.</returns>
         public static DateTime DeserializeDateTime(string utcDateTime)
         {
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<DateTime>(utcDateTime, k_JsonSerializerSettings).ToLocalTime();
+            return JsonConvert.DeserializeObject<DateTime>(utcDateTime, k_JsonSerializerSettings).ToLocalTime();
         }
 
-        public static T[] From<T>(string json)
+        public static T[] DeserializeArray<T>(string json)
         {
             var wrapper = JsonUtility.FromJson<Wrapper<T>>(json);
             return wrapper.Items;
         }
 
-        public static T[] FromFile<T>(string fileName)
+        public static T[] DeserializeArrayFromFile<T>(string fileName)
         {
             var fullPath = Path.GetFullPath(fileName);
             var json = File.ReadAllText(fullPath);
-            var items = Json.From<T>(json);
+            var items = Json.DeserializeArray<T>(json);
 
             return items;
         }
 
-        public static string To<T>(T[] array)
+        public static string SerializeArray<T>(T[] array)
         {
             var wrapper = new Wrapper<T> {Items = array};
             return JsonUtility.ToJson(wrapper);
         }
 
-        public static string To<T>(T[] array, bool prettyPrint)
+        public static string SerializeArray<T>(T[] array, bool prettyPrint)
         {
             var wrapper = new Wrapper<T> {Items = array};
             return JsonUtility.ToJson(wrapper, prettyPrint);

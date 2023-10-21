@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             m_StringLookup = new Dictionary<string, StringLookup>();
 
             var rawDescriptors =
-                Json.FromFile<RawStringLookup>(Path.Combine(ProjectAuditor.s_DataPath, "RoslynTextLookup.json"));
+                Json.DeserializeArrayFromFile<RawStringLookup>(Path.Combine(ProjectAuditor.s_DataPath, "RoslynTextLookup.json"));
 
             foreach (var rawDescriptor in rawDescriptors)
             {
