@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    internal class ProjectAuditorParams
+    internal class SerializedAnalysisParams
     {
         /// <summary>
         /// Categories to include in the audit. If null, all categories will be included.
@@ -43,6 +43,22 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public CompilationMode CompilationMode;
 
+        public SerializedAnalysisParams()
+        {
+        }
+
+        public SerializedAnalysisParams(SerializedAnalysisParams original)
+        {
+            Categories = original.Categories;
+            Platform = original.Platform;
+            AssemblyNames = original.AssemblyNames;
+            CodeOptimization = original.CodeOptimization;
+            CompilationMode = original.CompilationMode;
+        }
+    }
+
+    internal class ProjectAuditorParams : SerializedAnalysisParams
+    {
         /// <summary>
         /// Reports a batch of new issues. Note that this be called multiple times per analysis.
         /// </summary>
@@ -64,11 +80,12 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// The ProjectAuditorRules object which defines which issues should be ignored, and the customizable thresholds for reporting certain diagnostics.
         /// </summary>
+        [JsonIgnore]
         public ProjectAuditorRules Rules;
 
-        // TODO: Not sure what this is for, so keeping it internal for now. Document it if we need it to be public
+        [JsonIgnore]
+        [NonSerialized]
         internal ProjectReport ExistingReport;
-
 
         /// <summary>
         /// ProjectAuditorParams constructor
@@ -93,13 +110,8 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         public ProjectAuditorParams(ProjectAuditorParams original)
+        : base(original)
         {
-            Categories = original.Categories;
-            Platform = original.Platform;
-            AssemblyNames = original.AssemblyNames;
-            CodeOptimization = original.CodeOptimization;
-            CompilationMode = original.CompilationMode;
-
             OnIncomingIssues = original.OnIncomingIssues;
             OnCompleted = original.OnCompleted;
             OnModuleCompleted = original.OnModuleCompleted;

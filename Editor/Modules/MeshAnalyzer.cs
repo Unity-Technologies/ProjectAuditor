@@ -39,10 +39,22 @@ namespace Unity.ProjectAuditor.Editor.Modules
             documentationUrl = "https://docs.unity3d.com/Manual/FBXImporter-Model.html"
         };
 
+#pragma warning disable 0414
+        int m_MeshVertexCountLimit;
+        int m_MeshTriangleCountLimit;
+#pragma warning restore 0414
+
         public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_MeshReadWriteEnabledDescriptor);
             module.RegisterDescriptor(k_Mesh32BitIndexFormatUsedDescriptor);
+        }
+
+        public void PrepareForAnalysis(ProjectAuditorParams projectAuditorParams)
+        {
+            var rules = projectAuditorParams.Rules;
+            m_MeshVertexCountLimit = rules.GetParameter("MeshVertexCountLimit", 5000);
+            m_MeshTriangleCountLimit = rules.GetParameter("MeshTriangleCountLimit", 5000);
         }
 
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, AssetImporter assetImporter)

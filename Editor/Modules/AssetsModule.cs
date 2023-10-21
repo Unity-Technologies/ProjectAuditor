@@ -119,7 +119,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
 
                 var folderSizeLimitMB =
-                    projectAuditorParams.Rules.GetParameter("StreamingAssetsFolderSizeLimit");
+                    projectAuditorParams.Rules.GetParameter("StreamingAssetsFolderSizeLimit", 50);
 
                 if (totalBytes > folderSizeLimitMB * 1024 * 1024)
                 {

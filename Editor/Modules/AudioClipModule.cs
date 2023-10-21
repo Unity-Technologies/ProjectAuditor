@@ -59,6 +59,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
+            foreach (var analyzer in analyzers)
+            {
+                analyzer.PrepareForAnalysis(projectAuditorParams);
+            }
+
             var GUIDsAudioClip = AssetDatabase.FindAssets("t:AudioClip, a:assets");
 
             progress?.Start("Finding AudioClips", "Search in Progress...", GUIDsAudioClip.Length);

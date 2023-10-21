@@ -12,15 +12,14 @@ using UnityEditor;
 namespace Unity.ProjectAuditor.Editor
 {
     [Serializable]
-    internal class SessionInfo : ProjectAuditorParams
+    internal class SessionInfo : SerializedAnalysisParams
     {
         // for serialization purposes only
         public SessionInfo()
-            : base(new ProjectAuditorParams(BuildTarget.NoTarget, UserPreferences.RulesAssetPath))
         {}
 
-        public SessionInfo(ProjectAuditorParams projectAuditorParams)
-            : base(projectAuditorParams)
+        public SessionInfo(SerializedAnalysisParams serializedParams)
+            : base(serializedParams)
         {}
 
         public string ProjectAuditorVersion;

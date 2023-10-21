@@ -158,6 +158,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "Texture Atlas '{0}' has too much empty space ({1})"
         };
 
+        string m_PlatformString;
+        int m_TextureSizeLimit;
+        int m_TextureStreamingMipmapsSizeLimit;
+        private int m_SpriteAtlasEmptySpaceLimit;
+
         public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_TextureMipMapNotEnabledDescriptor);
@@ -170,6 +175,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_TextureAtlasEmptyDescriptor);
         }
 
+        public void PrepareForAnalysis(ProjectAuditorParams projectAuditorParams)
+        {
+            m_PlatformString = projectAuditorParams.Platform.ToString();
+            var rules = projectAuditorParams.Rules;
+            m_TextureSizeLimit = rules.GetParameter("TextureSizeLimit", 2048);
+            m_TextureStreamingMipmapsSizeLimit = rules.GetParameter("TextureStreamingMipmapsSizeLimit", 4000);
+            m_SpriteAtlasEmptySpaceLimit = rules.GetParameter("SpriteAtlasEmptySpaceLimit", 50);
+        }
+
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, TextureImporter textureImporter, TextureImporterPlatformSettings platformSettings)
         {
             var assetPath = textureImporter.assetPath;
@@ -179,7 +193,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             TextureFormat format = (TextureFormat)platformSettings.format;
             if (platformSettings.format == TextureImporterFormat.Automatic)
             {
-                format = (TextureFormat)textureImporter.GetAutomaticFormat(projectAuditorParams.Platform.ToString());
+                format = (TextureFormat)textureImporter.GetAutomaticFormat(m_PlatformString);
             }
 
             var size = UnityEngine.Experimental.Rendering.GraphicsFormatUtility.ComputeMipChainSize(texture.width, texture.height, TextureUtils.GetTextureDepth(texture), format, texture.mipmapCount);
@@ -230,7 +244,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithLocation(textureImporter.assetPath);
             }
 
-            if (textureImporter.mipmapEnabled && !textureImporter.streamingMipmaps && size > Mathf.Pow(projectAuditorParams.Rules.GetParameter("TextureStreamingMipmapsSizeLimit"), 2))
+            if (textureImporter.mipmapEnabled && !textureImporter.streamingMipmaps && size > Mathf.Pow(m_TextureStreamingMipmapsSizeLimit, 2))
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureStreamingMipMapEnabledDescriptor.id, textureName)
                     .WithLocation(textureImporter.assetPath);
@@ -254,8 +268,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (texture2D != null)
             {
                 var emptyPercent = TextureUtils.GetEmptyPixelsPercent(texture2D);
-                if (emptyPercent >
-                    projectAuditorParams.Rules.GetParameter("SpriteAtlasEmptySpaceLimit"))
+                if (emptyPercent > m_SpriteAtlasEmptySpaceLimit)
                 {
                     yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureAtlasEmptyDescriptor.id, textureName, Formatting.FormatPercentage(emptyPercent / 100.0f))
                         .WithLocation(textureImporter.assetPath);

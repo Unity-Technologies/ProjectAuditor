@@ -8,6 +8,8 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
 {
     internal interface ITextureModuleAnalyzer : IModuleAnalyzer
     {
+        void PrepareForAnalysis(ProjectAuditorParams projectAuditorParams);
+
         IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams,
             TextureImporter textureImporter,
             TextureImporterPlatformSettings textureImporterPlatformSettings);

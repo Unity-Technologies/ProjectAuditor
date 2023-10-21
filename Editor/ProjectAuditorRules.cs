@@ -187,7 +187,7 @@ namespace Unity.ProjectAuditor.Editor
 
             if (m_ParamsStack.Count == 0)
             {
-                CreateDefaultParams();
+                m_ParamsStack.Add(new DiagnosticParams("Default"));
             }
         }
 
@@ -207,8 +207,8 @@ namespace Unity.ProjectAuditor.Editor
             // Just go with the default, then
             CurrentParamsIndex = 0;
         }
-        
-        public int GetParameter(string paramName)
+
+        public int GetParameter(string paramName, int defaultValue)
         {
             if (m_ParamsStack.Count == 0)
             {
@@ -228,26 +228,10 @@ namespace Unity.ProjectAuditor.Editor
             if (m_ParamsStack[0].TryGetParameter(paramName, out paramValue))
                 return paramValue;
 
-            Debug.LogError($"Could not find Diagnostic Parameter '{paramName}' in ProjectAuditorRules");
-            return 0;
+            // We didn't find the parameter in the rules. That's okay, just means we need to register it and set the default value
+            m_ParamsStack[0].SetParameter(paramName, defaultValue);
+            return defaultValue;
         }
-
-        void CreateDefaultParams()
-        {
-            var defaultParams = new DiagnosticParams("Default");
-
-            defaultParams.SetParameter("MeshVerticeCountLimit",5000);
-            defaultParams.SetParameter("MeshTriangleCountLimit",5000);
-            defaultParams.SetParameter("TextureSizeLimit",2048);
-            defaultParams.SetParameter("TextureStreamingMipmapsSizeLimit",4000);
-            defaultParams.SetParameter("StreamingAssetsFolderSizeLimit",50);
-            defaultParams.SetParameter("SpriteAtlasEmptySpaceLimit",50);
-            defaultParams.SetParameter("StreamingClipThresholdBytes",1 * (64000 + (int)(1.6 * 48000 * 2)) + 694);
-            defaultParams.SetParameter("LongDecompressedClipThresholdBytes",200 * 1024);
-            defaultParams.SetParameter("LongCompressedMobileClipThresholdBytes",200 * 1024);
-            defaultParams.SetParameter("LoadInBackGroundClipSizeThresholdBytes",200 * 1024);
-
-            m_ParamsStack.Add(defaultParams);
-        }
+        
     }
 }

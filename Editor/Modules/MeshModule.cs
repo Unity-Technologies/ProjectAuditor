@@ -45,6 +45,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
+            foreach (var analyzer in analyzers)
+            {
+                analyzer.PrepareForAnalysis(projectAuditorParams);
+            }
+
             var allMeshes = AssetDatabase.FindAssets("t:mesh, a:assets");
 
             progress?.Start("Finding Meshes", "Search in Progress...", allMeshes.Length);

@@ -90,7 +90,7 @@ namespace Unity.ProjectAuditor.EditorTests
             textureImporter.SaveAndReimport();
 
             var projectAuditorParams = new ProjectAuditorParams();
-            var largeSize = projectAuditorParams.Rules.GetParameter("TextureStreamingMipmapsSizeLimit") + 50;
+            var largeSize = projectAuditorParams.Rules.GetParameter("TextureStreamingMipmapsSizeLimit", 4000) + 50;
             var largeTexture = new Texture2D(largeSize, largeSize);
             largeTexture.SetPixel(0, 0, Random.ColorHSV());
             largeTexture.name = k_TextureNameStreamingMipmapDisabled;

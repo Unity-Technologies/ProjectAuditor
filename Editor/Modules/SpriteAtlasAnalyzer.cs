@@ -24,9 +24,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "Sprite Atlas '{0}' has too much empty space ({1})"
         };
 
+        int m_SpriteAtlasEmptySpaceLimit;
+
         public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_SpriteAtlasEmptyDescriptor);
+        }
+
+        public void PrepareForAnalysis(ProjectAuditorParams projectAuditorParams)
+        {
+            var rules = projectAuditorParams.Rules;
+            m_SpriteAtlasEmptySpaceLimit = rules.GetParameter("SpriteAtlasEmptySpaceLimit", 50);
         }
 
         public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, string assetPath)
@@ -37,7 +45,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 .WithLocation(new Location(assetPath));
 
             var emptyPercent = TextureUtils.GetEmptySpacePercentage(spriteAtlas);
-            if (emptyPercent > projectAuditorParams.Rules.GetParameter("SpriteAtlasEmptySpaceLimit"))
+            if (emptyPercent > m_SpriteAtlasEmptySpaceLimit)
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
                     k_SpriteAtlasEmptyDescriptor.id, spriteAtlas.name, Formatting.FormatPercentage(emptyPercent / 100.0f, 0))
