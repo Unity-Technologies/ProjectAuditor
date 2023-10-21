@@ -55,16 +55,12 @@ test_trigger:
       - targets:
           only:
             - master
-    recurring:
-      - branch: master
-        frequency: daily    
   dependencies:
     - .yamato/pack.yml#pack
 {% for editor in test_editors -%}
 {% for platform in test_platforms -%}
     - .yamato/test.yml#test_{{ platform.name }}_{{editor.version }}
     - .yamato/test.yml#validate_{{ platform.name }}_{{editor.version }}
-    - .yamato/coverage.yml#test_coverage_{{ platform.name }}_{{ editor.version }}
 {% endfor -%}
 {% endfor -%}
 
@@ -85,4 +81,23 @@ test_trigger_lightweight:
     - .yamato/test.yml#test_{{ platform.name }}_{{ editor.version }}
 {% endif -%}
 {% endfor -%}
+{% endfor -%}
+
+# This trigger runs tests, validations and test coverage on the 'master' branch every night.
+test_trigger_nightly:
+  name: Package Tests Trigger - Nightly
+  triggers:
+    recurring:
+      - branch: master
+        frequency: daily
+  dependencies:
+    - .yamato/pack.yml#pack
+{% for editor in test_editors -%}
+{% if editor.version != "2018.4" -%}
+{% for platform in test_platforms -%}
+    - .yamato/test.yml#test_{{ platform.name }}_{{editor.version }}
+    - .yamato/test.yml#validate_{{ platform.name }}_{{editor.version }}
+    - .yamato/coverage.yml#test_coverage_{{ platform.name }}_{{ editor.version }}
+{% endfor -%}
+{% endif -%}
 {% endfor -%}
