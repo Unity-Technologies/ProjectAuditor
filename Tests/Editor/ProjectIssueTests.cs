@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.EditorTests
     [Serializable]
     class ProjectIssueTests
     {
-        Descriptor m_Descriptor = new Descriptor
+        readonly Descriptor m_Descriptor = new Descriptor
             (
             "TDD2001",
             "test",

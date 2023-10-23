@@ -16,6 +16,15 @@ namespace Unity.ProjectAuditor.EditorTests
 {
     class ProjectReportTests : TestFixtureBase
     {
+        readonly Descriptor m_Descriptor = new Descriptor
+            (
+            "TDD2001",
+            "test",
+            Area.CPU,
+            "this is not actually a problem",
+            "do nothing"
+            );
+
 #pragma warning disable 0414
         TestAsset m_TestAsset;
 #pragma warning restore 0414
@@ -23,6 +32,8 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void SetUp()
         {
+            DescriptorLibrary.RegisterDescriptor(m_Descriptor.id, m_Descriptor);
+
             m_TestAsset = new TestAsset("MyClass.cs", @"
 using UnityEngine;
 class MyClass : MonoBehaviour
@@ -54,7 +65,7 @@ class MyClass : MonoBehaviour
             projectReport.AddIssues(new[] { new ProjectIssue
                                             (
                                                 IssueCategory.Code,
-                                                "TDD2001",
+                                                m_Descriptor.id,
                                                 "dummy issue"
                                             ) }
             );

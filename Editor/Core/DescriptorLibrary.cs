@@ -55,5 +55,11 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             s_Descriptors = m_SerializedDescriptors.ToDictionary(m => new DescriptorID(m.id).AsInt(), m => m);
             m_SerializedDescriptors = null;
         }
+
+        // For testing purposes only
+        internal static void Reset()
+        {
+            s_Descriptors?.Clear();
+        }
     }
 }
