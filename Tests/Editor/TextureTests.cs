@@ -380,7 +380,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void Texture_SolidTexture_IsReported()
         {
             var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TextureSolidColor, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.id.Equals(TextureAnalyzer.k_TextureSolidColorDescriptor.id));
+                .FirstOrDefault(i => i.id.Equals(TextureUtilizationAnalyzer.k_TextureSolidColorDescriptor.id));
 
             Assert.IsNotNull(textureDiagnostic);
         }
@@ -389,7 +389,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void Texture_Not_SolidTexture_IsNotReported()
         {
             var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TextureNotSolidColor, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.id.Equals(TextureAnalyzer.k_TextureSolidColorDescriptor.id));
+                .FirstOrDefault(i => i.id.Equals(TextureUtilizationAnalyzer.k_TextureSolidColorDescriptor.id));
 
             Assert.IsNull(textureDiagnostic);
         }
@@ -398,7 +398,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void Texture_Empty_Space_IsReported()
         {
             var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TestTextureEmptySpace, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.id.Equals(TextureAnalyzer.k_TextureAtlasEmptyDescriptor.id));
+                .FirstOrDefault(i => i.id.Equals(TextureUtilizationAnalyzer.k_TextureAtlasEmptyDescriptor.id));
 
             Assert.IsNotNull(textureDiagnostic);
         }
@@ -408,7 +408,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             //We don't need to create a new texture as we only need a not empty one
             var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TextureSolidColor, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.id.Equals(TextureAnalyzer.k_TextureAtlasEmptyDescriptor.id));
+                .FirstOrDefault(i => i.id.Equals(TextureUtilizationAnalyzer.k_TextureAtlasEmptyDescriptor.id));
 
             Assert.IsNull(textureDiagnostic);
         }

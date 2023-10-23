@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using UnityEditor;
+using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
@@ -69,10 +69,22 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     continue; // skip render textures
                 }
 
-                var platformSettings = textureImporter.GetPlatformTextureSettings(currentPlatformString);
+                var context = new TextureAnalysisContext
+                {
+                    Importer = textureImporter,
+                    ImporterPlatformSettings = textureImporter.GetPlatformTextureSettings(currentPlatformString),
+                    Texture = AssetDatabase.LoadAssetAtPath<Texture>(assetPath),
+                    Params = projectAuditorParams
+                };
+
+                if (string.IsNullOrEmpty(context.Texture.name))
+                    context.Name = Path.GetFileNameWithoutExtension(assetPath);
+                else
+                    context.Name = context.Texture.name;
+
                 foreach (var analyzer in analyzers)
                 {
-                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(projectAuditorParams, textureImporter, platformSettings));
+                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(context));
                 }
 
                 progress?.Advance();

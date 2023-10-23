@@ -17,9 +17,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string PAA0002 = nameof(PAA0002);
         internal const string PAA0003 = nameof(PAA0003);
         internal const string PAA0004 = nameof(PAA0004);
-        internal const string PAA0005 = nameof(PAA0005);
-        internal const string PAA0006 = nameof(PAA0006);
-        internal const string PAA0007 = nameof(PAA0007);
 
         internal static readonly Descriptor k_TextureMipMapNotEnabledDescriptor = new Descriptor(
             PAA0000,
@@ -123,41 +120,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        internal static readonly Descriptor k_TextureSolidColorDescriptor = new Descriptor(
-            PAA0005,
-            "Texture: Solid color is not 1x1 size",
-            new[] {Area.Memory},
-            "The texture is a single, solid color and is bigger than 1x1 pixels in size. Redundant texture data occupies memory unneccesarily.",
-            "Consider shrinking the texture to 1x1 size."
-        )
-        {
-            messageFormat = "Texture '{0}' is a solid color and not 1x1 size",
-            fixer = (issue) => { ResizeSolidTexture(issue.relativePath); }
-        };
-
-        // NOTE:  This is only here to run the same analysis without a quick fix button.  Clean up when we either have appropriate quick fix for other dimensions or improved fixer support.
-        internal static readonly Descriptor k_TextureSolidColorNoFixerDescriptor = new Descriptor(
-            PAA0006,
-            "Texture: Solid color is not 1x1 size",
-            new[] { Area.Memory },
-            "The texture is a single, solid color and is bigger than 1x1 pixels in size. Redundant texture data occupies memory unneccesarily.",
-            "Consider shrinking the texture to 1x1 size."
-        )
-        {
-            messageFormat = "Texture '{0}' is a solid color and not 1x1 size"
-        };
-
-        internal static readonly Descriptor k_TextureAtlasEmptyDescriptor = new Descriptor(
-            PAA0007,
-            "Texture Atlas: Too much empty space",
-            new[] {Area.Memory},
-            "The texture atlas contains a lot of empty space. Empty space contributes to texture memory usage.",
-            "Consider reorganizing your texture atlas in order to reduce the amount of empty space."
-        )
-        {
-            messageFormat = "Texture Atlas '{0}' has too much empty space ({1})"
-        };
-
         public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_TextureMipMapNotEnabledDescriptor);
@@ -165,126 +127,76 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_TextureReadWriteEnabledDescriptor);
             module.RegisterDescriptor(k_TextureStreamingMipMapEnabledDescriptor);
             module.RegisterDescriptor(k_TextureAnisotropicLevelDescriptor);
-            module.RegisterDescriptor(k_TextureSolidColorDescriptor);
-            module.RegisterDescriptor(k_TextureSolidColorNoFixerDescriptor);
-            module.RegisterDescriptor(k_TextureAtlasEmptyDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, TextureImporter textureImporter, TextureImporterPlatformSettings platformSettings)
+        public IEnumerable<ProjectIssue> Analyze(TextureAnalysisContext context)
         {
-            var assetPath = textureImporter.assetPath;
+            var assetPath = context.Importer.assetPath;
 
-            var texture = AssetDatabase.LoadAssetAtPath<Texture>(assetPath);
 #if PA_CAN_USE_COMPUTEMIPCHAINSIZE
-            TextureFormat format = (TextureFormat)platformSettings.format;
-            if (platformSettings.format == TextureImporterFormat.Automatic)
+            var format = (TextureFormat)context.ImporterPlatformSettings.format;
+            if (context.ImporterPlatformSettings.format == TextureImporterFormat.Automatic)
             {
-                format = (TextureFormat)textureImporter.GetAutomaticFormat(projectAuditorParams.PlatformString);
+                format = (TextureFormat)context.Importer.GetAutomaticFormat(context.Params.PlatformString);
             }
 
-            var size = UnityEngine.Experimental.Rendering.GraphicsFormatUtility.ComputeMipChainSize(texture.width, texture.height, TextureUtils.GetTextureDepth(texture), format, texture.mipmapCount);
+            var size = UnityEngine.Experimental.Rendering.GraphicsFormatUtility.ComputeMipChainSize(context.Texture.width, context.Texture.height, TextureUtils.GetTextureDepth(context.Texture), format, context.Texture.mipmapCount);
 #else
             // This is not the correct size but we don't have access to the appropriate functionality on older versions to do much better without a lot more work.
-            var size = Profiler.GetRuntimeMemorySizeLong(texture);
+            var size = Profiler.GetRuntimeMemorySizeLong(context.Texture);
 #endif
-            var resolution = texture.width + "x" + texture.height;
+            var resolution = context.Texture.width + "x" + context.Texture.height;
 
-            yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.Texture, texture.name)
+            yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.Texture, context.Texture.name)
                 .WithCustomProperties(
                     new object[(int)TextureProperty.Num]
                     {
-                        textureImporter.textureShape,
-                        textureImporter.textureType,
-                        platformSettings.format,
-                        platformSettings.textureCompression,
-                        textureImporter.mipmapEnabled,
-                        textureImporter.isReadable,
+                        context.Importer.textureShape,
+                        context.Importer.textureType,
+                        context.ImporterPlatformSettings.format,
+                        context.ImporterPlatformSettings.textureCompression,
+                        context.Importer.mipmapEnabled,
+                        context.Importer.isReadable,
                         resolution,
                         size,
-                        textureImporter.streamingMipmaps
+                        context.Importer.streamingMipmaps
                     })
                 .WithLocation(new Location(assetPath));
 
             // diagnostics
-            var textureName = Path.GetFileNameWithoutExtension(assetPath);
-
-            if (!textureImporter.mipmapEnabled && textureImporter.textureType == TextureImporterType.Default)
+            if (!context.Importer.mipmapEnabled && context.Importer.textureType == TextureImporterType.Default)
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
-                    k_TextureMipMapNotEnabledDescriptor.id, textureName)
+                    k_TextureMipMapNotEnabledDescriptor.id, context.Name)
                     .WithLocation(assetPath);
             }
 
-            if (textureImporter.mipmapEnabled &&
-                (textureImporter.textureType == TextureImporterType.Sprite || textureImporter.textureType == TextureImporterType.GUI)
+            if (context.Importer.mipmapEnabled &&
+                (context.Importer.textureType == TextureImporterType.Sprite || context.Importer.textureType == TextureImporterType.GUI)
             )
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
-                    k_TextureMipMapEnabledDescriptor.id, textureName)
+                    k_TextureMipMapEnabledDescriptor.id, context.Name)
                     .WithLocation(assetPath);
             }
 
-            if (textureImporter.isReadable)
+            if (context.Importer.isReadable)
             {
-                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureReadWriteEnabledDescriptor.id, textureName)
-                    .WithLocation(textureImporter.assetPath);
+                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureReadWriteEnabledDescriptor.id, context.Name)
+                    .WithLocation(context.Importer.assetPath);
             }
 
-            if (textureImporter.mipmapEnabled && !textureImporter.streamingMipmaps && size > Mathf.Pow(projectAuditorParams.DiagnosticParams.TextureStreamingMipmapsSizeLimit, 2))
+            if (context.Importer.mipmapEnabled && !context.Importer.streamingMipmaps && size > Mathf.Pow(context.Params.DiagnosticParams.TextureStreamingMipmapsSizeLimit, 2))
             {
-                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureStreamingMipMapEnabledDescriptor.id, textureName)
-                    .WithLocation(textureImporter.assetPath);
+                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureStreamingMipMapEnabledDescriptor.id, context.Name)
+                    .WithLocation(context.Importer.assetPath);
             }
 
-            if (k_TextureAnisotropicLevelDescriptor.IsApplicable(projectAuditorParams) &&
-                textureImporter.mipmapEnabled && textureImporter.filterMode != FilterMode.Point && textureImporter.anisoLevel > 1)
+            if (k_TextureAnisotropicLevelDescriptor.IsApplicable(context.Params) &&
+                context.Importer.mipmapEnabled && context.Importer.filterMode != FilterMode.Point && context.Importer.anisoLevel > 1)
             {
-                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureAnisotropicLevelDescriptor.id, textureName, textureImporter.anisoLevel)
-                    .WithLocation(textureImporter.assetPath);
-            }
-
-            if (TextureUtils.IsTextureSolidColorTooBig(textureImporter, texture))
-            {
-                var dimensionAppropriateDescriptor = texture.dimension == UnityEngine.Rendering.TextureDimension.Tex2D ? k_TextureSolidColorDescriptor : k_TextureSolidColorNoFixerDescriptor;
-                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, dimensionAppropriateDescriptor.id, textureName)
-                    .WithLocation(textureImporter.assetPath);
-            }
-
-            var texture2D = texture as Texture2D;
-            if (texture2D != null)
-            {
-                var emptyPercent = TextureUtils.GetEmptyPixelsPercent(texture2D);
-                if (emptyPercent >
-                    projectAuditorParams.DiagnosticParams.SpriteAtlasEmptySpaceLimit)
-                {
-                    yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureAtlasEmptyDescriptor.id, textureName, Formatting.FormatPercentage(emptyPercent / 100.0f))
-                        .WithLocation(textureImporter.assetPath);
-                }
-            }
-        }
-
-        internal static void ResizeSolidTexture(string path)
-        {
-            var textureImporter = AssetImporter.GetAtPath(path) as TextureImporter;
-            if (textureImporter != null)
-            {
-                var originalValue = textureImporter.isReadable;
-                textureImporter.isReadable = true;
-                textureImporter.SaveAndReimport();
-
-                var texture = AssetDatabase.LoadAssetAtPath<Texture>(path) as Texture2D;
-                var color = texture.GetPixel(0, 0);
-                //Create a new texture as we can't resize the current one
-                var newTexture = new Texture2D(1, 1, TextureFormat.RGBA32, false);
-                newTexture.SetPixel(0, 0, color);
-                newTexture.Apply();
-
-                byte[] pixels = newTexture.EncodeToPNG();
-                File.WriteAllBytes(path, pixels);
-                AssetDatabase.Refresh();
-
-                textureImporter.isReadable = originalValue;
-                textureImporter.SaveAndReimport();
+                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureAnisotropicLevelDescriptor.id, context.Name, context.Importer.anisoLevel)
+                    .WithLocation(context.Importer.assetPath);
             }
         }
     }
