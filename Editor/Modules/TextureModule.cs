@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using UnityEditor;
+using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
@@ -61,24 +61,34 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 analyzer.PrepareForAnalysis(projectAuditorParams);
             }
 
-            var allTextures = AssetDatabase.FindAssets("t:texture, a:assets");
-            var currentPlatformString = projectAuditorParams.Platform.ToString();
+            var assetPaths = GetAssetPathsByFilter("t:texture, a:assets");
+            var currentPlatformString = projectAuditorParams.PlatformString;
 
-            progress?.Start("Finding Textures", "Search in Progress...", allTextures.Length);
+            progress?.Start("Finding Textures", "Search in Progress...", assetPaths.Length);
 
-            foreach (var guid in allTextures)
+            foreach (var assetPath in assetPaths)
             {
-                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
                 var textureImporter = AssetImporter.GetAtPath(assetPath) as TextureImporter;
                 if (textureImporter == null)
                 {
                     continue; // skip render textures
                 }
 
-                var platformSettings = textureImporter.GetPlatformTextureSettings(currentPlatformString);
+                var context = new TextureAnalysisContext
+                {
+                    Importer = textureImporter,
+                    ImporterPlatformSettings = textureImporter.GetPlatformTextureSettings(currentPlatformString),
+                    Texture = AssetDatabase.LoadAssetAtPath<Texture>(assetPath)
+                };
+
+                if (string.IsNullOrEmpty(context.Texture.name))
+                    context.Name = Path.GetFileNameWithoutExtension(assetPath);
+                else
+                    context.Name = context.Texture.name;
+
                 foreach (var analyzer in analyzers)
                 {
-                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(projectAuditorParams, textureImporter, platformSettings));
+                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(projectAuditorParams, context));
                 }
 
                 progress?.Advance();

@@ -6,12 +6,18 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Interfaces
 {
+    internal class TextureAnalysisContext
+    {
+        public string Name;
+        public Texture Texture;
+        public TextureImporter Importer;
+        public TextureImporterPlatformSettings ImporterPlatformSettings;
+    }
+
     internal interface ITextureModuleAnalyzer : IModuleAnalyzer
     {
         void PrepareForAnalysis(ProjectAuditorParams projectAuditorParams);
 
-        IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams,
-            TextureImporter textureImporter,
-            TextureImporterPlatformSettings textureImporterPlatformSettings);
+        IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, TextureAnalysisContext context);
     }
 }

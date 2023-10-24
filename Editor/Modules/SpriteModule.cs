@@ -23,15 +23,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 analyzer.PrepareForAnalysis(projectAuditorParams);
             }
 
-            var allSpriteAtlases = AssetDatabase.FindAssets("t:SpriteAtlas, a:assets");
-            //var currentPlatformString = projectAuditorParams.platform.ToString();
+            var assetPaths = GetAssetPathsByFilter("t:SpriteAtlas, a:assets");
 
-            progress?.Start("Finding Sprite Atlas", "Search in Progress...", allSpriteAtlases.Length);
+            progress?.Start("Finding Sprite Atlas", "Search in Progress...", assetPaths.Length);
 
-            foreach (var guid in allSpriteAtlases)
+            foreach (var assetPath in assetPaths)
             {
-                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
-
                 foreach (var analyzer in analyzers)
                 {
                     projectAuditorParams.OnIncomingIssues(analyzer.Analyze(projectAuditorParams, assetPath));

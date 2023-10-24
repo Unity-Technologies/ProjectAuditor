@@ -9,7 +9,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
     {
         internal static List<Descriptor> LoadFromJson(string path, string name)
         {
-            var rawDescriptors = Json.FromFile<Descriptor>(Path.Combine(path, name + ".json"));
+            var rawDescriptors = Json.DeserializeArrayFromFile<Descriptor>(Path.Combine(path, name + ".json"));
             var descriptors = new List<Descriptor>(rawDescriptors.Length);
             foreach (var rawDescriptor in rawDescriptors)
             {

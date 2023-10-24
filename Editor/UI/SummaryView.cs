@@ -120,32 +120,43 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.Space();
             EditorGUILayout.BeginVertical();
 
-            EditorGUILayout.LabelField("Session Information", SharedStyles.BoldLabel);
-            EditorGUI.indentLevel++;
+            DrawSessionInfo(m_ViewManager.Report.SessionInfo);
 
-            var sessionInfo = m_ViewManager.Report.SessionInfo;
-            var itemIndex = 0;
-            DrawKeyValue("Date and Time", Formatting.FormatDateTime(Json.DeserializeDateTime(sessionInfo.DateTime)), itemIndex++);
-            DrawKeyValue("Host Name", sessionInfo.HostName, itemIndex++);
-            DrawKeyValue("Host Platform", sessionInfo.HostPlatform, itemIndex++);
-            DrawKeyValue("Company Name", sessionInfo.CompanyName, itemIndex++);
-            if (!string.IsNullOrEmpty(sessionInfo.ProjectId))
-                DrawKeyValue("Project Id", sessionInfo.ProjectId, itemIndex++);
-            DrawKeyValue("Project Name", sessionInfo.ProjectName, itemIndex++);
-            DrawKeyValue("Project Revision", sessionInfo.ProjectRevision, itemIndex++);
-            DrawKeyValue("Unity Version", sessionInfo.UnityVersion, itemIndex++);
-            DrawKeyValue("Project Auditor Version", sessionInfo.ProjectAuditorVersion, itemIndex++);
-
-            EditorGUI.indentLevel--;
             EditorGUILayout.EndVertical();
         }
 
-        void DrawKeyValue(string key, string value, int itemIndex)
+        static void DrawSessionInfo(SessionInfo sessionInfo)
         {
-            EditorGUILayout.BeginHorizontal(itemIndex % 2 == 0 ? SharedStyles.Row : SharedStyles.RowAlternate);
-            EditorGUILayout.LabelField($"{key}:", SharedStyles.Label, GUILayout.Width(160));
-            EditorGUILayout.LabelField(value, SharedStyles.Label,  GUILayout.ExpandWidth(true));
-            EditorGUILayout.EndHorizontal();
+            var keyValues = new[]
+            {
+                new KeyValuePair<string, string>("Date and Time", Formatting.FormatDateTime(Json.DeserializeDateTime(sessionInfo.DateTime))),
+                new KeyValuePair<string, string>("Host Name", sessionInfo.HostName),
+                new KeyValuePair<string, string>("Host Platform", sessionInfo.HostPlatform),
+                new KeyValuePair<string, string>("Company Name", sessionInfo.CompanyName),
+                new KeyValuePair<string, string>("Project Name", sessionInfo.ProjectName),
+                new KeyValuePair<string, string>("Project Revision", sessionInfo.ProjectRevision),
+                new KeyValuePair<string, string>("Unity Version", sessionInfo.UnityVersion),
+                new KeyValuePair<string, string>("Project Auditor Version", sessionInfo.ProjectAuditorVersion)
+            };
+
+            DrawSessionFields("Session Information", keyValues);
+        }
+
+        static void DrawSessionFields(string label, KeyValuePair<string, string>[] keyValues)
+        {
+            EditorGUILayout.LabelField(label, SharedStyles.BoldLabel);
+            EditorGUI.indentLevel++;
+
+            var itemIndex = 0;
+            foreach (var pair in keyValues)
+            {
+                EditorGUILayout.BeginHorizontal(itemIndex++ % 2 == 0 ? SharedStyles.Row : SharedStyles.RowAlternate);
+                EditorGUILayout.LabelField($"{pair.Key}:", SharedStyles.Label, GUILayout.Width(160));
+                EditorGUILayout.LabelField(pair.Value, SharedStyles.Label,  GUILayout.ExpandWidth(true));
+                EditorGUILayout.EndHorizontal();
+            }
+
+            EditorGUI.indentLevel--;
         }
 
         void DrawSummaryItem<T>(string title, T value, IssueCategory category, GUIContent icon = null)

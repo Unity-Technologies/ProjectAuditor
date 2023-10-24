@@ -274,11 +274,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var shaderPathMap = CollectShaders();
-            ProcessShaders(projectAuditorParams, shaderPathMap, projectAuditorParams.OnIncomingIssues);
+            ProcessShaders(projectAuditorParams, shaderPathMap);
 
-            ProcessComputeShaders(projectAuditorParams.Platform, projectAuditorParams.OnIncomingIssues);
+            ProcessComputeShaders(projectAuditorParams);
 
-            ProcessMaterials(projectAuditorParams.OnIncomingIssues);
+            ProcessMaterials(projectAuditorParams);
 
             // clear collected variants before next build
             ClearBuildData();
@@ -289,11 +289,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Dictionary<Shader, string> CollectShaders()
         {
             var shaderPathMap = new Dictionary<Shader, string>();
-            var shaderGuids = AssetDatabase.FindAssets("t:shader");
-            foreach (var guid in shaderGuids)
+            var assetPaths = GetAssetPathsByFilter("t:shader");
+            foreach (var assetPath in assetPaths)
             {
-                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
-
                 // skip editor shaders
                 if (assetPath.IndexOf("/editor/", StringComparison.OrdinalIgnoreCase) != -1)
                     continue;
@@ -330,11 +328,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Dictionary<Material, string> CollectMaterials()
         {
             var materialPathMap = new Dictionary<Material, string>();
-            var materialGuids = AssetDatabase.FindAssets("t:material");
-            foreach (var guid in materialGuids)
+            var assetPaths = GetAssetPathsByFilter("t:material");
+            foreach (var assetPath in assetPaths)
             {
-                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
-
                 var material = AssetDatabase.LoadAssetAtPath<Material>(assetPath);
                 if (material == null)
                 {
@@ -382,8 +378,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return alwaysIncludedShaders;
         }
 
-        void ProcessShaders(ProjectAuditorParams projectAuditorParams, Dictionary<Shader, string> shaderPathMap,
-            Action<IEnumerable<ProjectIssue>> onIncomingIssues)
+        void ProcessShaders(ProjectAuditorParams projectAuditorParams, Dictionary<Shader, string> shaderPathMap)
         {
             BuildTarget platform = projectAuditorParams.Platform;
             var alwaysIncludedShaders = GetAlwaysIncludedShaders();
@@ -420,17 +415,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     }
                 }
 #endif
-                onIncomingIssues(ProcessShader(shader, assetPath, assetSize, alwaysIncludedShaders.Contains(shader)));
-                onIncomingIssues(ProcessVariants(platform, shader, assetPath));
+                projectAuditorParams.OnIncomingIssues(ProcessShader(shader, assetPath, assetSize, alwaysIncludedShaders.Contains(shader)));
+                projectAuditorParams.OnIncomingIssues(ProcessVariants(platform, shader, assetPath));
 
                 foreach (var analyzer in analyzers)
                 {
-                    onIncomingIssues(analyzer.Analyze(projectAuditorParams, shader, assetPath));
+                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(projectAuditorParams, shader, assetPath));
                 }
             }
         }
 
-        void ProcessComputeShaders(BuildTarget platform, Action<IEnumerable<ProjectIssue>> onIncomingIssues)
+        void ProcessComputeShaders(ProjectAuditorParams projectAuditorParams)
         {
 #if PA_CAN_USE_IPREPROCESSCOMPUTESHADERS
             var issues = new List<ProjectIssue>();
@@ -440,7 +435,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var computeShaderName = shaderCompilerData.Key.name;
                 foreach (var shaderVariantData in shaderCompilerData.Value)
                 {
-                    if (shaderVariantData.buildTarget != BuildTarget.NoTarget && shaderVariantData.buildTarget != platform)
+                    if (shaderVariantData.buildTarget != BuildTarget.NoTarget && shaderVariantData.buildTarget != projectAuditorParams.Platform)
                         continue;
 
                     issues.Add(ProjectIssue.CreateWithoutDiagnostic(k_ComputeShaderVariantLayout.category, computeShaderName)
@@ -456,11 +451,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
             }
             if (issues.Any())
-                onIncomingIssues(issues);
+                projectAuditorParams.OnIncomingIssues(issues);
 #endif
         }
 
-        void ProcessMaterials(Action<IEnumerable<ProjectIssue>> onIncomingIssues)
+        void ProcessMaterials(ProjectAuditorParams projectAuditorParams)
         {
             var issues = new List<ProjectIssue>();
 
@@ -477,7 +472,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
 
             if (issues.Any())
-                onIncomingIssues(issues);
+                projectAuditorParams.OnIncomingIssues(issues);
         }
 
         IEnumerable<ProjectIssue> ProcessShader(Shader shader, string assetPath, string assetSize, bool isAlwaysIncluded)
@@ -718,7 +713,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         }
 
-        public static void ExportSVC(string svcName, string path, ProjectIssue[] variants)
+        public static void ExportVariantsToSvc(string svcName, string path, ProjectIssue[] variants)
         {
             var svc = new ShaderVariantCollection();
             svc.name = svcName;

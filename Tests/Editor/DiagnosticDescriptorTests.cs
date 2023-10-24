@@ -19,6 +19,21 @@ namespace Unity.ProjectAuditor.EditorTests
 {
     class DiagnosticDescriptorTests
     {
+        readonly Descriptor m_Descriptor = new Descriptor
+            (
+            "TDD2001",
+            "test",
+            Area.CPU,
+            "this is not actually a problem",
+            "do nothing"
+            );
+
+        [OneTimeSetUp]
+        public void Setup()
+        {
+            DescriptorLibrary.RegisterDescriptor(m_Descriptor.id, m_Descriptor);
+        }
+
         [Test]
         public void DiagnosticDescriptor_Comparison_Works()
         {
@@ -187,25 +202,16 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void DiagnosticDescriptor_Descriptor_IsRegistered()
         {
-            var desc = new Descriptor
-                (
-                "TDD2001",
-                "test",
-                new[] { Area.CPU },
-                "this is not actually a problem",
-                "do nothing"
-                );
-
             var projectAuditor = new Editor.ProjectAuditor();
 
-            projectAuditor.GetModules(IssueCategory.Code)[0].RegisterDescriptor(desc);
+            projectAuditor.GetModules(IssueCategory.Code)[0].RegisterDescriptor(m_Descriptor);
 
             var IDs = projectAuditor.GetDiagnosticIDs();
 
-            Assert.NotZero(IDs.Count(id => id.AsString() == desc.id), "Descriptor {0} is not registered", desc.id);
+            Assert.NotZero(IDs.Count(id => id.AsString() == m_Descriptor.id), "Descriptor {0} is not registered", m_Descriptor.id);
 
             // This will throw an exception if the Descriptor is somehow registered in the module but not in the DescriptorLibrary
-            var descriptor = new DescriptorID(desc.id).GetDescriptor();
+            var descriptor = new DescriptorID(m_Descriptor.id).GetDescriptor();
         }
 
         [Test]

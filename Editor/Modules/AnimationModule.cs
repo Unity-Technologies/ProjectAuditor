@@ -168,11 +168,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var issues = new List<ProjectIssue>();
 
-            var allControllerGuids = AssetDatabase.FindAssets("t:animatorcontroller, a:assets");
-            progress?.Start("Finding Animator Controllers", "Search in Progress...", allControllerGuids.Length);
-            foreach (var guid in allControllerGuids)
+            var assetPaths = GetAssetPathsByFilter("t:animatorcontroller, a:assets");
+            progress?.Start("Finding Animator Controllers", "Search in Progress...", assetPaths.Length);
+            foreach (var assetPath in assetPaths)
             {
-                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
                 var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(assetPath);
                 if (controller == null)
                 {
@@ -207,12 +206,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
         void ProcessAnimationClips(Action<IEnumerable<ProjectIssue>> onIncomingIssues, IProgress progress)
         {
             var issues = new List<ProjectIssue>();
+            var assetPaths = GetAssetPathsByFilter("t:animationclip, a:assets");
 
-            var allClipGuids = AssetDatabase.FindAssets("t:animationclip, a:assets");
-            progress?.Start("Finding Animation Clips", "Search in Progress...", allClipGuids.Length);
-            foreach (var guid in allClipGuids)
+            progress?.Start("Finding Animation Clips", "Search in Progress...", assetPaths.Length);
+
+            foreach (var assetPath in assetPaths)
             {
-                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
                 var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(assetPath);
                 if (clip == null)
                 {
@@ -256,12 +255,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
         void ProcessAvatars(Action<IEnumerable<ProjectIssue>> onIncomingIssues, IProgress progress)
         {
             var issues = new List<ProjectIssue>();
+            var assetPaths = GetAssetPathsByFilter("t:avatar, a:assets");
 
-            var allAvatarGuids = AssetDatabase.FindAssets("t:avatar, a:assets");
-            progress?.Start("Finding Avatars", "Search in Progress...", allAvatarGuids.Length);
-            foreach (var guid in allAvatarGuids)
+            progress?.Start("Finding Avatars", "Search in Progress...", assetPaths.Length);
+
+            foreach (var assetPath in assetPaths)
             {
-                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
                 var avatar = AssetDatabase.LoadAssetAtPath<Avatar>(assetPath);
                 if (avatar == null)
                 {
@@ -307,12 +306,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
         void ProcessAvatarMasks(Action<IEnumerable<ProjectIssue>> onIncomingIssues, IProgress progress)
         {
             var issues = new List<ProjectIssue>();
+            var assetPaths = GetAssetPathsByFilter("t:avatarmask, a:assets");
 
-            var allMaskGuids = AssetDatabase.FindAssets("t:avatarmask, a:assets");
-            progress?.Start("Finding Avatar Masks", "Search in Progress...", allMaskGuids.Length);
-            foreach (var guid in allMaskGuids)
+            progress?.Start("Finding Avatar Masks", "Search in Progress...", assetPaths.Length);
+
+            foreach (var assetPath in assetPaths)
             {
-                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
                 var mask = AssetDatabase.LoadAssetAtPath<AvatarMask>(assetPath);
                 if (mask == null)
                 {

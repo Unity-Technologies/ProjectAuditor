@@ -58,5 +58,11 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
                 m_SerializedDescriptors = null;
             }
         }
+
+        // For testing purposes only
+        internal static void Reset()
+        {
+            s_Descriptors?.Clear();
+        }
     }
 }

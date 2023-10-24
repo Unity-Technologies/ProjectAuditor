@@ -169,8 +169,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 projectAuditorParams.OnIncomingIssues(precompiledAssemblies);
 
             // find all roslyn analyzer DLLs by label
-            var roslynAnalyzerAssets = AssetDatabase.FindAssets("l:RoslynAnalyzer").Select(AssetDatabase.GUIDToAssetPath)
-                .ToList();
+            var roslynAnalyzerAssets = GetAssetPathsByFilter("l:RoslynAnalyzer").ToList();
 
             // find all roslyn analyzers packaged with Project Auditor
             if (Directory.Exists($"{ProjectAuditor.PackagePath}/RoslynAnalyzers"))

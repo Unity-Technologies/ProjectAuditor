@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
@@ -45,6 +46,8 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         {
             m_SavedAnalyzeInBackground = UserPreferences.AnalyzeInBackground;
             UserPreferences.AnalyzeInBackground = false;
+
+            DescriptorLibrary.Reset();
 
             m_ProjectAuditor = new ProjectAuditor();
 
