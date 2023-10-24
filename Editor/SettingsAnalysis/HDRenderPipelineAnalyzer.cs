@@ -40,7 +40,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         }
 
 #if PACKAGE_HDRP
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
+        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
             if (IsLitShaderModeBothOrMixed())
             {
@@ -57,11 +57,11 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                         forwardCamera = true;
 
                     if (deferredCamera && forwardCamera)
-                        yield return ProjectIssue.Create(IssueCategory.ProjectSetting,
+                        yield return context.Create(IssueCategory.ProjectSetting,
                             k_CameraLitShaderModeBothOrMixed.id);
                 }
 
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_AssetLitShaderModeBothOrMixed.id);
+                yield return context.Create(IssueCategory.ProjectSetting, k_AssetLitShaderModeBothOrMixed.id);
             }
         }
 
@@ -92,7 +92,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         }
 
 #else
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
+        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
             yield break;
         }

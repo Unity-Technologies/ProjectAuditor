@@ -97,20 +97,26 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 projectAuditorParams.OnModuleCompleted?.Invoke();
                 return;
             }
+
+            var context = new AnalysisContext()
+            {
+                Params = projectAuditorParams
+            };
+
             foreach (var package in request.Result)
             {
-                projectAuditorParams.OnIncomingIssues(EnumerateInstalledPackages(package));
-                projectAuditorParams.OnIncomingIssues(EnumeratePackageDiagnostics(package));
+                projectAuditorParams.OnIncomingIssues(EnumerateInstalledPackages(context, package));
+                projectAuditorParams.OnIncomingIssues(EnumeratePackageDiagnostics(context, package));
             }
             projectAuditorParams.OnModuleCompleted?.Invoke();
         }
 
-        IEnumerable<ProjectIssue> EnumerateInstalledPackages(UnityEditor.PackageManager.PackageInfo package)
+        IEnumerable<ProjectIssue> EnumerateInstalledPackages(AnalysisContext context, UnityEditor.PackageManager.PackageInfo package)
         {
             var dependencies = package.dependencies.Select(d => d.name + " [" + d.version + "]").ToArray();
             var displayName = string.IsNullOrEmpty(package.displayName) ? package.name : package.displayName;
             var node = new PackageDependencyNode(displayName, dependencies);
-            yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.Package, displayName)
+            yield return context.CreateWithoutDiagnostic(IssueCategory.Package, displayName)
                 .WithCustomProperties(new object[(int)PackageProperty.Num]
                 {
                     package.name,
@@ -121,20 +127,20 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 .WithLocation(package.assetPath);
         }
 
-        IEnumerable<ProjectIssue> EnumeratePackageDiagnostics(UnityEditor.PackageManager.PackageInfo package)
+        IEnumerable<ProjectIssue> EnumeratePackageDiagnostics(AnalysisContext context, UnityEditor.PackageManager.PackageInfo package)
         {
             var recommendedVersionString = PackageUtils.GetPackageRecommendedVersion(package);
             if (!string.IsNullOrEmpty(package.version) && !string.IsNullOrEmpty(recommendedVersionString))
             {
                 if (!recommendedVersionString.Equals(package.version))
                 {
-                    yield return ProjectIssue.Create(IssueCategory.PackageDiagnostic, k_RecommendPackageUpgrade.id, package.name, package.version, recommendedVersionString)
+                    yield return context.Create(IssueCategory.PackageDiagnostic, k_RecommendPackageUpgrade.id, package.name, package.version, recommendedVersionString)
                         .WithLocation(package.assetPath);
                 }
             }
             else if (package.version.Contains("pre") || package.version.Contains("exp"))
             {
-                yield return ProjectIssue.Create(IssueCategory.PackageDiagnostic, k_RecommendPackagePreView.id, package.name, package.version)
+                yield return context.Create(IssueCategory.PackageDiagnostic, k_RecommendPackagePreView.id, package.name, package.version)
                     .WithLocation(package.assetPath);
             }
         }

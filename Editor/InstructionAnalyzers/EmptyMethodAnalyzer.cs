@@ -38,10 +38,10 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             module.RegisterDescriptor(k_Descriptor);
         }
 
-        public IssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
+        public IssueBuilder Analyze(InstructionAnalysisContext context)
         {
             // skip any no-op
-            var previousIL = inst.Previous;
+            var previousIL = context.Instruction.Previous;
             while (previousIL != null && previousIL.OpCode == OpCodes.Nop)
                 previousIL = previousIL.Previous;
 
@@ -49,13 +49,13 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             if (previousIL != null)
                 return null;
 
-            if (!MonoBehaviourAnalysis.IsMonoBehaviour(methodDefinition.DeclaringType))
+            if (!MonoBehaviourAnalysis.IsMonoBehaviour(context.MethodDefinition.DeclaringType))
                 return null;
 
-            if (!MonoBehaviourAnalysis.IsMonoBehaviourEvent(methodDefinition))
+            if (!MonoBehaviourAnalysis.IsMonoBehaviourEvent(context.MethodDefinition))
                 return null;
 
-            return ProjectIssue.Create(IssueCategory.Code, k_Descriptor.id, methodDefinition.Name);
+            return context.Create(IssueCategory.Code, k_Descriptor.id, context.MethodDefinition.Name);
         }
 
         internal static string GetDescriptorID()

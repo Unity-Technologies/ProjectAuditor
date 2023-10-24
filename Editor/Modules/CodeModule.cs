@@ -161,9 +161,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (UserPreferences.AnalyzeInBackground && m_AssemblyAnalysisThread != null)
                 m_AssemblyAnalysisThread.Join();
 
+            var context = new AnalysisContext()
+            {
+                Params = projectAuditorParams
+            };
+
             var precompiledAssemblies = AssemblyInfoProvider.GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.All)
-                .Select(assemblyPath => (ProjectIssue)ProjectIssue
-                    .CreateWithoutDiagnostic(IssueCategory.PrecompiledAssembly, Path.GetFileNameWithoutExtension(assemblyPath))
+                .Select(assemblyPath => (ProjectIssue)context.CreateWithoutDiagnostic(IssueCategory.PrecompiledAssembly, Path.GetFileNameWithoutExtension(assemblyPath))
                     .WithCustomProperties(new object[(int)PrecompiledAssemblyProperty.Num]
                     {
                         false
@@ -189,7 +193,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             // report all roslyn analyzers as PrecompiledAssembly issues
             var roslynAnalyzerIssues = roslynAnalyzerAssets
-                .Select(roslynAnalyzerDllPath => (ProjectIssue)ProjectIssue.CreateWithoutDiagnostic(
+                .Select(roslynAnalyzerDllPath => (ProjectIssue)context.CreateWithoutDiagnostic(
                 IssueCategory.PrecompiledAssembly,
                 Path.GetFileNameWithoutExtension(roslynAnalyzerDllPath))
                 .WithCustomProperties(new object[(int)PrecompiledAssemblyProperty.Num]
@@ -205,7 +209,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 onAssemblyCompilationFinished = (compilationTask, compilerMessages) =>
                 {
-                    projectAuditorParams.OnIncomingIssues(ProcessCompilerMessages(compilationTask, compilerMessages));
+                    projectAuditorParams.OnIncomingIssues(ProcessCompilerMessages(context, compilationTask, compilerMessages));
                 },
                 codeOptimization = projectAuditorParams.CodeOptimization,
                 compilationMode = projectAuditorParams.CompilationMode,
@@ -232,8 +236,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (projectAuditorParams.CompilationMode == CompilationMode.Editor ||
                 projectAuditorParams.CompilationMode == CompilationMode.EditorPlayMode)
             {
-                var issues = assemblyInfos.Select(assemblyInfo => (ProjectIssue)ProjectIssue
-                    .CreateWithoutDiagnostic(IssueCategory.Assembly, assemblyInfo.name)
+                var issues = assemblyInfos.Select(assemblyInfo => (ProjectIssue)context.CreateWithoutDiagnostic(IssueCategory.Assembly, assemblyInfo.name)
                     .WithCustomProperties(new object[(int)AssemblyProperty.Num]
                     {
                         assemblyInfo.packageReadOnly,
@@ -432,12 +435,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 if (onIssueFound == null)
                     continue;
 
+                var context = new InstructionAnalysisContext
+                {
+                    Instruction = inst,
+                    MethodDefinition = caller
+                };
+
                 Profiler.BeginSample("CodeModule.Analyzing " + inst.OpCode.Name);
                 foreach (var analyzer in m_Analyzers)
                     if (analyzer.opCodes.Contains(inst.OpCode))
                     {
                         Profiler.BeginSample("CodeModule " + analyzer.GetType().Name);
-                        var issueBuilder = analyzer.Analyze(caller, inst);
+                        var issueBuilder = analyzer.Analyze(context);
                         if (issueBuilder != null)
                         {
                             issueBuilder.WithDependencies(callerNode); // set root
@@ -453,7 +462,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             Profiler.EndSample();
         }
 
-        IEnumerable<ProjectIssue> ProcessCompilerMessages(AssemblyCompilationTask compilationTask, CompilerMessage[] compilerMessages)
+        IEnumerable<ProjectIssue> ProcessCompilerMessages(AnalysisContext context, AssemblyCompilationTask compilationTask, CompilerMessage[] compilerMessages)
         {
             Profiler.BeginSample("CodeModule.ProcessCompilerMessages");
 
@@ -464,7 +473,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 severity = Severity.Error;
 
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(compilationTask.assemblyPath);
-            yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.Assembly, assemblyInfo.name)
+            yield return context.CreateWithoutDiagnostic(IssueCategory.Assembly, assemblyInfo.name)
                 .WithCustomProperties(new object[(int)AssemblyProperty.Num]
                 {
                     assemblyInfo.packageReadOnly,
@@ -493,7 +502,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                     DescriptorLibrary.RegisterDescriptor(descriptor.id, descriptor);
 
-                    yield return ProjectIssue.Create(IssueCategory.DomainReload, descriptor.id)
+                    yield return context.Create(IssueCategory.DomainReload, descriptor.id)
                         .WithLocation(relativePath, message.line)
                         .WithLogLevel(CompilerMessageTypeToLogLevel(message.type))
                         .WithCustomProperties(new object[(int)CompilerMessageProperty.Num]
@@ -504,7 +513,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
                 else
                 {
-                    yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.CodeCompilerMessage, message.message)
+                    yield return context.CreateWithoutDiagnostic(IssueCategory.CodeCompilerMessage, message.message)
                         .WithCustomProperties(new object[(int)CompilerMessageProperty.Num]
                         {
                             message.code,

@@ -5,8 +5,12 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Interfaces
 {
+    internal class SettingsAnalysisContext : AnalysisContext
+    {
+    }
+
     internal interface ISettingsModuleAnalyzer : IModuleAnalyzer
     {
-        IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams);
+        IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context);
     }
 }

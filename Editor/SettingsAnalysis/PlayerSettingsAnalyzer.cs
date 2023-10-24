@@ -110,40 +110,40 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_LightmapStreamingEnabledDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
+        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
-            if (k_AccelerometerDescriptor.IsApplicable(projectAuditorParams) && IsAccelerometerEnabled())
+            if (k_AccelerometerDescriptor.IsApplicable(context.Params) && IsAccelerometerEnabled())
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_AccelerometerDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_AccelerometerDescriptor.id)
                     .WithLocation("Project/Player");
             }
             if (IsSplashScreenEnabledAndCanBeDisabled())
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_SplashScreenDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_SplashScreenDescriptor.id)
                     .WithLocation("Project/Player");
             }
-            if (k_SpeakerModeDescriptor.IsApplicable(projectAuditorParams) && !IsSpeakerModeMono())
+            if (k_SpeakerModeDescriptor.IsApplicable(context.Params) && !IsSpeakerModeMono())
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_SpeakerModeDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_SpeakerModeDescriptor.id)
                     .WithLocation("Project/Player");
             }
 
-            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(projectAuditorParams.Platform);
-            if (CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration.Master, projectAuditorParams))
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(context.Params.Platform);
+            if (CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration.Master, context.Params))
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_IL2CPPCompilerConfigurationMasterDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_IL2CPPCompilerConfigurationMasterDescriptor.id)
                     .WithCustomProperties(new object[] {buildTargetGroup})
                     .WithLocation("Project/Player");
             }
-            if (CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration.Debug, projectAuditorParams))
+            if (CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration.Debug, context.Params))
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_IL2CPPCompilerConfigurationDebugDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_IL2CPPCompilerConfigurationDebugDescriptor.id)
                     .WithCustomProperties(new object[] {buildTargetGroup})
                     .WithLocation("Project/Player");
             }
             if (!PlayerSettingsUtil.IsLightmapStreamingEnabled(buildTargetGroup))
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_LightmapStreamingEnabledDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_LightmapStreamingEnabledDescriptor.id)
                     .WithCustomProperties(new object[] {buildTargetGroup})
                     .WithLocation("Project/Player");
             }

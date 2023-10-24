@@ -89,25 +89,25 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             module.RegisterDescriptor(k_ParamArrayAllocationDescriptor);
         }
 
-        public IssueBuilder Analyze(MethodDefinition callerMethodDefinition, Instruction inst)
+        public IssueBuilder Analyze(InstructionAnalysisContext context)
         {
-            if (inst.OpCode == OpCodes.Call || inst.OpCode == OpCodes.Callvirt)
+            if (context.Instruction.OpCode == OpCodes.Call || context.Instruction.OpCode == OpCodes.Callvirt)
             {
-                var callee = (MethodReference)inst.Operand;
+                var callee = (MethodReference)context.Instruction.Operand;
                 if (callee.HasParameters)
                 {
                     var lastParam = callee.Parameters.Last();
                     if (lastParam.HasCustomAttributes && lastParam.CustomAttributes.Any(a => a.AttributeType.FullName.GetHashCode() == k_ParamArrayAtributeHashCode))
                     {
-                        return ProjectIssue.Create(IssueCategory.Code, k_ParamArrayAllocationDescriptor.id, lastParam.ParameterType.Name, lastParam.Name);
+                        return context.Create(IssueCategory.Code, k_ParamArrayAllocationDescriptor.id, lastParam.ParameterType.Name, lastParam.Name);
                     }
                 }
                 return null;
             }
 
-            if (inst.OpCode == OpCodes.Newobj)
+            if (context.Instruction.OpCode == OpCodes.Newobj)
             {
-                var methodReference = (MethodReference)inst.Operand;
+                var methodReference = (MethodReference)context.Instruction.Operand;
                 var typeReference = methodReference.DeclaringType;
                 if (typeReference.IsValueType)
                     return null;
@@ -115,18 +115,18 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 var isClosure = typeReference.Name.StartsWith("<>c__DisplayClass");
                 if (isClosure)
                 {
-                    return ProjectIssue.Create(IssueCategory.Code, k_ClosureAllocationDescriptor.id, callerMethodDefinition.DeclaringType.Name, callerMethodDefinition.Name);
+                    return context.Create(IssueCategory.Code, k_ClosureAllocationDescriptor.id, context.MethodDefinition.DeclaringType.Name, context.MethodDefinition.Name);
                 }
                 else
                 {
-                    return ProjectIssue.Create(IssueCategory.Code, k_ObjectAllocationDescriptor.id, typeReference.FullName);
+                    return context.Create(IssueCategory.Code, k_ObjectAllocationDescriptor.id, typeReference.FullName);
                 }
             }
             else // OpCodes.Newarr
             {
-                var typeReference = (TypeReference)inst.Operand;
+                var typeReference = (TypeReference)context.Instruction.Operand;
 
-                return ProjectIssue.Create(IssueCategory.Code, k_ArrayAllocationDescriptor.id, typeReference.Name);
+                return context.Create(IssueCategory.Code, k_ArrayAllocationDescriptor.id, typeReference.Name);
             }
         }
     }

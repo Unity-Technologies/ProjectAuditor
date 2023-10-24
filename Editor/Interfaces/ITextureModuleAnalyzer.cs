@@ -6,9 +6,8 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Interfaces
 {
-    internal class TextureAnalysisContext
+    internal class TextureAnalysisContext : AnalysisContext
     {
-        public ProjectAuditorParams Params;
         public string Name;
         public Texture Texture;
         public TextureImporter Importer;

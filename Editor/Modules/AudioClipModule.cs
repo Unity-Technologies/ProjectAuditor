@@ -71,9 +71,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     continue;
                 }
 
+                var context = new AudioClipAnalysisContext
+                {
+                    Importer = audioImporter,
+                    Params = projectAuditorParams
+                };
+
                 foreach (var analyzer in analyzers)
                 {
-                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(projectAuditorParams, audioImporter));
+                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(context));
                 }
 
                 progress?.Advance();

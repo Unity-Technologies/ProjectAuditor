@@ -147,7 +147,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 #endif
             var resolution = context.Texture.width + "x" + context.Texture.height;
 
-            yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.Texture, context.Texture.name)
+            yield return context.CreateWithoutDiagnostic(IssueCategory.Texture, context.Texture.name)
                 .WithCustomProperties(
                     new object[(int)TextureProperty.Num]
                     {
@@ -166,7 +166,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             // diagnostics
             if (!context.Importer.mipmapEnabled && context.Importer.textureType == TextureImporterType.Default)
             {
-                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
+                yield return context.Create(IssueCategory.AssetDiagnostic,
                     k_TextureMipMapNotEnabledDescriptor.id, context.Name)
                     .WithLocation(assetPath);
             }
@@ -175,27 +175,27 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 (context.Importer.textureType == TextureImporterType.Sprite || context.Importer.textureType == TextureImporterType.GUI)
             )
             {
-                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
+                yield return context.Create(IssueCategory.AssetDiagnostic,
                     k_TextureMipMapEnabledDescriptor.id, context.Name)
                     .WithLocation(assetPath);
             }
 
             if (context.Importer.isReadable)
             {
-                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureReadWriteEnabledDescriptor.id, context.Name)
+                yield return context.Create(IssueCategory.AssetDiagnostic, k_TextureReadWriteEnabledDescriptor.id, context.Name)
                     .WithLocation(context.Importer.assetPath);
             }
 
             if (context.Importer.mipmapEnabled && !context.Importer.streamingMipmaps && size > Mathf.Pow(context.Params.DiagnosticParams.TextureStreamingMipmapsSizeLimit, 2))
             {
-                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureStreamingMipMapEnabledDescriptor.id, context.Name)
+                yield return context.Create(IssueCategory.AssetDiagnostic, k_TextureStreamingMipMapEnabledDescriptor.id, context.Name)
                     .WithLocation(context.Importer.assetPath);
             }
 
             if (k_TextureAnisotropicLevelDescriptor.IsApplicable(context.Params) &&
                 context.Importer.mipmapEnabled && context.Importer.filterMode != FilterMode.Point && context.Importer.anisoLevel > 1)
             {
-                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureAnisotropicLevelDescriptor.id, context.Name, context.Importer.anisoLevel)
+                yield return context.Create(IssueCategory.AssetDiagnostic, k_TextureAnisotropicLevelDescriptor.id, context.Name, context.Importer.anisoLevel)
                     .WithLocation(context.Importer.assetPath);
             }
         }

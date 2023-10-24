@@ -59,23 +59,23 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_VulkanDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
+        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
-            if (projectAuditorParams.Platform == BuildTarget.iOS)
+            if (context.Params.Platform == BuildTarget.iOS)
             {
                 if (IsUsingOpenGLESAndMetal())
-                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_OpenGLESAndMetalDescriptor.id)
+                    yield return context.Create(IssueCategory.ProjectSetting, k_OpenGLESAndMetalDescriptor.id)
                         .WithLocation("Project/Player");
 
                 if (IsNotUsingMetal())
-                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_MetalDescriptor.id)
+                    yield return context.Create(IssueCategory.ProjectSetting, k_MetalDescriptor.id)
                         .WithLocation("Project/Player");
             }
 
-            if (projectAuditorParams.Platform == BuildTarget.Android)
+            if (context.Params.Platform == BuildTarget.Android)
             {
                 if (IsNotUsingVulkan())
-                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_VulkanDescriptor.id)
+                    yield return context.Create(IssueCategory.ProjectSetting, k_VulkanDescriptor.id)
                         .WithLocation("Project/Player");
             }
         }

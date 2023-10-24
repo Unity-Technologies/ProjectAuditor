@@ -45,10 +45,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_Mesh32BitIndexFormatUsedDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, AssetImporter assetImporter)
+        public IEnumerable<ProjectIssue> Analyze(MeshAnalysisContext context)
         {
-            var assetPath = assetImporter.assetPath;
-            var modelImporter = assetImporter as ModelImporter;
+            var assetPath = context.Importer.assetPath;
+            var modelImporter = context.Importer as ModelImporter;
             var subAssets = AssetDatabase.LoadAllAssetsAtPath(assetPath);
 
             foreach (var subAsset in subAssets)
@@ -64,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler is not the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(mesh);
 
-                yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.Mesh, meshName)
+                yield return context.CreateWithoutDiagnostic(IssueCategory.Mesh, meshName)
                     .WithCustomProperties(
                         new object[((int)MeshProperty.Num)]
                         {
@@ -79,14 +79,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 if (mesh.isReadable)
                 {
-                    yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_MeshReadWriteEnabledDescriptor.id, meshName)
+                    yield return context.Create(IssueCategory.AssetDiagnostic, k_MeshReadWriteEnabledDescriptor.id, meshName)
                         .WithLocation(assetPath);
                 }
 
                 if (mesh.indexFormat == IndexFormat.UInt32 &&
                     mesh.vertexCount <= 65535)
                 {
-                    yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
+                    yield return context.Create(IssueCategory.AssetDiagnostic,
                         k_Mesh32BitIndexFormatUsedDescriptor.id, meshName)
                         .WithLocation(assetPath);
                 }

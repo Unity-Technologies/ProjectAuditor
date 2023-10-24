@@ -62,9 +62,9 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             module.RegisterDescriptor(k_DebugLogWarningIssueDescriptor);
         }
 
-        public IssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
+        public IssueBuilder Analyze(InstructionAnalysisContext context)
         {
-            var callee = (MethodReference)inst.Operand;
+            var callee = (MethodReference)context.Instruction.Operand;
             var methodName = callee.Name;
             var declaringType = callee.DeclaringType;
 
@@ -90,7 +90,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             }
 
             // If we find the ConditionalAttribute, we assume this is intended to be compiled out on release
-            if (methodDefinition.HasCustomAttributes && methodDefinition.CustomAttributes.Any(a =>
+            if (context.MethodDefinition.HasCustomAttributes && context.MethodDefinition.CustomAttributes.Any(a =>
                 a.AttributeType.FullName.GetHashCode() == k_ConditionalAttributeHashCode))
             {
                 return null;
@@ -100,10 +100,10 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             {
                 case "Log":
                 case "LogFormat":
-                    return ProjectIssue.Create(IssueCategory.Code, k_DebugLogIssueDescriptor.id, methodName, methodDefinition.Name);
+                    return context.Create(IssueCategory.Code, k_DebugLogIssueDescriptor.id, methodName, context.MethodDefinition.Name);
                 case "LogWarning":
                 case "LogWarningFormat":
-                    return ProjectIssue.Create(IssueCategory.Code, k_DebugLogWarningIssueDescriptor.id, methodName, methodDefinition.Name);
+                    return context.Create(IssueCategory.Code, k_DebugLogWarningIssueDescriptor.id, methodName, context.MethodDefinition.Name);
                 default:
                     return null;
             }

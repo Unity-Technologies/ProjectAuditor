@@ -42,7 +42,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 if (progress != null)
                     progress.Advance();
 
-                var issues = analyzer.Analyze(projectAuditorParams).ToArray();
+                var context = new SettingsAnalysisContext
+                {
+                    Params = projectAuditorParams
+                };
+
+                var issues = analyzer.Analyze(context).ToArray();
                 if (issues.Any())
                     projectAuditorParams.OnIncomingIssues(issues);
             }

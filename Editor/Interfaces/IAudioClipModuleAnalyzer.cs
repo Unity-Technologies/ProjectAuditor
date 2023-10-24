@@ -6,8 +6,13 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Interfaces
 {
+    internal class AudioClipAnalysisContext : AnalysisContext
+    {
+        public AudioImporter Importer;
+    }
+
     internal interface IAudioClipModuleAnalyzer : IModuleAnalyzer
     {
-        IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, AudioImporter audioImporter);
+        IEnumerable<ProjectIssue> Analyze(AudioClipAnalysisContext context);
     }
 }

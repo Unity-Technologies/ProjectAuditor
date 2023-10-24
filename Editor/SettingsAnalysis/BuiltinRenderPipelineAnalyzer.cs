@@ -47,24 +47,24 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_DeferredRenderingDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
+        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
             // Only check for Built-In Rendering Pipeline
             if (!IsUsingBuiltinRenderPipeline())
             {
-                if (IsMixedStandardShaderQuality(projectAuditorParams.Platform))
+                if (IsMixedStandardShaderQuality(context.Params.Platform))
                 {
-                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_ShaderQualityDescriptor.id)
+                    yield return context.Create(IssueCategory.ProjectSetting, k_ShaderQualityDescriptor.id)
                         .WithLocation("Project/Graphics");
                 }
-                if (IsUsingForwardRendering(projectAuditorParams.Platform))
+                if (IsUsingForwardRendering(context.Params.Platform))
                 {
-                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_ForwardRenderingDescriptor.id)
+                    yield return context.Create(IssueCategory.ProjectSetting, k_ForwardRenderingDescriptor.id)
                         .WithLocation("Project/Graphics");
                 }
-                if (IsUsingDeferredRendering(projectAuditorParams.Platform))
+                if (IsUsingDeferredRendering(context.Params.Platform))
                 {
-                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_DeferredRenderingDescriptor.id)
+                    yield return context.Create(IssueCategory.ProjectSetting, k_DeferredRenderingDescriptor.id)
                         .WithLocation("Project/Graphics");
                 }
             }

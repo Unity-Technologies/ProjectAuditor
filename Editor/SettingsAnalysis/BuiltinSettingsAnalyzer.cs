@@ -49,20 +49,20 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             }
         }
 
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
+        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
             if (m_Descriptors == null)
                 throw new Exception("Descriptors Database not initialized.");
 
-            foreach (var descriptor in m_Descriptors.Where(d => d.IsApplicable(projectAuditorParams)))
+            foreach (var descriptor in m_Descriptors.Where(d => d.IsApplicable(context.Params)))
             {
-                var issue = Evaluate(descriptor);
+                var issue = Evaluate(context, descriptor);
                 if (issue != null)
                     yield return issue;
             }
         }
 
-        ProjectIssue Evaluate(Descriptor descriptor)
+        ProjectIssue Evaluate(AnalysisContext context, Descriptor descriptor)
         {
             // evaluate a Unity API static method or property
             var assembly = m_Assemblies.First(a => a.GetType(descriptor.type) != null);
@@ -82,7 +82,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                     descriptor.type, methodName, paramTypes, args);
 
                 if (value.ToString() == descriptor.value)
-                    return NewIssue(descriptor, descriptor.title);
+                    return NewIssue(context, descriptor, descriptor.title);
             }
             catch (ArgumentException e)
             {
@@ -92,13 +92,13 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             return null;
         }
 
-        ProjectIssue NewIssue(Descriptor descriptor, string description)
+        ProjectIssue NewIssue(AnalysisContext context, Descriptor descriptor, string description)
         {
             var projectWindowPath = string.Empty;
             var mappings = m_ProjectSettingsMapping.Where(p => descriptor.type.StartsWith(p.Key)).ToArray();
             if (mappings.Any())
                 projectWindowPath = mappings.First().Value;
-            return ProjectIssue.Create
+            return context.Create
                 (
                     IssueCategory.ProjectSetting,
                     descriptor.id,

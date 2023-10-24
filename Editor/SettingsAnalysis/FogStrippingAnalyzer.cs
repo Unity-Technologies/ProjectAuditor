@@ -44,23 +44,23 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_FogModeDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
+        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
             if (IsFogModeEnabled(FogMode.Linear))
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor.id, FogMode.Linear)
+                yield return context.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor.id, FogMode.Linear)
                     .WithLocation("Project/Graphics");
             }
 
             if (IsFogModeEnabled(FogMode.Exponential))
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor.id, FogMode.Exponential)
+                yield return context.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor.id, FogMode.Exponential)
                     .WithLocation("Project/Graphics");
             }
 
             if (IsFogModeEnabled(FogMode.ExponentialSquared))
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor.id, FogMode.ExponentialSquared)
+                yield return context.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor.id, FogMode.ExponentialSquared)
                     .WithLocation("Project/Graphics");
             }
         }

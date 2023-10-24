@@ -29,8 +29,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_SrpBatcherDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, Shader shader,
-            string assetPath)
+        public IEnumerable<ProjectIssue> Analyze(ShaderAnalysisContext context)
         {
             if (!IsSrpBatchingEnabled)
             {
@@ -38,13 +37,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
 
 #if UNITY_2019_3_OR_NEWER
-            var subShaderIndex = ShaderUtilProxy.GetShaderActiveSubshaderIndex(shader);
-            var isSrpBatchingCompatible = ShaderUtilProxy.GetSRPBatcherCompatibilityCode(shader, subShaderIndex) == 0;
+            var subShaderIndex = ShaderUtilProxy.GetShaderActiveSubshaderIndex(context.Shader);
+            var isSrpBatchingCompatible = ShaderUtilProxy.GetSRPBatcherCompatibilityCode(context.Shader, subShaderIndex) == 0;
 
             if (!isSrpBatchingCompatible && IsSrpBatchingEnabled)
             {
-                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_SrpBatcherDescriptor.id, shader.name)
-                    .WithLocation(assetPath);
+                yield return context.Create(IssueCategory.AssetDiagnostic, k_SrpBatcherDescriptor.id, context.Shader.name)
+                    .WithLocation(context.AssetPath);
             }
 #endif
         }

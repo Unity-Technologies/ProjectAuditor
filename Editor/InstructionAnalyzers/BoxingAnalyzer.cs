@@ -38,9 +38,9 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             module.RegisterDescriptor(k_Descriptor);
         }
 
-        public IssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
+        public IssueBuilder Analyze(InstructionAnalysisContext context)
         {
-            var type = (TypeReference)inst.Operand;
+            var type = (TypeReference)context.Instruction.Operand;
             if (type.IsGenericParameter)
             {
                 var isValueType = true; // assume it's value type
@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             else if (type.FullName.Equals("System.Double"))
                 typeName = "double";
 
-            return ProjectIssue.Create(IssueCategory.Code, k_Descriptor.id, typeName);
+            return context.Create(IssueCategory.Code, k_Descriptor.id, typeName);
         }
     }
 }

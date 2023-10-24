@@ -156,15 +156,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            ProcessAnimatorControllers(projectAuditorParams.OnIncomingIssues, progress);
-            ProcessAnimationClips(projectAuditorParams.OnIncomingIssues, progress);
-            ProcessAvatars(projectAuditorParams.OnIncomingIssues, progress);
-            ProcessAvatarMasks(projectAuditorParams.OnIncomingIssues, progress);
+            var context = new AnalysisContext
+            {
+                Params = projectAuditorParams
+            };
+            ProcessAnimatorControllers(context, progress);
+            ProcessAnimationClips(context, progress);
+            ProcessAvatars(context, progress);
+            ProcessAvatarMasks(context, progress);
 
             projectAuditorParams.OnModuleCompleted?.Invoke();
         }
 
-        void ProcessAnimatorControllers(Action<IEnumerable<ProjectIssue>> onIncomingIssues, IProgress progress)
+        void ProcessAnimatorControllers(AnalysisContext context, IProgress progress)
         {
             var issues = new List<ProjectIssue>();
 
@@ -183,7 +187,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler may not be the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(controller);
 
-                issues.Add(ProjectIssue.CreateWithoutDiagnostic(k_AnimatorControllerLayout.category, controller.name)
+                issues.Add(context.CreateWithoutDiagnostic(k_AnimatorControllerLayout.category, controller.name)
                     .WithCustomProperties(new object[(int)AnimatorControllerProperty.Num]
                     {
                         controller.layers.Length,
@@ -198,12 +202,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
 
             if (issues.Any())
-                onIncomingIssues(issues);
+                context.Params.OnIncomingIssues(issues);
 
             progress?.Clear();
         }
 
-        void ProcessAnimationClips(Action<IEnumerable<ProjectIssue>> onIncomingIssues, IProgress progress)
+        void ProcessAnimationClips(AnalysisContext context, IProgress progress)
         {
             var issues = new List<ProjectIssue>();
             var assetPaths = GetAssetPathsByFilter("t:animationclip, a:assets");
@@ -223,7 +227,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler may not be the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(clip);
 
-                issues.Add(ProjectIssue.CreateWithoutDiagnostic(k_AnimationClipLayout.category, clip.name)
+                issues.Add(context.CreateWithoutDiagnostic(k_AnimationClipLayout.category, clip.name)
                     .WithCustomProperties(new object[(int)AnimationClipProperty.Num]
                     {
                         clip.empty,
@@ -247,12 +251,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
 
             if (issues.Any())
-                onIncomingIssues(issues);
+                context.Params.OnIncomingIssues(issues);
 
             progress?.Clear();
         }
 
-        void ProcessAvatars(Action<IEnumerable<ProjectIssue>> onIncomingIssues, IProgress progress)
+        void ProcessAvatars(AnalysisContext context, IProgress progress)
         {
             var issues = new List<ProjectIssue>();
             var assetPaths = GetAssetPathsByFilter("t:avatar, a:assets");
@@ -272,7 +276,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler may not be the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(avatar);
 
-                issues.Add(ProjectIssue.CreateWithoutDiagnostic(k_AvatarLayout.category, avatar.name)
+                issues.Add(context.CreateWithoutDiagnostic(k_AvatarLayout.category, avatar.name)
                     .WithCustomProperties(new object[(int)AvatarProperty.Num]
                     {
                         avatar.isValid,
@@ -298,12 +302,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
 
             if (issues.Any())
-                onIncomingIssues(issues);
+                context.Params.OnIncomingIssues(issues);
 
             progress?.Clear();
         }
 
-        void ProcessAvatarMasks(Action<IEnumerable<ProjectIssue>> onIncomingIssues, IProgress progress)
+        void ProcessAvatarMasks(AnalysisContext context, IProgress progress)
         {
             var issues = new List<ProjectIssue>();
             var assetPaths = GetAssetPathsByFilter("t:avatarmask, a:assets");
@@ -323,7 +327,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler may not be the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(mask);
 
-                issues.Add(ProjectIssue.CreateWithoutDiagnostic(k_AvatarMaskLayout.category, mask.name)
+                issues.Add(context.CreateWithoutDiagnostic(k_AvatarMaskLayout.category, mask.name)
                     .WithCustomProperties(new object[(int)AvatarMaskProperty.Num]
                     {
                         mask.transformCount,
@@ -336,7 +340,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
 
             if (issues.Any())
-                onIncomingIssues(issues);
+                context.Params.OnIncomingIssues(issues);
 
             progress?.Clear();
         }

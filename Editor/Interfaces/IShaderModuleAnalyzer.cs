@@ -4,8 +4,14 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Interfaces
 {
+    internal class ShaderAnalysisContext : AnalysisContext
+    {
+        public string AssetPath;
+        public Shader Shader;
+    }
+
     internal interface IShaderModuleAnalyzer : IModuleAnalyzer
     {
-        IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, Shader shader, string assetPath);
+        IEnumerable<ProjectIssue> Analyze(ShaderAnalysisContext context);
     }
 }

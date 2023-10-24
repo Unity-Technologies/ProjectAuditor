@@ -75,20 +75,20 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             descriptorMicrophoneSupported = module.SupportsDescriptor(k_DescriptorMicrophone.id);
         }
 
-        public IssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
+        public IssueBuilder Analyze(InstructionAnalysisContext context)
         {
-            var methodReference = (MethodReference)inst.Operand;
+            var methodReference = (MethodReference)context.Instruction.Operand;
             if (descriptorSystemNetSupported && methodReference.DeclaringType.FullName.StartsWith("System.Net."))
             {
-                return ProjectIssue.Create(IssueCategory.Code, k_DescriptorSystemNet.id, methodReference.FullName);
+                return context.Create(IssueCategory.Code, k_DescriptorSystemNet.id, methodReference.FullName);
             }
             if (descriptorSystemThreadingSupported && methodReference.DeclaringType.FullName.StartsWith("System.Threading."))
             {
-                return ProjectIssue.Create(IssueCategory.Code, k_DescriptorSystemThreading.id, methodReference.FullName);
+                return context.Create(IssueCategory.Code, k_DescriptorSystemThreading.id, methodReference.FullName);
             }
             if (descriptorMicrophoneSupported && methodReference.DeclaringType.FullName.Equals("UnityEngine.Microphone"))
             {
-                return ProjectIssue.Create(IssueCategory.Code, k_DescriptorMicrophone.id, methodReference.FullName);
+                return context.Create(IssueCategory.Code, k_DescriptorMicrophone.id, methodReference.FullName);
             }
 
             return null;

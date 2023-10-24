@@ -26,13 +26,13 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_Descriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
+        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
 #if PACKAGE_HYBRID_RENDERER
 
-            if (PlayerSettingsUtil.IsStaticBatchingEnabled(projectAuditorParams.Platform))
+            if (PlayerSettingsUtil.IsStaticBatchingEnabled(context.Params.Platform))
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_Descriptor.id);
+                yield return context.Create(IssueCategory.ProjectSetting, k_Descriptor.id);
             }
 #else
             yield break;

@@ -24,9 +24,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             foreach (var assetPath in assetPaths)
             {
+                var context = new SpriteAtlasAnalysisContext
+                {
+                    AssetPath = assetPath,
+                    Params = projectAuditorParams
+                };
+
                 foreach (var analyzer in analyzers)
                 {
-                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(projectAuditorParams, assetPath));
+                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(context));
                 }
 
                 progress?.Advance();

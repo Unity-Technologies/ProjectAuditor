@@ -4,8 +4,13 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Interfaces
 {
+    internal class MeshAnalysisContext : AnalysisContext
+    {
+        public AssetImporter Importer;
+    }
+
     internal interface IMeshModuleAnalyzer : IModuleAnalyzer
     {
-        IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, AssetImporter assetImporter);
+        IEnumerable<ProjectIssue> Analyze(MeshAnalysisContext context);
     }
 }

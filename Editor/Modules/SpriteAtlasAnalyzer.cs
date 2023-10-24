@@ -29,19 +29,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_SpriteAtlasEmptyDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, string assetPath)
+        public IEnumerable<ProjectIssue> Analyze(SpriteAtlasAnalysisContext context)
         {
-            var spriteAtlas = AssetDatabase.LoadAssetAtPath<SpriteAtlas>(assetPath);
+            var spriteAtlas = AssetDatabase.LoadAssetAtPath<SpriteAtlas>(context.AssetPath);
 
-            yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.SpriteAtlas, spriteAtlas.name)
-                .WithLocation(new Location(assetPath));
+            yield return context.CreateWithoutDiagnostic(IssueCategory.SpriteAtlas, spriteAtlas.name)
+                .WithLocation(new Location(context.AssetPath));
 
             var emptyPercent = TextureUtils.GetEmptySpacePercentage(spriteAtlas);
-            if (emptyPercent > projectAuditorParams.DiagnosticParams.SpriteAtlasEmptySpaceLimit)
+            if (emptyPercent > context.Params.DiagnosticParams.SpriteAtlasEmptySpaceLimit)
             {
-                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
+                yield return context.Create(IssueCategory.AssetDiagnostic,
                     k_SpriteAtlasEmptyDescriptor.id, spriteAtlas.name, Formatting.FormatPercentage(emptyPercent / 100.0f, 0))
-                    .WithLocation(assetPath);
+                    .WithLocation(context.AssetPath);
             }
         }
     }

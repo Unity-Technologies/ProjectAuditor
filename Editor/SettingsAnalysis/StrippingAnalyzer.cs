@@ -55,15 +55,15 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_iOSManagedStrippingDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
+        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
-            if (k_EngineCodeStrippingDescriptor.IsApplicable(projectAuditorParams) && !PlayerSettings.stripEngineCode)
+            if (k_EngineCodeStrippingDescriptor.IsApplicable(context.Params) && !PlayerSettings.stripEngineCode)
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_EngineCodeStrippingDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_EngineCodeStrippingDescriptor.id)
                     .WithLocation("Project/Player");
             }
 
-            if (k_AndroidManagedStrippingDescriptor.IsApplicable(projectAuditorParams))
+            if (k_AndroidManagedStrippingDescriptor.IsApplicable(context.Params))
             {
                 var value = PlayerSettings.GetManagedStrippingLevel(BuildTargetGroup.Android);
                 if (value == ManagedStrippingLevel.Disabled || value == ManagedStrippingLevel.Low
@@ -71,15 +71,15 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                     || value == ManagedStrippingLevel.Minimal
 #endif
                 )
-                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_AndroidManagedStrippingDescriptor.id)
+                    yield return context.Create(IssueCategory.ProjectSetting, k_AndroidManagedStrippingDescriptor.id)
                         .WithLocation("Project/Player");
             }
 
-            if (k_iOSManagedStrippingDescriptor.IsApplicable(projectAuditorParams))
+            if (k_iOSManagedStrippingDescriptor.IsApplicable(context.Params))
             {
                 var value = PlayerSettings.GetManagedStrippingLevel(BuildTargetGroup.iOS);
                 if (value == ManagedStrippingLevel.Disabled || value == ManagedStrippingLevel.Low)
-                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_iOSManagedStrippingDescriptor.id)
+                    yield return context.Create(IssueCategory.ProjectSetting, k_iOSManagedStrippingDescriptor.id)
                         .WithLocation("Project/Player");
             }
         }

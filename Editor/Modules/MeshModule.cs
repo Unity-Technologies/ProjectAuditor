@@ -51,11 +51,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             foreach (var assetPath in assetPaths)
             {
-                var importer = AssetImporter.GetAtPath(assetPath);
+                var context = new MeshAnalysisContext()
+                {
+                    Importer = AssetImporter.GetAtPath(assetPath),
+                    Params = projectAuditorParams
+                };
 
                 foreach (var analyzer in analyzers)
                 {
-                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(projectAuditorParams, importer));
+                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(context));
                 }
 
                 progress?.Advance();
