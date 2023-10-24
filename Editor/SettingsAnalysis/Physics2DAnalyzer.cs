@@ -40,16 +40,16 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_SimulationModeDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
+        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
             if (IsDefaultLayerCollisionMatrix())
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_DefaultLayerCollisionMatrixDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_DefaultLayerCollisionMatrixDescriptor.id)
                     .WithLocation("Project/Physics 2D");
             }
-            if (k_SimulationModeDescriptor.IsApplicable(projectAuditorParams) && IsNotUsingSimulationModeScript())
+            if (k_SimulationModeDescriptor.IsApplicable(context.Params) && IsNotUsingSimulationModeScript())
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_SimulationModeDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_SimulationModeDescriptor.id)
                     .WithLocation("Project/Physics 2D");
             }
         }

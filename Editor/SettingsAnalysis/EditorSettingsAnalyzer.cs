@@ -48,12 +48,12 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_DomainReloadDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
+        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
             if (k_EnterPlayModeOptionsDescriptor.IsVersionCompatible() &&
                 !EditorSettings.enterPlayModeOptionsEnabled)
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_EnterPlayModeOptionsDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_EnterPlayModeOptionsDescriptor.id)
                     .WithLocation("Project/Editor");
             }
             else
@@ -61,7 +61,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 if (k_DomainReloadDescriptor.IsVersionCompatible() &&
                     (EditorSettings.enterPlayModeOptions & EnterPlayModeOptions.DisableDomainReload) != EnterPlayModeOptions.DisableDomainReload)
                 {
-                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_DomainReloadDescriptor.id)
+                    yield return context.Create(IssueCategory.ProjectSetting, k_DomainReloadDescriptor.id)
                         .WithLocation("Project/Editor");
                 }
             }

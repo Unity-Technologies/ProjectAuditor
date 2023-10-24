@@ -6,19 +6,20 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Interfaces
 {
-    internal class TextureAnalysisContext
+    internal class TextureAnalysisContext : AnalysisContext
     {
-        public ProjectAuditorParams Params; // TODO: Remove this, it's going to land in the base class.
         public string Name;
         public Texture Texture;
         public TextureImporter Importer;
         public TextureImporterPlatformSettings ImporterPlatformSettings;
+        public string PlatformString;
+        public int TextureStreamingMipmapsSizeLimit;
+        public int TextureSizeLimit;
+        public int SpriteAtlasEmptySpaceLimit;
     }
 
     internal interface ITextureModuleAnalyzer : IModuleAnalyzer
     {
-        void PrepareForAnalysis(ProjectAuditorParams projectAuditorParams);
-
         IEnumerable<ProjectIssue> Analyze(TextureAnalysisContext context);
     }
 }

@@ -380,7 +380,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         void ProcessShaders(ProjectAuditorParams projectAuditorParams, Dictionary<Shader, string> shaderPathMap)
         {
-            BuildTarget platform = projectAuditorParams.Platform;
+            var platform = projectAuditorParams.Platform;
             var alwaysIncludedShaders = GetAlwaysIncludedShaders();
             var buildReportInfoAvailable = false;
 #if BUILD_REPORT_API_SUPPORT
@@ -415,12 +415,20 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     }
                 }
 #endif
-                projectAuditorParams.OnIncomingIssues(ProcessShader(shader, assetPath, assetSize, alwaysIncludedShaders.Contains(shader)));
-                projectAuditorParams.OnIncomingIssues(ProcessVariants(platform, shader, assetPath));
+
+                var shaderAnalysisContext = new ShaderAnalysisContext()
+                {
+                    AssetPath = assetPath,
+                    Shader = shader,
+                    Params = projectAuditorParams
+                };
+
+                projectAuditorParams.OnIncomingIssues(ProcessShader(shaderAnalysisContext, assetSize, alwaysIncludedShaders.Contains(shader)));
+                projectAuditorParams.OnIncomingIssues(ProcessVariants(shaderAnalysisContext));
 
                 foreach (var analyzer in analyzers)
                 {
-                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(projectAuditorParams, shader, assetPath));
+                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(shaderAnalysisContext));
                 }
             }
         }
@@ -428,6 +436,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
         void ProcessComputeShaders(ProjectAuditorParams projectAuditorParams)
         {
 #if PA_CAN_USE_IPREPROCESSCOMPUTESHADERS
+            var context = new AnalysisContext()
+            {
+                Params = projectAuditorParams
+            };
             var issues = new List<ProjectIssue>();
 
             foreach (var shaderCompilerData in s_ComputeShaderVariantData)
@@ -438,7 +450,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     if (shaderVariantData.buildTarget != BuildTarget.NoTarget && shaderVariantData.buildTarget != projectAuditorParams.Platform)
                         continue;
 
-                    issues.Add(ProjectIssue.CreateWithoutDiagnostic(k_ComputeShaderVariantLayout.category, computeShaderName)
+                    issues.Add(context.CreateWithoutDiagnostic(k_ComputeShaderVariantLayout.category, computeShaderName)
                         .WithCustomProperties(new object[(int)ComputeShaderVariantProperty.Num]
                         {
                             shaderVariantData.compilerPlatform,
@@ -457,12 +469,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         void ProcessMaterials(ProjectAuditorParams projectAuditorParams)
         {
+            var context = new AnalysisContext()
+            {
+                Params = projectAuditorParams
+            };
             var issues = new List<ProjectIssue>();
 
             var materialPathMap = CollectMaterials();
             foreach (var material in materialPathMap)
             {
-                issues.Add(ProjectIssue.CreateWithoutDiagnostic(k_MaterialLayout.category, material.Key.name)
+                issues.Add(context.CreateWithoutDiagnostic(k_MaterialLayout.category, material.Key.name)
                     .WithCustomProperties(new object[(int)MaterialProperty.Num]
                     {
                         material.Key.shader.name
@@ -475,42 +491,42 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 projectAuditorParams.OnIncomingIssues(issues);
         }
 
-        IEnumerable<ProjectIssue> ProcessShader(Shader shader, string assetPath, string assetSize, bool isAlwaysIncluded)
+        IEnumerable<ProjectIssue> ProcessShader(ShaderAnalysisContext context, string assetSize, bool isAlwaysIncluded)
         {
             // set initial state (-1: info not available)
             var variantCountPerCompilerPlatform = s_ShaderVariantData.Count > 0 ? 0 : -1;
 
             // add variants first
-            if (s_ShaderVariantData.ContainsKey(shader))
+            if (s_ShaderVariantData.ContainsKey(context.Shader))
             {
-                var variants = s_ShaderVariantData[shader];
+                var variants = s_ShaderVariantData[context.Shader];
                 var numCompilerPlatforms = variants.Select(v => v.compilerPlatform).Distinct().Count();
                 variantCountPerCompilerPlatform = variants.Count(v => ShaderTypeIsFragment(v.shaderType, v.compilerPlatform)) / numCompilerPlatforms;
             }
 
-            var shaderName = shader.name;
+            var shaderName = context.Shader.name;
             var shaderHasError = false;
             var severity = Severity.None;
 #if UNITY_2019_1_OR_NEWER
-            var shaderMessages = ShaderUtil.GetShaderMessages(shader);
+            var shaderMessages = ShaderUtil.GetShaderMessages(context.Shader);
             foreach (var shaderMessage in shaderMessages)
             {
                 var message = shaderMessage.message;
                 if (message.EndsWith("\n"))
                     message = message.Substring(0, message.Length - 2);
-                yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.ShaderCompilerMessage, message)
+                yield return context.CreateWithoutDiagnostic(IssueCategory.ShaderCompilerMessage, message)
                     .WithCustomProperties(new object[(int)ShaderMessageProperty.Num]
                     {
                         shaderName,
                         shaderMessage.platform
                     })
-                    .WithLocation(assetPath, shaderMessage.line)
+                    .WithLocation(context.AssetPath, shaderMessage.line)
                     .WithSeverity(shaderMessage.severity == ShaderCompilerMessageSeverity.Error
                         ? Severity.Error
                         : Severity.Warning);
             }
 
-            shaderHasError = ShaderUtil.ShaderHasError(shader);
+            shaderHasError = ShaderUtil.ShaderHasError(context.Shader);
 
             if (shaderHasError)
                 severity = Severity.Error;
@@ -520,9 +536,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (shaderHasError)
             {
-                yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.Shader, Path.GetFileNameWithoutExtension(assetPath))
+                yield return context.CreateWithoutDiagnostic(IssueCategory.Shader, Path.GetFileNameWithoutExtension(context.AssetPath))
                     .WithCustomProperties((int)ShaderProperty.Num, k_NotAvailable)
-                    .WithLocation(assetPath)
+                    .WithLocation(context.AssetPath)
                     .WithSeverity(severity);
             }
             else
@@ -536,50 +552,50 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
 */
                 var passCount = -1;
-                var globalKeywords = ShaderUtilProxy.GetShaderGlobalKeywords(shader);
-                var localKeywords = ShaderUtilProxy.GetShaderLocalKeywords(shader);
-                var hasInstancing = ShaderUtilProxy.HasInstancing(shader);
-                var subShaderIndex = ShaderUtilProxy.GetShaderActiveSubshaderIndex(shader);
-                var isSrpBatcherCompatible = ShaderUtilProxy.GetSRPBatcherCompatibilityCode(shader, subShaderIndex) == 0;
-                var propertyCount = ShaderUtilProxy.GetPropertyCount(shader);
-                var texturePropertyCount = ShaderUtilProxy.GetTexturePropertyCount(shader);
+                var globalKeywords = ShaderUtilProxy.GetShaderGlobalKeywords(context.Shader);
+                var localKeywords = ShaderUtilProxy.GetShaderLocalKeywords(context.Shader);
+                var hasInstancing = ShaderUtilProxy.HasInstancing(context.Shader);
+                var subShaderIndex = ShaderUtilProxy.GetShaderActiveSubshaderIndex(context.Shader);
+                var isSrpBatcherCompatible = ShaderUtilProxy.GetSRPBatcherCompatibilityCode(context.Shader, subShaderIndex) == 0;
+                var propertyCount = ShaderUtilProxy.GetPropertyCount(context.Shader);
+                var texturePropertyCount = ShaderUtilProxy.GetTexturePropertyCount(context.Shader);
 
 #if UNITY_2019_1_OR_NEWER
-                passCount = shader.passCount;
+                passCount = context.Shader.passCount;
 #endif
-                yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.Shader, shaderName)
+                yield return context.CreateWithoutDiagnostic(IssueCategory.Shader, shaderName)
                     .WithCustomProperties(new object[(int)ShaderProperty.Num]
                     {
                         assetSize,
-                        ShaderUtilProxy.GetVariantCount(shader),
+                        ShaderUtilProxy.GetVariantCount(context.Shader),
                         variantCountPerCompilerPlatform == -1 ? k_NotAvailable : variantCountPerCompilerPlatform.ToString(),
                         passCount == -1 ? k_NotAvailable : passCount.ToString(),
                         globalKeywords == null || localKeywords == null ? k_NotAvailable : (globalKeywords.Length + localKeywords.Length).ToString(),
                         propertyCount,
                         texturePropertyCount,
-                        shader.renderQueue,
+                        context.Shader.renderQueue,
                         hasInstancing,
                         isSrpBatcherCompatible,
                         isAlwaysIncluded
                     })
-                    .WithLocation(assetPath)
+                    .WithLocation(context.AssetPath)
                     .WithSeverity(severity);
             }
         }
 
-        IEnumerable<ProjectIssue> ProcessVariants(BuildTarget platform, Shader shader, string assetPath)
+        IEnumerable<ProjectIssue> ProcessVariants(ShaderAnalysisContext context)
         {
-            if (s_ShaderVariantData.ContainsKey(shader))
+            if (s_ShaderVariantData.ContainsKey(context.Shader))
             {
-                var shaderVariants = s_ShaderVariantData[shader];
+                var shaderVariants = s_ShaderVariantData[context.Shader];
 
                 foreach (var shaderVariantData in shaderVariants)
                 {
-                    if (shaderVariantData.buildTarget != BuildTarget.NoTarget && shaderVariantData.buildTarget != platform)
+                    if (shaderVariantData.buildTarget != BuildTarget.NoTarget && shaderVariantData.buildTarget != context.Params.Platform)
                         continue;
 
-                    yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.ShaderVariant, shader.name)
-                        .WithLocation(assetPath)
+                    yield return context.CreateWithoutDiagnostic(IssueCategory.ShaderVariant, context.Shader.name)
+                        .WithLocation(context.AssetPath)
                         .WithCustomProperties(new object[(int)ShaderVariantProperty.Num]
                         {
                             k_NoRuntimeData,

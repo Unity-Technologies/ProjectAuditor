@@ -68,18 +68,23 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
+            var context = new AnalysisContext
+            {
+                Params = projectAuditorParams
+            };
+
             var issues = new List<ProjectIssue>();
-            AnalyzeResources(issues);
+            AnalyzeResources(context, issues);
 
             if (k_StreamingAssetsFolderDescriptor.IsApplicable(projectAuditorParams))
-                AnalyzeStreamingAssets(projectAuditorParams, issues);
+                AnalyzeStreamingAssets(context, issues);
 
             if (issues.Any())
                 projectAuditorParams.OnIncomingIssues(issues);
             projectAuditorParams.OnModuleCompleted?.Invoke();
         }
 
-        static void AnalyzeResources(IList<ProjectIssue> issues)
+        static void AnalyzeResources(AnalysisContext context, IList<ProjectIssue> issues)
         {
             var allAssetPaths = AssetDatabase.GetAllAssetPaths();
             var allResources =
@@ -93,7 +98,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 if ((File.GetAttributes(assetPath) & FileAttributes.Directory) == FileAttributes.Directory)
                     continue;
 
-                var root = AddResourceAsset(assetPath, assetPathsDict, issues, null);
+                var root = AddResourceAsset(context, assetPath, assetPathsDict, issues, null);
                 var dependencies = AssetDatabase.GetDependencies(assetPath, true);
                 foreach (var depAssetPath in dependencies)
                 {
@@ -101,12 +106,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     if (depAssetPath.Equals(assetPath))
                         continue;
 
-                    AddResourceAsset(depAssetPath, assetPathsDict, issues, root);
+                    AddResourceAsset(context, depAssetPath, assetPathsDict, issues, root);
                 }
             }
         }
 
-        static void AnalyzeStreamingAssets(ProjectAuditorParams projectAuditorParams, IList<ProjectIssue> issues)
+        static void AnalyzeStreamingAssets(AnalysisContext context, IList<ProjectIssue> issues)
         {
             if (Directory.Exists("Assets/StreamingAssets"))
             {
@@ -119,19 +124,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
 
                 var folderSizeLimitMB =
-                    projectAuditorParams.Rules.GetParameter("StreamingAssetsFolderSizeLimit", 50);
+                    context.Params.Rules.GetParameter("StreamingAssetsFolderSizeLimit", 50);
 
                 if (totalBytes > folderSizeLimitMB * 1024 * 1024)
                 {
                     issues.Add(
-                        ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_StreamingAssetsFolderDescriptor.id,
+                        context.Create(IssueCategory.AssetDiagnostic, k_StreamingAssetsFolderDescriptor.id,
                             Formatting.FormatSize((ulong)totalBytes))
                     );
                 }
             }
         }
 
-        static DependencyNode AddResourceAsset(
+        static DependencyNode AddResourceAsset(AnalysisContext context,
             string assetPath, Dictionary<string, DependencyNode> assetPathsDict, IList<ProjectIssue> issues, DependencyNode parent)
         {
             // skip C# scripts
@@ -156,7 +161,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             var isInResources = assetPath.IndexOf("/resources/", StringComparison.OrdinalIgnoreCase) >= 0;
 
-            issues.Add(ProjectIssue.Create
+            issues.Add(context.Create
                 (
                     IssueCategory.AssetDiagnostic,
                     k_AssetInResourcesFolderDescriptor.id,

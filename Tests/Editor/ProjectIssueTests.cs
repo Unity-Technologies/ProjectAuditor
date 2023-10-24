@@ -101,7 +101,8 @@ namespace Unity.ProjectAuditor.EditorTests
                 "property #0",
                 "property #1"
             };
-            ProjectIssue issue = ProjectIssue.Create(IssueCategory.Code, m_Descriptor.id, "dummy issue")
+            var context = new AnalysisContext();
+            var issue = (ProjectIssue)context.Create(IssueCategory.Code, m_Descriptor.id, "dummy issue")
                 .WithCustomProperties(properties);
 
             Assert.AreEqual(2, issue.GetNumCustomProperties());
@@ -125,7 +126,8 @@ namespace Unity.ProjectAuditor.EditorTests
                 "property #0",
                 "property #1"
             };
-            ProjectIssue issue = ProjectIssue.Create(IssueCategory.Code, m_Descriptor.id, "dummy issue")
+            var context = new AnalysisContext();
+            var issue = (ProjectIssue)context.Create(IssueCategory.Code, m_Descriptor.id, "dummy issue")
                 .WithCustomProperties(properties)
                 .WithLocation("Assets/Dummy.cs");
 
@@ -158,7 +160,8 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase(LogLevel.Info)]
         public void ProjectIssue_Issue_IsCreatedWithLogLevel(LogLevel logLevel)
         {
-            ProjectIssue issue = ProjectIssue.Create(IssueCategory.Code, m_Descriptor.id, "dummy issue")
+            var context = new AnalysisContext();
+            ProjectIssue issue = context.Create(IssueCategory.Code, m_Descriptor.id, "dummy issue")
                 .WithLogLevel(logLevel);
 
             Assert.AreEqual(logLevel, issue.logLevel);

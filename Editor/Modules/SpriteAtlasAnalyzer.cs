@@ -24,32 +24,24 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "Sprite Atlas '{0}' has too much empty space ({1})"
         };
 
-        int m_SpriteAtlasEmptySpaceLimit;
-
         public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_SpriteAtlasEmptyDescriptor);
         }
 
-        public void PrepareForAnalysis(ProjectAuditorParams projectAuditorParams)
+        public IEnumerable<ProjectIssue> Analyze(SpriteAtlasAnalysisContext context)
         {
-            var rules = projectAuditorParams.Rules;
-            m_SpriteAtlasEmptySpaceLimit = rules.GetParameter("SpriteAtlasEmptySpaceLimit", 50);
-        }
+            var spriteAtlas = AssetDatabase.LoadAssetAtPath<SpriteAtlas>(context.AssetPath);
 
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, string assetPath)
-        {
-            var spriteAtlas = AssetDatabase.LoadAssetAtPath<SpriteAtlas>(assetPath);
-
-            yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.SpriteAtlas, spriteAtlas.name)
-                .WithLocation(new Location(assetPath));
+            yield return context.CreateWithoutDiagnostic(IssueCategory.SpriteAtlas, spriteAtlas.name)
+                .WithLocation(new Location(context.AssetPath));
 
             var emptyPercent = TextureUtils.GetEmptySpacePercentage(spriteAtlas);
-            if (emptyPercent > m_SpriteAtlasEmptySpaceLimit)
+            if (emptyPercent > context.SpriteAtlasEmptySpaceLimit)
             {
-                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
+                yield return context.Create(IssueCategory.AssetDiagnostic,
                     k_SpriteAtlasEmptyDescriptor.id, spriteAtlas.name, Formatting.FormatPercentage(emptyPercent / 100.0f, 0))
-                    .WithLocation(assetPath);
+                    .WithLocation(context.AssetPath);
             }
         }
     }

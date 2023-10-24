@@ -39,28 +39,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
             documentationUrl = "https://docs.unity3d.com/Manual/FBXImporter-Model.html"
         };
 
-#pragma warning disable 0414
-        int m_MeshVertexCountLimit;
-        int m_MeshTriangleCountLimit;
-#pragma warning restore 0414
-
         public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_MeshReadWriteEnabledDescriptor);
             module.RegisterDescriptor(k_Mesh32BitIndexFormatUsedDescriptor);
         }
 
-        public void PrepareForAnalysis(ProjectAuditorParams projectAuditorParams)
+        public IEnumerable<ProjectIssue> Analyze(MeshAnalysisContext context)
         {
-            var rules = projectAuditorParams.Rules;
-            m_MeshVertexCountLimit = rules.GetParameter("MeshVertexCountLimit", 5000);
-            m_MeshTriangleCountLimit = rules.GetParameter("MeshTriangleCountLimit", 5000);
-        }
-
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, AssetImporter assetImporter)
-        {
-            var assetPath = assetImporter.assetPath;
-            var modelImporter = assetImporter as ModelImporter;
+            var assetPath = context.Importer.assetPath;
+            var modelImporter = context.Importer as ModelImporter;
             var subAssets = AssetDatabase.LoadAllAssetsAtPath(assetPath);
 
             foreach (var subAsset in subAssets)
@@ -76,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler is not the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(mesh);
 
-                yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.Mesh, meshName)
+                yield return context.CreateWithoutDiagnostic(IssueCategory.Mesh, meshName)
                     .WithCustomProperties(
                         new object[((int)MeshProperty.Num)]
                         {
@@ -91,14 +79,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 if (mesh.isReadable)
                 {
-                    yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_MeshReadWriteEnabledDescriptor.id, meshName)
+                    yield return context.Create(IssueCategory.AssetDiagnostic, k_MeshReadWriteEnabledDescriptor.id, meshName)
                         .WithLocation(assetPath);
                 }
 
                 if (mesh.indexFormat == IndexFormat.UInt32 &&
                     mesh.vertexCount <= 65535)
                 {
-                    yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic,
+                    yield return context.Create(IssueCategory.AssetDiagnostic,
                         k_Mesh32BitIndexFormatUsedDescriptor.id, meshName)
                         .WithLocation(assetPath);
                 }

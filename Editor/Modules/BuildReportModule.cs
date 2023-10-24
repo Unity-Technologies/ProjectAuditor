@@ -39,6 +39,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     class BuildReportModule : ProjectAuditorModule
     {
+        class BuildAnalysisContext : AnalysisContext
+        {
+            public BuildReport Report;
+        }
+
         internal interface IBuildReportProvider
         {
             BuildReport GetBuildReport(BuildTarget platform);
@@ -123,30 +128,36 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var buildReport = BuildReportProvider.GetBuildReport(projectAuditorParams.Platform);
             if (buildReport != null)
             {
+                var context = new BuildAnalysisContext()
+                {
+                    Report = buildReport
+                };
+
                 projectAuditorParams.OnIncomingIssues(new[]
                 {
-                    NewMetaData(k_KeyBuildPath, buildReport.summary.outputPath),
-                    NewMetaData(k_KeyPlatform, buildReport.summary.platform),
-                    NewMetaData(k_KeyResult, buildReport.summary.result),
-                    NewMetaData(k_KeyStartTime, Formatting.FormatDateTime(buildReport.summary.buildStartedAt)),
-                    NewMetaData(k_KeyEndTime, Formatting.FormatDateTime(buildReport.summary.buildEndedAt)),
-                    NewMetaData(k_KeyTotalTime, Formatting.FormatDuration(buildReport.summary.totalTime)),
-                    NewMetaData(k_KeyTotalSize, Formatting.FormatSize(buildReport.summary.totalSize)),
+                    NewMetaData(context, k_KeyBuildPath, buildReport.summary.outputPath),
+                    NewMetaData(context, k_KeyPlatform, buildReport.summary.platform),
+                    NewMetaData(context, k_KeyResult, buildReport.summary.result),
+                    NewMetaData(context, k_KeyStartTime, Formatting.FormatDateTime(buildReport.summary.buildStartedAt)),
+                    NewMetaData(context, k_KeyEndTime, Formatting.FormatDateTime(buildReport.summary.buildEndedAt)),
+                    NewMetaData(context, k_KeyTotalTime, Formatting.FormatDuration(buildReport.summary.totalTime)),
+                    NewMetaData(context, k_KeyTotalSize, Formatting.FormatSize(buildReport.summary.totalSize)),
                 });
-                projectAuditorParams.OnIncomingIssues(AnalyzeBuildSteps(buildReport));
-                projectAuditorParams.OnIncomingIssues(AnalyzePackedAssets(buildReport));
+
+                projectAuditorParams.OnIncomingIssues(AnalyzeBuildSteps(context));
+                projectAuditorParams.OnIncomingIssues(AnalyzePackedAssets(context));
             }
 #endif
             projectAuditorParams.OnModuleCompleted?.Invoke();
         }
 
 #if BUILD_REPORT_API_SUPPORT
-        IEnumerable<ProjectIssue> AnalyzeBuildSteps(BuildReport buildReport)
+        IEnumerable<ProjectIssue> AnalyzeBuildSteps(BuildAnalysisContext context)
         {
-            foreach (var step in buildReport.steps)
+            foreach (var step in context.Report.steps)
             {
                 var depth = step.depth;
-                yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.BuildStep, step.name)
+                yield return context.CreateWithoutDiagnostic(IssueCategory.BuildStep, step.name)
                     .WithCustomProperties(new object[(int)BuildReportStepProperty.Num]
                     {
                         Formatting.FormatDuration(step.duration),
@@ -159,7 +170,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 {
                     var logMessage = message.content;
                     var description = new StringReader(logMessage).ReadLine(); // only take first line
-                    yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.BuildStep, description)
+                    yield return context.CreateWithoutDiagnostic(IssueCategory.BuildStep, description)
                         .WithCustomProperties(new object[(int)BuildReportStepProperty.Num]
                         {
                             0,
@@ -171,11 +182,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         }
 
-        IEnumerable<ProjectIssue> AnalyzePackedAssets(BuildReport buildReport)
+        IEnumerable<ProjectIssue> AnalyzePackedAssets(BuildAnalysisContext context)
         {
-            var dataSize = buildReport.packedAssets.SelectMany(p => p.contents).Sum(c => (long)c.packedSize);
+            var dataSize = context.Report.packedAssets.SelectMany(p => p.contents).Sum(c => (long)c.packedSize);
 
-            foreach (var packedAsset in buildReport.packedAssets)
+            foreach (var packedAsset in context.Report.packedAssets)
             {
                 // note that there can be several entries for each source asset (for example, a prefab can reference a Texture, a Material and a shader)
                 foreach (var content in packedAsset.contents)
@@ -185,7 +196,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     var assetImporter = AssetImporter.GetAtPath(assetPath);
                     var description = string.IsNullOrEmpty(assetPath) ? k_Unknown : Path.GetFileNameWithoutExtension(assetPath);
 
-                    yield return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.BuildFile, description)
+                    yield return context.CreateWithoutDiagnostic(IssueCategory.BuildFile, description)
                         .WithLocation(assetPath)
                         .WithCustomProperties(new object[(int)BuildReportFileProperty.Num]
                         {
@@ -199,9 +210,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         }
 
-        ProjectIssue NewMetaData(string key, object value)
+        ProjectIssue NewMetaData(BuildAnalysisContext context, string key, object value)
         {
-            return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.BuildSummary, key)
+            return context.CreateWithoutDiagnostic(IssueCategory.BuildSummary, key)
                 .WithCustomProperties(new object[(int)BuildReportMetaData.Num] { value });
         }
 

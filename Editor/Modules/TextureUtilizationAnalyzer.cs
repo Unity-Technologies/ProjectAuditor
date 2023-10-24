@@ -50,9 +50,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "Texture Atlas '{0}' has too much empty space ({1})"
         };
 
-        int m_TextureSizeLimit;
-        int m_SpriteAtlasEmptySpaceLimit;
-
         public void Initialize(ProjectAuditorModule module)
         {
             module.RegisterDescriptor(k_TextureSolidColorDescriptor);
@@ -60,19 +57,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_TextureAtlasEmptyDescriptor);
         }
 
-        public void PrepareForAnalysis(ProjectAuditorParams projectAuditorParams)
-        {
-            var rules = projectAuditorParams.Rules;
-            m_TextureSizeLimit = rules.GetParameter("TextureSizeLimit", 2048);
-            m_SpriteAtlasEmptySpaceLimit = rules.GetParameter("SpriteAtlasEmptySpaceLimit", 50);
-        }
-
         public IEnumerable<ProjectIssue> Analyze(TextureAnalysisContext context)
         {
             if (TextureUtils.IsTextureSolidColorTooBig(context.Importer, context.Texture))
             {
                 var dimensionAppropriateDescriptor = context.Texture.dimension == UnityEngine.Rendering.TextureDimension.Tex2D ? k_TextureSolidColorDescriptor : k_TextureSolidColorNoFixerDescriptor;
-                yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, dimensionAppropriateDescriptor.id, context.Name)
+                yield return context.Create(IssueCategory.AssetDiagnostic, dimensionAppropriateDescriptor.id, context.Name)
                     .WithLocation(context.Importer.assetPath);
             }
 
@@ -80,9 +70,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (texture2D != null)
             {
                 var emptyPercent = TextureUtils.GetEmptyPixelsPercent(texture2D);
-                if (emptyPercent > m_SpriteAtlasEmptySpaceLimit)
+                if (emptyPercent > context.SpriteAtlasEmptySpaceLimit)
                 {
-                    yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureAtlasEmptyDescriptor.id, context.Name, Formatting.FormatPercentage(emptyPercent / 100.0f))
+                    yield return context.Create(IssueCategory.AssetDiagnostic, k_TextureAtlasEmptyDescriptor.id, context.Name, Formatting.FormatPercentage(emptyPercent / 100.0f))
                         .WithLocation(context.Importer.assetPath);
                 }
             }

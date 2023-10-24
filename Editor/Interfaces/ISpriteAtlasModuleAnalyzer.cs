@@ -4,11 +4,14 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Interfaces
 {
+    internal class SpriteAtlasAnalysisContext : AnalysisContext
+    {
+        public string AssetPath;
+        public int SpriteAtlasEmptySpaceLimit;
+    }
+
     internal interface ISpriteAtlasModuleAnalyzer : IModuleAnalyzer
     {
-        void PrepareForAnalysis(ProjectAuditorParams projectAuditorParams);
-        
-        IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams,
-            string assetPath);
+        IEnumerable<ProjectIssue> Analyze(SpriteAtlasAnalysisContext context);
     }
 }

@@ -24,17 +24,17 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
         {
         }
 
-        public IssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
+        public IssueBuilder Analyze(InstructionAnalysisContext context)
         {
-            return AnalyzeType(inst.OpCode == OpCodes.Newobj ? ((MethodReference)inst.Operand).DeclaringType : (TypeReference)inst.Operand);
+            return AnalyzeType(context, context.Instruction.OpCode == OpCodes.Newobj ? ((MethodReference)context.Instruction.Operand).DeclaringType : (TypeReference)context.Instruction.Operand);
         }
 
-        IssueBuilder AnalyzeType(TypeReference typeReference)
+        IssueBuilder AnalyzeType(InstructionAnalysisContext context, TypeReference typeReference)
         {
             if (!typeReference.IsGenericInstance)
                 return null;
 
-            return ProjectIssue.CreateWithoutDiagnostic(IssueCategory.GenericInstance, $"'{typeReference.FullName}' generic instance");
+            return context.CreateWithoutDiagnostic(IssueCategory.GenericInstance, $"'{typeReference.FullName}' generic instance");
         }
     }
 }

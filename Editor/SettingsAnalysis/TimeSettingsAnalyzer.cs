@@ -34,13 +34,13 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_MaximumAllowedTimestepDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
+        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
             if (UnityEngine.Time.fixedDeltaTime - 0.02f < Mathf.Epsilon)
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FixedTimestepDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_FixedTimestepDescriptor.id)
                     .WithLocation("Project/Time");
             if (UnityEngine.Time.maximumDeltaTime - 0.1f < Mathf.Epsilon)
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_MaximumAllowedTimestepDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_MaximumAllowedTimestepDescriptor.id)
                     .WithLocation("Project/Time");
         }
     }

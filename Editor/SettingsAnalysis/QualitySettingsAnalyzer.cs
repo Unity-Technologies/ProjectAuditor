@@ -71,29 +71,29 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_TextureStreamingDisabledDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
+        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
             if (IsUsingDefaultSettings())
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_DefaultSettingsDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_DefaultSettingsDescriptor.id)
                     .WithLocation("Project/Quality");
             }
 
             if (IsUsingLowQualityTextures())
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_UsingLowQualityTexturesDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_UsingLowQualityTexturesDescriptor.id)
                     .WithLocation("Project/Quality");
             }
 
             if (IsDefaultAsyncUploadTimeSlice())
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_DefaultAsyncUploadTimeSliceDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_DefaultAsyncUploadTimeSliceDescriptor.id)
                     .WithLocation("Project/Quality");
             }
 
             if (IsDefaultAsyncUploadBufferSize())
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_DefaultAsyncUploadBufferSizeSliceDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_DefaultAsyncUploadBufferSizeSliceDescriptor.id)
                     .WithLocation("Project/Quality");
             }
 
@@ -103,7 +103,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 foreach (var levelIndex in qualityLevels)
                 {
                     var levelName = QualitySettings.names[levelIndex];
-                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_TextureStreamingDisabledDescriptor.id, levelName)
+                    yield return context.Create(IssueCategory.ProjectSetting, k_TextureStreamingDisabledDescriptor.id, levelName)
                         .WithCustomProperties(new object[] {levelIndex})
                         .WithLocation("Project/Quality/" + levelName);
                 }

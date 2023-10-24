@@ -57,7 +57,10 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             Area.GPU,
             "The <b>Stop NaNs</b> property is enabled on a Camera component. This stops certain effects from breaking, but is a resource-intensive process on the GPU. Only enable this feature if you experience NaN issues that you cannot fix.",
             "Disable <b>Stop NaNs</b> on as Camera components as you can."
-        );
+        )
+        {
+            platforms = new[] { "Android", "iOS", "Switch" }
+        };
 
         public void Initialize(ProjectAuditorModule module)
         {
@@ -67,29 +70,29 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_CameraStopNanDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
+        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
 #if UNITY_2019_3_OR_NEWER && PACKAGE_URP
             var renderPipeline = GraphicsSettings.currentRenderPipeline;
             if (renderPipeline == null || !(renderPipeline is UniversalRenderPipelineAsset))
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_URPAssetDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_URPAssetDescriptor.id)
                     .WithLocation("Project/Graphics");
             }
-            else
-            {
-#if UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH
-                foreach (var analyzeSrpAsset in RenderPipelineUtils.AnalyzeAssets(projectAuditorParams, Analyze)) yield return analyzeSrpAsset;
 
-                var allCameraData = RenderPipelineUtils
-                    .GetAllComponents<UniversalAdditionalCameraData>();
-                foreach (var cameraData in allCameraData)
-                {
-                    if (cameraData.stopNaN)
-                        yield return ProjectIssue.Create(IssueCategory.ProjectSetting,
-                            k_CameraStopNanDescriptor.id);
-                }
-#endif
+            foreach (var analyzeSrpAsset in RenderPipelineUtils.AnalyzeAssets(context, Analyze))
+                yield return analyzeSrpAsset;
+
+            if (!k_CameraStopNanDescriptor.IsApplicable(context.Params))
+                yield break;
+
+            var allCameraData = RenderPipelineUtils
+                .GetAllComponents<UniversalAdditionalCameraData>();
+            foreach (var cameraData in allCameraData)
+            {
+                if (cameraData.stopNaN)
+                    yield return context.Create(IssueCategory.ProjectSetting,
+                        k_CameraStopNanDescriptor.id);
             }
 #else
             yield break;
@@ -103,7 +106,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 #endif
         }
 
-        private static void FixMsaaSampleCountSetting(ProjectIssue issue)
+        static void FixMsaaSampleCountSetting(ProjectIssue issue)
         {
 #if UNITY_2019_3_OR_NEWER && PACKAGE_URP
             RenderPipelineUtils.FixAssetSetting(issue, p => SetMsaaSampleCountSetting(p, 2));
@@ -111,18 +114,18 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         }
 
 #if UNITY_2019_3_OR_NEWER
-        private IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, RenderPipelineAsset renderPipeline, int qualityLevel)
+        IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context, RenderPipelineAsset renderPipeline, int qualityLevel)
         {
 #if PACKAGE_URP
-            if (k_HdrSettingDescriptor.IsApplicable(projectAuditorParams) && GetHdrSetting(renderPipeline))
+            if (k_HdrSettingDescriptor.IsApplicable(context.Params) && GetHdrSetting(renderPipeline))
             {
-                yield return RenderPipelineUtils.CreateAssetSettingIssue(qualityLevel, renderPipeline.name,
+                yield return RenderPipelineUtils.CreateAssetSettingIssue(context, qualityLevel, renderPipeline.name,
                     k_HdrSettingDescriptor.id);
             }
 
-            if (k_MsaaSampleCountSettingDescriptor.IsApplicable(projectAuditorParams) && GetMsaaSampleCountSetting(renderPipeline) >= 4)
+            if (k_MsaaSampleCountSettingDescriptor.IsApplicable(context.Params) && GetMsaaSampleCountSetting(renderPipeline) >= 4)
             {
-                yield return RenderPipelineUtils.CreateAssetSettingIssue(qualityLevel, renderPipeline.name,
+                yield return RenderPipelineUtils.CreateAssetSettingIssue(context, qualityLevel, renderPipeline.name,
                     k_MsaaSampleCountSettingDescriptor.id);
             }
 #else

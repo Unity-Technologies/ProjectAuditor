@@ -35,10 +35,10 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_SRPBatcherSettingDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
+        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
 #if UNITY_2019_3_OR_NEWER
-            return RenderPipelineUtils.AnalyzeAssets(projectAuditorParams, Analyze);
+            return RenderPipelineUtils.AnalyzeAssets(context, Analyze);
 #else
             yield break;
 #endif
@@ -52,18 +52,18 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         }
 
 #if UNITY_2019_3_OR_NEWER
-        IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, RenderPipelineAsset renderPipeline, int qualityLevel)
+        IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context, RenderPipelineAsset renderPipeline, int qualityLevel)
         {
             bool? srpBatcherSetting = GetSrpBatcherSetting(renderPipeline);
             if (srpBatcherSetting != null && !srpBatcherSetting.Value)
             {
-                yield return CreateSrpBatcherIssue(qualityLevel, renderPipeline.name);
+                yield return CreateSrpBatcherIssue(context, qualityLevel, renderPipeline.name);
             }
         }
 
-        static ProjectIssue CreateSrpBatcherIssue(int qualityLevel, string name)
+        static ProjectIssue CreateSrpBatcherIssue(AnalysisContext context, int qualityLevel, string name)
         {
-            return RenderPipelineUtils.CreateAssetSettingIssue(qualityLevel, name, k_SRPBatcherSettingDescriptor.id);
+            return RenderPipelineUtils.CreateAssetSettingIssue(context, qualityLevel, name, k_SRPBatcherSettingDescriptor.id);
         }
 
         internal static bool? GetSrpBatcherSetting(RenderPipelineAsset renderPipeline)

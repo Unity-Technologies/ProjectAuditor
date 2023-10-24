@@ -7,10 +7,6 @@ using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
-using Unity.ProjectAuditor.Editor.Modules;
-using Unity.ProjectAuditor.Editor.Utils;
-using UnityEditor;
-using UnityEngine;
 using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
@@ -54,9 +50,9 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             m_NamespaceOrClassDescriptors = descriptors.Where(descriptor => descriptor.method.Equals("*")).ToDictionary(d => d.type);
         }
 
-        public IssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
+        public IssueBuilder Analyze(InstructionAnalysisContext context)
         {
-            var callee = (MethodReference)inst.Operand;
+            var callee = (MethodReference)context.Instruction.Operand;
             var description = string.Empty;
             var methodName = callee.Name;
 
@@ -99,7 +95,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 }
             }
 
-            return ProjectIssue.Create(IssueCategory.Code, descriptor.id)
+            return context.Create(IssueCategory.Code, descriptor.id)
                 .WithDescription(description);
         }
     }
