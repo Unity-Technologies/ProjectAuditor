@@ -139,7 +139,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             m_TextureStreamingMipmapsSizeLimit = rules.GetParameter("TextureStreamingMipmapsSizeLimit", 4000);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, TextureAnalysisContext context)
+        public IEnumerable<ProjectIssue> Analyze(TextureAnalysisContext context)
         {
             var assetPath = context.Importer.assetPath;
 
@@ -202,7 +202,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithLocation(context.Importer.assetPath);
             }
 
-            if (k_TextureAnisotropicLevelDescriptor.IsApplicable(projectAuditorParams) &&
+            if (k_TextureAnisotropicLevelDescriptor.IsApplicable(context.Params) &&
                 context.Importer.mipmapEnabled && context.Importer.filterMode != FilterMode.Point && context.Importer.anisoLevel > 1)
             {
                 yield return ProjectIssue.Create(IssueCategory.AssetDiagnostic, k_TextureAnisotropicLevelDescriptor.id, context.Name, context.Importer.anisoLevel)

@@ -8,6 +8,7 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
 {
     internal class TextureAnalysisContext
     {
+        public ProjectAuditorParams Params; // TODO: Remove this, it's going to land in the base class.
         public string Name;
         public Texture Texture;
         public TextureImporter Importer;
@@ -18,6 +19,6 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
     {
         void PrepareForAnalysis(ProjectAuditorParams projectAuditorParams);
 
-        IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams, TextureAnalysisContext context);
+        IEnumerable<ProjectIssue> Analyze(TextureAnalysisContext context);
     }
 }

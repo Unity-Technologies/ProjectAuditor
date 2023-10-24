@@ -78,7 +78,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 {
                     Importer = textureImporter,
                     ImporterPlatformSettings = textureImporter.GetPlatformTextureSettings(currentPlatformString),
-                    Texture = AssetDatabase.LoadAssetAtPath<Texture>(assetPath)
+                    Texture = AssetDatabase.LoadAssetAtPath<Texture>(assetPath),
+                    Params = projectAuditorParams
                 };
 
                 if (string.IsNullOrEmpty(context.Texture.name))
@@ -88,7 +89,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var analyzer in analyzers)
                 {
-                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(projectAuditorParams, context));
+                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(context));
                 }
 
                 progress?.Advance();
