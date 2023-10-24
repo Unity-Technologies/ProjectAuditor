@@ -151,8 +151,6 @@ namespace Unity.ProjectAuditor.Editor
             if (!BuildPipeline.IsBuildTargetSupported(BuildPipeline.GetBuildTargetGroup(platform), platform))
             {
                 // Error and early out if the user has request analysis of a platform which the Unity Editor doesn't have installed support for
-                Debug.LogError($"Build target {platform.ToString()} is not supported in this Unity Editor");
-                projectAuditorParams.OnCompleted(report);
                 Debug.LogError($"Build target {platform} is not supported in this Unity Editor");
                 projectAuditorParams.OnCompleted(report);
                 return;
@@ -160,14 +158,6 @@ namespace Unity.ProjectAuditor.Editor
 
             var requestedModules = categories.SelectMany(GetModules).Distinct().ToArray();
             var supportedModules = requestedModules.Where(m => m != null && m.isSupported && CoreUtils.SupportsPlatform(m.GetType(), projectAuditorParams.Platform)).ToArray();
-
-            if (projectAuditorParams.Categories != null)
-            {
-                foreach (var category in projectAuditorParams.Categories)
-                {
-                    report.ClearIssues(category);
-                }
-            }
 
             var numModules = supportedModules.Length;
             if (numModules == 0)
