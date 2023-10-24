@@ -33,8 +33,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Visualization of the Horizontal Stacked Bar and Legend Item
 * Improved AudioClip asset table
 * Clear table selection on unmuting issues
-* Move ProjectAuditorConfig fields to UserPreferences
+* Move some data that should be user-configurable to UserPreferences
 * ProjectReport serialization files changed so that saved JSON is <= half the size it was before
+* Reworked ProjectAuditor configuration: ProjectAuditorConfig and ProjectAuditorDiagnosticParams have been replaced with ProjectAuditorRules, a file which you can commit to version control alongside your project for persistent configuration options. Per-analysis configuration (including which ProjectAuditorRules instance to refer to) all lives in ProejctAuditorParams, as before.
 
 ### Removed
 * Actions section and Mute/Unmute buttons
