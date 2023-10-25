@@ -1,24 +1,35 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.SettingsAnalysis;
 using Unity.ProjectAuditor.Editor.Tests.Common;
 using Unity.ProjectAuditor.Editor.Utils;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.TestTools;
+using Random = UnityEngine.Random;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
     [Serializable]
     class RuleTests : TestFixtureBase
     {
-        TestAsset m_TestAsset;
+        private const string k_RulesAssetName = "TestRules";
+        private const string k_TestParamName = "TestParameter";
+        const string k_TextureName = "RuleTestTexture";
+        const int k_TestTextureResolution = 64;
+
+        TestAsset m_TestScriptAsset;
+        TestAsset m_TestTextureAsset;
+        TestAsset m_TestRulesAsset;
 
         [SerializeField]
         ProjectAuditorRules m_SerializedRules;
@@ -28,11 +39,29 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_TestAsset = new TestAsset("MyClass.cs",
+            m_TestScriptAsset = new TestAsset("MyClass.cs",
                 "using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(Camera.allCameras.Length.ToString()); } }");
 
             m_Rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
             m_Rules.Initialize();
+            m_Rules.SetAnalysisPlatform(m_Platform);
+            m_Rules.SetParameter("Default", "TestParameter", 42);
+            m_TestRulesAsset = TestAsset.Save(m_Rules, k_RulesAssetName + ".asset");
+
+            var texture = new Texture2D(k_TestTextureResolution, k_TestTextureResolution);
+            texture.SetPixel(0, 0, Random.ColorHSV());
+            texture.name = k_TextureName;
+            texture.Apply();
+            m_TestTextureAsset = new TestAsset(k_TextureName + ".png", texture.EncodeToPNG());
+
+            var importer =
+                AssetImporter.GetAtPath(m_TestTextureAsset.relativePath) as TextureImporter;
+            importer.mipmapEnabled = true;
+            importer.streamingMipmaps = false;
+            //Size should not be compressed for testing purposes.
+            //If compressed, it won't trigger a warning, as size will be below the minimal size
+            importer.textureCompression = TextureImporterCompression.Uncompressed;
+            importer.SaveAndReimport();
         }
 
 #if UNITY_2019_4_OR_NEWER
@@ -64,7 +93,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Rule_MutedIssue_IsNotReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAsset);
+            var issues = AnalyzeAndFindAssetIssues(m_TestScriptAsset);
 
             var allCamerasIssues = issues.Where(i => i.id == "PAC0066").ToArray();
 
@@ -109,7 +138,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(1, m_SerializedRules.NumRules);
 
             // retry after domain reload
-            var issues = AnalyzeAndFindAssetIssues(m_TestAsset);
+            var issues = AnalyzeAndFindAssetIssues(m_TestScriptAsset);
 
             var allCamerasIssues = issues.Where(i => i.id.Equals("PAC0066")).ToArray();
 
@@ -236,6 +265,66 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.AreNotEqual(Severity.None, m_Rules.GetAction(descriptorId));
             Assert.AreEqual(Severity.None, m_Rules.GetAction(descriptorId, filter));
+        }
+
+        [Test]
+        public void Rule_CanCreateCustomRulesAndEditParams()
+        {
+            ValidateTargetPlatform();
+
+            var rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
+            rules.Initialize();
+            rules.SetAnalysisPlatform(m_Platform);
+
+            var paramVal = rules.GetParameter("TextureStreamingMipmapsSizeLimit", 4000);
+            Assert.AreEqual(paramVal, 4000);
+
+            rules.SetParameter("Default", "TextureStreamingMipmapsSizeLimit", 32);
+            paramVal = rules.GetParameter("TextureStreamingMipmapsSizeLimit", 4000);
+            Assert.AreEqual(paramVal, 32);
+
+            rules.SetParameter(m_Platform.ToString(), "TextureStreamingMipmapsSizeLimit", 64);
+            paramVal = rules.GetParameter("TextureStreamingMipmapsSizeLimit", 4000);
+            Assert.AreEqual(paramVal, 64);
+        }
+
+        [Test]
+        public void Rule_CustomRulesImpactReports()
+        {
+            ValidateTargetPlatform();
+
+            var rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
+            rules.Initialize();
+            rules.SetAnalysisPlatform(m_Platform);
+
+            var projectAuditorParams = new ProjectAuditorParams
+            {
+                Categories = new[] { IssueCategory.AssetDiagnostic },
+                Rules = rules
+            };
+
+            var projectAuditor = new Editor.ProjectAuditor();
+            var report = projectAuditor.Audit(projectAuditorParams);
+            var foundIssues = report.GetAllIssues().Where(i => i.relativePath.Equals(m_TestTextureAsset.relativePath));
+
+            Assert.NotNull(foundIssues);
+            Assert.Null(foundIssues.FirstOrDefault(i => i.id.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor.id)));
+
+            // Texture would normally be too small to trigger this diagnostic, unless we specify a custom smaller limit
+            rules.SetParameter("Default", "TextureStreamingMipmapsSizeLimit", 32);
+            report = projectAuditor.Audit(projectAuditorParams);
+            foundIssues = report.GetAllIssues().Where(i => i.relativePath.Equals(m_TestTextureAsset.relativePath));
+
+            Assert.NotNull(foundIssues);
+            Assert.NotNull(foundIssues.FirstOrDefault(i => i.id.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor.id)));
+        }
+
+        [Test]
+        public void Rule_LoadCustomRulesFromPath()
+        {
+            var projectAuditorParams = new ProjectAuditorParams(m_Platform, m_TestRulesAsset.relativePath);
+            var testParamValue = projectAuditorParams.Rules.GetParameter(k_TestParamName, 0);
+            Assert.AreEqual(testParamValue, 42);
         }
     }
 }

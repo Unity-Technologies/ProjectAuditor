@@ -204,8 +204,9 @@ namespace Unity.ProjectAuditor.Editor
                 }
             }
 
-            // Just go with the default, then
-            CurrentParamsIndex = 0;
+            // We didn't find this platform in the platform stack yet, so let's create it.
+            m_ParamsStack.Add(new DiagnosticParams(platformString));
+            CurrentParamsIndex = m_ParamsStack.Count - 1;
         }
 
         public int GetParameter(string paramName, int defaultValue)
@@ -232,6 +233,26 @@ namespace Unity.ProjectAuditor.Editor
             m_ParamsStack[0].SetParameter(paramName, defaultValue);
             return defaultValue;
         }
-        
+
+        public void SetParameter(string platform, string paramName, int value)
+        {
+            if (m_ParamsStack.Count == 0)
+            {
+                Debug.LogError("Uninitialized ProjectAuditorRules. Find out how this one was created and why it wasn't initialized.");
+            }
+
+            foreach(var platformParams in m_ParamsStack)
+            {
+                if (platformParams.Platform == platform)
+                {
+                    platformParams.SetParameter(paramName, value);
+                    return;
+                }
+            }
+
+            var newParams = new DiagnosticParams(platform);
+            newParams.SetParameter(paramName, value);
+            m_ParamsStack.Add(newParams);
+        }
     }
 }

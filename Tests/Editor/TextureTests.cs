@@ -28,6 +28,7 @@ namespace Unity.ProjectAuditor.EditorTests
         const string k_TextureNameEmptySpace = k_TextureName + "EmptySpace";
 
         const int k_Resolution = 1;
+        const int k_LargeSize = 4050;
 
         TestAsset m_TestTexture;
         TestAsset m_TestTextureMipMapDefault;
@@ -89,9 +90,7 @@ namespace Unity.ProjectAuditor.EditorTests
             textureImporter.isReadable = true;
             textureImporter.SaveAndReimport();
 
-            var projectAuditorParams = new ProjectAuditorParams();
-            var largeSize = projectAuditorParams.Rules.GetParameter("TextureStreamingMipmapsSizeLimit", 4000) + 50;
-            var largeTexture = new Texture2D(largeSize, largeSize);
+            var largeTexture = new Texture2D(k_LargeSize, k_LargeSize);
             largeTexture.SetPixel(0, 0, Random.ColorHSV());
             largeTexture.name = k_TextureNameStreamingMipmapDisabled;
             largeTexture.Apply();
