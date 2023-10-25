@@ -57,7 +57,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
             var assetPaths = GetAssetPathsByFilter("t:texture, a:assets");
-            var currentPlatformString = projectAuditorParams.PlatformString;
 
             progress?.Start("Finding Textures", "Search in Progress...", assetPaths.Length);
 
@@ -78,10 +77,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var context = new TextureAnalysisContext
                 {
                     Importer = textureImporter,
-                    ImporterPlatformSettings = textureImporter.GetPlatformTextureSettings(currentPlatformString),
+                    ImporterPlatformSettings = textureImporter.GetPlatformTextureSettings(projectAuditorParams.PlatformString),
                     Texture = AssetDatabase.LoadAssetAtPath<Texture>(assetPath),
                     Params = projectAuditorParams,
-                    PlatformString = platformString,
                     TextureStreamingMipmapsSizeLimit = textureStreamingMipmapsSizeLimit,
                     TextureSizeLimit = textureSizeLimit,
                     SpriteAtlasEmptySpaceLimit = spriteAtlasEmptySpaceLimit

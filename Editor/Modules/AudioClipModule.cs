@@ -78,7 +78,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 {
                     Importer = audioImporter,
                     Params = projectAuditorParams,
-                    PlatformString = projectAuditorParams.Platform.ToString(),
                     StreamingClipThresholdBytes = rules.GetParameter("StreamingClipThresholdBytes", 1 * (64000 + (int)(1.6 * 48000 * 2)) + 694),
                     LongDecompressedClipThresholdBytes = rules.GetParameter("LongDecompressedClipThresholdBytes", 200 * 1024),
                     LongCompressedMobileClipThresholdBytes = rules.GetParameter("LongCompressedMobileClipThresholdBytes", 200 * 1024),

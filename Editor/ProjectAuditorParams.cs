@@ -15,17 +15,32 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public IssueCategory[] Categories;
 
+        BuildTarget m_Platform;
+        string m_PlatformString;
+
         /// <summary>
         /// Analysis platform. The default platform is the currently active build target.
         /// </summary>
         [JsonIgnore]
-        public BuildTarget Platform;
+        public BuildTarget Platform
+        {
+            get => m_Platform;
+            set
+            {
+                m_Platform = value;
+                m_PlatformString = m_Platform.ToString();
+            }
+        }
 
         [JsonProperty("Platform")]
         public string PlatformString
         {
-            get => Platform.ToString();
-            set => Platform = (BuildTarget)Enum.Parse(typeof(BuildTarget), value);
+            get => m_PlatformString;
+            set
+            {
+                m_PlatformString = value;
+                m_Platform = (BuildTarget)Enum.Parse(typeof(BuildTarget), m_PlatformString);
+            }
         }
 
         /// <summary>

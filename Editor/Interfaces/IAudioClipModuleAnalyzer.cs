@@ -9,7 +9,6 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
     internal class AudioClipAnalysisContext : AnalysisContext
     {
         public AudioImporter Importer;
-        public string PlatformString;
         public int StreamingClipThresholdBytes;
         public int LongDecompressedClipThresholdBytes;
         public int LongCompressedMobileClipThresholdBytes;

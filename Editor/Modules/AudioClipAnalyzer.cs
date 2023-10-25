@@ -264,7 +264,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public IEnumerable<ProjectIssue> Analyze(AudioClipAnalysisContext context)
         {
             var assetPath = context.Importer.assetPath;
-            s_PlatformString = context.PlatformString;
+            s_PlatformString = context.Params.PlatformString;
 
             var sampleSettings = context.Importer.GetOverrideSampleSettings(s_PlatformString);
             var audioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(assetPath);
