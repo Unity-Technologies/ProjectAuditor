@@ -215,6 +215,9 @@ namespace Unity.ProjectAuditor.Editor
                 }
             }
 
+            // Save any new DiagnosticParams that may have been declared by previously-unseen modules during analysis
+            projectAuditorParams.Rules.Save();
+
             if (logTimingsInfo)
                 Debug.Log("Project Auditor time to interactive: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
         }

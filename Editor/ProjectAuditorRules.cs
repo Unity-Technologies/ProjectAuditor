@@ -121,20 +121,21 @@ namespace Unity.ProjectAuditor.Editor
             // TODO: string-keyed Dictionary again. Aargh.
             Dictionary<string, int> m_Params;
 
+            // Can't use KeyValuePair<string, int> because Unity won't serialize generic types. So we'll make a concrete type.
             [Serializable]
-            internal struct KeyValuePair
+            internal struct ParamKeyValue
             {
                 public string Key;
                 public int Value;
 
-                public KeyValuePair(string key, int value)
+                public ParamKeyValue(string key, int value)
                 {
                     Key = key;
                     Value = value;
                 }
             }
 
-            [SerializeField] internal List<KeyValuePair> m_SerializedParams;
+            [SerializeField] List<ParamKeyValue> m_SerializedParams;
 
             public DiagnosticParams()
             {
@@ -157,21 +158,25 @@ namespace Unity.ProjectAuditor.Editor
 
             public void OnBeforeSerialize()
             {
-                m_SerializedParams = new List<KeyValuePair>();
+                m_SerializedParams = new List<ParamKeyValue>();
                 foreach (var key in m_Params.Keys)
                 {
-                    m_SerializedParams.Add(new KeyValuePair(key, m_Params[key]));
+                    m_SerializedParams.Add(new ParamKeyValue(key, m_Params[key]));
                 }
             }
 
             public void OnAfterDeserialize()
             {
-                m_Params.Clear();
-                foreach (var kvp in m_SerializedParams)
+                if (m_SerializedParams != null)
                 {
-                    m_Params[kvp.Key] = kvp.Value;
+                    m_Params.Clear();
+                    foreach (var kvp in m_SerializedParams)
+                    {
+                        m_Params[kvp.Key] = kvp.Value;
+                    }
+
+                    m_SerializedParams = null;
                 }
-                m_SerializedParams = null;
             }
         }
 
@@ -189,6 +194,8 @@ namespace Unity.ProjectAuditor.Editor
             {
                 m_ParamsStack.Add(new DiagnosticParams("Default"));
             }
+
+            EditorUtility.SetDirty(this);
         }
 
         public void SetAnalysisPlatform(BuildTarget platform)
@@ -207,6 +214,8 @@ namespace Unity.ProjectAuditor.Editor
             // We didn't find this platform in the platform stack yet, so let's create it.
             m_ParamsStack.Add(new DiagnosticParams(platformString));
             CurrentParamsIndex = m_ParamsStack.Count - 1;
+
+            EditorUtility.SetDirty(this);
         }
 
         public int GetParameter(string paramName, int defaultValue)
@@ -231,6 +240,7 @@ namespace Unity.ProjectAuditor.Editor
 
             // We didn't find the parameter in the rules. That's okay, just means we need to register it and set the default value
             m_ParamsStack[0].SetParameter(paramName, defaultValue);
+            EditorUtility.SetDirty(this);
             return defaultValue;
         }
 
@@ -246,6 +256,7 @@ namespace Unity.ProjectAuditor.Editor
                 if (platformParams.Platform == platform)
                 {
                     platformParams.SetParameter(paramName, value);
+                    EditorUtility.SetDirty(this);
                     return;
                 }
             }
@@ -253,6 +264,16 @@ namespace Unity.ProjectAuditor.Editor
             var newParams = new DiagnosticParams(platform);
             newParams.SetParameter(paramName, value);
             m_ParamsStack.Add(newParams);
+            EditorUtility.SetDirty(this);
+        }
+
+        public void Save()
+        {
+            for(int i = 0; i < m_ParamsStack.Count; ++i)
+            {
+                m_ParamsStack[i].OnBeforeSerialize();
+            }
+            AssetDatabase.SaveAssetIfDirty(this);
         }
     }
 }
