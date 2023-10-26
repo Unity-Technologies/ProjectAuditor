@@ -45,8 +45,14 @@ namespace Unity.ProjectAuditor.EditorTests
             m_Rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
             m_Rules.Initialize();
             m_Rules.SetAnalysisPlatform(m_Platform);
-            m_Rules.SetParameter("Default", "TestParameter", 42);
-            m_TestRulesAsset = TestAsset.Save(m_Rules, k_RulesAssetName + ".asset");
+
+            // Need a saved rules asset for Rule_LoadCustomRulesFromPath, but if we just save m_Rules it messes up
+            // how it behaves during the domain reload tests. So let's save a different asset instead.
+            var savedRules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
+            savedRules.Initialize();
+            savedRules.SetAnalysisPlatform(m_Platform);
+            savedRules.SetParameter("Default", "TestParameter", 42);
+            m_TestRulesAsset = TestAsset.Save(savedRules, k_RulesAssetName + ".asset");
 
             var texture = new Texture2D(k_TestTextureResolution, k_TestTextureResolution);
             texture.SetPixel(0, 0, Random.ColorHSV());
