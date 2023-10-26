@@ -5,7 +5,7 @@ pack:
     image: package-ci/win10:stable
     flavor: b1.large
   commands:
-    - unity-downloader-cli -u 2018.4 -c editor --path .Editor --wait
+    - unity-downloader-cli -u 2018.4 -c editor --path .Editor --wait --fast
     - .\.Editor\Unity.exe -quit -batchmode -createProject "temp/project"
     - mkdir temp\project\Assets\Editor
     - copy Editor\Internal\* temp\project\Assets\Editor

@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "Player: Engine Code Stripping is disabled",
             Area.BuildSize,
             "The <b>Strip Engine Code</b> is option in Player Settings is disabled. The generated build will be larger than necessary.",
-            "Enable <b>Strip Engine Code</b> in <b>Player Settings ➔ Other Settings ➔ Optimization</b>.")
+            "Enable <b>Strip Engine Code</b> in <b>Project Settings > Player > Other Settings > Optimization</b>.")
         {
             platforms = new string[] { BuildTarget.Android.ToString(), BuildTarget.iOS.ToString(), BuildTarget.WebGL.ToString() }
         };

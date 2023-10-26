@@ -3,7 +3,7 @@
 This guide provides a brief overview on how to use Project Auditor.
 
 ## User Interface
-To open the Project Auditor window in Unity, go to **Window ➔ Analysis ➔ Project Auditor**.
+To open the Project Auditor window in Unity, go to **Window > Analysis > Project Auditor**.
 
 <img src="images/window-menu.png">
 

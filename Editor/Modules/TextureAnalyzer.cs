@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Texture: Mipmaps not enabled",
             new[] {Area.GPU, Area.Quality},
             "<b>Generate Mip Maps</b> in the Texture Import Settings is not enabled. Using textures that are not mipmapped in a 3D environment can impact rendering performance and introduce aliasing artifacts.",
-            "Consider enabling mipmaps using the <b>Advanced ➔ Generate Mip Maps</b> option in the Texture Import Settings."
+            "Consider enabling mipmaps using the <b>Advanced > Generate Mip Maps</b> option in the Texture Import Settings."
         )
         {
             messageFormat = "Texture '{0}' mipmaps generation is not enabled",
@@ -43,7 +43,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Texture: Mipmaps enabled on Sprite/UI texture",
             new[] {Area.BuildSize, Area.Quality},
             "<b>Generate Mip Maps</b> is enabled in the Texture Import Settings for a Sprite/UI texture. This might reduce rendering quality of sprites and UI.",
-            "Consider disabling mipmaps using the <b>Advanced ➔ Generate Mip Maps</b> option in the texture inspector. This will also reduce your build size."
+            "Consider disabling mipmaps using the <b>Advanced > Generate Mip Maps</b> option in the texture inspector. This will also reduce your build size."
         )
         {
             messageFormat = "Texture '{0}' mipmaps generation is enabled",

@@ -29,7 +29,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "Physics2D: Simulation Mode is set to automatically update",
             new[] { Area.CPU },
             "<b>Simulation Mode</b> in Physics2D Settings is set to either <b>FixedUpdate</b> or <b>Update</b>. As a result, 2D physics simulation is executed on every update which might be expensive for some projects.",
-            "Change <b>Physics 2D Settings ➔ Simulation Mode</b> to <b>Script</b> to disable the 2d physics processing each frame. If physics simulation is required for certain special rendering, use <b>Script</b> mode to control <b>Physics2d.Simulate</b> on a per frame basis.")
+            "Change <b>Project Settings > Physics 2D > Simulation Mode</b> to <b>Script</b> to disable the 2d physics processing each frame. If physics simulation is required for certain special rendering, use <b>Script</b> mode to control <b>Physics2d.Simulate</b> on a per frame basis.")
         {
             minimumVersion = "2020.2"
         };
