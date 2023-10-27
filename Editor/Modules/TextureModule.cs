@@ -57,9 +57,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
             var assetPaths = GetAssetPathsByFilter("t:texture, a:assets");
-            var currentPlatformString = projectAuditorParams.PlatformString;
 
             progress?.Start("Finding Textures", "Search in Progress...", assetPaths.Length);
+
+            var platformString = projectAuditorParams.Platform.ToString();
+            var rules = projectAuditorParams.Rules;
+            var textureStreamingMipmapsSizeLimit = rules.GetParameter("TextureStreamingMipmapsSizeLimit", 4000);
+            var textureSizeLimit = rules.GetParameter("TextureSizeLimit", 2048);
+            var spriteAtlasEmptySpaceLimit = rules.GetParameter("SpriteAtlasEmptySpaceLimit", 50);
 
             foreach (var assetPath in assetPaths)
             {
@@ -72,9 +77,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var context = new TextureAnalysisContext
                 {
                     Importer = textureImporter,
-                    ImporterPlatformSettings = textureImporter.GetPlatformTextureSettings(currentPlatformString),
+                    ImporterPlatformSettings = textureImporter.GetPlatformTextureSettings(projectAuditorParams.PlatformString),
                     Texture = AssetDatabase.LoadAssetAtPath<Texture>(assetPath),
-                    Params = projectAuditorParams
+                    Params = projectAuditorParams,
+                    TextureStreamingMipmapsSizeLimit = textureStreamingMipmapsSizeLimit,
+                    TextureSizeLimit = textureSizeLimit,
+                    SpriteAtlasEmptySpaceLimit = spriteAtlasEmptySpaceLimit
                 };
 
                 if (string.IsNullOrEmpty(context.Texture.name))

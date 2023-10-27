@@ -70,8 +70,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (texture2D != null)
             {
                 var emptyPercent = TextureUtils.GetEmptyPixelsPercent(texture2D);
-                if (emptyPercent >
-                    context.Params.DiagnosticParams.SpriteAtlasEmptySpaceLimit)
+                if (emptyPercent > context.SpriteAtlasEmptySpaceLimit)
                 {
                     yield return context.Create(IssueCategory.AssetDiagnostic, k_TextureAtlasEmptyDescriptor.id, context.Name, Formatting.FormatPercentage(emptyPercent / 100.0f))
                         .WithLocation(context.Importer.assetPath);

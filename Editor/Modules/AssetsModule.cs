@@ -58,9 +58,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[] {k_IssueLayout};
 
-        public override void Initialize(ProjectAuditorConfig config)
+        public override void Initialize()
         {
-            base.Initialize(config);
+            base.Initialize();
 
             RegisterDescriptor(k_AssetInResourcesFolderDescriptor);
             RegisterDescriptor(k_StreamingAssetsFolderDescriptor);
@@ -113,8 +113,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         static void AnalyzeStreamingAssets(AnalysisContext context, IList<ProjectIssue> issues)
         {
-            var diagnosticParams = context.Params.DiagnosticParams;
-
             if (Directory.Exists("Assets/StreamingAssets"))
             {
                 long totalBytes = 0;
@@ -125,7 +123,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     totalBytes += fileInfo.Length;
                 }
 
-                if (totalBytes > diagnosticParams.StreamingAssetsFolderSizeLimit * 1024 * 1024)
+                var folderSizeLimitMB =
+                    context.Params.Rules.GetParameter("StreamingAssetsFolderSizeLimit", 50);
+
+                if (totalBytes > folderSizeLimitMB * 1024 * 1024)
                 {
                     issues.Add(
                         context.Create(IssueCategory.AssetDiagnostic, k_StreamingAssetsFolderDescriptor.id,

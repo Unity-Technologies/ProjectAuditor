@@ -22,7 +22,6 @@ namespace Unity.ProjectAuditor.Editor
         : IPreprocessBuildWithReport
     {
         internal static string s_DataPath => PackagePath + "/Data";
-        internal const string k_DefaultAssetPath = "Assets/Editor/ProjectAuditorConfig.asset";
         internal const string k_CanonicalPackagePath = "Packages/" + k_PackageName;
 
         internal const string k_PackageName = "com.unity.project-auditor";
@@ -61,63 +60,13 @@ namespace Unity.ProjectAuditor.Editor
         static readonly Dictionary<string, IssueCategory> s_CustomCategories = new Dictionary<string, IssueCategory>();
 
         readonly List<ProjectAuditorModule> m_Modules = new List<ProjectAuditorModule>();
-        ProjectAuditorConfig m_Config;
-
-        /// <summary>
-        /// A ProjectAuditorConfig object to configure how analysis is performed
-        /// </summary>
-        internal ProjectAuditorConfig Config
-        {
-            get => m_Config;
-        }
-
-        IProjectAuditorDiagnosticParamsProvider m_DefaultDiagnosticParamsProvider;
 
         /// <summary>
         /// ProjectAuditor default constructor
         /// </summary>
         public ProjectAuditor()
         {
-            InitAsset(k_DefaultAssetPath);
             InitModules();
-            InitDefaultSettingsProvider();
-        }
-
-        /// <summary>
-        /// ProjectAuditor constructor
-        /// </summary>
-        /// <param name="projectAuditorConfig"> ProjectAuditor Configuration object</param>
-        public ProjectAuditor(ProjectAuditorConfig projectAuditorConfig)
-        {
-            m_Config = projectAuditorConfig;
-            InitModules();
-            InitDefaultSettingsProvider();
-        }
-
-        /// <summary>
-        /// ProjectAuditor constructor
-        /// </summary>
-        /// <param name="assetPath"> Path to the ProjectAuditorConfig asset</param>
-        public ProjectAuditor(string assetPath)
-        {
-            InitAsset(assetPath);
-            InitModules();
-            InitDefaultSettingsProvider();
-        }
-
-        void InitAsset(string assetPath)
-        {
-            m_Config = AssetDatabase.LoadAssetAtPath<ProjectAuditorConfig>(assetPath);
-            if (m_Config == null)
-            {
-                var path = Path.GetDirectoryName(assetPath);
-                if (!File.Exists(path))
-                    Directory.CreateDirectory(path);
-                m_Config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-                AssetDatabase.CreateAsset(m_Config, assetPath);
-
-                Debug.LogFormat("Project Auditor: {0} has been created.", assetPath);
-            }
         }
 
         void InitModules()
@@ -129,7 +78,7 @@ namespace Unity.ProjectAuditor.Editor
                 var instance = Activator.CreateInstance(type) as ProjectAuditorModule;
                 try
                 {
-                    instance.Initialize(m_Config);
+                    instance.Initialize();
                 }
                 catch (Exception e)
                 {
@@ -138,12 +87,6 @@ namespace Unity.ProjectAuditor.Editor
                 }
                 m_Modules.Add(instance);
             }
-        }
-
-        void InitDefaultSettingsProvider()
-        {
-            m_DefaultDiagnosticParamsProvider = new ProjectAuditorDiagnosticParamsProvider();
-            m_DefaultDiagnosticParamsProvider.Initialize();
         }
 
         /// <summary>
@@ -216,9 +159,6 @@ namespace Unity.ProjectAuditor.Editor
             var requestedModules = categories.SelectMany(GetModules).Distinct().ToArray();
             var supportedModules = requestedModules.Where(m => m != null && m.isSupported && CoreUtils.SupportsPlatform(m.GetType(), projectAuditorParams.Platform)).ToArray();
 
-            if (projectAuditorParams.DiagnosticParams == null)
-                projectAuditorParams.DiagnosticParams = m_DefaultDiagnosticParamsProvider.GetCurrentParams();
-
             var numModules = supportedModules.Length;
             if (numModules == 0)
             {
@@ -275,6 +215,9 @@ namespace Unity.ProjectAuditor.Editor
                 }
             }
 
+            // Save any new DiagnosticParams that may have been declared by previously-unseen modules during analysis
+            projectAuditorParams.Rules.Save();
+
             if (logTimingsInfo)
                 Debug.Log("Project Auditor time to interactive: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
         }
@@ -323,19 +266,6 @@ namespace Unity.ProjectAuditor.Editor
         internal IssueCategory[] GetCategories()
         {
             return m_Modules.Where(module => module.isSupported).SelectMany(m => m.categories).ToArray();
-        }
-
-        /// <summary>
-        /// Get the layout for a category
-        /// </summary>
-        /// <param name="category">The category to get the layout for</param>
-        /// <returns>The IssueLayout for the specified category</returns>
-        internal IssueLayout GetLayout(IssueCategory category)
-        {
-            if (category == IssueCategory.Metadata)
-                return new IssueLayout {category = IssueCategory.Metadata, properties = new PropertyDefinition[] {}};
-            var layouts = m_Modules.Where(a => a.isSupported).SelectMany(module => module.supportedLayouts).Where(l => l.category == category);
-            return layouts.FirstOrDefault();
         }
 
         /// <summary>

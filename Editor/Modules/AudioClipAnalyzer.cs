@@ -264,7 +264,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public IEnumerable<ProjectIssue> Analyze(AudioClipAnalysisContext context)
         {
             var assetPath = context.Importer.assetPath;
-            s_PlatformString = context.Params.Platform.ToString();
+            s_PlatformString = context.Params.PlatformString;
 
             var sampleSettings = context.Importer.GetOverrideSampleSettings(s_PlatformString);
             var audioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(assetPath);
@@ -351,14 +351,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var preloadAudioData = context.Importer.preloadAudioData;
 #endif
 
-            if (runtimeSize > context.Params.DiagnosticParams.StreamingClipThresholdBytes && !isStreaming)
+            if (runtimeSize > context.StreamingClipThresholdBytes && !isStreaming)
             {
                 yield return context.Create(
                     IssueCategory.AssetDiagnostic, k_AudioLongClipDoesNotStreamDescriptor.id, clipName)
                     .WithLocation(assetPath);
             }
 
-            if (decompressedClipSize < context.Params.DiagnosticParams.StreamingClipThresholdBytes && isStreaming)
+            if (decompressedClipSize < context.StreamingClipThresholdBytes && isStreaming)
             {
                 yield return context.Create(
                     IssueCategory.AssetDiagnostic, k_AudioShortClipStreamsDescriptor.id, clipName)
@@ -381,7 +381,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
             }
 
-            if (runtimeSize > context.Params.DiagnosticParams.LongDecompressedClipThresholdBytes &&
+            if (runtimeSize > context.LongDecompressedClipThresholdBytes &&
                 sampleSettings.loadType == AudioClipLoadType.DecompressOnLoad)
             {
                 yield return context.Create(
@@ -399,7 +399,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
 
             if (isMobileTarget &&
-                compSize > context.Params.DiagnosticParams.LongCompressedMobileClipThresholdBytes &&
+                compSize > context.LongCompressedMobileClipThresholdBytes &&
                 sampleSettings.compressionFormat != AudioCompressionFormat.PCM &&
                 sampleSettings.compressionFormat != AudioCompressionFormat.ADPCM &&
                 audioClip.frequency >= 48000 &&
@@ -427,7 +427,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithLocation(assetPath);
             }
 
-            if (!context.Importer.loadInBackground && compSize > context.Params.DiagnosticParams.LoadInBackGroundClipSizeThresholdBytes)
+            if (!context.Importer.loadInBackground && compSize > context.LoadInBackGroundClipSizeThresholdBytes)
             {
                 yield return context.Create(
                     IssueCategory.AssetDiagnostic, k_AudioLoadInBackgroundDisabledDescriptor.id, clipName)

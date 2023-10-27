@@ -36,18 +36,17 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 BuildReportModule.BuildReportProvider = this;
 
-                var tempConfigAsset = CreateInstance<ProjectAuditorConfig>();
-                var projectAuditor = new ProjectAuditor(tempConfigAsset);
-
-                m_ViewManager = new ViewManager(k_Categories);
-                m_ViewManager.Create(projectAuditor, m_ViewStates);
-
-                m_ViewManager.OnActiveViewChanged = index => m_ActiveViewIndex = index;
-
-                var report = projectAuditor.Audit(new ProjectAuditorParams
+                var projectAuditor = new ProjectAuditor();
+                var projectAuditorParams = new ProjectAuditorParams
                 {
                     Categories = k_Categories
-                });
+                };
+
+                m_ViewManager = new ViewManager(k_Categories);
+                m_ViewManager.Create(projectAuditorParams.Rules, m_ViewStates);
+                m_ViewManager.OnActiveViewChanged = index => m_ActiveViewIndex = index;
+
+                var report = projectAuditor.Audit(projectAuditorParams);
 
                 m_ViewManager.AddIssues(report.GetAllIssues());
                 m_ViewManager.ChangeView(k_Categories[m_ActiveViewIndex]);

@@ -22,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         protected Draw2D m_2D;
         protected bool m_Dirty = true;
-        protected ProjectAuditorConfig m_Config;
+        protected ProjectAuditorRules m_Rules;
         protected ViewStates m_ViewStates;
         protected ViewDescriptor m_Desc;
         protected IIssueFilter m_BaseFilter;
@@ -61,10 +61,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_ViewManager = viewManager;
         }
 
-        public virtual void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, ViewStates viewStates, IIssueFilter filter)
+        public virtual void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorRules rules, ViewStates viewStates, IIssueFilter filter)
         {
             m_Desc = descriptor;
-            m_Config = config;
+            m_Rules = rules;
             m_ViewStates = viewStates;
             m_BaseFilter = filter;
             m_Layout = layout;
@@ -129,7 +129,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 multiColumnHeader,
                 m_Desc,
                 layout,
-                m_Config,
+                m_Rules,
                 this);
 
             if (m_Desc.showDependencyView)

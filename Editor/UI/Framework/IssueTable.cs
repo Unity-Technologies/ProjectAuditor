@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static readonly int k_DefaultRowHeight = 18;
         static readonly int k_FirstId = 1;
 
-        readonly ProjectAuditorConfig m_Config;
+        readonly ProjectAuditorRules m_Rules;
         readonly ViewDescriptor m_Desc;
         readonly AnalysisView m_View;
         readonly IssueLayout m_Layout;
@@ -56,11 +56,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         }
 
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
-                          ViewDescriptor desc, IssueLayout layout, ProjectAuditorConfig config,
+                          ViewDescriptor desc, IssueLayout layout, ProjectAuditorRules rules,
                           AnalysisView view) : base(state,
                                                     multicolumnHeader)
         {
-            m_Config = config;
+            m_Rules = rules;
             m_View = view;
             m_Desc = desc;
             m_Layout = layout;
@@ -303,9 +303,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 else if (issue.id.IsValid())
                 {
                     var id = issue.id;
-                    rule = m_Config.GetRule(id, issue.GetContext());
+                    rule = m_Rules.GetRule(id, issue.GetContext());
                     if (rule == null)
-                        rule = m_Config.GetRule(id); // try to find non-specific rule
+                        rule = m_Rules.GetRule(id); // try to find non-specific rule
                     if (rule != null && rule.severity == Severity.None)
                         GUI.enabled = false;
                 }

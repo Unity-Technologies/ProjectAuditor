@@ -52,8 +52,11 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             // version of the tool with updated descriptors, we might want to keep those descriptors in the library
             // rather than overwrite them with the ones that were saved alongside the issues. Right now it's such an
             // edge case that it doesn't really seem worth spending time on.
-            s_Descriptors = m_SerializedDescriptors.ToDictionary(m => new DescriptorID(m.id).AsInt(), m => m);
-            m_SerializedDescriptors = null;
+            if (m_SerializedDescriptors != null)
+            {
+                s_Descriptors = m_SerializedDescriptors.ToDictionary(m => new DescriptorID(m.id).AsInt(), m => m);
+                m_SerializedDescriptors = null;
+            }
         }
 
         // For testing purposes only

@@ -77,13 +77,12 @@ class MyClass : MonoBehaviour
 
         IReadOnlyCollection<ProjectIssue> AnalyzeAndExport(IssueCategory category, string path, string format, Func<ProjectIssue, bool> predicate = null)
         {
-            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var projectReport = projectAuditor.Audit(new ProjectAuditorParams
             {
                 CompilationMode = CompilationMode.Player
             });
-            var layout = projectAuditor.GetLayout(category);
+            var layout = IssueLayout.GetLayout(category);
 
             switch (format)
             {

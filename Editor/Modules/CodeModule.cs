@@ -125,7 +125,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        ProjectAuditorConfig m_Config;
         List<OpCode> m_OpCodes;
 
         Thread m_AssemblyAnalysisThread;
@@ -142,14 +141,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             k_DomainReloadIssueLayout
         };
 
-        public override void Initialize(ProjectAuditorConfig config)
+        public override void Initialize()
         {
-            base.Initialize(config);
+            base.Initialize();
 
-            if (m_Config != null)
-                throw new Exception("Module is already initialized.");
-
-            m_Config = config;
             m_OpCodes = m_Analyzers.Select(a => a.opCodes).SelectMany(c => c).Distinct().ToList();
         }
 
@@ -488,7 +483,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 var relativePath = AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, message.file);
 
-                // SteveM TODO - A more data-driven way to specify which view Roslyn messages should be sent to, depending on their code.
+                // stephenm TODO - A more data-driven way to specify which view Roslyn messages should be sent to, depending on their code.
                 // Match a whole "word", starting with UDR and ending with exactly 4 digits, e.g. UDR1234
                 var rx = new Regex(@"\bUDR\d{4}\b");
                 if (rx.IsMatch(message.code))

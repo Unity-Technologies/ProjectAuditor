@@ -22,12 +22,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             progress?.Start("Finding Sprite Atlas", "Search in Progress...", assetPaths.Length);
 
+            var rules = projectAuditorParams.Rules;
+            var spriteAtlasEmptySpaceLimit = rules.GetParameter("SpriteAtlasEmptySpaceLimit", 50);
+
             foreach (var assetPath in assetPaths)
             {
                 var context = new SpriteAtlasAnalysisContext
                 {
                     AssetPath = assetPath,
-                    Params = projectAuditorParams
+                    Params = projectAuditorParams,
+                    SpriteAtlasEmptySpaceLimit = spriteAtlasEmptySpaceLimit
                 };
 
                 foreach (var analyzer in analyzers)

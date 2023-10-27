@@ -59,6 +59,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
+
             var assetPaths = GetAssetPathsByFilter("t:AudioClip, a:assets");
 
             progress?.Start("Finding AudioClips", "Search in Progress...", assetPaths.Length);
@@ -71,10 +72,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     continue;
                 }
 
+                var rules = projectAuditorParams.Rules;
+
                 var context = new AudioClipAnalysisContext
                 {
                     Importer = audioImporter,
-                    Params = projectAuditorParams
+                    Params = projectAuditorParams,
+                    StreamingClipThresholdBytes = rules.GetParameter("StreamingClipThresholdBytes", 1 * (64000 + (int)(1.6 * 48000 * 2)) + 694),
+                    LongDecompressedClipThresholdBytes = rules.GetParameter("LongDecompressedClipThresholdBytes", 200 * 1024),
+                    LongCompressedMobileClipThresholdBytes = rules.GetParameter("LongCompressedMobileClipThresholdBytes", 200 * 1024),
+                    LoadInBackGroundClipSizeThresholdBytes = rules.GetParameter("LoadInBackGroundClipSizeThresholdBytes", 200 * 1024)
                 };
 
                 foreach (var analyzer in analyzers)

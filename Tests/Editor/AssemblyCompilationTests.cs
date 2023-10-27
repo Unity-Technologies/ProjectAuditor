@@ -93,8 +93,7 @@ class MyClass
         //[TestCase(CompilationMode.Editor, "Editor")]
         public void AssemblyCompilation_Player_IsCompiled(CompilationMode mode, string methodName)
         {
-            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var projectReport = projectAuditor.Audit(new ProjectAuditorParams
             {
                 CompilationMode = mode

@@ -79,9 +79,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             k_PackageVersionLayout
         };
 
-        public override void Initialize(ProjectAuditorConfig config)
+        public override void Initialize()
         {
-            base.Initialize(config);
+            base.Initialize();
 
             RegisterDescriptor(k_RecommendPackageUpgrade);
             RegisterDescriptor(k_RecommendPackagePreView);

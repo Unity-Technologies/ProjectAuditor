@@ -59,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         PropertyFoldout[] m_PropertyFoldouts;
 
-        public override void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorConfig config, ViewStates viewStates, IIssueFilter filter)
+        public override void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorRules rules, ViewStates viewStates, IIssueFilter filter)
         {
             var propertyFoldouts = new List<PropertyFoldout>();
 
@@ -85,7 +85,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 });
             m_PropertyFoldouts = propertyFoldouts.ToArray();
 
-            base.Create(descriptor, layout, config, viewStates, filter);
+            base.Create(descriptor, layout, rules, viewStates, filter);
         }
 
         void ParsePlayerLog(string logFilename)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -78,7 +79,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public void Create(ProjectAuditor projectAuditor, ViewStates viewStates, Action<ViewDescriptor, bool> onCreateView = null, IIssueFilter filter = null)
+        public void Create(ProjectAuditorRules projectAuditorRules, ViewStates viewStates, Action<ViewDescriptor, bool> onCreateView = null, IIssueFilter filter = null)
         {
             if (filter == null)
                 filter = new NullFilter();
@@ -93,7 +94,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     Debug.LogWarning("[Project Auditor] Descriptor for " + ProjectAuditor.GetCategoryName(category) + " was not registered.");
                     continue;
                 }
-                var layout = projectAuditor.GetLayout(category);
+                var layout = IssueLayout.GetLayout(category);
                 var isSupported = layout != null;
 
                 if (onCreateView != null)
@@ -106,7 +107,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
 
                 var view = desc.type != null ? (AnalysisView)Activator.CreateInstance(desc.type, this) : new AnalysisView(this);
-                view.Create(desc, layout, projectAuditor.Config, viewStates, filter);
+                view.Create(desc, layout, projectAuditorRules, viewStates, filter);
                 view.OnEnable();
                 views.Add(view);
             }

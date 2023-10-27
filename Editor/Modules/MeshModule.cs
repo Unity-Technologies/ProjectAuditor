@@ -45,16 +45,23 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
+
             var assetPaths = GetAssetPathsByFilter("t:mesh, a:assets");
 
             progress?.Start("Finding Meshes", "Search in Progress...", assetPaths.Length);
+
+            var rules = projectAuditorParams.Rules;
+            var meshVertexCountLimit = rules.GetParameter("MeshVertexCountLimit", 5000);
+            var meshTriangleCountLimit = rules.GetParameter("MeshTriangleCountLimit", 5000);
 
             foreach (var assetPath in assetPaths)
             {
                 var context = new MeshAnalysisContext()
                 {
                     Importer = AssetImporter.GetAtPath(assetPath),
-                    Params = projectAuditorParams
+                    Params = projectAuditorParams,
+                    MeshVertexCountLimit = meshVertexCountLimit,
+                    MeshTriangleCountLimit = meshTriangleCountLimit
                 };
 
                 foreach (var analyzer in analyzers)
