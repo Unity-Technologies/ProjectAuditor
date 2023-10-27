@@ -1,5 +1,6 @@
 using System;
 using UnityEditor;
+using Unity.ProjectAuditor.Editor.Utils; // Required for TypeCache in Unity 2018
 
 namespace Unity.ProjectAuditor.Editor.Core
 {

@@ -272,7 +272,11 @@ namespace Unity.ProjectAuditor.Editor
             {
                 m_ParamsStack[i].OnBeforeSerialize();
             }
+#if UNITY_2020_3_OR_NEWER
             AssetDatabase.SaveAssetIfDirty(this);
+#else
+            AssetDatabase.SaveAssets();
+#endif
         }
     }
 }
