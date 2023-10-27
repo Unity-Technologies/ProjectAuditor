@@ -51,7 +51,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var savedRules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
             savedRules.Initialize();
             savedRules.SetAnalysisPlatform(m_Platform);
-            savedRules.SetParameter("Default", "TestParameter", 42);
+            savedRules.SetParameter(BuildTarget.NoTarget, "TestParameter", 42);
             m_TestRulesAsset = TestAsset.Save(savedRules, k_RulesAssetName + ".asset");
 
             var texture = new Texture2D(k_TestTextureResolution, k_TestTextureResolution);
@@ -285,11 +285,11 @@ namespace Unity.ProjectAuditor.EditorTests
             var paramVal = rules.GetParameter("TextureStreamingMipmapsSizeLimit", 4000);
             Assert.AreEqual(paramVal, 4000);
 
-            rules.SetParameter("Default", "TextureStreamingMipmapsSizeLimit", 32);
+            rules.SetParameter(BuildTarget.NoTarget, "TextureStreamingMipmapsSizeLimit", 32);
             paramVal = rules.GetParameter("TextureStreamingMipmapsSizeLimit", 4000);
             Assert.AreEqual(paramVal, 32);
 
-            rules.SetParameter(m_Platform.ToString(), "TextureStreamingMipmapsSizeLimit", 64);
+            rules.SetParameter(m_Platform, "TextureStreamingMipmapsSizeLimit", 64);
             paramVal = rules.GetParameter("TextureStreamingMipmapsSizeLimit", 4000);
             Assert.AreEqual(paramVal, 64);
         }
@@ -317,7 +317,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.Null(foundIssues.FirstOrDefault(i => i.id.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor.id)));
 
             // Texture would normally be too small to trigger this diagnostic, unless we specify a custom smaller limit
-            rules.SetParameter("Default", "TextureStreamingMipmapsSizeLimit", 32);
+            rules.SetParameter(BuildTarget.NoTarget, "TextureStreamingMipmapsSizeLimit", 32);
             report = projectAuditor.Audit(projectAuditorParams);
             foundIssues = report.GetAllIssues().Where(i => i.relativePath.Equals(m_TestTextureAsset.relativePath));
 

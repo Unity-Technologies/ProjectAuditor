@@ -332,7 +332,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             Profiler.BeginSample("Views Creation");
 
-            m_ViewManager.Create(m_ProjectAuditor, projectAuditorRules, m_ViewStates, null, this);
+            m_ViewManager.Create(projectAuditorRules, m_ViewStates, null, this);
 
             InitializeTabs(!initialize);
 

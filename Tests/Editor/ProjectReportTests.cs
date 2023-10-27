@@ -82,7 +82,7 @@ class MyClass : MonoBehaviour
             {
                 CompilationMode = CompilationMode.Player
             });
-            var layout = projectAuditor.GetLayout(category);
+            var layout = IssueLayout.GetLayout(category);
 
             switch (format)
             {

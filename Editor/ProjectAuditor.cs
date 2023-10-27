@@ -269,19 +269,6 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Get the layout for a category
-        /// </summary>
-        /// <param name="category">The category to get the layout for</param>
-        /// <returns>The IssueLayout for the specified category</returns>
-        internal IssueLayout GetLayout(IssueCategory category)
-        {
-            if (category == IssueCategory.Metadata)
-                return new IssueLayout {category = IssueCategory.Metadata, properties = new PropertyDefinition[] {}};
-            var layouts = m_Modules.Where(a => a.isSupported).SelectMany(module => module.supportedLayouts).Where(l => l.category == category);
-            return layouts.FirstOrDefault();
-        }
-
-        /// <summary>
         /// Get or Register a category by name. If the name argument does not match an existing category, a new category is registered.
         /// </summary>
         /// <param name="name">The name of the category</param>

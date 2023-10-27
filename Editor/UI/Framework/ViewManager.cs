@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -78,8 +79,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        // TODO: It's a bit weird that ViewManaer needs an instance of ProjectAuditor, and only uses it to get the layout for categories: Something ProjectAuditor arguably shouldn't be responsible for.
-        public void Create(ProjectAuditor projectAuditor, ProjectAuditorRules projectAuditorRules, ViewStates viewStates, Action<ViewDescriptor, bool> onCreateView = null, IIssueFilter filter = null)
+        public void Create(ProjectAuditorRules projectAuditorRules, ViewStates viewStates, Action<ViewDescriptor, bool> onCreateView = null, IIssueFilter filter = null)
         {
             if (filter == null)
                 filter = new NullFilter();
@@ -94,7 +94,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     Debug.LogWarning("[Project Auditor] Descriptor for " + ProjectAuditor.GetCategoryName(category) + " was not registered.");
                     continue;
                 }
-                var layout = projectAuditor.GetLayout(category);
+                var layout = IssueLayout.GetLayout(category);
                 var isSupported = layout != null;
 
                 if (onCreateView != null)

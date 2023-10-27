@@ -483,7 +483,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 var relativePath = AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, message.file);
 
-                // SteveM TODO - A more data-driven way to specify which view Roslyn messages should be sent to, depending on their code.
+                // stephenm TODO - A more data-driven way to specify which view Roslyn messages should be sent to, depending on their code.
                 // Match a whole "word", starting with UDR and ending with exactly 4 digits, e.g. UDR1234
                 var rx = new Regex(@"\bUDR\d{4}\b");
                 if (rx.IsMatch(message.code))

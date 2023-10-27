@@ -110,15 +110,15 @@ namespace Unity.ProjectAuditor.Editor
         //////////////////////////////////////////////////////////////////////
         // Per-platform Diagnostic Params
 
-        // TODO: Maybe this should live in some separate class that we hold an instance of, or something. Just throw it in here with the rules for now, refactor later if it needs it.
-
         [Serializable]
         internal class DiagnosticParams : ISerializationCallbackReceiver
         {
-            // TODO: Not ideal that this is a string rather than a BuildTarget, but this makes serialization easier for now.
-            public string Platform;
+            public BuildTarget Platform;
 
-            // TODO: string-keyed Dictionary again. Aargh.
+            // A string-keyed Dictionary is not a particularly efficient data structure. However:
+            // - We need strings for serialization, so we can't just hash strings to make keys then throw the string away
+            // - We want DiagnosticParams to be arbitrarily-definable by any future module without modifying core code, which rules out an enum
+            // It can stay. For now.
             Dictionary<string, int> m_Params;
 
             // Can't use KeyValuePair<string, int> because Unity won't serialize generic types. So we'll make a concrete type.
@@ -141,7 +141,7 @@ namespace Unity.ProjectAuditor.Editor
             {
                 m_Params = new Dictionary<string, int>();
             }
-            public DiagnosticParams(string platform) : this()
+            public DiagnosticParams(BuildTarget platform) : this()
             {
                 Platform = platform;
             }
@@ -192,7 +192,8 @@ namespace Unity.ProjectAuditor.Editor
 
             if (m_ParamsStack.Count == 0)
             {
-                m_ParamsStack.Add(new DiagnosticParams("Default"));
+                // We treat BuildTarget.NoTarget as the default value fallback if there isn't a platform-specific override
+                m_ParamsStack.Add(new DiagnosticParams(BuildTarget.NoTarget));
             }
 
             EditorUtility.SetDirty(this);
@@ -200,11 +201,9 @@ namespace Unity.ProjectAuditor.Editor
 
         public void SetAnalysisPlatform(BuildTarget platform)
         {
-            var platformString = platform.ToString();
-
             for(int i = 0; i < m_ParamsStack.Count; ++i)
             {
-                if (m_ParamsStack[i].Platform == platformString)
+                if (m_ParamsStack[i].Platform == platform)
                 {
                     CurrentParamsIndex = i;
                     return;
@@ -212,7 +211,7 @@ namespace Unity.ProjectAuditor.Editor
             }
 
             // We didn't find this platform in the platform stack yet, so let's create it.
-            m_ParamsStack.Add(new DiagnosticParams(platformString));
+            m_ParamsStack.Add(new DiagnosticParams(platform));
             CurrentParamsIndex = m_ParamsStack.Count - 1;
 
             EditorUtility.SetDirty(this);
@@ -244,7 +243,7 @@ namespace Unity.ProjectAuditor.Editor
             return defaultValue;
         }
 
-        public void SetParameter(string platform, string paramName, int value)
+        public void SetParameter(BuildTarget platform, string paramName, int value)
         {
             if (m_ParamsStack.Count == 0)
             {
