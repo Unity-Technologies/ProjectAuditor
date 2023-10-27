@@ -12,7 +12,7 @@ To install this package, refer to the instructions that match your Unity Editor 
 
 ### Version 2021.1 and later
 
-To install this package, follow the instructions for [adding a package by name](https://docs.unity3d.com/2021.1/Documentation/Manual/upm-ui-quick.html) in the Unity Editor. 
+To install this package, follow the instructions for [adding a package by name](https://docs.unity3d.com/2021.1/Documentation/Manual/upm-ui-quick.html) in the Unity Editor. Use the package name `com.unity.project-auditor`.
 
 ### Version 2020.3 and earlier
 
