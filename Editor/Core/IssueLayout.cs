@@ -43,7 +43,6 @@ namespace Unity.ProjectAuditor.Editor.Core
                             return layout;
                     }
                 }
-
             }
             return null;
         }

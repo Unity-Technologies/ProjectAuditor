@@ -106,7 +106,7 @@ namespace Unity.ProjectAuditor.Editor
         /// ProjectAuditorParams constructor
         /// </summary>
         public ProjectAuditorParams()
-        : this(EditorUserBuildSettings.activeBuildTarget, UserPreferences.RulesAssetPath)
+            : this(EditorUserBuildSettings.activeBuildTarget, UserPreferences.RulesAssetPath)
         {
         }
 
@@ -125,7 +125,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         public ProjectAuditorParams(ProjectAuditorParams original)
-        : base(original)
+            : base(original)
         {
             OnIncomingIssues = original.OnIncomingIssues;
             OnCompleted = original.OnCompleted;

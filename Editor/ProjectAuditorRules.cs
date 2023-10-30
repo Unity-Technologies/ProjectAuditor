@@ -141,6 +141,7 @@ namespace Unity.ProjectAuditor.Editor
             {
                 m_Params = new Dictionary<string, int>();
             }
+
             public DiagnosticParams(BuildTarget platform) : this()
             {
                 Platform = platform;
@@ -201,7 +202,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public void SetAnalysisPlatform(BuildTarget platform)
         {
-            for(int i = 0; i < m_ParamsStack.Count; ++i)
+            for (int i = 0; i < m_ParamsStack.Count; ++i)
             {
                 if (m_ParamsStack[i].Platform == platform)
                 {
@@ -250,7 +251,7 @@ namespace Unity.ProjectAuditor.Editor
                 Debug.LogError("Uninitialized ProjectAuditorRules. Find out how this one was created and why it wasn't initialized.");
             }
 
-            foreach(var platformParams in m_ParamsStack)
+            foreach (var platformParams in m_ParamsStack)
             {
                 if (platformParams.Platform == platform)
                 {
@@ -268,7 +269,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public void Save()
         {
-            for(int i = 0; i < m_ParamsStack.Count; ++i)
+            for (int i = 0; i < m_ParamsStack.Count; ++i)
             {
                 m_ParamsStack[i].OnBeforeSerialize();
             }
