@@ -64,15 +64,13 @@ class MyClass : MonoBehaviour
 
             projectReport.AddIssues(new[] { new ProjectIssue
                                             (
-                                                IssueCategory.Code,
-                                                m_Descriptor.id,
-                                                "dummy issue"
+                                                IssueCategory.Texture,
+                                                "myTexture"
                                             ) }
             );
 
             Assert.AreEqual(1, projectReport.NumTotalIssues);
-            Assert.AreEqual(1, projectReport.GetNumIssues(IssueCategory.Code));
-            Assert.AreEqual(0, projectReport.GetNumIssues(IssueCategory.ProjectSetting));
+            Assert.AreEqual(1, projectReport.GetNumIssues(IssueCategory.Texture));
         }
 
         IReadOnlyCollection<ProjectIssue> AnalyzeAndExport(IssueCategory category, string path, string format, Func<ProjectIssue, bool> predicate = null)

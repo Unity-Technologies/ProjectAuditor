@@ -270,7 +270,11 @@ namespace Unity.ProjectAuditor.Editor
 
         public static ProjectReport Load(string path)
         {
-            return JsonConvert.DeserializeObject<ProjectReport>(File.ReadAllText(path));
+            return JsonConvert.DeserializeObject<ProjectReport>(File.ReadAllText(path), new JsonSerializerSettings
+            {
+                Converters = new List<JsonConverter> { new ScriptableObjectJsonConverter() },
+                ObjectCreationHandling = ObjectCreationHandling.Replace
+            });
         }
     }
 }

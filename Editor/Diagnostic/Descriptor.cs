@@ -127,7 +127,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             this.id = id;
             this.title = title;
             this.areas = areas;
-            this.messageFormat = "{0}";
+            this.messageFormat = string.Empty;
             this.description = description;
             this.solution = solution;
 

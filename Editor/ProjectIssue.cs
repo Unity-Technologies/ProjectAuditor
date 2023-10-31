@@ -45,10 +45,19 @@ namespace Unity.ProjectAuditor.Editor
         internal ProjectIssue(IssueCategory category, string id, params object[] args)
         {
             m_DescriptorID = new DescriptorID(id);
+            var descriptor = DescriptorLibrary.GetDescriptor(m_DescriptorID.AsInt());
+
             m_Category = category;
 
-            var descriptor = m_DescriptorID.GetDescriptor();
-            m_Description = args.Length > 0 ? string.Format(descriptor.messageFormat, args) : descriptor.title;
+            try
+            {
+                m_Description = string.IsNullOrEmpty(descriptor.messageFormat) ? descriptor.title : string.Format(descriptor.messageFormat, args);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Error formatting message: " + descriptor.messageFormat + " with args: " + string.Join(", ", args) + " - " + e.Message);
+                m_Description = descriptor.title;
+            }
             m_Severity = descriptor.defaultSeverity;
         }
 
@@ -76,7 +85,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         [JsonProperty("diagnosticID")]
-        internal string diagnoticIDAsString
+        internal string diagnosticIDAsString
         {
             get { return m_DescriptorID.IsValid() ? m_DescriptorID.AsString() : null; }
             set
