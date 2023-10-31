@@ -63,10 +63,11 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         [JsonProperty("sessionInfo")]
+        [SerializeField]
         SessionInfo m_SessionInfo;
 
-        [SerializeField]
         [JsonProperty("moduleMetadata")]
+        [SerializeField]
         List<ModuleInfo> m_ModuleInfos = new List<ModuleInfo>();
 
         [SerializeField]

@@ -8,14 +8,19 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
+    [Serializable]
     internal class SerializedAnalysisParams
     {
         /// <summary>
         /// Categories to include in the audit. If null, all categories will be included.
         /// </summary>
+        [SerializeField]
         public IssueCategory[] Categories;
 
+        [SerializeField]
         BuildTarget m_Platform;
+
+        [SerializeField]
         string m_PlatformString;
 
         /// <summary>
