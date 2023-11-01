@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
@@ -31,6 +32,16 @@ namespace Unity.ProjectAuditor.Editor.Core
         public abstract IReadOnlyCollection<IssueLayout> supportedLayouts
         {
             get;
+        }
+
+        public static string[] GetAssetPaths()
+        {
+            return AssetDatabase.GetAllAssetPaths();
+        }
+
+        public static string[] GetAssetPathsByFilter(string filter)
+        {
+            return AssetDatabase.FindAssets(filter).Select(AssetDatabase.GUIDToAssetPath).ToArray();
         }
 
         public virtual void Initialize()

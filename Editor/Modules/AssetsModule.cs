@@ -86,7 +86,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         static void AnalyzeResources(AnalysisContext context, IList<ProjectIssue> issues)
         {
-            var allAssetPaths = AssetDatabase.GetAllAssetPaths();
+            var allAssetPaths = GetAssetPaths();
             var allResources =
                 allAssetPaths.Where(path => path.IndexOf("/resources/", StringComparison.OrdinalIgnoreCase) >= 0);
             var allPlayerResources =

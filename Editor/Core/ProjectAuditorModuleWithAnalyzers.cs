@@ -11,11 +11,6 @@ namespace Unity.ProjectAuditor.Editor.Core
     {
         protected List<T> m_Analyzers;
 
-        protected string[] GetAssetPathsByFilter(string filter)
-        {
-            return AssetDatabase.FindAssets(filter).Select(AssetDatabase.GUIDToAssetPath).ToArray();
-        }
-
         protected T[] GetPlatformAnalyzers(BuildTarget platform)
         {
             return m_Analyzers.Where(a => CoreUtils.SupportsPlatform(a.GetType(), platform)).ToArray();
