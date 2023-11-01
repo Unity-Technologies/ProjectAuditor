@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             PAA0005,
             "Texture: Solid color is not 1x1 size",
             new[] {Area.Memory},
-            "The texture is a single, solid color and is bigger than 1x1 pixels in size. Redundant texture data occupies memory unneccesarily.",
+            "The texture is a single, solid color and is bigger than 1x1 pixels in size. Redundant texture data occupies memory unnecessarily.",
             "Consider shrinking the texture to 1x1 size."
         )
         {
@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             PAA0006,
             "Texture: Solid color is not 1x1 size",
             new[] { Area.Memory },
-            "The texture is a single, solid color and is bigger than 1x1 pixels in size. Redundant texture data occupies memory unneccesarily.",
+            "The texture is a single, solid color and is bigger than 1x1 pixels in size. Redundant texture data occupies memory unnecessarily.",
             "Consider shrinking the texture to 1x1 size."
         )
         {
