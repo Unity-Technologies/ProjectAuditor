@@ -107,6 +107,10 @@ namespace Unity.ProjectAuditor.Editor
         [NonSerialized]
         internal ProjectReport ExistingReport;
 
+        [JsonIgnore]
+        [NonSerialized]
+        public Predicate<string> AssetPathFilter;
+
         /// <summary>
         /// ProjectAuditorParams constructor
         /// </summary>
@@ -139,6 +143,8 @@ namespace Unity.ProjectAuditor.Editor
             ExistingReport = original.ExistingReport;
 
             Rules = original.Rules;
+
+            AssetPathFilter = original.AssetPathFilter;
         }
 
         void InitRulesAsset(string assetPath)

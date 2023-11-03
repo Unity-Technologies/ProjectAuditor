@@ -273,12 +273,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
-            var shaderPathMap = CollectShaders();
+            var context = new AnalysisContext()
+            {
+                Params = projectAuditorParams
+            };
+
+            var shaderPathMap = CollectShaders(context);
             ProcessShaders(projectAuditorParams, shaderPathMap);
 
             ProcessComputeShaders(projectAuditorParams);
 
-            ProcessMaterials(projectAuditorParams);
+            ProcessMaterials(context);
 
             // clear collected variants before next build
             ClearBuildData();
@@ -286,10 +291,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             projectAuditorParams.OnModuleCompleted?.Invoke();
         }
 
-        Dictionary<Shader, string> CollectShaders()
+        Dictionary<Shader, string> CollectShaders(AnalysisContext context)
         {
             var shaderPathMap = new Dictionary<Shader, string>();
-            var assetPaths = GetAssetPathsByFilter("t:shader");
+            var assetPaths = GetAssetPathsByFilter("t:shader", context);
             foreach (var assetPath in assetPaths)
             {
                 // skip editor shaders
@@ -325,10 +330,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return shaderPathMap;
         }
 
-        Dictionary<Material, string> CollectMaterials()
+        Dictionary<Material, string> CollectMaterials(AnalysisContext context)
         {
             var materialPathMap = new Dictionary<Material, string>();
-            var assetPaths = GetAssetPathsByFilter("t:material");
+            var assetPaths = GetAssetPathsByFilter("t:material", context);
             foreach (var assetPath in assetPaths)
             {
                 var material = AssetDatabase.LoadAssetAtPath<Material>(assetPath);
@@ -467,15 +472,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
 #endif
         }
 
-        void ProcessMaterials(ProjectAuditorParams projectAuditorParams)
+        void ProcessMaterials(AnalysisContext context)
         {
-            var context = new AnalysisContext()
-            {
-                Params = projectAuditorParams
-            };
             var issues = new List<ProjectIssue>();
 
-            var materialPathMap = CollectMaterials();
+            var materialPathMap = CollectMaterials(context);
             foreach (var material in materialPathMap)
             {
                 issues.Add(context.CreateWithoutDiagnostic(k_MaterialLayout.category, material.Key.name)
@@ -488,7 +489,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
 
             if (issues.Any())
-                projectAuditorParams.OnIncomingIssues(issues);
+                context.Params.OnIncomingIssues(issues);
         }
 
         IEnumerable<ProjectIssue> ProcessShader(ShaderAnalysisContext context, string assetSize, bool isAlwaysIncluded)

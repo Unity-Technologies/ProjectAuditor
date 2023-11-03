@@ -56,15 +56,27 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
-            var assetPaths = GetAssetPathsByFilter("t:texture, a:assets");
-
-            progress?.Start("Finding Textures", "Search in Progress...", assetPaths.Length);
 
             var platformString = projectAuditorParams.Platform.ToString();
             var rules = projectAuditorParams.Rules;
             var textureStreamingMipmapsSizeLimit = rules.GetParameter("TextureStreamingMipmapsSizeLimit", 4000);
             var textureSizeLimit = rules.GetParameter("TextureSizeLimit", 2048);
             var spriteAtlasEmptySpaceLimit = rules.GetParameter("SpriteAtlasEmptySpaceLimit", 50);
+
+            var context = new TextureAnalysisContext
+            {
+                // Importer set in loop
+                // ImporterPlatformSettings set in loop
+                // Texture set in loop
+                Params = projectAuditorParams,
+                TextureStreamingMipmapsSizeLimit = textureStreamingMipmapsSizeLimit,
+                TextureSizeLimit = textureSizeLimit,
+                SpriteAtlasEmptySpaceLimit = spriteAtlasEmptySpaceLimit
+            };
+
+            var assetPaths = GetAssetPathsByFilter("t:texture, a:assets", context);
+
+            progress?.Start("Finding Textures", "Search in Progress...", assetPaths.Length);
 
             foreach (var assetPath in assetPaths)
             {
@@ -74,16 +86,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     continue; // skip render textures
                 }
 
-                var context = new TextureAnalysisContext
-                {
-                    Importer = textureImporter,
-                    ImporterPlatformSettings = textureImporter.GetPlatformTextureSettings(projectAuditorParams.PlatformString),
-                    Texture = AssetDatabase.LoadAssetAtPath<Texture>(assetPath),
-                    Params = projectAuditorParams,
-                    TextureStreamingMipmapsSizeLimit = textureStreamingMipmapsSizeLimit,
-                    TextureSizeLimit = textureSizeLimit,
-                    SpriteAtlasEmptySpaceLimit = spriteAtlasEmptySpaceLimit
-                };
+                context.Importer = textureImporter;
+                context.ImporterPlatformSettings = textureImporter.GetPlatformTextureSettings(projectAuditorParams.PlatformString);
+                context.Texture = AssetDatabase.LoadAssetAtPath<Texture>(assetPath);
 
                 if (string.IsNullOrEmpty(context.Texture.name))
                     context.Name = Path.GetFileNameWithoutExtension(assetPath);

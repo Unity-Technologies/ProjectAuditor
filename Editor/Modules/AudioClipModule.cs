@@ -60,7 +60,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
 
-            var assetPaths = GetAssetPathsByFilter("t:AudioClip, a:assets");
+            var rules = projectAuditorParams.Rules;
+
+            var context = new AudioClipAnalysisContext
+            {
+                // Importer is set in the loop
+                Params = projectAuditorParams,
+                StreamingClipThresholdBytes = rules.GetParameter("StreamingClipThresholdBytes", 1 * (64000 + (int)(1.6 * 48000 * 2)) + 694),
+                LongDecompressedClipThresholdBytes = rules.GetParameter("LongDecompressedClipThresholdBytes", 200 * 1024),
+                LongCompressedMobileClipThresholdBytes = rules.GetParameter("LongCompressedMobileClipThresholdBytes", 200 * 1024),
+                LoadInBackGroundClipSizeThresholdBytes = rules.GetParameter("LoadInBackGroundClipSizeThresholdBytes", 200 * 1024)
+            };
+
+            var assetPaths = GetAssetPathsByFilter("t:AudioClip, a:assets", context);
 
             progress?.Start("Finding AudioClips", "Search in Progress...", assetPaths.Length);
 
@@ -72,17 +84,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     continue;
                 }
 
-                var rules = projectAuditorParams.Rules;
-
-                var context = new AudioClipAnalysisContext
-                {
-                    Importer = audioImporter,
-                    Params = projectAuditorParams,
-                    StreamingClipThresholdBytes = rules.GetParameter("StreamingClipThresholdBytes", 1 * (64000 + (int)(1.6 * 48000 * 2)) + 694),
-                    LongDecompressedClipThresholdBytes = rules.GetParameter("LongDecompressedClipThresholdBytes", 200 * 1024),
-                    LongCompressedMobileClipThresholdBytes = rules.GetParameter("LongCompressedMobileClipThresholdBytes", 200 * 1024),
-                    LoadInBackGroundClipSizeThresholdBytes = rules.GetParameter("LoadInBackGroundClipSizeThresholdBytes", 200 * 1024)
-                };
+                context.Importer = audioImporter;
 
                 foreach (var analyzer in analyzers)
                 {
