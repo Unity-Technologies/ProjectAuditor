@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Utils;
+using Unity.ProjectAuditor.Editor.Utils; // Required for TypeCache in Unity 2018
 using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
@@ -125,6 +125,9 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="progress"> Progress bar, if applicable </param>
         internal void AuditAsync(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
+            if (projectAuditorParams.Platform == BuildTarget.NoTarget)
+                projectAuditorParams.Platform = EditorUserBuildSettings.activeBuildTarget;
+
             var categories = projectAuditorParams.Categories != null
                 ? projectAuditorParams.Categories
                 : m_Modules
@@ -157,7 +160,7 @@ namespace Unity.ProjectAuditor.Editor
             }
 
             var requestedModules = categories.SelectMany(GetModules).Distinct().ToArray();
-            var supportedModules = requestedModules.Where(m => m != null && m.isSupported && CoreUtils.SupportsPlatform(m.GetType(), projectAuditorParams.Platform)).ToArray();
+            var supportedModules = requestedModules.Where(m => m != null && m.isSupported && CoreUtils.SupportsPlatform(m.GetType(), platform)).ToArray();
 
             var numModules = supportedModules.Length;
             if (numModules == 0)
@@ -214,9 +217,6 @@ namespace Unity.ProjectAuditor.Editor
                     moduleParams.OnModuleCompleted();
                 }
             }
-
-            // Save any new DiagnosticParams that may have been declared by previously-unseen modules during analysis
-            projectAuditorParams.Rules.Save();
 
             if (logTimingsInfo)
                 Debug.Log("Project Auditor time to interactive: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");

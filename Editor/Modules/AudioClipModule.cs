@@ -56,6 +56,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
             AssetsModule.k_IssueLayout
         };
 
+        const string k_StreamingClipThresholdBytes            = "StreamingClipThresholdBytes";
+        const string k_LongDecompressedClipThresholdBytes     = "LongDecompressedClipThresholdBytes";
+        const string k_LongCompressedMobileClipThresholdBytes = "LongCompressedMobileClipThresholdBytes";
+        const string k_LoadInBackGroundClipSizeThresholdBytes = "LoadInBackGroundClipSizeThresholdBytes";
+
+        public override void RegisterParameters(ProjectAuditorDiagnosticParams diagnosticParams)
+        {
+            diagnosticParams.RegisterParameter(k_StreamingClipThresholdBytes, 1 * (64000 + (int)(1.6 * 48000 * 2)) + 694);
+            diagnosticParams.RegisterParameter(k_LongDecompressedClipThresholdBytes, 200 * 1024);
+            diagnosticParams.RegisterParameter(k_LongCompressedMobileClipThresholdBytes, 200 * 1024);
+            diagnosticParams.RegisterParameter(k_LoadInBackGroundClipSizeThresholdBytes, 200 * 1024);
+        }
+
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
@@ -72,16 +85,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     continue;
                 }
 
-                var rules = projectAuditorParams.Rules;
+                var diagnosticParams = projectAuditorParams.DiagnosticParams;
 
                 var context = new AudioClipAnalysisContext
                 {
                     Importer = audioImporter,
                     Params = projectAuditorParams,
-                    StreamingClipThresholdBytes = rules.GetParameter("StreamingClipThresholdBytes", 1 * (64000 + (int)(1.6 * 48000 * 2)) + 694),
-                    LongDecompressedClipThresholdBytes = rules.GetParameter("LongDecompressedClipThresholdBytes", 200 * 1024),
-                    LongCompressedMobileClipThresholdBytes = rules.GetParameter("LongCompressedMobileClipThresholdBytes", 200 * 1024),
-                    LoadInBackGroundClipSizeThresholdBytes = rules.GetParameter("LoadInBackGroundClipSizeThresholdBytes", 200 * 1024)
+                    StreamingClipThresholdBytes = diagnosticParams.GetParameter(k_StreamingClipThresholdBytes),
+                    LongDecompressedClipThresholdBytes = diagnosticParams.GetParameter(k_LongDecompressedClipThresholdBytes),
+                    LongCompressedMobileClipThresholdBytes = diagnosticParams.GetParameter(k_LongCompressedMobileClipThresholdBytes),
+                    LoadInBackGroundClipSizeThresholdBytes = diagnosticParams.GetParameter(k_LoadInBackGroundClipSizeThresholdBytes)
                 };
 
                 foreach (var analyzer in analyzers)

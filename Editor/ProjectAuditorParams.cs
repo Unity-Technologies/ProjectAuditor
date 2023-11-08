@@ -9,7 +9,7 @@ using UnityEngine;
 namespace Unity.ProjectAuditor.Editor
 {
     [Serializable]
-    internal class SerializedAnalysisParams
+    internal class ProjectAuditorParams
     {
         /// <summary>
         /// Categories to include in the audit. If null, all categories will be included.
@@ -34,6 +34,7 @@ namespace Unity.ProjectAuditor.Editor
             {
                 m_Platform = value;
                 m_PlatformString = m_Platform.ToString();
+                DiagnosticParams?.SetAnalysisPlatform(Platform);
             }
         }
 
@@ -63,22 +64,6 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public CompilationMode CompilationMode;
 
-        public SerializedAnalysisParams()
-        {
-        }
-
-        public SerializedAnalysisParams(SerializedAnalysisParams original)
-        {
-            Categories = original.Categories;
-            Platform = original.Platform;
-            AssemblyNames = original.AssemblyNames;
-            CodeOptimization = original.CodeOptimization;
-            CompilationMode = original.CompilationMode;
-        }
-    }
-
-    internal class ProjectAuditorParams : SerializedAnalysisParams
-    {
         /// <summary>
         /// Reports a batch of new issues. Note that this be called multiple times per analysis.
         /// </summary>
@@ -98,10 +83,14 @@ namespace Unity.ProjectAuditor.Editor
         public Action OnModuleCompleted;
 
         /// <summary>
-        /// The ProjectAuditorRules object which defines which issues should be ignored, and the customizable thresholds for reporting certain diagnostics.
+        /// The ProjectAuditorRules object which defines which issues should be ignored or given increased severity
         /// </summary>
-        [JsonIgnore]
         public ProjectAuditorRules Rules;
+
+        /// <summary>
+        /// The ProjectAuditorDiagnosticParams object which defines the customizable thresholds for reporting certain diagnostics.
+        /// </summary>
+        public ProjectAuditorDiagnosticParams DiagnosticParams;
 
         [JsonIgnore]
         [NonSerialized]
@@ -110,54 +99,41 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// ProjectAuditorParams constructor
         /// </summary>
-        public ProjectAuditorParams()
-            : this(EditorUserBuildSettings.activeBuildTarget, UserPreferences.RulesAssetPath)
+        /// <param name="copyParamsFromGlobal"> If true, the global ProjectSettings will register DiagnosticParams defaults, save any changes and copy the data into this object. This is usually the desired behaviour, but is not allowed during serialization. </param>
+        public ProjectAuditorParams(bool copyParamsFromGlobal = true)
         {
-        }
+            if (copyParamsFromGlobal)
+            {
+                // Check for any new defaults (newly-installed package, new user modules, or an updated version of the package since last analysis)
+                ProjectAuditorSettings.instance.DiagnosticParams.RegisterParameters();
+                ProjectAuditorSettings.instance.Save();
 
-        /// <summary>
-        /// ProjectAuditorParams constructor
-        /// </summary>
-        /// <param name="platform"> Target platform for analysis</param>
-        /// <param name="assetPath"> Path to the ProjectAuditorRules asset</param>
-        public ProjectAuditorParams(BuildTarget platform, string assetPath)
-        {
-            Platform = platform;
+                Rules = new ProjectAuditorRules(ProjectAuditorSettings.instance.Rules);
+                DiagnosticParams = new ProjectAuditorDiagnosticParams(ProjectAuditorSettings.instance.DiagnosticParams);
+            }
+
+            Platform = BuildTarget.NoTarget;
             CodeOptimization = CodeOptimization.Release;
             CompilationMode = CompilationMode.Player;
-
-            InitRulesAsset(assetPath);
         }
 
+        // Copy constructor
         public ProjectAuditorParams(ProjectAuditorParams original)
-            : base(original)
         {
+            Rules = original.Rules;
+            DiagnosticParams = original.DiagnosticParams;
+
+            Categories = original.Categories;
+            Platform = original.Platform;
+            AssemblyNames = original.AssemblyNames;
+            CodeOptimization = original.CodeOptimization;
+            CompilationMode = original.CompilationMode;
+
             OnIncomingIssues = original.OnIncomingIssues;
             OnCompleted = original.OnCompleted;
             OnModuleCompleted = original.OnModuleCompleted;
 
             ExistingReport = original.ExistingReport;
-
-            Rules = original.Rules;
-        }
-
-        void InitRulesAsset(string assetPath)
-        {
-            Rules = AssetDatabase.LoadAssetAtPath<ProjectAuditorRules>(assetPath);
-            if (Rules == null)
-            {
-                var path = Path.GetDirectoryName(assetPath);
-                if (!File.Exists(path))
-                    Directory.CreateDirectory(path);
-
-                Rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
-                Rules.Initialize();
-                AssetDatabase.CreateAsset(Rules, assetPath);
-
-                Debug.LogFormat("Project Auditor Rules: {0} has been created.", assetPath);
-            }
-
-            Rules.SetAnalysisPlatform(Platform);
         }
     }
 }

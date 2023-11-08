@@ -6,7 +6,6 @@ using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
-using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
@@ -64,6 +63,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             RegisterDescriptor(k_AssetInResourcesFolderDescriptor);
             RegisterDescriptor(k_StreamingAssetsFolderDescriptor);
+        }
+
+        const string k_StreamingAssetsFolderSizeLimit   = "StreamingAssetsFolderSizeLimit";
+
+        public override void RegisterParameters(ProjectAuditorDiagnosticParams diagnosticParams)
+        {
+            diagnosticParams.RegisterParameter(k_StreamingAssetsFolderSizeLimit, 50);
         }
 
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
@@ -124,7 +130,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
 
                 var folderSizeLimitMB =
-                    context.Params.Rules.GetParameter("StreamingAssetsFolderSizeLimit", 50);
+                    context.Params.DiagnosticParams.GetParameter(k_StreamingAssetsFolderSizeLimit);
 
                 if (totalBytes > folderSizeLimitMB * 1024 * 1024)
                 {

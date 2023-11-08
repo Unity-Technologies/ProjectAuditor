@@ -1,13 +1,13 @@
 using System;
+using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
     [Serializable]
-    internal class Rule : IEquatable<Rule>
+    public class Rule : IEquatable<Rule>
     {
         public Severity severity;
         public string filter;
-
         public string id;
 
         public bool Equals(Rule other)

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using Unity.ProjectAuditor.Editor.Core;
@@ -53,6 +52,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
             AssetsModule.k_IssueLayout
         };
 
+        const string k_TextureStreamingMipmapsSizeLimit = "TextureStreamingMipmapsSizeLimit";
+        const string k_TextureSizeLimit                 = "TextureSizeLimit";
+        const string k_SpriteAtlasEmptySpaceLimit       = "SpriteAtlasEmptySpaceLimit";
+
+        public override void RegisterParameters(ProjectAuditorDiagnosticParams diagnosticParams)
+        {
+            diagnosticParams.RegisterParameter(k_TextureStreamingMipmapsSizeLimit, 4000);
+            diagnosticParams.RegisterParameter(k_TextureSizeLimit, 2048);
+            diagnosticParams.RegisterParameter(k_SpriteAtlasEmptySpaceLimit, 50);
+        }
+
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
@@ -60,11 +70,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             progress?.Start("Finding Textures", "Search in Progress...", assetPaths.Length);
 
-            var platformString = projectAuditorParams.Platform.ToString();
-            var rules = projectAuditorParams.Rules;
-            var textureStreamingMipmapsSizeLimit = rules.GetParameter("TextureStreamingMipmapsSizeLimit", 4000);
-            var textureSizeLimit = rules.GetParameter("TextureSizeLimit", 2048);
-            var spriteAtlasEmptySpaceLimit = rules.GetParameter("SpriteAtlasEmptySpaceLimit", 50);
+            var diagnosticParams = projectAuditorParams.DiagnosticParams;
+            var textureStreamingMipmapsSizeLimit = diagnosticParams.GetParameter(k_TextureStreamingMipmapsSizeLimit);
+            var textureSizeLimit = diagnosticParams.GetParameter(k_TextureSizeLimit);
+            var spriteAtlasEmptySpaceLimit = diagnosticParams.GetParameter(k_SpriteAtlasEmptySpaceLimit);
 
             foreach (var assetPath in assetPaths)
             {
