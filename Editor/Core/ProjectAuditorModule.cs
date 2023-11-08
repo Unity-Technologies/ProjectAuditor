@@ -34,20 +34,15 @@ namespace Unity.ProjectAuditor.Editor.Core
             get;
         }
 
-        public static string[] GetAssetPaths(AnalysisContext context, bool doAssetPathFilter = true)
+        public static string[] GetAssetPaths(AnalysisContext context)
         {
-            var assets = AssetDatabase.GetAllAssetPaths();
-            if (doAssetPathFilter)
-            {
-                return FilterAssetPathsArray(context, assets);
-            }
-            return assets;
+            return FilterAssetPathsArray(context, AssetDatabase.GetAllAssetPaths());
         }
 
-        public static string[] GetAssetPathsByFilter(string filter, AnalysisContext context, bool doAssetPathFilter = true)
+        public static string[] GetAssetPathsByFilter(string filter, AnalysisContext context)
         {
             var assetsEnumerable = AssetDatabase.FindAssets(filter).Select(AssetDatabase.GUIDToAssetPath);
-            if (doAssetPathFilter && context.Params.AssetPathFilter != null)
+            if (context.Params.AssetPathFilter != null)
             {
                 assetsEnumerable = assetsEnumerable.Where(path => context.Params.AssetPathFilter(path));
             }
