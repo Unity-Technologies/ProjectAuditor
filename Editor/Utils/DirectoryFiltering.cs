@@ -4,13 +4,13 @@ using System.Runtime.CompilerServices;
 
 namespace Unity.ProjectAuditor.Editor.Utils
 {
-    public enum FilteringMode
+    internal enum FilteringMode
     {
         Allow,
         Block
     }
 
-    public static class DirectoryFiltering
+    internal static class DirectoryFiltering
     {
         public readonly struct Rule
         {
