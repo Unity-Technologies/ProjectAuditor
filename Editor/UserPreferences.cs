@@ -35,9 +35,6 @@ namespace Unity.ProjectAuditor.Editor
         static string k_BuildReportPathLabel = "Library Path";
         static string k_BuildReportPathDefault = "Assets/BuildReports";
 
-        static string k_RulesPathLabel = "Rules Asset Path";
-        static string k_RulesPathDefault = "Assets/Editor/ProjectAuditorRules.asset";
-
         internal static string LoadSavePath = string.Empty;
 
         public static string Path => k_PreferencesKey;
@@ -120,12 +117,6 @@ namespace Unity.ProjectAuditor.Editor
             set => EditorPrefs.SetString(MakeKey(nameof(SettingsAsset)), value);
         }
 
-        public static string RulesAssetPath
-        {
-            get => EditorPrefs.GetString(MakeKey(nameof(RulesAssetPath)), k_RulesPathDefault);
-            set => EditorPrefs.SetString(MakeKey(nameof(RulesAssetPath)), value);
-        }
-
         [SettingsProvider]
         internal static SettingsProvider CreatePreferencesProvider()
         {
@@ -166,21 +157,6 @@ namespace Unity.ProjectAuditor.Editor
             AnalyzeInBackground = EditorGUILayout.Toggle(k_AnalysisInBackgroundLabel, AnalyzeInBackground);
             UseRoslynAnalyzers = EditorGUILayout.Toggle(k_UseRoslynAnalyzersLabel, UseRoslynAnalyzers);
             LogTimingsInfo = EditorGUILayout.Toggle(k_LogTimingsInfoLabel, LogTimingsInfo);
-
-            EditorGUILayout.BeginHorizontal();
-            var newRulesPath = EditorGUILayout.DelayedTextField(k_RulesPathLabel, RulesAssetPath);
-            if (!string.IsNullOrEmpty(newRulesPath))
-                RulesAssetPath = newRulesPath;
-            if (GUILayout.Button("Browse...", GUILayout.Width(80)))
-            {
-                newRulesPath = EditorUtility.OpenFilePanel("Select Project Auditor Rules asset path/filename", RulesAssetPath, "asset");
-                if (!string.IsNullOrEmpty(newRulesPath))
-                {
-                    RulesAssetPath = FileUtil.GetProjectRelativePath(newRulesPath);
-                    InternalEditorUtility.RepaintAllViews();
-                }
-            }
-            EditorGUILayout.EndHorizontal();
 
             EditorGUI.indentLevel--;
 

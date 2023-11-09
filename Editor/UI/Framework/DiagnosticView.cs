@@ -141,7 +141,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         foreach (var t in selectedIssues)
                         {
                             m_Rules.ClearRules(t);
+                            ProjectAuditorSettings.instance.Rules.ClearRules(t);
                         }
+
+                        ProjectAuditorSettings.instance.Save();
 
                         m_ViewManager.OnSelectedIssuesDisplayRequested?.Invoke(selectedIssues);
 
@@ -155,8 +158,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         foreach (var t in selectedIssues)
                         {
                             m_Rules.SetRule(t, Severity.None);
+                            ProjectAuditorSettings.instance.Rules.SetRule(t, Severity.None);
                         }
 
+                        ProjectAuditorSettings.instance.Save();
                         m_ViewManager.OnSelectedIssuesIgnoreRequested?.Invoke(selectedIssues);
 
                         ClearSelection();

@@ -1,9 +1,6 @@
 using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Interfaces;
-using UnityEditor;
-using UnityEditor.U2D;
-using UnityEngine.U2D;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
@@ -15,12 +12,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts  => new IssueLayout[] { AssetsModule.k_IssueLayout };
 
+        const string k_SpriteAtlasEmptySpaceLimit   = "SpriteAtlasEmptySpaceLimit";
+
+        public override void RegisterParameters(ProjectAuditorDiagnosticParams diagnosticParams)
+        {
+            diagnosticParams.RegisterParameter(k_SpriteAtlasEmptySpaceLimit, 50);
+        }
+
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
 
-            var rules = projectAuditorParams.Rules;
-            var spriteAtlasEmptySpaceLimit = rules.GetParameter("SpriteAtlasEmptySpaceLimit", 50);
+            var spriteAtlasEmptySpaceLimit = projectAuditorParams.DiagnosticParams.GetParameter(k_SpriteAtlasEmptySpaceLimit);
 
             var context = new SpriteAtlasAnalysisContext
             {

@@ -56,14 +56,16 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.IsNull(projectAuditorParams.Categories);
             Assert.IsNull(projectAuditorParams.AssemblyNames);
-            Assert.AreEqual(EditorUserBuildSettings.activeBuildTarget, projectAuditorParams.Platform);
+            // projectAuditorParams.Platform defaults to NoTarget because we can't call EditorUserBuildSettings.activeBuildTarget
+            // during construction/serialization. Platform gets set when params is passed to an instance of ProjectAuditor
+            Assert.AreEqual(BuildTarget.NoTarget, projectAuditorParams.Platform);
             Assert.AreEqual(CodeOptimization.Release, projectAuditorParams.CodeOptimization);
         }
 
         [Test]
         public void ProjectAuditor_Params_AreCopied()
         {
-            var rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
+            var rules = new ProjectAuditorRules();
 
             var originalParams = new ProjectAuditorParams
             {

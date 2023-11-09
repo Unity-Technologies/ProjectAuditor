@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using UnityEditor;
@@ -42,13 +40,22 @@ namespace Unity.ProjectAuditor.Editor.Modules
             AssetsModule.k_IssueLayout
         };
 
+        const string k_MeshVertexCountLimit   = "MeshVertexCountLimit";
+        const string k_MeshTriangleCountLimit = "MeshTriangleCountLimit";
+
+        public override void RegisterParameters(ProjectAuditorDiagnosticParams diagnosticParams)
+        {
+            diagnosticParams.RegisterParameter(k_MeshVertexCountLimit, 5000);
+            diagnosticParams.RegisterParameter(k_MeshTriangleCountLimit, 5000);
+        }
+
         public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
 
-            var rules = projectAuditorParams.Rules;
-            var meshVertexCountLimit = rules.GetParameter("MeshVertexCountLimit", 5000);
-            var meshTriangleCountLimit = rules.GetParameter("MeshTriangleCountLimit", 5000);
+            var diagnosticParams = projectAuditorParams.DiagnosticParams;
+            var meshVertexCountLimit = diagnosticParams.GetParameter(k_MeshVertexCountLimit);
+            var meshTriangleCountLimit = diagnosticParams.GetParameter(k_MeshTriangleCountLimit);
 
             var context = new MeshAnalysisContext()
             {

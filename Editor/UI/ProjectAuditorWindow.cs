@@ -239,10 +239,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 m_ProjectAuditor = new ProjectAuditor();
 
-                // Create a default params just to use the default rules it contains to initialize the views
-                var projectAuditorParams = new ProjectAuditorParams();
-
-                InitializeViews(GetAllSupportedCategories(), projectAuditorParams.Rules, true);
+                InitializeViews(GetAllSupportedCategories(), ProjectAuditorSettings.instance.Rules, true);
 
                 Profiler.BeginSample("Views Update");
                 m_ViewManager.OnAnalysisRestored(m_ProjectReport);
@@ -264,7 +261,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             wantsMouseMove = true;
         }
 
-        void InitializeViews(IssueCategory[] categories, ProjectAuditorRules projectAuditorRules, bool reload)
+        void InitializeViews(IssueCategory[] categories, ProjectAuditorRules rules, bool reload)
         {
             var initialize = m_ViewManager == null || !reload;
 
@@ -332,7 +329,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             Profiler.BeginSample("Views Creation");
 
-            m_ViewManager.Create(projectAuditorRules, m_ViewStates, null, this);
+            m_ViewManager.Create(rules, m_ViewStates, null, this);
 
             InitializeTabs(!initialize);
 

@@ -12,13 +12,12 @@ using UnityEditor;
 namespace Unity.ProjectAuditor.Editor
 {
     [Serializable]
-    internal class SessionInfo : SerializedAnalysisParams
+    internal class SessionInfo : ProjectAuditorParams
     {
         // for serialization purposes only
-        public SessionInfo()
-        {}
+        public SessionInfo() : base(false) {}
 
-        public SessionInfo(SerializedAnalysisParams serializedParams)
+        public SessionInfo(ProjectAuditorParams serializedParams)
             : base(serializedParams)
         {}
 
@@ -273,7 +272,6 @@ namespace Unity.ProjectAuditor.Editor
         {
             return JsonConvert.DeserializeObject<ProjectReport>(File.ReadAllText(path), new JsonSerializerSettings
             {
-                Converters = new List<JsonConverter> { new ScriptableObjectJsonConverter() },
                 ObjectCreationHandling = ObjectCreationHandling.Replace
             });
         }

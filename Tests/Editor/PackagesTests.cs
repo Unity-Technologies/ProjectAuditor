@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
 #if UNITY_2019_1_OR_NEWER
             AddPackage("com.unity.2d.pixel-perfect@3.0.2");
-            AddPackage("com.unity.services.vivox@15.1.180001-pre.5");
+            AddPackage("com.unity.services.vivox");
 #endif
         }
 
