@@ -1,4 +1,6 @@
-﻿namespace Unity.ProjectAuditor.Editor.Core
+using Unity.ProjectAuditor.Editor.Diagnostic;
+
+namespace Unity.ProjectAuditor.Editor.Core
 {
     internal class AnalysisContext
     {
@@ -25,6 +27,18 @@
         internal IssueBuilder CreateWithoutDiagnostic(IssueCategory category, string description)
         {
             return new IssueBuilder(category, description);
+        }
+
+        public bool IsDescriptorEnabled(Descriptor descriptor)
+        {
+            if (!descriptor.IsApplicable(Params))
+                return false;
+
+            var rule = Params.Rules.GetRule(descriptor.id);
+            if (rule != null)
+                return rule.severity != Severity.None;
+
+            return descriptor.isEnabledByDefault;
         }
     }
 }

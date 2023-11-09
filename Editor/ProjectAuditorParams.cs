@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using Newtonsoft.Json;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using UnityEditor;
@@ -134,6 +133,16 @@ namespace Unity.ProjectAuditor.Editor
             OnModuleCompleted = original.OnModuleCompleted;
 
             ExistingReport = original.ExistingReport;
+        }
+
+        public ProjectAuditorParams WithAdditionalDiagnosticRules(List<Diagnostic.Rule> rules)
+        {
+            foreach (var rule in rules)
+            {
+                Rules.AddRule(rule);
+            }
+
+            return this;
         }
     }
 }

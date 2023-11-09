@@ -22,6 +22,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         protected string m_BuildPath;
         protected ProjectAuditor m_ProjectAuditor;
         protected AndroidArchitecture m_OriginalTargetArchitecture;
+        protected List<Diagnostic.Rule> m_AdditionalRules = new List<Diagnostic.Rule>();
         protected string m_OriginalCompanyName;
         protected string m_OriginalProductName;
 
@@ -97,7 +98,8 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
                     foundIssues.AddRange(predicate == null ? issues : issues.Where(predicate));
                 },
                 Platform = m_Platform
-            };
+            }.WithAdditionalDiagnosticRules(m_AdditionalRules);
+
             m_ProjectAuditor.Audit(projectAuditorParams);
 
             return foundIssues.ToArray();
@@ -120,7 +122,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
                     foundIssues.AddRange(predicate == null ? categoryIssues : categoryIssues.Where(predicate));
                 },
                 Platform = m_Platform
-            };
+            }.WithAdditionalDiagnosticRules(m_AdditionalRules);
 
             projectAuditor.Audit(projectAuditorParams);
 

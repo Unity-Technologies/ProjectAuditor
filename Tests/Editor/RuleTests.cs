@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -292,5 +293,30 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(rule2.filter, k_filter);
 
         }
+
+        [Test]
+        public void Rule_TemporaryRule_IsAdded()
+        {
+            var projectAuditorParams = new ProjectAuditorParams { Platform = m_Platform };
+            var numRules = projectAuditorParams.Rules.NumRules;
+
+            projectAuditorParams.WithAdditionalDiagnosticRules(new List<Rule>(new []{new Rule()}));
+
+            Assert.AreEqual(numRules+1, projectAuditorParams.Rules.NumRules);
+        }
+
+        [Test]
+        public void Rule_TemporaryRule_DoesNotPersist()
+        {
+            var projectAuditorParams = new ProjectAuditorParams { Platform = m_Platform };
+            var numRules = ProjectAuditorSettings.instance.Rules.NumRules;
+
+            projectAuditorParams.WithAdditionalDiagnosticRules(new List<Rule>(new []{new Rule()}));
+
+            m_ProjectAuditor.Audit();
+
+            Assert.AreEqual(numRules, ProjectAuditorSettings.instance.Rules.NumRules);
+        }
+
     }
 }
