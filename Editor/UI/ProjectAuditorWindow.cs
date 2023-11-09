@@ -843,17 +843,17 @@ namespace Unity.ProjectAuditor.Editor.UI
         void AuditSingleModule<T>() where T : Module
         {
             var module = m_ProjectAuditor.GetModule<T>();
-            if (!module.isSupported)
+            if (!module.IsSupported)
                 return;
 
-            AuditCategories(module.categories);
+            AuditCategories(module.Categories);
         }
 
         void AuditCategories(IssueCategory[] categories, bool refreshSummaryView = false)
         {
             // a module might report more categories than requested so we need to make sure we clean up the views accordingly
             var modules = categories.SelectMany(m_ProjectAuditor.GetModules).ToArray();
-            var actualCategories = modules.SelectMany(m => m.categories).Distinct().ToArray();
+            var actualCategories = modules.SelectMany(m => m.Categories).Distinct().ToArray();
 
             var views = actualCategories
                 .Select(c => m_ViewManager.GetView(c))
@@ -1002,7 +1002,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     var tabValue = tab;
 
-                    var moduleCategories = module.supportedLayouts
+                    var moduleCategories = module.SupportedLayouts
                         .Where(l => tabValue.excludedModuleCategories == null || tabValue.excludedModuleCategories.Contains(l.category) == false)
                         .Select(l => l.category);
 

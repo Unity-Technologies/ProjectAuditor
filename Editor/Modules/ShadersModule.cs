@@ -253,9 +253,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             new Dictionary<ComputeShader, List<ComputeShaderVariantData>>();
 #endif
 
-        public override string name => "Shaders";
+        public override string Name => "Shaders";
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_ShaderLayout,
             k_ShaderVariantLayout,

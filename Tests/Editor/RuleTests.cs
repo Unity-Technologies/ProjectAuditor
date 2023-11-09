@@ -130,9 +130,9 @@ namespace Unity.ProjectAuditor.EditorTests
         public void Rule_Test_CanBeAddedAndRemoved()
         {
             var settingsAuditor = m_ProjectAuditor.GetModule<SettingsModule>();
-            var IDs = settingsAuditor.supportedDescriptorIDs;
+            var ids = settingsAuditor.SupportedDescriptorIds;
             var rules = new SeverityRules();
-            var firstID = IDs.FirstOrDefault();
+            var firstID = ids.FirstOrDefault();
 
             Assert.IsNotNull(firstID);
 

@@ -82,7 +82,7 @@ namespace Unity.ProjectAuditor.Editor
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"Project Auditor [{instance.name}]: {e.Message} {e.StackTrace}");
+                    Debug.LogError($"Project Auditor [{instance.Name}]: {e.Message} {e.StackTrace}");
                     continue;
                 }
                 m_Modules.Add(instance);
@@ -131,8 +131,8 @@ namespace Unity.ProjectAuditor.Editor
             var categories = analysisParams.Categories != null
                 ? analysisParams.Categories
                 : m_Modules
-                    .Where(m => m.isEnabledByDefault)
-                    .SelectMany(m => m.categories)
+                    .Where(m => m.IsEnabledByDefault)
+                    .SelectMany(m => m.Categories)
                     .ToArray();
             var report = analysisParams.ExistingReport;
             if (report == null)
@@ -160,7 +160,7 @@ namespace Unity.ProjectAuditor.Editor
             }
 
             var requestedModules = categories.SelectMany(GetModules).Distinct().ToArray();
-            var supportedModules = requestedModules.Where(m => m != null && m.isSupported && CoreUtils.SupportsPlatform(m.GetType(), platform)).ToArray();
+            var supportedModules = requestedModules.Where(m => m != null && m.IsSupported && CoreUtils.SupportsPlatform(m.GetType(), platform)).ToArray();
 
             var numModules = supportedModules.Length;
             if (numModules == 0)
@@ -187,7 +187,7 @@ namespace Unity.ProjectAuditor.Editor
                     {
                         var moduleEndTime = DateTime.Now;
                         if (logTimingsInfo)
-                            Debug.Log($"Project Auditor module {module.name} took: " +
+                            Debug.Log($"Project Auditor module {module.Name} took: " +
                                 (moduleEndTime - moduleStartTime).TotalMilliseconds / 1000.0 + " seconds.");
 
                         report.RecordModuleInfo(module, moduleStartTime, moduleEndTime);
@@ -213,7 +213,7 @@ namespace Unity.ProjectAuditor.Editor
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"Project Auditor module {module.name} failed: " + e.Message + " " + e.StackTrace);
+                    Debug.LogError($"Project Auditor module {module.Name} failed: " + e.Message + " " + e.StackTrace);
                     moduleParams.OnModuleCompleted();
                 }
             }
@@ -246,17 +246,17 @@ namespace Unity.ProjectAuditor.Editor
 
         internal DescriptorID[] GetDiagnosticIDs()
         {
-            return m_Modules.SelectMany(m => m.supportedDescriptorIDs).ToArray();
+            return m_Modules.SelectMany(m => m.SupportedDescriptorIds).ToArray();
         }
 
         internal Module[] GetModules(IssueCategory category)
         {
-            return m_Modules.Where(a => a.isSupported && a.supportedLayouts.FirstOrDefault(l => l.category == category) != null).ToArray();
+            return m_Modules.Where(a => a.IsSupported && a.SupportedLayouts.FirstOrDefault(l => l.category == category) != null).ToArray();
         }
 
         internal bool IsModuleSupported(IssueCategory category)
         {
-            return m_Modules.Any(a => a.isSupported && a.supportedLayouts.FirstOrDefault(l => l.category == category) != null);
+            return m_Modules.Any(a => a.IsSupported && a.SupportedLayouts.FirstOrDefault(l => l.category == category) != null);
         }
 
         /// <summary>
@@ -265,7 +265,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <returns>An array of IssueCategory values</returns>
         internal IssueCategory[] GetCategories()
         {
-            return m_Modules.Where(module => module.isSupported).SelectMany(m => m.categories).ToArray();
+            return m_Modules.Where(module => module.IsSupported).SelectMany(m => m.Categories).ToArray();
         }
 
         /// <summary>

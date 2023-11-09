@@ -109,13 +109,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         internal static IBuildReportProvider DefaultBuildReportProvider => s_BuildReportProvider;
 
-        public override string name => "Build Report";
+        public override string Name => "Build Report";
 
 #if !BUILD_REPORT_API_SUPPORT
-        public override bool isSupported => false;
+        public override bool IsSupported => false;
 #endif
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_MetaDataLayout,
             k_FileLayout,

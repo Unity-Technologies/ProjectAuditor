@@ -11,25 +11,25 @@ namespace Unity.ProjectAuditor.Editor.Core
     /// </summary>
     internal abstract class Module
     {
-        protected HashSet<DescriptorID> m_IDs;
+        protected HashSet<DescriptorID> m_Ids;
 
-        public abstract string name
+        public abstract string Name
         {
             get;
         }
 
-        public IssueCategory[] categories
+        public IssueCategory[] Categories
         {
-            get { return supportedLayouts.Select(l => l.category).ToArray(); }
+            get { return SupportedLayouts.Select(l => l.category).ToArray(); }
         }
 
-        public virtual bool isEnabledByDefault => true;
+        public virtual bool IsEnabledByDefault => true;
 
-        public virtual bool isSupported => true;
+        public virtual bool IsSupported => true;
 
-        public IReadOnlyCollection<DescriptorID> supportedDescriptorIDs => m_IDs != null ? m_IDs.ToArray() : Array.Empty<DescriptorID>();
+        public IReadOnlyCollection<DescriptorID> SupportedDescriptorIds => m_Ids != null ? m_Ids.ToArray() : Array.Empty<DescriptorID>();
 
-        public abstract IReadOnlyCollection<IssueLayout> supportedLayouts
+        public abstract IReadOnlyCollection<IssueLayout> SupportedLayouts
         {
             get;
         }
@@ -46,7 +46,7 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         public virtual void Initialize()
         {
-            m_IDs = new HashSet<DescriptorID>();
+            m_Ids = new HashSet<DescriptorID>();
         }
 
         public virtual void RegisterParameters(DiagnosticParams diagnosticParams)
@@ -64,13 +64,13 @@ namespace Unity.ProjectAuditor.Editor.Core
 
             DescriptorLibrary.RegisterDescriptor(descriptor.id, descriptor);
 
-            if (!m_IDs.Add(descriptor.id))
+            if (!m_Ids.Add(descriptor.id))
                 throw new Exception("Duplicate descriptor with id: " + descriptor.id);
         }
 
         public bool SupportsDescriptor(DescriptorID id)
         {
-            return m_IDs.Contains(id);
+            return m_Ids.Contains(id);
         }
 
         /// <summary>

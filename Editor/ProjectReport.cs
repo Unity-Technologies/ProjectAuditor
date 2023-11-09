@@ -139,7 +139,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public void RecordModuleInfo(Module module, DateTime startTime, DateTime endTime)
         {
-            var name = module.name;
+            var name = module.Name;
             var info = m_ModuleInfos.FirstOrDefault(m => m.name.Equals(name));
             if (info != null)
             {
@@ -150,9 +150,9 @@ namespace Unity.ProjectAuditor.Editor
             {
                 m_ModuleInfos.Add(new ModuleInfo
                 {
-                    name = module.name,
-                    categories = module.categories,
-                    layouts = module.supportedLayouts,
+                    name = module.Name,
+                    categories = module.Categories,
+                    layouts = module.SupportedLayouts,
                     startTime = Utils.Json.SerializeDateTime(startTime),
                     endTime = Utils.Json.SerializeDateTime(endTime)
                 });

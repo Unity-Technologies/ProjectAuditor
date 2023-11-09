@@ -71,9 +71,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "'{0}' version '{1}' is a preview/experimental version"
         };
 
-        public override string name => "Packages";
+        public override string Name => "Packages";
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_PackageLayout,
             k_PackageVersionLayout

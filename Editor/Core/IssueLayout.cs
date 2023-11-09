@@ -35,9 +35,9 @@ namespace Unity.ProjectAuditor.Editor.Core
                 if (type.IsAbstract)
                     continue;
                 var module = Activator.CreateInstance(type) as Module;
-                if (module.isSupported)
+                if (module.IsSupported)
                 {
-                    foreach (var layout in module.supportedLayouts)
+                    foreach (var layout in module.SupportedLayouts)
                     {
                         if (layout.category == category)
                             return layout;

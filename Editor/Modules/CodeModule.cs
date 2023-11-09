@@ -129,9 +129,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         Thread m_AssemblyAnalysisThread;
 
-        public override string name => "Code";
+        public override string Name => "Code";
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_IssueLayout,
             k_AssemblyLayout,
@@ -150,7 +150,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
-            if (m_IDs == null)
+            if (m_Ids == null)
                 throw new Exception("Descriptors Database not initialized.");
 
             if (UserPreferences.AnalyzeInBackground && m_AssemblyAnalysisThread != null)

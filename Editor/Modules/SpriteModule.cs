@@ -6,11 +6,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
 {
     class SpriteModule : ModuleWithAnalyzers<ISpriteAtlasModuleAnalyzer>
     {
-        public override string name => "Sprites Atlas";
+        public override string Name => "Sprites Atlas";
 
-        public override bool isEnabledByDefault => false;
+        public override bool IsEnabledByDefault => false;
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts  => new IssueLayout[] { AssetsModule.k_IssueLayout };
+        public override IReadOnlyCollection<IssueLayout> SupportedLayouts  => new IssueLayout[] { AssetsModule.k_IssueLayout };
 
         const string k_SpriteAtlasEmptySpaceLimit   = "SpriteAtlasEmptySpaceLimit";
 
