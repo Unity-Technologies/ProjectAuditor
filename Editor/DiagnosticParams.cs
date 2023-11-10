@@ -31,6 +31,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public void RegisterParameters()
         {
+            m_ParamsStack[0].Platform = BuildTarget.NoTarget;
             foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(Module)))
             {
                 if (type.IsAbstract)
