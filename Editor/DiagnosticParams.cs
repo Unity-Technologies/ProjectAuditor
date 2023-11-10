@@ -60,6 +60,8 @@ namespace Unity.ProjectAuditor.Editor
             [JsonProperty("params")]
             Dictionary<string, int> m_Params = new Dictionary<string, int>();
 
+            internal int ParamsCount => (m_Params == null) ? 0 : m_Params.Count;
+
             // Can't use KeyValuePair<string, int> because Unity won't serialize generic types. So we'll make a concrete type.
             [Serializable]
             internal struct ParamKeyValue
@@ -74,7 +76,8 @@ namespace Unity.ProjectAuditor.Editor
                 }
             }
 
-            [JsonIgnore][SerializeField] List<ParamKeyValue> m_SerializedParams = new List<ParamKeyValue>();
+            [JsonIgnore] [NonReorderable] [SerializeField]
+            List<ParamKeyValue> m_SerializedParams = new List<ParamKeyValue>();
 
             public PlatformParams()
             {
@@ -134,6 +137,8 @@ namespace Unity.ProjectAuditor.Editor
 
         public void OnBeforeSerialize()
         {
+            EnsureDefaults();
+
             foreach (var platformParams in m_ParamsStack)
             {
                 platformParams.PreSerialize();
@@ -146,13 +151,34 @@ namespace Unity.ProjectAuditor.Editor
             {
                 platformParams.PostDeserialize();
             }
+
+            EnsureDefaults();
         }
 
-        [JsonProperty("paramsStack")][SerializeField] internal List<PlatformParams> m_ParamsStack = new List<PlatformParams>();
-        [JsonProperty][SerializeField] public int CurrentParamsIndex;
+        void EnsureDefaults()
+        {
+            if (m_ParamsStack == null || m_ParamsStack.Count == 0)
+            {
+                m_ParamsStack = new List<PlatformParams>();
+                m_ParamsStack.Add(new PlatformParams(BuildTarget.NoTarget));
+            }
+
+            if (m_ParamsStack[0].ParamsCount == 0)
+            {
+                RegisterParameters();
+            }
+        }
+
+        [JsonProperty("paramsStack")] [NonReorderable] [SerializeField]
+        internal List<PlatformParams> m_ParamsStack = new List<PlatformParams>();
+
+        [JsonProperty] [SerializeField]
+        public int CurrentParamsIndex;
 
         public void SetAnalysisPlatform(BuildTarget platform)
         {
+            EnsureDefaults();
+
             for (int i = 0; i < m_ParamsStack.Count; ++i)
             {
                 if (m_ParamsStack[i].Platform == platform)
