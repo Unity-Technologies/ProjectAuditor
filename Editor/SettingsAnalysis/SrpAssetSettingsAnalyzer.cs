@@ -9,7 +9,6 @@ using UnityEngine.Rendering.Universal;
 #endif
 
 #if PACKAGE_HDRP
-using System.Reflection;
 using UnityEngine.Rendering.HighDefinition;
 #endif
 
@@ -75,7 +74,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 return urpAsset.useSRPBatcher;
             }
 #elif PACKAGE_HDRP
-            FieldInfo enableSrpBatcherField = GetSrpBatcherField(renderPipeline,
+            System.Reflection.FieldInfo enableSrpBatcherField = GetSrpBatcherField(renderPipeline,
                 out HDRenderPipelineAsset hdrpAsset);
             if (enableSrpBatcherField != null)
             {
@@ -94,7 +93,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 urpAsset.useSRPBatcher = value;
             }
 #elif PACKAGE_HDRP
-            FieldInfo enableSrpBatcherField = GetSrpBatcherField(renderPipeline,
+            System.Reflection.FieldInfo enableSrpBatcherField = GetSrpBatcherField(renderPipeline,
                 out HDRenderPipelineAsset hdrpAsset);
             if (enableSrpBatcherField != null)
             {
@@ -104,7 +103,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         }
 
 #if PACKAGE_HDRP
-        static FieldInfo GetSrpBatcherField(RenderPipelineAsset renderPipeline,
+        static System.Reflection.FieldInfo GetSrpBatcherField(RenderPipelineAsset renderPipeline,
             out HDRenderPipelineAsset hdrpAsset)
         {
             hdrpAsset = null;
@@ -112,7 +111,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             {
                 hdrpAsset = asset;
                 return hdrpAsset.GetType()
-                    .GetField("enableSRPBatcher", BindingFlags.NonPublic | BindingFlags.Instance);
+                    .GetField("enableSRPBatcher", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             }
 
             return null;
