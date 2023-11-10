@@ -297,7 +297,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Rule_TemporaryRule_IsAdded()
         {
-            var projectAuditorParams = new ProjectAuditorParams { Platform = m_Platform };
+            var projectAuditorParams = new AnalysisParams { Platform = m_Platform };
             var numRules = projectAuditorParams.Rules.NumRules;
 
             projectAuditorParams.WithAdditionalDiagnosticRules(new List<Rule>(new []{new Rule()}));
@@ -308,7 +308,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Rule_TemporaryRule_DoesNotPersist()
         {
-            var projectAuditorParams = new ProjectAuditorParams { Platform = m_Platform };
+            var projectAuditorParams = new AnalysisParams { Platform = m_Platform };
             var numRules = ProjectAuditorSettings.instance.Rules.NumRules;
 
             projectAuditorParams.WithAdditionalDiagnosticRules(new List<Rule>(new []{new Rule()}));

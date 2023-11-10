@@ -135,7 +135,7 @@ namespace Unity.ProjectAuditor.Editor
             ExistingReport = original.ExistingReport;
         }
 
-        public ProjectAuditorParams WithAdditionalDiagnosticRules(List<Diagnostic.Rule> rules)
+        public AnalysisParams WithAdditionalDiagnosticRules(List<Diagnostic.Rule> rules)
         {
             foreach (var rule in rules)
             {
