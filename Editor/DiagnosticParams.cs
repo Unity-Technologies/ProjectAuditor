@@ -74,7 +74,7 @@ namespace Unity.ProjectAuditor.Editor
                 }
             }
 
-            [JsonIgnore] [SerializeField] List<ParamKeyValue> m_SerializedParams = new List<ParamKeyValue>();
+            [JsonIgnore][SerializeField] List<ParamKeyValue> m_SerializedParams = new List<ParamKeyValue>();
 
             public PlatformParams()
             {
@@ -134,7 +134,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public void OnBeforeSerialize()
         {
-            foreach(var platformParams in m_ParamsStack)
+            foreach (var platformParams in m_ParamsStack)
             {
                 platformParams.PreSerialize();
             }
@@ -142,14 +142,14 @@ namespace Unity.ProjectAuditor.Editor
 
         public void OnAfterDeserialize()
         {
-            foreach(var platformParams in m_ParamsStack)
+            foreach (var platformParams in m_ParamsStack)
             {
                 platformParams.PostDeserialize();
             }
         }
 
-        [JsonProperty("paramsStack")] [SerializeField] internal List<PlatformParams> m_ParamsStack = new List<PlatformParams>();
-        [JsonProperty] [SerializeField] public int CurrentParamsIndex;
+        [JsonProperty("paramsStack")][SerializeField] internal List<PlatformParams> m_ParamsStack = new List<PlatformParams>();
+        [JsonProperty][SerializeField] public int CurrentParamsIndex;
 
         public void SetAnalysisPlatform(BuildTarget platform)
         {

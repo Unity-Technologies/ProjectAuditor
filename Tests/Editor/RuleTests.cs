@@ -265,10 +265,10 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(2, m_Rules.NumRules);
 
             var jsonString = JsonConvert.SerializeObject(m_Rules, Formatting.None,
-                    new JsonSerializerSettings
-                    {
-                        NullValueHandling = NullValueHandling.Ignore
-                    });
+                new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                });
 
             Assert.NotNull(jsonString);
 
@@ -291,7 +291,6 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(rule2.id, k_id2);
             Assert.AreEqual(rule2.severity, Severity.Critical);
             Assert.AreEqual(rule2.filter, k_filter);
-
         }
 
         [Test]
@@ -300,9 +299,9 @@ namespace Unity.ProjectAuditor.EditorTests
             var projectAuditorParams = new AnalysisParams { Platform = m_Platform };
             var numRules = projectAuditorParams.Rules.NumRules;
 
-            projectAuditorParams.WithAdditionalDiagnosticRules(new List<Rule>(new []{new Rule()}));
+            projectAuditorParams.WithAdditionalDiagnosticRules(new List<Rule>(new[] {new Rule()}));
 
-            Assert.AreEqual(numRules+1, projectAuditorParams.Rules.NumRules);
+            Assert.AreEqual(numRules + 1, projectAuditorParams.Rules.NumRules);
         }
 
         [Test]
@@ -311,12 +310,11 @@ namespace Unity.ProjectAuditor.EditorTests
             var projectAuditorParams = new AnalysisParams { Platform = m_Platform };
             var numRules = ProjectAuditorSettings.instance.Rules.NumRules;
 
-            projectAuditorParams.WithAdditionalDiagnosticRules(new List<Rule>(new []{new Rule()}));
+            projectAuditorParams.WithAdditionalDiagnosticRules(new List<Rule>(new[] {new Rule()}));
 
             m_ProjectAuditor.Audit();
 
             Assert.AreEqual(numRules, ProjectAuditorSettings.instance.Rules.NumRules);
         }
-
     }
 }

@@ -12,13 +12,16 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Metadata_IsReported()
         {
-            var report = m_ProjectAuditor.Audit(new AnalysisParams { Categories = new []
+            var report = m_ProjectAuditor.Audit(new AnalysisParams
             {
-                IssueCategory.ProjectSetting,
-            }});
+                Categories = new[]
+                {
+                    IssueCategory.ProjectSetting,
+                }
+            });
 
             Assert.IsNotNull(report.SessionInfo);
-            Assert.AreEqual( Application.unityVersion, report.SessionInfo.UnityVersion);
+            Assert.AreEqual(Application.unityVersion, report.SessionInfo.UnityVersion);
         }
     }
 }
