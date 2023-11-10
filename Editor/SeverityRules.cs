@@ -11,14 +11,14 @@ namespace Unity.ProjectAuditor.Editor
     /// Rules to specify the severity of individual diagnostic issues
     /// </summary>
     [Serializable]
-    public class ProjectAuditorRules
+    public class SeverityRules
     {
-        public ProjectAuditorRules()
+        public SeverityRules()
         {
         }
 
         // Copy constructor
-        public ProjectAuditorRules(ProjectAuditorRules copyFrom)
+        public SeverityRules(SeverityRules copyFrom)
         {
             foreach (var rule in copyFrom.m_Rules)
             {

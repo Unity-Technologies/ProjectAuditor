@@ -48,7 +48,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             platforms = new string[] { BuildTarget.iOS.ToString() }
         };
 
-        public void Initialize(ProjectAuditorModule module)
+        public void Initialize(Module module)
         {
             module.RegisterDescriptor(k_EngineCodeStrippingDescriptor);
             module.RegisterDescriptor(k_AndroidManagedStrippingDescriptor);

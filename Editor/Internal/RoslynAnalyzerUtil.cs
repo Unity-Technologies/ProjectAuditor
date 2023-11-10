@@ -3,6 +3,10 @@ using UnityEngine;
 using System.IO;
 using System.Linq;
 
+// NOTE: Code files in the Editor/Internal folder are treated differently to other files, and probably shouldn't be moved from this folder.
+// During the Pack process, this file (and any others in this folder) is copied into a Unity project, and ImportDILL() is called to
+// pull any Roslyn Analyzer DLLs into the package.
+
 namespace Unity.ProjectAuditor.Editor.Internal
 {
     public class RoslynAnalyzerUtil

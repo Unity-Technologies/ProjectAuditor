@@ -14,7 +14,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    class MeshModule : ProjectAuditorModuleWithAnalyzers<IMeshModuleAnalyzer>
+    class MeshModule : ModuleWithAnalyzers<IMeshModuleAnalyzer>
     {
         static readonly IssueLayout k_MeshLayout = new IssueLayout
         {
@@ -43,21 +43,21 @@ namespace Unity.ProjectAuditor.Editor.Modules
         const string k_MeshVertexCountLimit   = "MeshVertexCountLimit";
         const string k_MeshTriangleCountLimit = "MeshTriangleCountLimit";
 
-        public override void RegisterParameters(ProjectAuditorDiagnosticParams diagnosticParams)
+        public override void RegisterParameters(DiagnosticParams diagnosticParams)
         {
             diagnosticParams.RegisterParameter(k_MeshVertexCountLimit, 5000);
             diagnosticParams.RegisterParameter(k_MeshTriangleCountLimit, 5000);
         }
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
-            var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
+            var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
 
             var assetPaths = GetAssetPathsByFilter("t:mesh, a:assets");
 
             progress?.Start("Finding Meshes", "Search in Progress...", assetPaths.Length);
 
-            var diagnosticParams = projectAuditorParams.DiagnosticParams;
+            var diagnosticParams = analysisParams.DiagnosticParams;
             var meshVertexCountLimit = diagnosticParams.GetParameter(k_MeshVertexCountLimit);
             var meshTriangleCountLimit = diagnosticParams.GetParameter(k_MeshTriangleCountLimit);
 
@@ -66,14 +66,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var context = new MeshAnalysisContext()
                 {
                     Importer = AssetImporter.GetAtPath(assetPath),
-                    Params = projectAuditorParams,
+                    Params = analysisParams,
                     MeshVertexCountLimit = meshVertexCountLimit,
                     MeshTriangleCountLimit = meshTriangleCountLimit
                 };
 
                 foreach (var analyzer in analyzers)
                 {
-                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(context));
+                    analysisParams.OnIncomingIssues(analyzer.Analyze(context));
                 }
 
                 progress?.Advance();
@@ -81,7 +81,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             progress?.Clear();
 
-            projectAuditorParams.OnModuleCompleted?.Invoke();
+            analysisParams.OnModuleCompleted?.Invoke();
         }
     }
 }

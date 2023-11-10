@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    class TextureModule : ProjectAuditorModuleWithAnalyzers<ITextureModuleAnalyzer>
+    class TextureModule : ModuleWithAnalyzers<ITextureModuleAnalyzer>
     {
         static readonly IssueLayout k_TextureLayout = new IssueLayout
         {
@@ -56,21 +56,21 @@ namespace Unity.ProjectAuditor.Editor.Modules
         const string k_TextureSizeLimit                 = "TextureSizeLimit";
         const string k_SpriteAtlasEmptySpaceLimit       = "SpriteAtlasEmptySpaceLimit";
 
-        public override void RegisterParameters(ProjectAuditorDiagnosticParams diagnosticParams)
+        public override void RegisterParameters(DiagnosticParams diagnosticParams)
         {
             diagnosticParams.RegisterParameter(k_TextureStreamingMipmapsSizeLimit, 4000);
             diagnosticParams.RegisterParameter(k_TextureSizeLimit, 2048);
             diagnosticParams.RegisterParameter(k_SpriteAtlasEmptySpaceLimit, 50);
         }
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
-            var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
+            var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
             var assetPaths = GetAssetPathsByFilter("t:texture, a:assets");
 
             progress?.Start("Finding Textures", "Search in Progress...", assetPaths.Length);
 
-            var diagnosticParams = projectAuditorParams.DiagnosticParams;
+            var diagnosticParams = analysisParams.DiagnosticParams;
             var textureStreamingMipmapsSizeLimit = diagnosticParams.GetParameter(k_TextureStreamingMipmapsSizeLimit);
             var textureSizeLimit = diagnosticParams.GetParameter(k_TextureSizeLimit);
             var spriteAtlasEmptySpaceLimit = diagnosticParams.GetParameter(k_SpriteAtlasEmptySpaceLimit);
@@ -86,9 +86,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var context = new TextureAnalysisContext
                 {
                     Importer = textureImporter,
-                    ImporterPlatformSettings = textureImporter.GetPlatformTextureSettings(projectAuditorParams.PlatformString),
+                    ImporterPlatformSettings = textureImporter.GetPlatformTextureSettings(analysisParams.PlatformString),
                     Texture = AssetDatabase.LoadAssetAtPath<Texture>(assetPath),
-                    Params = projectAuditorParams,
+                    Params = analysisParams,
                     TextureStreamingMipmapsSizeLimit = textureStreamingMipmapsSizeLimit,
                     TextureSizeLimit = textureSizeLimit,
                     SpriteAtlasEmptySpaceLimit = spriteAtlasEmptySpaceLimit
@@ -101,7 +101,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var analyzer in analyzers)
                 {
-                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(context));
+                    analysisParams.OnIncomingIssues(analyzer.Analyze(context));
                 }
 
                 progress?.Advance();
@@ -109,7 +109,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             progress?.Clear();
 
-            projectAuditorParams.OnModuleCompleted?.Invoke();
+            analysisParams.OnModuleCompleted?.Invoke();
         }
     }
 }

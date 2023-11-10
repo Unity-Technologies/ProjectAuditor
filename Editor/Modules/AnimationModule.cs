@@ -65,7 +65,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    class AnimationModule : ProjectAuditorModuleWithAnalyzers<AnimationAnalyzer>
+    class AnimationModule : ModuleWithAnalyzers<AnimationAnalyzer>
     {
         static readonly IssueLayout k_AnimatorControllerLayout = new IssueLayout
         {
@@ -154,18 +154,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
             AssetsModule.k_IssueLayout
         };
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
             var context = new AnalysisContext
             {
-                Params = projectAuditorParams
+                Params = analysisParams
             };
             ProcessAnimatorControllers(context, progress);
             ProcessAnimationClips(context, progress);
             ProcessAvatars(context, progress);
             ProcessAvatarMasks(context, progress);
 
-            projectAuditorParams.OnModuleCompleted?.Invoke();
+            analysisParams.OnModuleCompleted?.Invoke();
         }
 
         void ProcessAnimatorControllers(AnalysisContext context, IProgress progress)

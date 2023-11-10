@@ -11,6 +11,7 @@ using UnityEditor;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
+using Module = Unity.ProjectAuditor.Editor.Core.Module;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
@@ -100,7 +101,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             }),
         };
 
-        public void Initialize(ProjectAuditorModule module)
+        public void Initialize(Module module)
         {
             module.RegisterDescriptor(k_AccelerometerDescriptor);
             module.RegisterDescriptor(k_SplashScreenDescriptor);
@@ -183,9 +184,9 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             AudioSettings.Reset(audioConfiguration);
         }
 
-        internal static bool CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration compilerConfiguration, ProjectAuditorParams projectAuditorParams)
+        internal static bool CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration compilerConfiguration, AnalysisParams analysisParams)
         {
-            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(projectAuditorParams.Platform);
+            var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(analysisParams.Platform);
             if (PlayerSettings.GetScriptingBackend(buildTargetGroup) !=
                 ScriptingImplementation.IL2CPP)
             {

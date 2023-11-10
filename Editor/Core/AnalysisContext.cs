@@ -4,7 +4,7 @@ namespace Unity.ProjectAuditor.Editor.Core
 {
     internal class AnalysisContext
     {
-        public ProjectAuditorParams Params;
+        public AnalysisParams Params;
 
         /// <summary>
         /// Create Diagnostics-specific IssueBuilder

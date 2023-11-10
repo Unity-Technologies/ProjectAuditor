@@ -120,7 +120,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        public void Initialize(ProjectAuditorModule module)
+        public void Initialize(Module module)
         {
             module.RegisterDescriptor(k_TextureMipMapNotEnabledDescriptor);
             module.RegisterDescriptor(k_TextureMipMapEnabledDescriptor);

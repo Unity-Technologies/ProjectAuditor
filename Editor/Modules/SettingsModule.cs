@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    class SettingsModule : ProjectAuditorModuleWithAnalyzers<ISettingsModuleAnalyzer>
+    class SettingsModule : ModuleWithAnalyzers<ISettingsModuleAnalyzer>
     {
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
@@ -30,9 +30,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[] {k_IssueLayout};
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
-            var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
+            var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
             if (progress != null)
                 progress.Start("Analyzing Settings", "Analyzing project settings", analyzers.Length);
 
@@ -44,16 +44,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 var context = new SettingsAnalysisContext
                 {
-                    Params = projectAuditorParams
+                    Params = analysisParams
                 };
 
                 var issues = analyzer.Analyze(context).ToArray();
                 if (issues.Any())
-                    projectAuditorParams.OnIncomingIssues(issues);
+                    analysisParams.OnIncomingIssues(issues);
             }
 
             progress?.Clear();
-            projectAuditorParams.OnModuleCompleted?.Invoke();
+            analysisParams.OnModuleCompleted?.Invoke();
         }
     }
 }

@@ -12,36 +12,36 @@ namespace Unity.ProjectAuditor.Editor
     /// Project-specific settings
     /// </summary>
     [Serializable]
-    public class ProjectAuditorDiagnosticParams : ISerializationCallbackReceiver
+    public class DiagnosticParams : ISerializationCallbackReceiver
     {
-        public ProjectAuditorDiagnosticParams()
+        public DiagnosticParams()
         {
             // We treat BuildTarget.NoTarget as the default value fallback if there isn't a platform-specific override
-            m_ParamsStack.Add(new DiagnosticParams(BuildTarget.NoTarget));
+            m_ParamsStack.Add(new PlatformParams(BuildTarget.NoTarget));
         }
 
         // Copy constructor
-        public ProjectAuditorDiagnosticParams(ProjectAuditorDiagnosticParams copyFrom)
+        public DiagnosticParams(DiagnosticParams copyFrom)
         {
             foreach (var platformParams in copyFrom.m_ParamsStack)
             {
-                m_ParamsStack.Add(new DiagnosticParams(platformParams));
+                m_ParamsStack.Add(new PlatformParams(platformParams));
             }
         }
 
         public void RegisterParameters()
         {
-            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(ProjectAuditorModule)))
+            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(Module)))
             {
                 if (type.IsAbstract)
                     continue;
-                var instance = Activator.CreateInstance(type) as ProjectAuditorModule;
+                var instance = Activator.CreateInstance(type) as Module;
                 instance.RegisterParameters(this);
             }
         }
 
         [Serializable]
-        internal class DiagnosticParams
+        internal class PlatformParams
         {
             [JsonIgnore]
             public BuildTarget Platform;
@@ -76,16 +76,16 @@ namespace Unity.ProjectAuditor.Editor
 
             [JsonIgnore] [SerializeField] List<ParamKeyValue> m_SerializedParams = new List<ParamKeyValue>();
 
-            public DiagnosticParams()
+            public PlatformParams()
             {
             }
 
-            public DiagnosticParams(BuildTarget platform) : this()
+            public PlatformParams(BuildTarget platform) : this()
             {
                 Platform = platform;
             }
 
-            public DiagnosticParams(DiagnosticParams copyFrom) : this()
+            public PlatformParams(PlatformParams copyFrom) : this()
             {
                 Platform = copyFrom.Platform;
 
@@ -148,7 +148,7 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        [JsonProperty("paramsStack")] [SerializeField] internal List<DiagnosticParams> m_ParamsStack = new List<DiagnosticParams>();
+        [JsonProperty("paramsStack")] [SerializeField] internal List<PlatformParams> m_ParamsStack = new List<PlatformParams>();
         [JsonProperty] [SerializeField] public int CurrentParamsIndex;
 
         public void SetAnalysisPlatform(BuildTarget platform)
@@ -163,17 +163,12 @@ namespace Unity.ProjectAuditor.Editor
             }
 
             // We didn't find this platform in the platform stack yet, so let's create it.
-            m_ParamsStack.Add(new DiagnosticParams(platform));
+            m_ParamsStack.Add(new PlatformParams(platform));
             CurrentParamsIndex = m_ParamsStack.Count - 1;
         }
 
         public void RegisterParameter(string paramName, int defaultValue)
         {
-            if (m_ParamsStack.Count == 0)
-            {
-                Debug.LogError("Uninitialized ProjectAuditorRules. Find out how this one was created and why it wasn't initialized.");
-            }
-
             // Does this check mean that parameter default values can't be automatically changed if they change in future versions of the package?
             // Yep. Nothing is perfect. This is better than the risk of over-writing values that users may have tweaked.
             if (!m_ParamsStack[0].TryGetParameter(paramName, out var paramValue))
@@ -185,11 +180,6 @@ namespace Unity.ProjectAuditor.Editor
 
         public int GetParameter(string paramName)
         {
-            if (m_ParamsStack.Count == 0)
-            {
-                Debug.LogError("Uninitialized ProjectAuditorRules. Find out how this one was created and why it wasn't initialized.");
-            }
-
             int paramValue;
 
             // Try the params for the current analysis platform
@@ -209,11 +199,6 @@ namespace Unity.ProjectAuditor.Editor
 
         public void SetParameter(BuildTarget platform, string paramName, int value)
         {
-            if (m_ParamsStack.Count == 0)
-            {
-                Debug.LogError("Uninitialized ProjectAuditorRules. Find out how this one was created and why it wasn't initialized.");
-            }
-
             foreach (var platformParams in m_ParamsStack)
             {
                 if (platformParams.Platform == platform)
@@ -223,7 +208,7 @@ namespace Unity.ProjectAuditor.Editor
                 }
             }
 
-            var newParams = new DiagnosticParams(platform);
+            var newParams = new PlatformParams(platform);
             newParams.SetParameter(paramName, value);
             m_ParamsStack.Add(newParams);
         }
@@ -232,7 +217,7 @@ namespace Unity.ProjectAuditor.Editor
         internal void ClearAllParameters()
         {
             m_ParamsStack.Clear();
-            m_ParamsStack.Add(new DiagnosticParams(BuildTarget.NoTarget));
+            m_ParamsStack.Add(new PlatformParams(BuildTarget.NoTarget));
         }
 
         // For testing purposes only

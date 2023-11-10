@@ -20,13 +20,13 @@ namespace Unity.ProjectAuditor.Editor
 #endif
     public class ProjectAuditorSettings : ScriptableSingleton<ProjectAuditorSettings>
     {
-        public ProjectAuditorRules Rules;
-        public ProjectAuditorDiagnosticParams DiagnosticParams;
+        public SeverityRules Rules;
+        public DiagnosticParams DiagnosticParams;
 
         public ProjectAuditorSettings()
         {
-            Rules = new ProjectAuditorRules();
-            DiagnosticParams = new ProjectAuditorDiagnosticParams();
+            Rules = new SeverityRules();
+            DiagnosticParams = new DiagnosticParams();
         }
 
         private void OnEnable()

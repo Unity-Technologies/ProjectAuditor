@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Metadata_IsReported()
         {
-            var report = m_ProjectAuditor.Audit(new ProjectAuditorParams { Categories = new []
+            var report = m_ProjectAuditor.Audit(new AnalysisParams { Categories = new []
             {
                 IssueCategory.ProjectSetting,
             }});

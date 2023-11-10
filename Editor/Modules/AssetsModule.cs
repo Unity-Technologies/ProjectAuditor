@@ -9,7 +9,7 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    internal class AssetsModule : ProjectAuditorModule
+    internal class AssetsModule : Module
     {
         internal static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
@@ -67,27 +67,27 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         const string k_StreamingAssetsFolderSizeLimit   = "StreamingAssetsFolderSizeLimit";
 
-        public override void RegisterParameters(ProjectAuditorDiagnosticParams diagnosticParams)
+        public override void RegisterParameters(DiagnosticParams diagnosticParams)
         {
             diagnosticParams.RegisterParameter(k_StreamingAssetsFolderSizeLimit, 50);
         }
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
             var context = new AnalysisContext
             {
-                Params = projectAuditorParams
+                Params = analysisParams
             };
 
             var issues = new List<ProjectIssue>();
             AnalyzeResources(context, issues);
 
-            if (k_StreamingAssetsFolderDescriptor.IsApplicable(projectAuditorParams))
+            if (k_StreamingAssetsFolderDescriptor.IsApplicable(analysisParams))
                 AnalyzeStreamingAssets(context, issues);
 
             if (issues.Any())
-                projectAuditorParams.OnIncomingIssues(issues);
-            projectAuditorParams.OnModuleCompleted?.Invoke();
+                analysisParams.OnIncomingIssues(issues);
+            analysisParams.OnModuleCompleted?.Invoke();
         }
 
         static void AnalyzeResources(AnalysisContext context, IList<ProjectIssue> issues)

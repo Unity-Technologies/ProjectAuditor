@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static readonly int k_DefaultRowHeight = 18;
         static readonly int k_FirstId = 1;
 
-        readonly ProjectAuditorRules m_Rules;
+        readonly SeverityRules m_Rules;
         readonly ViewDescriptor m_Desc;
         readonly AnalysisView m_View;
         readonly IssueLayout m_Layout;
@@ -56,7 +56,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         }
 
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
-                          ViewDescriptor desc, IssueLayout layout, ProjectAuditorRules rules,
+                          ViewDescriptor desc, IssueLayout layout, SeverityRules rules,
                           AnalysisView view) : base(state,
                                                     multicolumnHeader)
         {

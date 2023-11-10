@@ -4,7 +4,7 @@ using Unity.ProjectAuditor.Editor.Interfaces;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    class SpriteModule : ProjectAuditorModuleWithAnalyzers<ISpriteAtlasModuleAnalyzer>
+    class SpriteModule : ModuleWithAnalyzers<ISpriteAtlasModuleAnalyzer>
     {
         public override string name => "Sprites Atlas";
 
@@ -14,32 +14,32 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         const string k_SpriteAtlasEmptySpaceLimit   = "SpriteAtlasEmptySpaceLimit";
 
-        public override void RegisterParameters(ProjectAuditorDiagnosticParams diagnosticParams)
+        public override void RegisterParameters(DiagnosticParams diagnosticParams)
         {
             diagnosticParams.RegisterParameter(k_SpriteAtlasEmptySpaceLimit, 50);
         }
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
-            var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
+            var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
             var assetPaths = GetAssetPathsByFilter("t:SpriteAtlas, a:assets");
 
             progress?.Start("Finding Sprite Atlas", "Search in Progress...", assetPaths.Length);
 
-            var spriteAtlasEmptySpaceLimit = projectAuditorParams.DiagnosticParams.GetParameter(k_SpriteAtlasEmptySpaceLimit);
+            var spriteAtlasEmptySpaceLimit = analysisParams.DiagnosticParams.GetParameter(k_SpriteAtlasEmptySpaceLimit);
 
             foreach (var assetPath in assetPaths)
             {
                 var context = new SpriteAtlasAnalysisContext
                 {
                     AssetPath = assetPath,
-                    Params = projectAuditorParams,
+                    Params = analysisParams,
                     SpriteAtlasEmptySpaceLimit = spriteAtlasEmptySpaceLimit
                 };
 
                 foreach (var analyzer in analyzers)
                 {
-                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(context));
+                    analysisParams.OnIncomingIssues(analyzer.Analyze(context));
                 }
 
                 progress?.Advance();
@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             progress?.Clear();
 
-            projectAuditorParams.OnModuleCompleted.Invoke();
+            analysisParams.OnModuleCompleted.Invoke();
         }
     }
 }

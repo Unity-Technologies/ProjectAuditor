@@ -90,7 +90,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
             var foundIssues = new List<ProjectIssue>();
 
-            var projectAuditorParams = new ProjectAuditorParams
+            var analysisParams = new AnalysisParams
             {
                 CodeOptimization = m_CodeOptimization,
                 OnIncomingIssues = issues =>
@@ -100,7 +100,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
                 Platform = m_Platform
             }.WithAdditionalDiagnosticRules(m_AdditionalRules);
 
-            m_ProjectAuditor.Audit(projectAuditorParams);
+            m_ProjectAuditor.Audit(analysisParams);
 
             return foundIssues.ToArray();
         }
@@ -111,7 +111,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
             var foundIssues = new List<ProjectIssue>();
             var projectAuditor = new ProjectAuditor();
-            var projectAuditorParams = new ProjectAuditorParams
+            var analysisParams = new AnalysisParams
             {
                 AssemblyNames = new[] { "Assembly-CSharp" },
                 Categories = new[] { category},
@@ -124,7 +124,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
                 Platform = m_Platform
             }.WithAdditionalDiagnosticRules(m_AdditionalRules);
 
-            projectAuditor.Audit(projectAuditorParams);
+            projectAuditor.Audit(analysisParams);
 
             return foundIssues.ToArray();
         }

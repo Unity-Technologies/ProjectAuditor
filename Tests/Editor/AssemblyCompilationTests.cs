@@ -94,7 +94,7 @@ class MyClass
         public void AssemblyCompilation_Player_IsCompiled(CompilationMode mode, string methodName)
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit(new ProjectAuditorParams
+            var projectReport = projectAuditor.Audit(new AnalysisParams
             {
                 CompilationMode = mode
             });

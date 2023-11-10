@@ -59,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         PropertyFoldout[] m_PropertyFoldouts;
 
-        public override void Create(ViewDescriptor descriptor, IssueLayout layout, ProjectAuditorRules rules, ViewStates viewStates, IIssueFilter filter)
+        public override void Create(ViewDescriptor descriptor, IssueLayout layout, SeverityRules rules, ViewStates viewStates, IIssueFilter filter)
         {
             var propertyFoldouts = new List<PropertyFoldout>();
 

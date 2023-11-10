@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             platforms = new[] { BuildTarget.Android.ToString() }
         };
 
-        public void Initialize(ProjectAuditorModule module)
+        public void Initialize(Module module)
         {
             module.RegisterDescriptor(k_OpenGLESAndMetalDescriptor);
             module.RegisterDescriptor(k_MetalDescriptor);

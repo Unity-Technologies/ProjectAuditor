@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "Un-tick all of the boxes except the ones that represent collisions that should be considered by the Physics system."
         );
 
-        public void Initialize(ProjectAuditorModule module)
+        public void Initialize(Module module)
         {
             module.RegisterDescriptor(k_DefaultLayerCollisionMatrixDescriptor);
         }

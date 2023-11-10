@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    class BuildReportModule : ProjectAuditorModule
+    class BuildReportModule : Module
     {
         class BuildAnalysisContext : AnalysisContext
         {
@@ -122,10 +122,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             k_StepLayout
         };
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
 #if BUILD_REPORT_API_SUPPORT
-            var buildReport = BuildReportProvider.GetBuildReport(projectAuditorParams.Platform);
+            var buildReport = BuildReportProvider.GetBuildReport(analysisParams.Platform);
             if (buildReport != null)
             {
                 var context = new BuildAnalysisContext()
@@ -133,7 +133,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     Report = buildReport
                 };
 
-                projectAuditorParams.OnIncomingIssues(new[]
+                analysisParams.OnIncomingIssues(new[]
                 {
                     NewMetaData(context, k_KeyBuildPath, buildReport.summary.outputPath),
                     NewMetaData(context, k_KeyPlatform, buildReport.summary.platform),
@@ -144,11 +144,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     NewMetaData(context, k_KeyTotalSize, Formatting.FormatSize(buildReport.summary.totalSize)),
                 });
 
-                projectAuditorParams.OnIncomingIssues(AnalyzeBuildSteps(context));
-                projectAuditorParams.OnIncomingIssues(AnalyzePackedAssets(context));
+                analysisParams.OnIncomingIssues(AnalyzeBuildSteps(context));
+                analysisParams.OnIncomingIssues(AnalyzePackedAssets(context));
             }
 #endif
-            projectAuditorParams.OnModuleCompleted?.Invoke();
+            analysisParams.OnModuleCompleted?.Invoke();
         }
 
 #if BUILD_REPORT_API_SUPPORT

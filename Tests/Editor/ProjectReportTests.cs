@@ -49,7 +49,7 @@ class MyClass : MonoBehaviour
         [Test]
         public void ProjectReport_NewReport_IsValid()
         {
-            var projectReport = new ProjectReport(new ProjectAuditorParams());
+            var projectReport = new ProjectReport(new AnalysisParams());
             Assert.Zero(projectReport.NumTotalIssues);
             Assert.Zero(projectReport.GetNumIssues(IssueCategory.Code));
             Assert.Zero(projectReport.GetNumIssues(IssueCategory.ProjectSetting));
@@ -60,7 +60,7 @@ class MyClass : MonoBehaviour
         [Test]
         public void ProjectReport_Issue_IsAdded()
         {
-            var projectReport = new ProjectReport(new ProjectAuditorParams());
+            var projectReport = new ProjectReport(new AnalysisParams());
 
             projectReport.AddIssues(new[] { new ProjectIssue
                                             (
@@ -76,7 +76,7 @@ class MyClass : MonoBehaviour
         IReadOnlyCollection<ProjectIssue> AnalyzeAndExport(IssueCategory category, string path, string format, Func<ProjectIssue, bool> predicate = null)
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit(new ProjectAuditorParams
+            var projectReport = projectAuditor.Audit(new AnalysisParams
             {
                 CompilationMode = CompilationMode.Player
             });

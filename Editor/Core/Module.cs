@@ -7,9 +7,9 @@ using UnityEditor;
 namespace Unity.ProjectAuditor.Editor.Core
 {
     /// <summary>
-    /// Project Auditor module base class. Any class derived from ProjectAuditorModule will be instantiated by ProjectAuditor and used to audit the project
+    /// Project Auditor module base class. Any class derived from Module will be instantiated by ProjectAuditor and used to audit the project
     /// </summary>
-    internal abstract class ProjectAuditorModule
+    internal abstract class Module
     {
         protected HashSet<DescriptorID> m_IDs;
 
@@ -49,7 +49,7 @@ namespace Unity.ProjectAuditor.Editor.Core
             m_IDs = new HashSet<DescriptorID>();
         }
 
-        public virtual void RegisterParameters(ProjectAuditorDiagnosticParams diagnosticParams)
+        public virtual void RegisterParameters(DiagnosticParams diagnosticParams)
         {
         }
 
@@ -76,8 +76,8 @@ namespace Unity.ProjectAuditor.Editor.Core
         /// <summary>
         /// This method audits the Unity project specific IssueCategory issues.
         /// </summary>
-        /// <param name="projectAuditorParams"> Project audit parameters  </param>
+        /// <param name="analysisParams"> Project audit parameters  </param>
         /// <param name="progress"> Progress bar, if applicable </param>
-        public abstract void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null);
+        public abstract void Audit(AnalysisParams analysisParams, IProgress progress = null);
     }
 }

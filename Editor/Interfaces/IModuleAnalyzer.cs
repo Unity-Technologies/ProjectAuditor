@@ -4,6 +4,6 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
 {
     internal interface IModuleAnalyzer
     {
-        void Initialize(ProjectAuditorModule module);
+        void Initialize(Module module);
     }
 }

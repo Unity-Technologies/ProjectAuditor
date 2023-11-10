@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             platforms = new[] { "Android", "iOS", "Switch" }
         };
 
-        public void Initialize(ProjectAuditorModule module)
+        public void Initialize(Module module)
         {
             module.RegisterDescriptor(k_URPAssetDescriptor);
             module.RegisterDescriptor(k_HdrSettingDescriptor);

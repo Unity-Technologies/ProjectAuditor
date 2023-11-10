@@ -30,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             fixer = FixSrpBatcherSetting
         };
 
-        public void Initialize(ProjectAuditorModule module)
+        public void Initialize(Module module)
         {
             module.RegisterDescriptor(k_SRPBatcherSettingDescriptor);
         }

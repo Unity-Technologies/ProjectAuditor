@@ -25,9 +25,9 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_TestScriptAsset;
 
         [SerializeField]
-        ProjectAuditorRules m_SerializedRules;
+        SeverityRules m_SerializedRules;
 
-        ProjectAuditorRules m_Rules;
+        SeverityRules m_Rules;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.EditorTests
             m_TestScriptAsset = new TestAsset("MyClass.cs",
                 "using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(Camera.allCameras.Length.ToString()); } }");
 
-            m_Rules = new ProjectAuditorRules();
+            m_Rules = new SeverityRules();
         }
 
 #if UNITY_2019_4_OR_NEWER
@@ -131,7 +131,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var settingsAuditor = m_ProjectAuditor.GetModule<SettingsModule>();
             var IDs = settingsAuditor.supportedDescriptorIDs;
-            var rules = new ProjectAuditorRules();
+            var rules = new SeverityRules();
             var firstID = IDs.FirstOrDefault();
 
             Assert.IsNotNull(firstID);
@@ -275,7 +275,7 @@ namespace Unity.ProjectAuditor.EditorTests
             m_Rules.ClearAllRules();
             Assert.AreEqual(0, m_Rules.NumRules);
 
-            m_Rules = JsonConvert.DeserializeObject<ProjectAuditorRules>(jsonString, new JsonSerializerSettings
+            m_Rules = JsonConvert.DeserializeObject<SeverityRules>(jsonString, new JsonSerializerSettings
             {
                 ObjectCreationHandling = ObjectCreationHandling.Replace
             });
