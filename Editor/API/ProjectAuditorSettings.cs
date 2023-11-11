@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using Newtonsoft.Json;
-using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEditor;
 using UnityEngine;
 
@@ -20,10 +14,20 @@ namespace Unity.ProjectAuditor.Editor
 #endif
     public class ProjectAuditorSettings : ScriptableSingleton<ProjectAuditorSettings>
     {
+        // <summary>
+        /// The SeverityRules object which defines which issues should be ignored or given increased severity when viewing reports.
+        /// </summary>
         public SeverityRules Rules;
+
+        /// <summary>
+        /// The DiagnosticParams object which defines the customizable thresholds for reporting certain diagnostics.
+        /// </summary>
         public DiagnosticParams DiagnosticParams;
 
-        public ProjectAuditorSettings()
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+        internal ProjectAuditorSettings()
         {
             Rules = new SeverityRules();
             DiagnosticParams = new DiagnosticParams();

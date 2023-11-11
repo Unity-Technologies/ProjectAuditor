@@ -7,8 +7,9 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
+    // stephenm TODO: Comment
     [Serializable]
-    internal class AnalysisParams
+    public class AnalysisParams
     {
         /// <summary>
         /// Categories to include in the audit. If null, all categories will be included.
@@ -37,17 +38,6 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        [JsonProperty("Platform")]
-        public string PlatformString
-        {
-            get => m_PlatformString;
-            set
-            {
-                m_PlatformString = value;
-                m_Platform = (BuildTarget)Enum.Parse(typeof(BuildTarget), m_PlatformString);
-            }
-        }
-
         /// <summary>
         /// Assemblies to analyze. If null, all compiled assemblies will be analyzed.
         /// </summary>
@@ -58,6 +48,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public CodeOptimization CodeOptimization;
 
+        // stephenm TODO: Elaborate on this, here and in the enum documentation.
         /// <summary>
         /// Compilation mode
         /// </summary>
@@ -70,19 +61,19 @@ namespace Unity.ProjectAuditor.Editor
         public Action<IEnumerable<ProjectIssue>> OnIncomingIssues;
 
         /// <summary>
-        /// Notifies that all modules completed their analysis.
+        /// Notifies that all Modules completed their analysis.
         /// </summary>
         [JsonIgnore]
         public Action<ProjectReport> OnCompleted;
 
         /// <summary>
-        /// Notifies that a module completed its analysis.
+        /// Notifies that a Module completed its analysis.
         /// </summary>
         [JsonIgnore]
         public Action OnModuleCompleted;
 
         /// <summary>
-        /// The SeverityRules object which defines which issues should be ignored or given increased severity
+        /// The SeverityRules object which defines which issues should be ignored or given increased severity.
         /// </summary>
         public SeverityRules Rules;
 
@@ -94,6 +85,17 @@ namespace Unity.ProjectAuditor.Editor
         [JsonIgnore]
         [NonSerialized]
         internal ProjectReport ExistingReport;
+
+        [JsonProperty("Platform")]
+        internal string PlatformString
+        {
+            get => m_PlatformString;
+            set
+            {
+                m_PlatformString = value;
+                m_Platform = (BuildTarget)Enum.Parse(typeof(BuildTarget), m_PlatformString);
+            }
+        }
 
         /// <summary>
         /// AnalysisParams constructor
@@ -116,6 +118,7 @@ namespace Unity.ProjectAuditor.Editor
             CompilationMode = CompilationMode.Player;
         }
 
+        // stephenm TODO: Comment
         // Copy constructor
         public AnalysisParams(AnalysisParams original)
         {
@@ -135,6 +138,7 @@ namespace Unity.ProjectAuditor.Editor
             ExistingReport = original.ExistingReport;
         }
 
+        // stephenm TODO: Comment
         public AnalysisParams WithAdditionalDiagnosticRules(List<Diagnostic.Rule> rules)
         {
             foreach (var rule in rules)

@@ -4,7 +4,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    public class DirectoryFilteringTests
+    class DirectoryFilteringTests
     {
         [Test]
         public void DirectoryFiltering_Rules_Nulls()

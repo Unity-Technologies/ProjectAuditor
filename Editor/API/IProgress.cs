@@ -1,6 +1,6 @@
 namespace Unity.ProjectAuditor.Editor
 {
-    internal interface IProgress
+    public interface IProgress
     {
         /// <summary>
         /// Initializes the progress object.

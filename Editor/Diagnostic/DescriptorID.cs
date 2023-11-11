@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
+    // stephenm TODO: This needs API documentation comments.
     [Serializable]
     public struct DescriptorID : IEquatable<DescriptorID>
     {

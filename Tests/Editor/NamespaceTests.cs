@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    public class NamespaceTests
+    class NamespaceTests
     {
         [Test]
         public void Namespaces_Are_Prefixed()

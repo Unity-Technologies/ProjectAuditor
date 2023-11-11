@@ -12,49 +12,6 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 {
-    /// <summary>
-    /// Options for the compilation mode Project Auditor should use when performing code analysis
-    /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum CompilationMode
-    {
-        /// <summary>
-        ///   <para>Non-Development player (default)</para>
-        /// </summary>
-        Player,
-        /// <summary>
-        ///   <para>Development player</para>
-        /// </summary>
-        DevelopmentPlayer,
-
-        /// <summary>
-        ///   <para>Editor assemblies for Play Mode</para>
-        /// </summary>
-        EditorPlayMode,
-
-        /// <summary>
-        ///   <para>Editor assemblies</para>
-        /// </summary>
-        Editor
-    }
-
-    /// <summary>
-    /// Options for selecting the code optimization level to be used during code analysis
-    /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum CodeOptimization
-    {
-        /// <summary>
-        /// Debug code optimization
-        /// </summary>
-        Debug,
-
-        /// <summary>
-        /// Release code optimization
-        /// </summary>
-        Release
-    }
-
     enum CompilerMessageType
     {
         /// <summary>

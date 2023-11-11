@@ -7,12 +7,13 @@ using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEngine;
 using Newtonsoft.Json;
-using UnityEditor;
+using UnityEngine.Serialization;
 
 namespace Unity.ProjectAuditor.Editor
 {
+    // stephenm TODO: This whole class needs proper documentation comments
     [Serializable]
-    internal class SessionInfo : AnalysisParams
+    public class SessionInfo : AnalysisParams
     {
         // for serialization purposes only
         public SessionInfo() : base(false) {}
@@ -40,17 +41,20 @@ namespace Unity.ProjectAuditor.Editor
     /// ProjectReport contains a list of all issues found by ProjectAuditor
     /// </summary>
     [Serializable]
-    internal sealed class ProjectReport
+    public sealed class ProjectReport
     {
-        internal const string k_CurrentVersion = "0.2";
+        const string k_CurrentVersion = "0.2";
 
+        // stephenm TODO: Check the serialization here. Changed this from private string m_Version with a property but I don't see why this shouldn't work?
         [JsonProperty("version")]
         [SerializeField]
-        string m_Version = k_CurrentVersion;
+        public string Version = k_CurrentVersion;
 
+        // stephenm TODO: ModuleInfo serializes to JSON but isn't accessible in any meaningful way if a script just has a ProjectReport object it wants to query. Figure out some API for this?
         [Serializable]
         class ModuleInfo
         {
+            // stephenm TODO: Comment (for all these fields... Assuming we do what the above comment says and expose this via an API of some sort)
             public string name;
 
             // this is used by HasCategory
@@ -61,23 +65,22 @@ namespace Unity.ProjectAuditor.Editor
             public string endTime;
         }
 
+        // stephenm TODO: Check the serialization here. Changed this from private SessionInfo m_SessionInfo with a property but I don't see why this shouldn't work?
         [JsonProperty("sessionInfo")]
         [SerializeField]
-        SessionInfo m_SessionInfo;
+        public SessionInfo SessionInfo;
 
         [JsonProperty("moduleMetadata")]
         [SerializeField]
         List<ModuleInfo> m_ModuleInfos = new List<ModuleInfo>();
 
+        // stephenm TODO: Should we be able to access the DescriptorLibrary here? It serialises to JSON, but I'm leaning towards "no".
         [SerializeField]
         DescriptorLibrary m_DescriptorLibrary = new DescriptorLibrary();
 
         [JsonIgnore]
         [SerializeField]
         List<ProjectIssue> m_Issues = new List<ProjectIssue>();
-
-        [JsonIgnore]
-        public SessionInfo SessionInfo => m_SessionInfo;
 
         [JsonProperty("issues")]
         internal ProjectIssue[] UnfixedIssues
@@ -106,12 +109,11 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
+        // stephenm TODO: comment
         [JsonIgnore]
         public int NumTotalIssues => m_Issues.Count;
 
-        [JsonIgnore]
-        public string Version => m_Version;
-
+        // stephenm TODO: comment
         // for serialization purposes only
         internal ProjectReport()
         {}
@@ -119,7 +121,7 @@ namespace Unity.ProjectAuditor.Editor
         // for internal use only
         internal ProjectReport(AnalysisParams analysisParams)
         {
-            m_SessionInfo = new SessionInfo(analysisParams)
+            SessionInfo = new SessionInfo(analysisParams)
             {
                 ProjectAuditorVersion = ProjectAuditor.PackageVersion,
 
@@ -137,33 +139,13 @@ namespace Unity.ProjectAuditor.Editor
             };
         }
 
-        public void RecordModuleInfo(Module module, DateTime startTime, DateTime endTime)
-        {
-            var name = module.Name;
-            var info = m_ModuleInfos.FirstOrDefault(m => m.name.Equals(name));
-            if (info != null)
-            {
-                info.startTime = Utils.Json.SerializeDateTime(startTime);
-                info.endTime = Utils.Json.SerializeDateTime(endTime);
-            }
-            else
-            {
-                m_ModuleInfos.Add(new ModuleInfo
-                {
-                    name = module.Name,
-                    categories = module.Categories,
-                    layouts = module.SupportedLayouts,
-                    startTime = Utils.Json.SerializeDateTime(startTime),
-                    endTime = Utils.Json.SerializeDateTime(endTime)
-                });
-            }
-        }
-
+        // stephenm TODO: comment
         public bool HasCategory(IssueCategory category)
         {
             return category == IssueCategory.Metadata || m_ModuleInfos.Any(m => m.categories.Contains(category));
         }
 
+        // stephenm TODO: comment
         public IReadOnlyCollection<ProjectIssue> GetAllIssues()
         {
             s_Mutex.WaitOne();
@@ -211,13 +193,7 @@ namespace Unity.ProjectAuditor.Editor
             return result;
         }
 
-        public void AddIssues(IEnumerable<ProjectIssue> issues)
-        {
-            s_Mutex.WaitOne();
-            m_Issues.AddRange(issues);
-            s_Mutex.ReleaseMutex();
-        }
-
+        // stephenm TODO: comment
         public void ClearIssues(IssueCategory category)
         {
             s_Mutex.WaitOne();
@@ -232,32 +208,13 @@ namespace Unity.ProjectAuditor.Editor
             s_Mutex.ReleaseMutex();
         }
 
-        public void ExportToCsv(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
-        {
-            var issues = m_Issues.Where(i => i.category == layout.category && (predicate == null || predicate(i))).ToArray();
-            using (var exporter = new CsvExporter(path, layout))
-            {
-                exporter.WriteHeader();
-                exporter.WriteIssues(issues);
-            }
-        }
-
+        // stephenm TODO: comment
         public bool IsValid()
         {
             return m_Issues.All(i => i.IsValid());
         }
 
-        public void ExportToHtml(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
-        {
-            var issues = m_Issues.Where(i => i.category == layout.category && (predicate == null || predicate(i))).ToArray();
-            using (var exporter = new HtmlExporter(path, layout))
-            {
-                exporter.WriteHeader();
-                exporter.WriteIssues(issues);
-                exporter.WriteFooter();
-            }
-        }
-
+        // stephenm TODO: comment
         public void Save(string path)
         {
             File.WriteAllText(path,
@@ -268,12 +225,69 @@ namespace Unity.ProjectAuditor.Editor
                     }));
         }
 
+        // stephenm TODO: comment
         public static ProjectReport Load(string path)
         {
             return JsonConvert.DeserializeObject<ProjectReport>(File.ReadAllText(path), new JsonSerializerSettings
             {
                 ObjectCreationHandling = ObjectCreationHandling.Replace
             });
+        }
+
+        // stephenm TODO: I'm keeping these specialist export methods internal for now. I don't know if they should be accessible/included in PA 1.0,
+        // and if they should, it means also exposing IssueLayout and the data types it uses, which opens a whole can of worms.
+        internal void ExportToCsv(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
+        {
+            var issues = m_Issues.Where(i => i.category == layout.category && (predicate == null || predicate(i))).ToArray();
+            using (var exporter = new CsvExporter(path, layout))
+            {
+                exporter.WriteHeader();
+                exporter.WriteIssues(issues);
+            }
+        }
+
+        // stephenm TODO: I'm keeping these specialist export methods internal for now. I don't know if they should be accessible/included in PA 1.0,
+        // and if they should, it means also exposing IssueLayout and the data types it uses, which opens a whole can of worms.
+        internal void ExportToHtml(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
+        {
+            var issues = m_Issues.Where(i => i.category == layout.category && (predicate == null || predicate(i))).ToArray();
+            using (var exporter = new HtmlExporter(path, layout))
+            {
+                exporter.WriteHeader();
+                exporter.WriteIssues(issues);
+                exporter.WriteFooter();
+            }
+        }
+
+        // Internal only: Data written by ProjectAuditor during analysis
+        internal void RecordModuleInfo(Module module, DateTime startTime, DateTime endTime)
+        {
+            var name = module.Name;
+            var info = m_ModuleInfos.FirstOrDefault(m => m.name.Equals(name));
+            if (info != null)
+            {
+                info.startTime = Utils.Json.SerializeDateTime(startTime);
+                info.endTime = Utils.Json.SerializeDateTime(endTime);
+            }
+            else
+            {
+                m_ModuleInfos.Add(new ModuleInfo
+                {
+                    name = module.Name,
+                    categories = module.Categories,
+                    layouts = module.SupportedLayouts,
+                    startTime = Utils.Json.SerializeDateTime(startTime),
+                    endTime = Utils.Json.SerializeDateTime(endTime)
+                });
+            }
+        }
+
+        // Internal only: Data written by ProjectAuditor during analysis
+        internal void AddIssues(IEnumerable<ProjectIssue> issues)
+        {
+            s_Mutex.WaitOne();
+            m_Issues.AddRange(issues);
+            s_Mutex.ReleaseMutex();
         }
     }
 }

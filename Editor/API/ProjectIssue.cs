@@ -27,7 +27,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         [JsonIgnore]
         [SerializeField]
-        public bool wasFixed = false;
+        internal bool wasFixed = false;
 
         [JsonConstructor]
         internal ProjectIssue()
@@ -75,8 +75,9 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// An unique identifier for the issue diagnostic. IDs must have exactly 3 upper case characters, followed by 4 digits
+        /// An unique identifier for the issue diagnostic. IDs must have exactly 3 upper case characters, followed by 4 digits.
         /// </summary>
+        // stephenm TODO: More detail about how a ProjectIssue is considered a 'diagnostic issue' if id.IsValid(), and just an informational issue if not.
         [JsonIgnore]
         public DescriptorID id
         {
@@ -235,6 +236,7 @@ namespace Unity.ProjectAuditor.Editor
             return m_CustomProperties != null ? m_CustomProperties.Length : 0;
         }
 
+        // stephenm TODO: The Get/SetCustomProperty methods need more explanation - like how do you find out what enum is used for a given ProjectIssue.
         /// <summary>
         /// Get a custom property string given an enum
         /// </summary>

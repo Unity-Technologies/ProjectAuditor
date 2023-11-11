@@ -7,16 +7,24 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
+    // stephenm TODO: Everything in this class is internal. Is there a use-case for allowing users to access this API?
+    // Maybe AnalysisParams.WithAdditionalDiagnostiRules() is enough? Maybe it isn't.
+    // If this is all the API we're allowing, we should at least explain how this is exposed via ProjectAuditorSettings,
+    // how rules can be added or removed with the Ignore/Un-ignore button and how analysis can set rules. Actually, we
+    // probably do need to expose this for when people write custom modules/analyzers...
+
     /// <summary>
     /// Rules to specify the severity of individual diagnostic issues
     /// </summary>
     [Serializable]
-    public class SeverityRules
+    public sealed class SeverityRules
     {
+        // stephenm TODO: Comment
         public SeverityRules()
         {
         }
 
+        // stephenm TODO: Comment
         // Copy constructor
         public SeverityRules(SeverityRules copyFrom)
         {
@@ -31,8 +39,7 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        [JsonProperty("rules")]
-        [SerializeField]
+        [JsonProperty("rules")] [NonReorderable] [SerializeField]
         List<Rule> m_Rules = new List<Rule>();
 
         internal int NumRules => m_Rules.Count;
@@ -60,12 +67,6 @@ namespace Unity.ProjectAuditor.Editor
                     return r;
             }
             return null;
-        }
-
-        // Only used for testing
-        internal void ClearAllRules()
-        {
-            m_Rules.Clear();
         }
 
         internal void ClearRules(string id, string filter = "")
@@ -114,6 +115,12 @@ namespace Unity.ProjectAuditor.Editor
                 });
             else
                 rule.severity = ruleSeverity;
+        }
+
+        // Only used for testing
+        internal void ClearAllRules()
+        {
+            m_Rules.Clear();
         }
     }
 }
