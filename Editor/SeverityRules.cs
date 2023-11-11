@@ -31,7 +31,10 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        [JsonProperty("rules")] [NonReorderable] [SerializeField]
+#if UNITY_2020_2_OR_NEWER
+        [NonReorderable]
+#endif
+        [JsonProperty("rules")] [SerializeField]
         List<Rule> m_Rules = new List<Rule>();
 
         internal int NumRules => m_Rules.Count;
