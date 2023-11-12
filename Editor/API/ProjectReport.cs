@@ -45,12 +45,13 @@ namespace Unity.ProjectAuditor.Editor
     {
         const string k_CurrentVersion = "0.2";
 
-        // stephenm TODO: Check the serialization here. Changed this from private string m_Version with a property but I don't see why this shouldn't work?
         [JsonProperty("version")]
         [SerializeField]
         public string Version = k_CurrentVersion;
 
         // stephenm TODO: ModuleInfo serializes to JSON but isn't accessible in any meaningful way if a script just has a ProjectReport object it wants to query. Figure out some API for this?
+        // stephenm TODO: Keeping this internal for now. Exposing this means exposing IssueLayout, which means exposing PropertyDefinition, which to be useful means exposing every enum that can
+        // be passed to PropertyTypeUtil.FromCustom() (basically one per view). I'd love to find a more elegant way to do this.
         [Serializable]
         class ModuleInfo
         {
