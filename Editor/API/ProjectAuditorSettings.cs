@@ -9,7 +9,7 @@ namespace Unity.ProjectAuditor.Editor
 #if UNITY_2020_1_OR_NEWER
     // FilePathAttribute.Location was private before 2020.1, meaning FilePathAttribute didn't work.
     // Everything else works fine if we disable this in old versions of Unity, except that Rules and DiagnosticParams
-    // unfortunately don't persist between sessions.
+    // unfortunately don't persist between sessions and can't be edited in the Settings window.
     [FilePath("ProjectSettings/ProjectAuditorSettings.asset", FilePathAttribute.Location.ProjectFolder)]
 #endif
     public class ProjectAuditorSettings : ScriptableSingleton<ProjectAuditorSettings>

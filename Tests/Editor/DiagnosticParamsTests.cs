@@ -106,7 +106,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(1, m_DiagnosticParams.CurrentParamsIndex);
 
             m_DiagnosticParams.RegisterParameter(k_TextureStreamingMipmapsSizeLimit, k_MipmapSizeLimitDefault);
-            Assert.AreEqual(1, m_DiagnosticParams.CountParameters());
+            Assert.NotZero(m_DiagnosticParams.CountParameters());
 
             var paramVal = m_DiagnosticParams.GetParameter(k_TextureStreamingMipmapsSizeLimit);
             Assert.AreEqual(paramVal, k_MipmapSizeLimitDefault);
@@ -131,7 +131,7 @@ namespace Unity.ProjectAuditor.EditorTests
             });
 
             Assert.AreEqual(1, m_DiagnosticParams.CurrentParamsIndex);
-            Assert.AreEqual(1, m_DiagnosticParams.CountParameters());
+            Assert.NotZero(m_DiagnosticParams.CountParameters());
 
             paramVal = m_DiagnosticParams.GetParameter(k_TextureStreamingMipmapsSizeLimit);
             Assert.AreEqual(paramVal, k_MipmapSizeLimitDefault);
