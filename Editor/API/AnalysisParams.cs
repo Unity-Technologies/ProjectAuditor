@@ -7,12 +7,15 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    // stephenm TODO: Comment
+    /// <summary>
+    /// Represents an object which can be passed to an instance of <see cref="ProjectAuditor"/> to specify how analysis should be performed and to provide delegates to be called when analysis steps have completed.
+    /// AnalysisParams defaults to values which instruct ProjectAuditor to analyse everything in the project for the current build target, but instances can be populated with custom data in an object initializer to provide additional constraints.
+    /// </summary>
     [Serializable]
     public class AnalysisParams
     {
         /// <summary>
-        /// Categories to include in the audit. If null, all categories will be included.
+        /// Issue Categories to include in the audit. If null, all categories will be included.
         /// </summary>
         [SerializeField]
         public IssueCategory[] Categories;
@@ -48,9 +51,8 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public CodeOptimization CodeOptimization;
 
-        // stephenm TODO: Elaborate on this, here and in the enum documentation.
         /// <summary>
-        /// Compilation mode
+        /// The Compilation mode to use during code analysis. The default is <see cref="CompilationMode.Player"/>.
         /// </summary>
         public CompilationMode CompilationMode;
 
@@ -74,11 +76,13 @@ namespace Unity.ProjectAuditor.Editor
 
         /// <summary>
         /// The SeverityRules object which defines which issues should be ignored or given increased severity.
+        /// By default, this makes a copy of ProjectAuditorSettings.<see cref="ProjectAuditorSettings.Rules"/>.
         /// </summary>
         public SeverityRules Rules;
 
         /// <summary>
         /// The DiagnosticParams object which defines the customizable thresholds for reporting certain diagnostics.
+        /// By default, this makes a copy of ProjectAuditorSettings.<see cref="ProjectAuditorSettings.DiagnosticParams"/>.
         /// </summary>
         public DiagnosticParams DiagnosticParams;
 
@@ -100,7 +104,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// AnalysisParams constructor
         /// </summary>
-        /// <param name="copyParamsFromGlobal"> If true, the global ProjectSettings will register DiagnosticParams defaults, save any changes and copy the data into this object. This is usually the desired behaviour, but is not allowed during serialization. </param>
+        /// <param name="copyParamsFromGlobal">If true, the global ProjectSettings will register DiagnosticParams defaults, save any changes and copy the data into this object. This is usually the desired behaviour, but is not allowed during serialization. </param>
         public AnalysisParams(bool copyParamsFromGlobal = true)
         {
             if (copyParamsFromGlobal)
@@ -118,8 +122,10 @@ namespace Unity.ProjectAuditor.Editor
             CompilationMode = CompilationMode.Player;
         }
 
-        // stephenm TODO: Comment
-        // Copy constructor
+        /// <summary>
+        /// Copy constructor
+        /// </summary>
+        /// <param name="original">The AnalysisParams object to copy from.</param>
         public AnalysisParams(AnalysisParams original)
         {
             Rules = original.Rules;
@@ -138,7 +144,10 @@ namespace Unity.ProjectAuditor.Editor
             ExistingReport = original.ExistingReport;
         }
 
-        // stephenm TODO: Comment
+        /// <summary>
+        /// Adds a list of additional Rules which will be applied during analysis
+        /// </summary>
+        /// <param name="rules">Additional Rules to impose.</param>
         public AnalysisParams WithAdditionalDiagnosticRules(List<Diagnostic.Rule> rules)
         {
             foreach (var rule in rules)
