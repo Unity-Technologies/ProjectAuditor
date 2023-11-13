@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
 
         List<IssueTableItem> m_TreeViewItemGroups = new List<IssueTableItem>();
-        IssueTableItem[] m_TreeViewItemIssues;
+        Dictionary<int, IssueTableItem> m_TreeViewItemIssues;
         int m_NextId;
         int m_NumMatchingIssues;
         bool m_FlatView;
@@ -90,9 +90,15 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     m_TreeViewItemGroups.Add((new IssueTableItem(m_NextId++, 0, name)));
             }
 
-            var itemsList = new List<IssueTableItem>(issues.Count);
+            var items = new Dictionary<int, IssueTableItem>(issues.Count);
             if (m_TreeViewItemIssues != null)
-                itemsList.AddRange(m_TreeViewItemIssues);
+            {
+                foreach (var issuesPair in m_TreeViewItemIssues)
+                {
+                    items.Add(issuesPair.Value.id, issuesPair.Value);
+                }
+            }
+
             foreach (var issue in issues)
             {
                 var depth = 1;
@@ -105,18 +111,19 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     else
                         depth = 0;
                 }
+
                 var item = new IssueTableItem(m_NextId++, depth, issue.description, issue, issue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
-                itemsList.Add(item);
+                items.Add(item.id, item);
             }
 
-            m_TreeViewItemIssues = itemsList.ToArray();
+            m_TreeViewItemIssues = items;
         }
 
         public void Clear()
         {
             m_NextId = k_FirstId;
             m_TreeViewItemGroups.Clear();
-            m_TreeViewItemIssues = new IssueTableItem[] {};
+            m_TreeViewItemIssues = new Dictionary<int, IssueTableItem>();
             ClearSelection();
         }
 
@@ -140,7 +147,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             // find all issues matching the filters and make an array out of them
             Profiler.BeginSample("IssueTable.Match");
-            var filteredItems = m_TreeViewItemIssues.Where(item => m_View.Match(item.ProjectIssue)).ToArray();
+            var filteredItems = m_TreeViewItemIssues.Where(item => m_View.Match(item.Value.ProjectIssue)).ToArray();
             Profiler.EndSample();
 
             m_NumMatchingIssues = filteredItems.Length;
@@ -159,7 +166,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Profiler.BeginSample("IssueTable.BuildRows");
             if (!hasSearch && !m_FlatView)
             {
-                var groupedItemQuery = filteredItems.GroupBy(i => i.ProjectIssue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
+                var groupedItemQuery = filteredItems.GroupBy(i => i.Value.ProjectIssue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
                 foreach (var groupedItems in groupedItemQuery)
                 {
                     var groupName = groupedItems.Key;
@@ -167,15 +174,15 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     m_Rows.Add(group);
 
                     var groupIsExpanded = state.expandedIDs.Contains(group.id);
-                    var children = filteredItems.Where(item => item.GroupName.Equals(groupName));
+                    var children = filteredItems.Where(item => item.Value.GroupName.Equals(groupName));
 
                     group.displayName = string.Format("{0} ({1})", groupName, children.Count());
 
                     foreach (var child in children)
                     {
                         if (groupIsExpanded)
-                            m_Rows.Add(child);
-                        group.AddChild(child);
+                            m_Rows.Add(child.Value);
+                        group.AddChild(child.Value);
                     }
                 }
             }
@@ -183,10 +190,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 foreach (var item in filteredItems)
                 {
-                    var group = m_TreeViewItemGroups.Find(g => g.GroupName.Equals(item.GroupName));
-                    group.AddChild(item);
+                    var group = m_TreeViewItemGroups.Find(g => g.GroupName.Equals(item.Value.GroupName));
+                    group.AddChild(item.Value);
 
-                    m_Rows.Add(item);
+                    m_Rows.Add(item.Value);
                 }
             }
             SortIfNeeded(m_Rows);
@@ -198,14 +205,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         protected override IList<int> GetAncestors(int id)
         {
-            if (m_TreeViewItemIssues == null || m_TreeViewItemIssues.Length == 0)
+            if (m_TreeViewItemIssues == null || m_TreeViewItemIssues.Count == 0)
                 return new List<int>();
             return base.GetAncestors(id);
         }
 
         protected override IList<int> GetDescendantsThatHaveChildren(int id)
         {
-            if (m_TreeViewItemIssues == null || m_TreeViewItemIssues.Length == 0)
+            if (m_TreeViewItemIssues == null || m_TreeViewItemIssues.Count == 0)
                 return new List<int>();
             return base.GetDescendantsThatHaveChildren(id);
         }
@@ -451,10 +458,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             // auto-expand groups containing selected items
             foreach (var id in state.selectedIDs)
             {
-                var item = m_TreeViewItemIssues.FirstOrDefault(issue => issue.id == id && issue.parent != null);
-                if (item != null && !state.expandedIDs.Contains(item.parent.id))
+                var item = m_TreeViewItemIssues.FirstOrDefault(issue => issue.Value.id == id && issue.Value.parent != null);
+                if (item.Value != null && !state.expandedIDs.Contains(item.Value.parent.id))
                 {
-                    state.expandedIDs.Add(item.parent.id);
+                    state.expandedIDs.Add(item.Value.parent.id);
                 }
             }
         }
@@ -467,8 +474,19 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public IssueTableItem[] GetSelectedItems()
         {
             var ids = GetSelection();
-            if (ids.Count() > 0)
-                return FindRows(ids).OfType<IssueTableItem>().ToArray();
+
+            var count = ids.Count();
+            if (count > 0)
+            {
+                var selectedItems = new List<IssueTableItem>();
+                for (int i = 0; i < count; ++i)
+                {
+                    if (m_TreeViewItemIssues.TryGetValue(ids[i], out var item))
+                        selectedItems.Add(item);
+                }
+
+                return selectedItems.ToArray();
+            }
 
             return new IssueTableItem[0];
         }
