@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             messageFormat = "Quality: Texture streaming on Quality Level '{0}' is turned off"
         };
 
-        public void Initialize(ProjectAuditorModule module)
+        public void Initialize(Module module)
         {
             module.RegisterDescriptor(k_DefaultSettingsDescriptor);
             module.RegisterDescriptor(k_UsingLowQualityTexturesDescriptor);

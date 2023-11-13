@@ -12,36 +12,37 @@ namespace Unity.ProjectAuditor.Editor
     /// Project-specific settings
     /// </summary>
     [Serializable]
-    public class ProjectAuditorDiagnosticParams : ISerializationCallbackReceiver
+    public class DiagnosticParams : ISerializationCallbackReceiver
     {
-        public ProjectAuditorDiagnosticParams()
+        public DiagnosticParams()
         {
             // We treat BuildTarget.NoTarget as the default value fallback if there isn't a platform-specific override
-            m_ParamsStack.Add(new DiagnosticParams(BuildTarget.NoTarget));
+            m_ParamsStack.Add(new PlatformParams(BuildTarget.NoTarget));
         }
 
         // Copy constructor
-        public ProjectAuditorDiagnosticParams(ProjectAuditorDiagnosticParams copyFrom)
+        public DiagnosticParams(DiagnosticParams copyFrom)
         {
             foreach (var platformParams in copyFrom.m_ParamsStack)
             {
-                m_ParamsStack.Add(new DiagnosticParams(platformParams));
+                m_ParamsStack.Add(new PlatformParams(platformParams));
             }
         }
 
         public void RegisterParameters()
         {
-            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(ProjectAuditorModule)))
+            m_ParamsStack[0].Platform = BuildTarget.NoTarget;
+            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(Module)))
             {
                 if (type.IsAbstract)
                     continue;
-                var instance = Activator.CreateInstance(type) as ProjectAuditorModule;
+                var instance = Activator.CreateInstance(type) as Module;
                 instance.RegisterParameters(this);
             }
         }
 
         [Serializable]
-        internal class DiagnosticParams
+        internal class PlatformParams
         {
             [JsonIgnore]
             public BuildTarget Platform;
@@ -60,6 +61,8 @@ namespace Unity.ProjectAuditor.Editor
             [JsonProperty("params")]
             Dictionary<string, int> m_Params = new Dictionary<string, int>();
 
+            internal int ParamsCount => (m_Params == null) ? 0 : m_Params.Count;
+
             // Can't use KeyValuePair<string, int> because Unity won't serialize generic types. So we'll make a concrete type.
             [Serializable]
             internal struct ParamKeyValue
@@ -74,18 +77,22 @@ namespace Unity.ProjectAuditor.Editor
                 }
             }
 
-            [JsonIgnore] [SerializeField] List<ParamKeyValue> m_SerializedParams = new List<ParamKeyValue>();
+#if UNITY_2020_2_OR_NEWER
+            [NonReorderable]
+#endif
+            [JsonIgnore] [SerializeField]
+            List<ParamKeyValue> m_SerializedParams = new List<ParamKeyValue>();
 
-            public DiagnosticParams()
+            public PlatformParams()
             {
             }
 
-            public DiagnosticParams(BuildTarget platform) : this()
+            public PlatformParams(BuildTarget platform) : this()
             {
                 Platform = platform;
             }
 
-            public DiagnosticParams(DiagnosticParams copyFrom) : this()
+            public PlatformParams(PlatformParams copyFrom) : this()
             {
                 Platform = copyFrom.Platform;
 
@@ -134,7 +141,9 @@ namespace Unity.ProjectAuditor.Editor
 
         public void OnBeforeSerialize()
         {
-            foreach(var platformParams in m_ParamsStack)
+            EnsureDefaults();
+
+            foreach (var platformParams in m_ParamsStack)
             {
                 platformParams.PreSerialize();
             }
@@ -142,17 +151,41 @@ namespace Unity.ProjectAuditor.Editor
 
         public void OnAfterDeserialize()
         {
-            foreach(var platformParams in m_ParamsStack)
+            foreach (var platformParams in m_ParamsStack)
             {
                 platformParams.PostDeserialize();
             }
+
+            EnsureDefaults();
         }
 
-        [JsonProperty("paramsStack")] [SerializeField] internal List<DiagnosticParams> m_ParamsStack = new List<DiagnosticParams>();
-        [JsonProperty] [SerializeField] public int CurrentParamsIndex;
+        void EnsureDefaults()
+        {
+            if (m_ParamsStack == null || m_ParamsStack.Count == 0)
+            {
+                m_ParamsStack = new List<PlatformParams>();
+                m_ParamsStack.Add(new PlatformParams(BuildTarget.NoTarget));
+            }
+
+            if (m_ParamsStack[0].ParamsCount == 0)
+            {
+                RegisterParameters();
+            }
+        }
+
+#if UNITY_2020_2_OR_NEWER
+        [NonReorderable]
+#endif
+        [JsonProperty("paramsStack")] [SerializeField]
+        internal List<PlatformParams> m_ParamsStack = new List<PlatformParams>();
+
+        [JsonProperty] [SerializeField]
+        public int CurrentParamsIndex;
 
         public void SetAnalysisPlatform(BuildTarget platform)
         {
+            EnsureDefaults();
+
             for (int i = 0; i < m_ParamsStack.Count; ++i)
             {
                 if (m_ParamsStack[i].Platform == platform)
@@ -163,17 +196,12 @@ namespace Unity.ProjectAuditor.Editor
             }
 
             // We didn't find this platform in the platform stack yet, so let's create it.
-            m_ParamsStack.Add(new DiagnosticParams(platform));
+            m_ParamsStack.Add(new PlatformParams(platform));
             CurrentParamsIndex = m_ParamsStack.Count - 1;
         }
 
         public void RegisterParameter(string paramName, int defaultValue)
         {
-            if (m_ParamsStack.Count == 0)
-            {
-                Debug.LogError("Uninitialized ProjectAuditorRules. Find out how this one was created and why it wasn't initialized.");
-            }
-
             // Does this check mean that parameter default values can't be automatically changed if they change in future versions of the package?
             // Yep. Nothing is perfect. This is better than the risk of over-writing values that users may have tweaked.
             if (!m_ParamsStack[0].TryGetParameter(paramName, out var paramValue))
@@ -185,11 +213,6 @@ namespace Unity.ProjectAuditor.Editor
 
         public int GetParameter(string paramName)
         {
-            if (m_ParamsStack.Count == 0)
-            {
-                Debug.LogError("Uninitialized ProjectAuditorRules. Find out how this one was created and why it wasn't initialized.");
-            }
-
             int paramValue;
 
             // Try the params for the current analysis platform
@@ -209,11 +232,6 @@ namespace Unity.ProjectAuditor.Editor
 
         public void SetParameter(BuildTarget platform, string paramName, int value)
         {
-            if (m_ParamsStack.Count == 0)
-            {
-                Debug.LogError("Uninitialized ProjectAuditorRules. Find out how this one was created and why it wasn't initialized.");
-            }
-
             foreach (var platformParams in m_ParamsStack)
             {
                 if (platformParams.Platform == platform)
@@ -223,7 +241,7 @@ namespace Unity.ProjectAuditor.Editor
                 }
             }
 
-            var newParams = new DiagnosticParams(platform);
+            var newParams = new PlatformParams(platform);
             newParams.SetParameter(paramName, value);
             m_ParamsStack.Add(newParams);
         }
@@ -232,7 +250,7 @@ namespace Unity.ProjectAuditor.Editor
         internal void ClearAllParameters()
         {
             m_ParamsStack.Clear();
-            m_ParamsStack.Add(new DiagnosticParams(BuildTarget.NoTarget));
+            m_ParamsStack.Add(new PlatformParams(BuildTarget.NoTarget));
         }
 
         // For testing purposes only

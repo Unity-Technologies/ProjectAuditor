@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using Newtonsoft.Json;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using UnityEditor;
@@ -9,7 +8,7 @@ using UnityEngine;
 namespace Unity.ProjectAuditor.Editor
 {
     [Serializable]
-    internal class ProjectAuditorParams
+    internal class AnalysisParams
     {
         /// <summary>
         /// Categories to include in the audit. If null, all categories will be included.
@@ -83,14 +82,14 @@ namespace Unity.ProjectAuditor.Editor
         public Action OnModuleCompleted;
 
         /// <summary>
-        /// The ProjectAuditorRules object which defines which issues should be ignored or given increased severity
+        /// The SeverityRules object which defines which issues should be ignored or given increased severity
         /// </summary>
-        public ProjectAuditorRules Rules;
+        public SeverityRules Rules;
 
         /// <summary>
-        /// The ProjectAuditorDiagnosticParams object which defines the customizable thresholds for reporting certain diagnostics.
+        /// The DiagnosticParams object which defines the customizable thresholds for reporting certain diagnostics.
         /// </summary>
-        public ProjectAuditorDiagnosticParams DiagnosticParams;
+        public DiagnosticParams DiagnosticParams;
 
         [JsonIgnore]
         [NonSerialized]
@@ -101,10 +100,10 @@ namespace Unity.ProjectAuditor.Editor
         public Predicate<string> AssetPathFilter;
 
         /// <summary>
-        /// ProjectAuditorParams constructor
+        /// AnalysisParams constructor
         /// </summary>
         /// <param name="copyParamsFromGlobal"> If true, the global ProjectSettings will register DiagnosticParams defaults, save any changes and copy the data into this object. This is usually the desired behaviour, but is not allowed during serialization. </param>
-        public ProjectAuditorParams(bool copyParamsFromGlobal = true)
+        public AnalysisParams(bool copyParamsFromGlobal = true)
         {
             if (copyParamsFromGlobal)
             {
@@ -112,8 +111,8 @@ namespace Unity.ProjectAuditor.Editor
                 ProjectAuditorSettings.instance.DiagnosticParams.RegisterParameters();
                 ProjectAuditorSettings.instance.Save();
 
-                Rules = new ProjectAuditorRules(ProjectAuditorSettings.instance.Rules);
-                DiagnosticParams = new ProjectAuditorDiagnosticParams(ProjectAuditorSettings.instance.DiagnosticParams);
+                Rules = new SeverityRules(ProjectAuditorSettings.instance.Rules);
+                DiagnosticParams = new DiagnosticParams(ProjectAuditorSettings.instance.DiagnosticParams);
             }
 
             Platform = BuildTarget.NoTarget;
@@ -122,7 +121,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         // Copy constructor
-        public ProjectAuditorParams(ProjectAuditorParams original)
+        public AnalysisParams(AnalysisParams original)
         {
             Rules = original.Rules;
             DiagnosticParams = original.DiagnosticParams;
@@ -142,6 +141,16 @@ namespace Unity.ProjectAuditor.Editor
             Rules = original.Rules;
 
             AssetPathFilter = original.AssetPathFilter;
+        }
+
+        public AnalysisParams WithAdditionalDiagnosticRules(List<Diagnostic.Rule> rules)
+        {
+            foreach (var rule in rules)
+            {
+                Rules.AddRule(rule);
+            }
+
+            return this;
         }
     }
 }

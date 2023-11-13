@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Module_BuiltinTypes_Exist()
         {
-            var types = TypeCache.GetTypesDerivedFrom(typeof(ProjectAuditorModule));
+            var types = TypeCache.GetTypesDerivedFrom(typeof(Module));
 
             Assert.NotNull(types.FirstOrDefault(type => type == typeof(CodeModule)));
             Assert.NotNull(types.FirstOrDefault(type => type == typeof(SettingsModule)));

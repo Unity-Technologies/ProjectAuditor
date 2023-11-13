@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             documentationUrl = "https://docs.unity3d.com/Manual/SRPBatcher.html"
         };
 
-        public void Initialize(ProjectAuditorModule module)
+        public void Initialize(Module module)
         {
             module.RegisterDescriptor(k_SrpBatcherDescriptor);
         }

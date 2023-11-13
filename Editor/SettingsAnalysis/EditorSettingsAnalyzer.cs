@@ -42,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             }
         };
 
-        public void Initialize(ProjectAuditorModule module)
+        public void Initialize(Module module)
         {
             module.RegisterDescriptor(k_EnterPlayModeOptionsDescriptor);
             module.RegisterDescriptor(k_DomainReloadDescriptor);

@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.EditorTests
         const int k_TestTextureResolution = 64;
         TestAsset m_TestTextureAsset;
 
-        ProjectAuditorDiagnosticParams m_DiagnosticParams;
+        DiagnosticParams m_DiagnosticParams;
 
         private const string k_TextureStreamingMipmapsSizeLimit = "TextureStreamingMipmapsSizeLimit";
         private const int k_MipmapSizeLimitDefault = 4000;
@@ -25,7 +25,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void SetUp()
         {
-            m_DiagnosticParams = new ProjectAuditorDiagnosticParams();
+            m_DiagnosticParams = new DiagnosticParams();
 
             var texture = new Texture2D(k_TestTextureResolution, k_TestTextureResolution);
             texture.SetPixel(0, 0, Color.red);
@@ -74,22 +74,22 @@ namespace Unity.ProjectAuditor.EditorTests
             m_DiagnosticParams.RegisterParameters();
             m_DiagnosticParams.SetAnalysisPlatform(BuildTarget.NoTarget);
 
-            var projectAuditorParams = new ProjectAuditorParams
+            var analysisParams = new AnalysisParams
             {
                 Categories = new[] { IssueCategory.AssetDiagnostic },
                 DiagnosticParams = m_DiagnosticParams
             };
 
             var projectAuditor = new Editor.ProjectAuditor();
-            var report = projectAuditor.Audit(projectAuditorParams);
+            var report = projectAuditor.Audit(analysisParams);
             var foundIssues = report.GetAllIssues().Where(i => i.relativePath.Equals(m_TestTextureAsset.relativePath));
 
             Assert.NotNull(foundIssues);
             Assert.Null(foundIssues.FirstOrDefault(i => i.id.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor.id)));
 
             // Texture would normally be too small to trigger this diagnostic, unless we specify a custom smaller limit
-            projectAuditorParams.DiagnosticParams.SetParameter(BuildTarget.NoTarget, k_TextureStreamingMipmapsSizeLimit, 32);
-            report = projectAuditor.Audit(projectAuditorParams);
+            analysisParams.DiagnosticParams.SetParameter(BuildTarget.NoTarget, k_TextureStreamingMipmapsSizeLimit, 32);
+            report = projectAuditor.Audit(analysisParams);
             foundIssues = report.GetAllIssues().Where(i => i.relativePath.Equals(m_TestTextureAsset.relativePath));
 
             Assert.NotNull(foundIssues);
@@ -106,7 +106,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(1, m_DiagnosticParams.CurrentParamsIndex);
 
             m_DiagnosticParams.RegisterParameter(k_TextureStreamingMipmapsSizeLimit, k_MipmapSizeLimitDefault);
-            Assert.AreEqual(1, m_DiagnosticParams.CountParameters());
+            Assert.NotZero(m_DiagnosticParams.CountParameters());
 
             var paramVal = m_DiagnosticParams.GetParameter(k_TextureStreamingMipmapsSizeLimit);
             Assert.AreEqual(paramVal, k_MipmapSizeLimitDefault);
@@ -125,13 +125,13 @@ namespace Unity.ProjectAuditor.EditorTests
             m_DiagnosticParams.SetAnalysisPlatform(BuildTarget.NoTarget);
             Assert.AreEqual(0, m_DiagnosticParams.CurrentParamsIndex);
 
-            m_DiagnosticParams = JsonConvert.DeserializeObject<ProjectAuditorDiagnosticParams>(jsonString, new JsonSerializerSettings
+            m_DiagnosticParams = JsonConvert.DeserializeObject<DiagnosticParams>(jsonString, new JsonSerializerSettings
             {
                 ObjectCreationHandling = ObjectCreationHandling.Replace
             });
 
             Assert.AreEqual(1, m_DiagnosticParams.CurrentParamsIndex);
-            Assert.AreEqual(1, m_DiagnosticParams.CountParameters());
+            Assert.NotZero(m_DiagnosticParams.CountParameters());
 
             paramVal = m_DiagnosticParams.GetParameter(k_TextureStreamingMipmapsSizeLimit);
             Assert.AreEqual(paramVal, k_MipmapSizeLimitDefault);

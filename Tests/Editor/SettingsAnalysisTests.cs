@@ -15,7 +15,7 @@ using UnityEditor.Rendering;
 using UnityEditor.TestTools;
 using UnityEngine;
 using UnityEngine.Rendering;
-using FogMode = Unity.ProjectAuditor.Editor.Modules.FogMode;
+using FogMode = Unity.ProjectAuditor.Editor.SettingsAnalysis.FogMode;
 #if PACKAGE_URP
 using UnityEngine.Rendering.Universal;
 #endif

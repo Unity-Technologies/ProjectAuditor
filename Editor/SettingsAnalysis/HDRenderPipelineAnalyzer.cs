@@ -33,7 +33,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "Change the <b>Lit Shader Mode</b> in all HDRP Assets and all Cameras to either <b>Forward</b> or <b>Deferred</b>."
         );
 
-        public void Initialize(ProjectAuditorModule module)
+        public void Initialize(Module module)
         {
             module.RegisterDescriptor(k_AssetLitShaderModeBothOrMixed);
             module.RegisterDescriptor(k_CameraLitShaderModeBothOrMixed);

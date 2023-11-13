@@ -30,14 +30,14 @@ namespace Unity.ProjectAuditor.Editor.Core
             if (category == IssueCategory.Metadata)
                 return new IssueLayout {category = IssueCategory.Metadata, properties = new PropertyDefinition[] {}};
 
-            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(ProjectAuditorModule)))
+            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(Module)))
             {
                 if (type.IsAbstract)
                     continue;
-                var module = Activator.CreateInstance(type) as ProjectAuditorModule;
-                if (module.isSupported)
+                var module = Activator.CreateInstance(type) as Module;
+                if (module.IsSupported)
                 {
-                    foreach (var layout in module.supportedLayouts)
+                    foreach (var layout in module.SupportedLayouts)
                     {
                         if (layout.category == category)
                             return layout;

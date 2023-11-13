@@ -12,12 +12,12 @@ using UnityEditor;
 namespace Unity.ProjectAuditor.Editor
 {
     [Serializable]
-    internal class SessionInfo : ProjectAuditorParams
+    internal class SessionInfo : AnalysisParams
     {
         // for serialization purposes only
         public SessionInfo() : base(false) {}
 
-        public SessionInfo(ProjectAuditorParams serializedParams)
+        public SessionInfo(AnalysisParams serializedParams)
             : base(serializedParams)
         {}
 
@@ -117,9 +117,9 @@ namespace Unity.ProjectAuditor.Editor
         {}
 
         // for internal use only
-        internal ProjectReport(ProjectAuditorParams projectAuditorParams)
+        internal ProjectReport(AnalysisParams analysisParams)
         {
-            m_SessionInfo = new SessionInfo(projectAuditorParams)
+            m_SessionInfo = new SessionInfo(analysisParams)
             {
                 ProjectAuditorVersion = ProjectAuditor.PackageVersion,
 
@@ -137,9 +137,9 @@ namespace Unity.ProjectAuditor.Editor
             };
         }
 
-        public void RecordModuleInfo(ProjectAuditorModule module, DateTime startTime, DateTime endTime)
+        public void RecordModuleInfo(Module module, DateTime startTime, DateTime endTime)
         {
-            var name = module.name;
+            var name = module.Name;
             var info = m_ModuleInfos.FirstOrDefault(m => m.name.Equals(name));
             if (info != null)
             {
@@ -150,9 +150,9 @@ namespace Unity.ProjectAuditor.Editor
             {
                 m_ModuleInfos.Add(new ModuleInfo
                 {
-                    name = module.name,
-                    categories = module.categories,
-                    layouts = module.supportedLayouts,
+                    name = module.Name,
+                    categories = module.Categories,
+                    layouts = module.SupportedLayouts,
                     startTime = Utils.Json.SerializeDateTime(startTime),
                     endTime = Utils.Json.SerializeDateTime(endTime)
                 });

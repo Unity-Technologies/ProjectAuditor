@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    class PackagesModule : ProjectAuditorModule
+    class PackagesModule : Module
     {
         static readonly IssueLayout k_PackageLayout = new IssueLayout
         {
@@ -71,9 +71,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "'{0}' version '{1}' is a preview/experimental version"
         };
 
-        public override string name => "Packages";
+        public override string Name => "Packages";
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_PackageLayout,
             k_PackageVersionLayout
@@ -87,28 +87,28 @@ namespace Unity.ProjectAuditor.Editor.Modules
             RegisterDescriptor(k_RecommendPackagePreView);
         }
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
             var request = Client.List();
             while (!request.IsCompleted)
                 System.Threading.Thread.Sleep(10);
             if (request.Status == StatusCode.Failure)
             {
-                projectAuditorParams.OnModuleCompleted?.Invoke();
+                analysisParams.OnModuleCompleted?.Invoke();
                 return;
             }
 
             var context = new AnalysisContext()
             {
-                Params = projectAuditorParams
+                Params = analysisParams
             };
 
             foreach (var package in request.Result)
             {
-                projectAuditorParams.OnIncomingIssues(EnumerateInstalledPackages(context, package));
-                projectAuditorParams.OnIncomingIssues(EnumeratePackageDiagnostics(context, package));
+                analysisParams.OnIncomingIssues(EnumerateInstalledPackages(context, package));
+                analysisParams.OnIncomingIssues(EnumeratePackageDiagnostics(context, package));
             }
-            projectAuditorParams.OnModuleCompleted?.Invoke();
+            analysisParams.OnModuleCompleted?.Invoke();
         }
 
         IEnumerable<ProjectIssue> EnumerateInstalledPackages(AnalysisContext context, UnityEditor.PackageManager.PackageInfo package)

@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             minimumVersion = "2020.2"
         };
 
-        public void Initialize(ProjectAuditorModule module)
+        public void Initialize(Module module)
         {
             module.RegisterDescriptor(k_DefaultLayerCollisionMatrixDescriptor);
             module.RegisterDescriptor(k_SimulationModeDescriptor);

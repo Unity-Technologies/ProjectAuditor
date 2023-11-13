@@ -22,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    class AudioClipModule : ProjectAuditorModuleWithAnalyzers<IAudioClipModuleAnalyzer>
+    class AudioClipModule : ModuleWithAnalyzers<IAudioClipModuleAnalyzer>
     {
         static readonly IssueLayout k_AudioClipLayout = new IssueLayout
         {
@@ -46,11 +46,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        public override string name => "AudioClips";
+        public override string Name => "AudioClips";
 
-        public override bool isEnabledByDefault => false;
+        public override bool IsEnabledByDefault => false;
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_AudioClipLayout,
             AssetsModule.k_IssueLayout
@@ -61,7 +61,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         const string k_LongCompressedMobileClipThresholdBytes = "LongCompressedMobileClipThresholdBytes";
         const string k_LoadInBackGroundClipSizeThresholdBytes = "LoadInBackGroundClipSizeThresholdBytes";
 
-        public override void RegisterParameters(ProjectAuditorDiagnosticParams diagnosticParams)
+        public override void RegisterParameters(DiagnosticParams diagnosticParams)
         {
             diagnosticParams.RegisterParameter(k_StreamingClipThresholdBytes, 1 * (64000 + (int)(1.6 * 48000 * 2)) + 694);
             diagnosticParams.RegisterParameter(k_LongDecompressedClipThresholdBytes, 200 * 1024);
@@ -69,16 +69,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
             diagnosticParams.RegisterParameter(k_LoadInBackGroundClipSizeThresholdBytes, 200 * 1024);
         }
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
-            var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
+            var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
 
-            var diagnosticParams = projectAuditorParams.DiagnosticParams;
+            var diagnosticParams = analysisParams.DiagnosticParams;
 
             var context = new AudioClipAnalysisContext
             {
                 // Importer is set in the loop
-                Params = projectAuditorParams,
+                Params = analysisParams,
                 StreamingClipThresholdBytes = diagnosticParams.GetParameter(k_StreamingClipThresholdBytes),
                 LongDecompressedClipThresholdBytes = diagnosticParams.GetParameter(k_LongDecompressedClipThresholdBytes),
                 LongCompressedMobileClipThresholdBytes = diagnosticParams.GetParameter(k_LongCompressedMobileClipThresholdBytes),
@@ -100,7 +100,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 context.Importer = audioImporter;
                 foreach (var analyzer in analyzers)
                 {
-                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(context));
+                    analysisParams.OnIncomingIssues(analyzer.Analyze(context));
                 }
 
                 progress?.Advance();
@@ -108,7 +108,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             progress?.Clear();
 
-            projectAuditorParams.OnModuleCompleted?.Invoke();
+            analysisParams.OnModuleCompleted?.Invoke();
         }
     }
 }

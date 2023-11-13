@@ -5,7 +5,7 @@ using Unity.ProjectAuditor.Editor.Interfaces;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 
-namespace Unity.ProjectAuditor.Editor.Modules
+namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
     enum FogStripping
     {
@@ -39,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "Graphics: Fog Mode '{0}' shader variants are always included in the build"
         };
 
-        public void Initialize(ProjectAuditorModule module)
+        public void Initialize(Module module)
         {
             module.RegisterDescriptor(k_FogModeDescriptor);
         }

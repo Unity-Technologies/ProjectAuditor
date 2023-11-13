@@ -23,6 +23,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Consider shrinking the texture to 1x1 size."
         )
         {
+            isEnabledByDefault = false,
             messageFormat = "Texture '{0}' is a solid color and not 1x1 size",
             fixer = (issue) => { ShrinkSolidTexture(issue.relativePath); }
         };
@@ -36,6 +37,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Consider shrinking the texture to 1x1 size."
         )
         {
+            isEnabledByDefault = false,
             messageFormat = "Texture '{0}' is a solid color and not 1x1 size"
         };
 
@@ -47,10 +49,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Consider reorganizing your texture atlas in order to reduce the amount of empty space."
         )
         {
+            isEnabledByDefault = false,
             messageFormat = "Texture Atlas '{0}' has too much empty space ({1})"
         };
 
-        public void Initialize(ProjectAuditorModule module)
+        public void Initialize(Module module)
         {
             module.RegisterDescriptor(k_TextureSolidColorDescriptor);
             module.RegisterDescriptor(k_TextureSolidColorNoFixerDescriptor);
@@ -59,15 +62,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public IEnumerable<ProjectIssue> Analyze(TextureAnalysisContext context)
         {
-            if (TextureUtils.IsTextureSolidColorTooBig(context.Importer, context.Texture))
+            var dimensionAppropriateDescriptor = context.Texture.dimension == UnityEngine.Rendering.TextureDimension.Tex2D ? k_TextureSolidColorDescriptor : k_TextureSolidColorNoFixerDescriptor;
+            if (context.IsDescriptorEnabled(dimensionAppropriateDescriptor) &&
+                TextureUtils.IsTextureSolidColorTooBig(context.Importer, context.Texture))
             {
-                var dimensionAppropriateDescriptor = context.Texture.dimension == UnityEngine.Rendering.TextureDimension.Tex2D ? k_TextureSolidColorDescriptor : k_TextureSolidColorNoFixerDescriptor;
                 yield return context.Create(IssueCategory.AssetDiagnostic, dimensionAppropriateDescriptor.id, context.Name)
                     .WithLocation(context.Importer.assetPath);
             }
 
             var texture2D = context.Texture as Texture2D;
-            if (texture2D != null)
+            if (context.IsDescriptorEnabled(k_TextureAtlasEmptyDescriptor) && texture2D != null)
             {
                 var emptyPercent = TextureUtils.GetEmptyPixelsPercent(texture2D);
                 if (emptyPercent > context.SpriteAtlasEmptySpaceLimit)

@@ -11,14 +11,14 @@ namespace Unity.ProjectAuditor.Editor
     /// Rules to specify the severity of individual diagnostic issues
     /// </summary>
     [Serializable]
-    public class ProjectAuditorRules
+    public class SeverityRules
     {
-        public ProjectAuditorRules()
+        public SeverityRules()
         {
         }
 
         // Copy constructor
-        public ProjectAuditorRules(ProjectAuditorRules copyFrom)
+        public SeverityRules(SeverityRules copyFrom)
         {
             foreach (var rule in copyFrom.m_Rules)
             {
@@ -31,8 +31,10 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        [JsonProperty("rules")]
-        [SerializeField]
+#if UNITY_2020_2_OR_NEWER
+        [NonReorderable]
+#endif
+        [JsonProperty("rules")] [SerializeField]
         List<Rule> m_Rules = new List<Rule>();
 
         internal int NumRules => m_Rules.Count;

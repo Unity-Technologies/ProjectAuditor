@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.Utils;
 
-namespace Unity.ProjectAuditor.Editor.Utils
+namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
     internal static class RoslynTextLookup
     {

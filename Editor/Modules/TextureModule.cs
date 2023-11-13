@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    class TextureModule : ProjectAuditorModuleWithAnalyzers<ITextureModuleAnalyzer>
+    class TextureModule : ModuleWithAnalyzers<ITextureModuleAnalyzer>
     {
         static readonly IssueLayout k_TextureLayout = new IssueLayout
         {
@@ -42,11 +42,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        public override string name => "Textures";
+        public override string Name => "Textures";
 
-        public override bool isEnabledByDefault => false;
+        public override bool IsEnabledByDefault => false;
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_TextureLayout,
             AssetsModule.k_IssueLayout
@@ -56,18 +56,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
         const string k_TextureSizeLimit                 = "TextureSizeLimit";
         const string k_SpriteAtlasEmptySpaceLimit       = "SpriteAtlasEmptySpaceLimit";
 
-        public override void RegisterParameters(ProjectAuditorDiagnosticParams diagnosticParams)
+        public override void RegisterParameters(DiagnosticParams diagnosticParams)
         {
             diagnosticParams.RegisterParameter(k_TextureStreamingMipmapsSizeLimit, 4000);
             diagnosticParams.RegisterParameter(k_TextureSizeLimit, 2048);
             diagnosticParams.RegisterParameter(k_SpriteAtlasEmptySpaceLimit, 50);
         }
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
-            var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
+            var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
 
-            var diagnosticParams = projectAuditorParams.DiagnosticParams;
+            var diagnosticParams = analysisParams.DiagnosticParams;
             var textureStreamingMipmapsSizeLimit = diagnosticParams.GetParameter(k_TextureStreamingMipmapsSizeLimit);
             var textureSizeLimit = diagnosticParams.GetParameter(k_TextureSizeLimit);
             var spriteAtlasEmptySpaceLimit = diagnosticParams.GetParameter(k_SpriteAtlasEmptySpaceLimit);
@@ -77,7 +77,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // Importer set in loop
                 // ImporterPlatformSettings set in loop
                 // Texture set in loop
-                Params = projectAuditorParams,
+                Params = analysisParams,
                 TextureStreamingMipmapsSizeLimit = textureStreamingMipmapsSizeLimit,
                 TextureSizeLimit = textureSizeLimit,
                 SpriteAtlasEmptySpaceLimit = spriteAtlasEmptySpaceLimit
@@ -96,7 +96,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
 
                 context.Importer = textureImporter;
-                context.ImporterPlatformSettings = textureImporter.GetPlatformTextureSettings(projectAuditorParams.PlatformString);
+                context.ImporterPlatformSettings = textureImporter.GetPlatformTextureSettings(analysisParams.PlatformString);
                 context.Texture = AssetDatabase.LoadAssetAtPath<Texture>(assetPath);
 
                 if (string.IsNullOrEmpty(context.Texture.name))
@@ -106,7 +106,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var analyzer in analyzers)
                 {
-                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(context));
+                    analysisParams.OnIncomingIssues(analyzer.Analyze(context));
                 }
 
                 progress?.Advance();
@@ -114,7 +114,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             progress?.Clear();
 
-            projectAuditorParams.OnModuleCompleted?.Invoke();
+            analysisParams.OnModuleCompleted?.Invoke();
         }
     }
 }

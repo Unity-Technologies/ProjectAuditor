@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 {
     class AnimationAnalyzer : IAnimationModuleAnalyzer
     {
-        public void Initialize(ProjectAuditorModule module)
+        public void Initialize(Module module)
         {
         }
     }

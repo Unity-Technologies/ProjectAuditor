@@ -17,19 +17,29 @@ namespace Unity.ProjectAuditor.Editor
                 // By default the last token of the path is used as display name if no label is provided.
                 label = "Project Auditor",
                 // Create the SettingsProvider and initialize its drawing (IMGUI) function in place:
-                guiHandler = (searchContext) =>
-                {
-                    var settings = ProjectAuditorSettings.instance.GetSerializedObject();
-                    EditorGUILayout.PropertyField(settings.FindProperty("Rules"), new GUIContent("Rules"));
-                    EditorGUILayout.PropertyField(settings.FindProperty("DiagnosticParams"), new GUIContent("Diagnostic Parameters"));
-                    settings.ApplyModifiedPropertiesWithoutUndo();
-                },
+                guiHandler = SettingsGUI,
 
                 // Populate the search keywords to enable smart search filtering and label highlighting:
                 keywords = new HashSet<string>(new[] { "Rules", "Diagnostic Parameters" })
             };
 
             return provider;
+        }
+
+        static void SettingsGUI(string searchContext)
+        {
+            var settings = ProjectAuditorSettings.instance.GetSerializedObject();
+
+            EditorGUI.BeginChangeCheck();
+
+            EditorGUILayout.PropertyField(settings.FindProperty("Rules"));
+            EditorGUILayout.PropertyField(settings.FindProperty("DiagnosticParams"));
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                settings.ApplyModifiedPropertiesWithoutUndo();
+                ProjectAuditorSettings.instance.Save();
+            }
         }
     }
 }

@@ -7,7 +7,6 @@ using Unity.ProjectAuditor.Editor.Tests.Common;
 using UnityEditor;
 using UnityEditor.TestTools;
 using UnityEngine;
-using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -47,6 +46,24 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void SetUp()
         {
+            m_AdditionalRules.Add(new Rule
+            {
+                id = TextureUtilizationAnalyzer.k_TextureSolidColorDescriptor.id,
+                severity = Severity.Moderate
+            });
+
+            m_AdditionalRules.Add(new Rule
+            {
+                id = TextureUtilizationAnalyzer.k_TextureSolidColorNoFixerDescriptor.id,
+                severity = Severity.Moderate
+            });
+
+            m_AdditionalRules.Add(new Rule
+            {
+                id = TextureUtilizationAnalyzer.k_TextureAtlasEmptyDescriptor.id,
+                severity = Severity.Moderate
+            });
+
             var texture = new Texture2D(k_Resolution, k_Resolution);
             texture.SetPixel(0, 0, Random.ColorHSV());
             texture.name = k_TextureName;
@@ -395,7 +412,7 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void Texture_Empty_Space_IsReported()
+        public void Texture_EmptySpace_IsReported()
         {
             var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TestTextureEmptySpace, IssueCategory.AssetDiagnostic)
                 .FirstOrDefault(i => i.id.Equals(TextureUtilizationAnalyzer.k_TextureAtlasEmptyDescriptor.id));
@@ -404,7 +421,7 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void Texture_Not_Empty_Space_IsNotReported()
+        public void Texture_EmptySpace_IsNotReported()
         {
             //We don't need to create a new texture as we only need a not empty one
             var textureDiagnostic = AnalyzeAndFindAssetIssues(m_TextureSolidColor, IssueCategory.AssetDiagnostic)

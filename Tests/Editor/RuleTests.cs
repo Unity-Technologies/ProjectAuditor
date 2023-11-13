@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -24,9 +25,9 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_TestScriptAsset;
 
         [SerializeField]
-        ProjectAuditorRules m_SerializedRules;
+        SeverityRules m_SerializedRules;
 
-        ProjectAuditorRules m_Rules;
+        SeverityRules m_Rules;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -34,7 +35,7 @@ namespace Unity.ProjectAuditor.EditorTests
             m_TestScriptAsset = new TestAsset("MyClass.cs",
                 "using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(Camera.allCameras.Length.ToString()); } }");
 
-            m_Rules = new ProjectAuditorRules();
+            m_Rules = new SeverityRules();
         }
 
 #if UNITY_2019_4_OR_NEWER
@@ -129,9 +130,9 @@ namespace Unity.ProjectAuditor.EditorTests
         public void Rule_Test_CanBeAddedAndRemoved()
         {
             var settingsAuditor = m_ProjectAuditor.GetModule<SettingsModule>();
-            var IDs = settingsAuditor.supportedDescriptorIDs;
-            var rules = new ProjectAuditorRules();
-            var firstID = IDs.FirstOrDefault();
+            var ids = settingsAuditor.SupportedDescriptorIds;
+            var rules = new SeverityRules();
+            var firstID = ids.FirstOrDefault();
 
             Assert.IsNotNull(firstID);
 
@@ -264,17 +265,17 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(2, m_Rules.NumRules);
 
             var jsonString = JsonConvert.SerializeObject(m_Rules, Formatting.None,
-                    new JsonSerializerSettings
-                    {
-                        NullValueHandling = NullValueHandling.Ignore
-                    });
+                new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                });
 
             Assert.NotNull(jsonString);
 
             m_Rules.ClearAllRules();
             Assert.AreEqual(0, m_Rules.NumRules);
 
-            m_Rules = JsonConvert.DeserializeObject<ProjectAuditorRules>(jsonString, new JsonSerializerSettings
+            m_Rules = JsonConvert.DeserializeObject<SeverityRules>(jsonString, new JsonSerializerSettings
             {
                 ObjectCreationHandling = ObjectCreationHandling.Replace
             });
@@ -290,7 +291,30 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(rule2.id, k_id2);
             Assert.AreEqual(rule2.severity, Severity.Critical);
             Assert.AreEqual(rule2.filter, k_filter);
+        }
 
+        [Test]
+        public void Rule_TemporaryRule_IsAdded()
+        {
+            var projectAuditorParams = new AnalysisParams { Platform = m_Platform };
+            var numRules = projectAuditorParams.Rules.NumRules;
+
+            projectAuditorParams.WithAdditionalDiagnosticRules(new List<Rule>(new[] {new Rule()}));
+
+            Assert.AreEqual(numRules + 1, projectAuditorParams.Rules.NumRules);
+        }
+
+        [Test]
+        public void Rule_TemporaryRule_DoesNotPersist()
+        {
+            var projectAuditorParams = new AnalysisParams { Platform = m_Platform };
+            var numRules = ProjectAuditorSettings.instance.Rules.NumRules;
+
+            projectAuditorParams.WithAdditionalDiagnosticRules(new List<Rule>(new[] {new Rule()}));
+
+            m_ProjectAuditor.Audit();
+
+            Assert.AreEqual(numRules, ProjectAuditorSettings.instance.Rules.NumRules);
         }
     }
 }

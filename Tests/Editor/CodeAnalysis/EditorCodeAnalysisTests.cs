@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void EditorCodeAnalysis_GetAssemblies_IsFound()
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit(new ProjectAuditorParams
+            var projectReport = projectAuditor.Audit(new AnalysisParams
             {
                 CompilationMode = CompilationMode.Editor,
                 Categories = new[] { IssueCategory.Code }
@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void EditorCodeAnalysis_FindAssets_IsFound()
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit(new ProjectAuditorParams
+            var projectReport = projectAuditor.Audit(new AnalysisParams
             {
                 CompilationMode = CompilationMode.Editor,
                 Categories = new[] { IssueCategory.Code }

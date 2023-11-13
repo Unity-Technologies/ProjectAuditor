@@ -108,7 +108,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public string[] keywords;
     }
 
-    class ShadersModule : ProjectAuditorModuleWithAnalyzers<IShaderModuleAnalyzer>
+    class ShadersModule : ModuleWithAnalyzers<IShaderModuleAnalyzer>
         , IPreprocessShaders
 #if PA_CAN_USE_IPREPROCESSCOMPUTESHADERS
         , IPreprocessComputeShaders
@@ -253,9 +253,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             new Dictionary<ComputeShader, List<ComputeShaderVariantData>>();
 #endif
 
-        public override string name => "Shaders";
+        public override string Name => "Shaders";
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_ShaderLayout,
             k_ShaderVariantLayout,
@@ -271,24 +271,24 @@ namespace Unity.ProjectAuditor.Editor.Modules
             AssetsModule.k_IssueLayout
         };
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
             var context = new AnalysisContext()
             {
-                Params = projectAuditorParams
+                Params = analysisParams
             };
 
             var shaderPathMap = CollectShaders(context);
-            ProcessShaders(projectAuditorParams, shaderPathMap);
+            ProcessShaders(analysisParams, shaderPathMap);
 
-            ProcessComputeShaders(projectAuditorParams);
+            ProcessComputeShaders(analysisParams);
 
             ProcessMaterials(context);
 
             // clear collected variants before next build
             ClearBuildData();
 
-            projectAuditorParams.OnModuleCompleted?.Invoke();
+            analysisParams.OnModuleCompleted?.Invoke();
         }
 
         Dictionary<Shader, string> CollectShaders(AnalysisContext context)
@@ -383,9 +383,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return alwaysIncludedShaders;
         }
 
-        void ProcessShaders(ProjectAuditorParams projectAuditorParams, Dictionary<Shader, string> shaderPathMap)
+        void ProcessShaders(AnalysisParams analysisParams, Dictionary<Shader, string> shaderPathMap)
         {
-            var platform = projectAuditorParams.Platform;
+            var platform = analysisParams.Platform;
             var alwaysIncludedShaders = GetAlwaysIncludedShaders();
             var buildReportInfoAvailable = false;
 #if BUILD_REPORT_API_SUPPORT
@@ -425,25 +425,25 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 {
                     AssetPath = assetPath,
                     Shader = shader,
-                    Params = projectAuditorParams
+                    Params = analysisParams
                 };
 
-                projectAuditorParams.OnIncomingIssues(ProcessShader(shaderAnalysisContext, assetSize, alwaysIncludedShaders.Contains(shader)));
-                projectAuditorParams.OnIncomingIssues(ProcessVariants(shaderAnalysisContext));
+                analysisParams.OnIncomingIssues(ProcessShader(shaderAnalysisContext, assetSize, alwaysIncludedShaders.Contains(shader)));
+                analysisParams.OnIncomingIssues(ProcessVariants(shaderAnalysisContext));
 
                 foreach (var analyzer in analyzers)
                 {
-                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(shaderAnalysisContext));
+                    analysisParams.OnIncomingIssues(analyzer.Analyze(shaderAnalysisContext));
                 }
             }
         }
 
-        void ProcessComputeShaders(ProjectAuditorParams projectAuditorParams)
+        void ProcessComputeShaders(AnalysisParams analysisParams)
         {
 #if PA_CAN_USE_IPREPROCESSCOMPUTESHADERS
             var context = new AnalysisContext()
             {
-                Params = projectAuditorParams
+                Params = analysisParams
             };
             var issues = new List<ProjectIssue>();
 
@@ -452,7 +452,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var computeShaderName = shaderCompilerData.Key.name;
                 foreach (var shaderVariantData in shaderCompilerData.Value)
                 {
-                    if (shaderVariantData.buildTarget != BuildTarget.NoTarget && shaderVariantData.buildTarget != projectAuditorParams.Platform)
+                    if (shaderVariantData.buildTarget != BuildTarget.NoTarget && shaderVariantData.buildTarget != analysisParams.Platform)
                         continue;
 
                     issues.Add(context.CreateWithoutDiagnostic(k_ComputeShaderVariantLayout.category, computeShaderName)
@@ -468,7 +468,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
             }
             if (issues.Any())
-                projectAuditorParams.OnIncomingIssues(issues);
+                analysisParams.OnIncomingIssues(issues);
 #endif
         }
 

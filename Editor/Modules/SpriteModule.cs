@@ -4,31 +4,31 @@ using Unity.ProjectAuditor.Editor.Interfaces;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    class SpriteModule : ProjectAuditorModuleWithAnalyzers<ISpriteAtlasModuleAnalyzer>
+    class SpriteModule : ModuleWithAnalyzers<ISpriteAtlasModuleAnalyzer>
     {
-        public override string name => "Sprites Atlas";
+        public override string Name => "Sprites Atlas";
 
-        public override bool isEnabledByDefault => false;
+        public override bool IsEnabledByDefault => false;
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts  => new IssueLayout[] { AssetsModule.k_IssueLayout };
+        public override IReadOnlyCollection<IssueLayout> SupportedLayouts  => new IssueLayout[] { AssetsModule.k_IssueLayout };
 
         const string k_SpriteAtlasEmptySpaceLimit   = "SpriteAtlasEmptySpaceLimit";
 
-        public override void RegisterParameters(ProjectAuditorDiagnosticParams diagnosticParams)
+        public override void RegisterParameters(DiagnosticParams diagnosticParams)
         {
             diagnosticParams.RegisterParameter(k_SpriteAtlasEmptySpaceLimit, 50);
         }
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
-            var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
+            var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
 
-            var spriteAtlasEmptySpaceLimit = projectAuditorParams.DiagnosticParams.GetParameter(k_SpriteAtlasEmptySpaceLimit);
+            var spriteAtlasEmptySpaceLimit = analysisParams.DiagnosticParams.GetParameter(k_SpriteAtlasEmptySpaceLimit);
 
             var context = new SpriteAtlasAnalysisContext
             {
                 // AssetPath set in loop
-                Params = projectAuditorParams,
+                Params = analysisParams,
                 SpriteAtlasEmptySpaceLimit = spriteAtlasEmptySpaceLimit
             };
 
@@ -42,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var analyzer in analyzers)
                 {
-                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(context));
+                    analysisParams.OnIncomingIssues(analyzer.Analyze(context));
                 }
 
                 progress?.Advance();
@@ -50,7 +50,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             progress?.Clear();
 
-            projectAuditorParams.OnModuleCompleted.Invoke();
+            analysisParams.OnModuleCompleted.Invoke();
         }
     }
 }

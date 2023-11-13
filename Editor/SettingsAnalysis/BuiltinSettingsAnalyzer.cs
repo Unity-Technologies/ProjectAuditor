@@ -10,6 +10,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Macros;
 using UnityEngine;
+using Module = Unity.ProjectAuditor.Editor.Core.Module;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
@@ -20,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             new List<KeyValuePair<string, string>>();
         List<Descriptor> m_Descriptors;
 
-        public void Initialize(ProjectAuditorModule module)
+        public void Initialize(Module module)
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             m_Assemblies.Add(assemblies.First(a => a.Location.Contains("UnityEngine.dll")));

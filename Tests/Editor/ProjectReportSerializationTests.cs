@@ -97,7 +97,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProjectReportSerialization_Report_CanSerialize()
         {
-            var report = m_ProjectAuditor.Audit(new ProjectAuditorParams
+            var report = m_ProjectAuditor.Audit(new AnalysisParams
             {
                 Categories = new[]
                 {

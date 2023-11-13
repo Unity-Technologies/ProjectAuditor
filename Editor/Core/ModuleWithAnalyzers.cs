@@ -7,7 +7,7 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
-    internal abstract class ProjectAuditorModuleWithAnalyzers<T> : ProjectAuditorModule where T : IModuleAnalyzer
+    internal abstract class ModuleWithAnalyzers<T> : Module where T : IModuleAnalyzer
     {
         protected List<T> m_Analyzers;
 
