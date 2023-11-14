@@ -85,10 +85,10 @@ namespace Unity.ProjectAuditor.EditorTests
             }
 #endif
 
-            var shadersWithErrors = Analyze(IssueCategory.Shader, i => i.severity == Severity.Error);
+            var shadersWithErrors = Analyze(IssueCategory.Shader, i => i.Severity == Severity.Error);
 
             Assert.Positive(shadersWithErrors.Count());
-            var shaderIssue = shadersWithErrors.FirstOrDefault(i => i.relativePath.Equals(local_shaderWithFunctionError.relativePath));
+            var shaderIssue = shadersWithErrors.FirstOrDefault(i => i.RelativePath.Equals(local_shaderWithFunctionError.relativePath));
             Assert.NotNull(shaderIssue);
 
             local_shaderWithFunctionError.CleanupLocal();
@@ -112,10 +112,10 @@ namespace Unity.ProjectAuditor.EditorTests
             }
 #endif
 
-            var shadersWithErrors = Analyze(IssueCategory.Shader, i => i.severity == Severity.Error);
+            var shadersWithErrors = Analyze(IssueCategory.Shader, i => i.Severity == Severity.Error);
 
             Assert.Positive(shadersWithErrors.Count());
-            var shaderIssue = shadersWithErrors.FirstOrDefault(i => i.relativePath.Equals(local_shaderWithShaderLabError.relativePath));
+            var shaderIssue = shadersWithErrors.FirstOrDefault(i => i.RelativePath.Equals(local_shaderWithShaderLabError.relativePath));
             Assert.NotNull(shaderIssue);
 
             local_shaderWithShaderLabError.CleanupLocal();

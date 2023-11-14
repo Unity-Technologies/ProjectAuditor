@@ -29,7 +29,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "Texture '{0}' mipmaps generation is not enabled",
             fixer = (issue) =>
             {
-                var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
+                var textureImporter = AssetImporter.GetAtPath(issue.RelativePath) as TextureImporter;
                 if (textureImporter != null)
                 {
                     textureImporter.mipmapEnabled = true;
@@ -49,7 +49,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "Texture '{0}' mipmaps generation is enabled",
             fixer = (issue) =>
             {
-                var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
+                var textureImporter = AssetImporter.GetAtPath(issue.RelativePath) as TextureImporter;
                 if (textureImporter != null)
                 {
                     textureImporter.mipmapEnabled = false;
@@ -70,7 +70,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             documentationUrl = "https://docs.unity3d.com/Manual/class-TextureImporter.html",
             fixer = (issue) =>
             {
-                var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
+                var textureImporter = AssetImporter.GetAtPath(issue.RelativePath) as TextureImporter;
                 if (textureImporter != null)
                 {
                     textureImporter.isReadable = false;
@@ -90,7 +90,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "Texture '{0}' mipmaps streaming is not enabled",
             fixer = (issue) =>
             {
-                var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
+                var textureImporter = AssetImporter.GetAtPath(issue.RelativePath) as TextureImporter;
                 if (textureImporter != null)
                 {
                     textureImporter.streamingMipmaps = true;
@@ -111,7 +111,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "Texture '{0}' anisotropic level is set to '{1}'",
             fixer = (issue) =>
             {
-                var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
+                var textureImporter = AssetImporter.GetAtPath(issue.RelativePath) as TextureImporter;
                 if (textureImporter != null)
                 {
                     textureImporter.anisoLevel = 1;
@@ -120,7 +120,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        public void Initialize(ProjectAuditorModule module)
+        public void Initialize(Module module)
         {
             module.RegisterDescriptor(k_TextureMipMapNotEnabledDescriptor);
             module.RegisterDescriptor(k_TextureMipMapEnabledDescriptor);

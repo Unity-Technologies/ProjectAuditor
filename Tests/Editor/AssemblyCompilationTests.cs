@@ -94,16 +94,16 @@ class MyClass
         public void AssemblyCompilation_Player_IsCompiled(CompilationMode mode, string methodName)
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit(new ProjectAuditorParams
+            var projectReport = projectAuditor.Audit(new AnalysisParams
             {
                 CompilationMode = mode
             });
 
             var issues = projectReport.FindByCategory(IssueCategory.Code);
-            var codeIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_TestAsset.relativePath));
+            var codeIssue = issues.FirstOrDefault(i => i.RelativePath.Equals(m_TestAsset.relativePath));
 
             Assert.NotNull(codeIssue);
-            Assert.AreEqual("MyClass." + methodName, codeIssue.dependencies.prettyName);
+            Assert.AreEqual("MyClass." + methodName, codeIssue.Dependencies.prettyName);
         }
     }
 }

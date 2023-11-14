@@ -10,6 +10,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Profiling;
+using Module = Unity.ProjectAuditor.Editor.Core.Module;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
@@ -44,7 +45,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "AudioClip '{0}' Load Type is not set to Streaming",
             fixer = (issue) =>
             {
-                var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
+                var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
                 {
                     var sampleSettings = audioImporter.GetOverrideSampleSettings(s_PlatformString);
@@ -77,7 +78,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "AudioClip '{0}' is stereo",
             fixer = (issue) =>
             {
-                var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
+                var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
                 {
                     audioImporter.forceToMono = true;
@@ -98,7 +99,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "AudioClip '{0}' is stereo",
             fixer = (issue) =>
             {
-                var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
+                var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
                 {
                     audioImporter.forceToMono = true;
@@ -153,7 +154,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "AudioClip '{0}' Sample Rate is over 48KHz",
             fixer = (issue) =>
             {
-                var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
+                var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
                 {
                     var sampleSettings = audioImporter.GetOverrideSampleSettings(s_PlatformString);
@@ -176,7 +177,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "AudioClip '{0}' is set to Preload Audio Data",
             fixer = (issue) =>
             {
-                var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
+                var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
                 {
 #if UNITY_2022_2_OR_NEWER
@@ -202,7 +203,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "AudioClip '{0}' Load In Background is not enabled",
             fixer = (issue) =>
             {
-                var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
+                var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
                 {
                     audioImporter.loadInBackground = true;
@@ -222,7 +223,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "AudioClip '{0}' Compression Format is MP3",
             fixer = (issue) =>
             {
-                var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
+                var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
                 {
                     var sampleSettings = audioImporter.GetOverrideSampleSettings(s_PlatformString);
@@ -245,7 +246,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "AudioClip '{0}' source asset is in a lossy compressed format",
         };
 
-        public void Initialize(ProjectAuditorModule module)
+        public void Initialize(Module module)
         {
             module.RegisterDescriptor(k_AudioLongClipDoesNotStreamDescriptor);
             module.RegisterDescriptor(k_AudioShortClipStreamsDescriptor);

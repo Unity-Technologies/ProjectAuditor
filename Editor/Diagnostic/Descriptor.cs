@@ -36,6 +36,11 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public Severity defaultSeverity;
 
         /// <summary>
+        /// Returns true if the diagnostic is enabled by default.
+        /// </summary>
+        public bool isEnabledByDefault = true;
+
+        /// <summary>
         /// Affected areas
         /// </summary>
         [JsonRequired]
@@ -189,7 +194,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
                 return;
 
             fixer(issue);
-            issue.wasFixed = true;
+            issue.WasFixed = true;
         }
 
         /// <summary>Returns a hash code for the Descriptor.</summary>

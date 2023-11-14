@@ -12,13 +12,12 @@ using UnityEditor;
 namespace Unity.ProjectAuditor.Editor
 {
     [Serializable]
-    internal class SessionInfo : SerializedAnalysisParams
+    internal class SessionInfo : AnalysisParams
     {
         // for serialization purposes only
-        public SessionInfo()
-        {}
+        public SessionInfo() : base(false) {}
 
-        public SessionInfo(SerializedAnalysisParams serializedParams)
+        public SessionInfo(AnalysisParams serializedParams)
             : base(serializedParams)
         {}
 
@@ -85,7 +84,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
-                return m_Issues.Where(i => !i.wasFixed).ToArray();
+                return m_Issues.Where(i => !i.WasFixed).ToArray();
             }
             set => m_Issues = value.ToList();
         }
@@ -118,9 +117,9 @@ namespace Unity.ProjectAuditor.Editor
         {}
 
         // for internal use only
-        internal ProjectReport(ProjectAuditorParams projectAuditorParams)
+        internal ProjectReport(AnalysisParams analysisParams)
         {
-            m_SessionInfo = new SessionInfo(projectAuditorParams)
+            m_SessionInfo = new SessionInfo(analysisParams)
             {
                 ProjectAuditorVersion = ProjectAuditor.PackageVersion,
 
@@ -138,9 +137,9 @@ namespace Unity.ProjectAuditor.Editor
             };
         }
 
-        public void RecordModuleInfo(ProjectAuditorModule module, DateTime startTime, DateTime endTime)
+        public void RecordModuleInfo(Module module, DateTime startTime, DateTime endTime)
         {
-            var name = module.name;
+            var name = module.Name;
             var info = m_ModuleInfos.FirstOrDefault(m => m.name.Equals(name));
             if (info != null)
             {
@@ -151,9 +150,9 @@ namespace Unity.ProjectAuditor.Editor
             {
                 m_ModuleInfos.Add(new ModuleInfo
                 {
-                    name = module.name,
-                    categories = module.categories,
-                    layouts = module.supportedLayouts,
+                    name = module.Name,
+                    categories = module.Categories,
+                    layouts = module.SupportedLayouts,
                     startTime = Utils.Json.SerializeDateTime(startTime),
                     endTime = Utils.Json.SerializeDateTime(endTime)
                 });
@@ -181,7 +180,7 @@ namespace Unity.ProjectAuditor.Editor
         public int GetNumIssues(IssueCategory category)
         {
             s_Mutex.WaitOne();
-            var result = m_Issues.Count(i => i.category == category);
+            var result = m_Issues.Count(i => i.Category == category);
             s_Mutex.ReleaseMutex();
             return result;
         }
@@ -194,7 +193,7 @@ namespace Unity.ProjectAuditor.Editor
         public IReadOnlyCollection<ProjectIssue> FindByCategory(IssueCategory category)
         {
             s_Mutex.WaitOne();
-            var result = m_Issues.Where(i => i.category == category).ToArray();
+            var result = m_Issues.Where(i => i.Category == category).ToArray();
             s_Mutex.ReleaseMutex();
             return result;
         }
@@ -207,7 +206,7 @@ namespace Unity.ProjectAuditor.Editor
         public IReadOnlyCollection<ProjectIssue> FindByDiagnosticID(string id)
         {
             s_Mutex.WaitOne();
-            var result = m_Issues.Where(i => i.id.IsValid() && i.id.Equals(id)).ToArray();
+            var result = m_Issues.Where(i => i.Id.IsValid() && i.Id.Equals(id)).ToArray();
             s_Mutex.ReleaseMutex();
             return result;
         }
@@ -222,7 +221,7 @@ namespace Unity.ProjectAuditor.Editor
         public void ClearIssues(IssueCategory category)
         {
             s_Mutex.WaitOne();
-            m_Issues.RemoveAll(issue => issue.category == category);
+            m_Issues.RemoveAll(issue => issue.Category == category);
             foreach (var info in m_ModuleInfos)
             {
                 var categories = info.categories.ToList();
@@ -235,7 +234,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public void ExportToCsv(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
         {
-            var issues = m_Issues.Where(i => i.category == layout.category && (predicate == null || predicate(i))).ToArray();
+            var issues = m_Issues.Where(i => i.Category == layout.category && (predicate == null || predicate(i))).ToArray();
             using (var exporter = new CsvExporter(path, layout))
             {
                 exporter.WriteHeader();
@@ -250,7 +249,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public void ExportToHtml(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
         {
-            var issues = m_Issues.Where(i => i.category == layout.category && (predicate == null || predicate(i))).ToArray();
+            var issues = m_Issues.Where(i => i.Category == layout.category && (predicate == null || predicate(i))).ToArray();
             using (var exporter = new HtmlExporter(path, layout))
             {
                 exporter.WriteHeader();
@@ -273,7 +272,6 @@ namespace Unity.ProjectAuditor.Editor
         {
             return JsonConvert.DeserializeObject<ProjectReport>(File.ReadAllText(path), new JsonSerializerSettings
             {
-                Converters = new List<JsonConverter> { new ScriptableObjectJsonConverter() },
                 ObjectCreationHandling = ObjectCreationHandling.Replace
             });
         }

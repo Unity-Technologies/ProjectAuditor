@@ -30,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             if (IsGroup())
                 return displayName;
-            return ProjectIssue.description;
+            return ProjectIssue.Description;
         }
 
         public bool Find(ProjectIssue issue)

@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    class BuildReportModule : ProjectAuditorModule
+    class BuildReportModule : Module
     {
         class BuildAnalysisContext : AnalysisContext
         {
@@ -49,7 +49,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             BuildReport GetBuildReport(BuildTarget platform);
         }
 
-#if BUILD_REPORT_API_SUPPORT
         const string k_KeyBuildPath = "Path";
         const string k_KeyPlatform = "Platform";
         const string k_KeyResult = "Result";
@@ -59,7 +58,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         const string k_KeyTotalTime = "Total Time";
         const string k_KeyTotalSize = "Total Size";
         const string k_Unknown = "Unknown";
-#endif
 
         static readonly IssueLayout k_MetaDataLayout = new IssueLayout
         {
@@ -109,23 +107,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         internal static IBuildReportProvider DefaultBuildReportProvider => s_BuildReportProvider;
 
-        public override string name => "Build Report";
+        public override string Name => "Build Report";
 
-#if !BUILD_REPORT_API_SUPPORT
-        public override bool isSupported => false;
-#endif
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_MetaDataLayout,
             k_FileLayout,
             k_StepLayout
         };
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
-#if BUILD_REPORT_API_SUPPORT
-            var buildReport = BuildReportProvider.GetBuildReport(projectAuditorParams.Platform);
+            var buildReport = BuildReportProvider.GetBuildReport(analysisParams.Platform);
             if (buildReport != null)
             {
                 var context = new BuildAnalysisContext()
@@ -133,7 +127,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     Report = buildReport
                 };
 
-                projectAuditorParams.OnIncomingIssues(new[]
+                analysisParams.OnIncomingIssues(new[]
                 {
                     NewMetaData(context, k_KeyBuildPath, buildReport.summary.outputPath),
                     NewMetaData(context, k_KeyPlatform, buildReport.summary.platform),
@@ -144,14 +138,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     NewMetaData(context, k_KeyTotalSize, Formatting.FormatSize(buildReport.summary.totalSize)),
                 });
 
-                projectAuditorParams.OnIncomingIssues(AnalyzeBuildSteps(context));
-                projectAuditorParams.OnIncomingIssues(AnalyzePackedAssets(context));
+                analysisParams.OnIncomingIssues(AnalyzeBuildSteps(context));
+                analysisParams.OnIncomingIssues(AnalyzePackedAssets(context));
             }
-#endif
-            projectAuditorParams.OnModuleCompleted?.Invoke();
+            analysisParams.OnModuleCompleted?.Invoke();
         }
 
-#if BUILD_REPORT_API_SUPPORT
         IEnumerable<ProjectIssue> AnalyzeBuildSteps(BuildAnalysisContext context)
         {
             foreach (var step in context.Report.steps)
@@ -215,7 +207,5 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return context.CreateWithoutDiagnostic(IssueCategory.BuildSummary, key)
                 .WithCustomProperties(new object[(int)BuildReportMetaData.Num] { value });
         }
-
-#endif
     }
 }

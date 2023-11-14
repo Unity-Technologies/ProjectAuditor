@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             messageFormat = "Sprite Atlas '{0}' has too much empty space ({1})"
         };
 
-        public void Initialize(ProjectAuditorModule module)
+        public void Initialize(Module module)
         {
             module.RegisterDescriptor(k_SpriteAtlasEmptyDescriptor);
         }

@@ -2,20 +2,15 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
-using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Modules;
-using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.SettingsAnalysis;
 using Unity.ProjectAuditor.Editor.Tests.Common;
-using Unity.ProjectAuditor.Editor.Utils;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.TestTools;
-using Random = UnityEngine.Random;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -28,13 +23,11 @@ namespace Unity.ProjectAuditor.EditorTests
         const int k_TestTextureResolution = 64;
 
         TestAsset m_TestScriptAsset;
-        TestAsset m_TestTextureAsset;
-        TestAsset m_TestRulesAsset;
 
         [SerializeField]
-        ProjectAuditorRules m_SerializedRules;
+        SeverityRules m_SerializedRules;
 
-        ProjectAuditorRules m_Rules;
+        SeverityRules m_Rules;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -42,32 +35,7 @@ namespace Unity.ProjectAuditor.EditorTests
             m_TestScriptAsset = new TestAsset("MyClass.cs",
                 "using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(Camera.allCameras.Length.ToString()); } }");
 
-            m_Rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
-            m_Rules.Initialize();
-            m_Rules.SetAnalysisPlatform(m_Platform);
-
-            // Need a saved rules asset for Rule_LoadCustomRulesFromPath, but if we just save m_Rules it messes up
-            // how it behaves during the domain reload tests. So let's save a different asset instead.
-            var savedRules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
-            savedRules.Initialize();
-            savedRules.SetAnalysisPlatform(m_Platform);
-            savedRules.SetParameter(BuildTarget.NoTarget, "TestParameter", 42);
-            m_TestRulesAsset = TestAsset.Save(savedRules, k_RulesAssetName + ".asset");
-
-            var texture = new Texture2D(k_TestTextureResolution, k_TestTextureResolution);
-            texture.SetPixel(0, 0, Random.ColorHSV());
-            texture.name = k_TextureName;
-            texture.Apply();
-            m_TestTextureAsset = new TestAsset(k_TextureName + ".png", texture.EncodeToPNG());
-
-            var importer =
-                AssetImporter.GetAtPath(m_TestTextureAsset.relativePath) as TextureImporter;
-            importer.mipmapEnabled = true;
-            importer.streamingMipmaps = false;
-            //Size should not be compressed for testing purposes.
-            //If compressed, it won't trigger a warning, as size will be below the minimal size
-            importer.textureCompression = TextureImporterCompression.Uncompressed;
-            importer.SaveAndReimport();
+            m_Rules = new SeverityRules();
         }
 
 #if UNITY_2019_4_OR_NEWER
@@ -101,7 +69,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var issues = AnalyzeAndFindAssetIssues(m_TestScriptAsset);
 
-            var allCamerasIssues = issues.Where(i => i.id == "PAC0066").ToArray();
+            var allCamerasIssues = issues.Where(i => i.Id == "PAC0066").ToArray();
 
             Assert.AreEqual(1, allCamerasIssues.Count());
 
@@ -110,7 +78,7 @@ namespace Unity.ProjectAuditor.EditorTests
             m_Rules.ClearAllRules();
 
             var callingMethod = issue.GetContext();
-            var action = m_Rules.GetAction(issue.id, callingMethod);
+            var action = m_Rules.GetAction(issue.Id, callingMethod);
 
             // expect default action specified in descriptor
             Assert.AreEqual(Severity.Default, action);
@@ -118,14 +86,14 @@ namespace Unity.ProjectAuditor.EditorTests
             // add rule with a filter.
             m_Rules.AddRule(new Rule
             {
-                id = issue.id,
+                id = issue.Id,
                 severity = Severity.None,
                 filter = callingMethod
             });
 
             Assert.AreEqual(1, m_Rules.NumRules);
 
-            action = m_Rules.GetAction(issue.id, callingMethod);
+            action = m_Rules.GetAction(issue.Id, callingMethod);
 
             // issue has been muted so it should not be reported
             Assert.AreEqual(Severity.None, action);
@@ -139,19 +107,18 @@ namespace Unity.ProjectAuditor.EditorTests
 
             m_SerializedRules = m_Rules;
             yield return new WaitForDomainReload();
-            m_Rules = m_SerializedRules; // restore rulesProject Auditor Rules from serialized rulespy
 
             Assert.AreEqual(1, m_SerializedRules.NumRules);
 
             // retry after domain reload
             var issues = AnalyzeAndFindAssetIssues(m_TestScriptAsset);
 
-            var allCamerasIssues = issues.Where(i => i.id.Equals("PAC0066")).ToArray();
+            var allCamerasIssues = issues.Where(i => i.Id.Equals("PAC0066")).ToArray();
 
             Assert.AreEqual(1, allCamerasIssues.Count());
 
             var callingMethod = allCamerasIssues[0].GetContext();
-            var action = m_SerializedRules.GetAction(allCamerasIssues[0].id, callingMethod);
+            var action = m_SerializedRules.GetAction(allCamerasIssues[0].Id, callingMethod);
 
             // issue has been muted so it should not be reported
             Assert.AreEqual(Severity.None, action);
@@ -163,9 +130,9 @@ namespace Unity.ProjectAuditor.EditorTests
         public void Rule_Test_CanBeAddedAndRemoved()
         {
             var settingsAuditor = m_ProjectAuditor.GetModule<SettingsModule>();
-            var IDs = settingsAuditor.supportedDescriptorIDs;
-            var rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
-            var firstID = IDs.FirstOrDefault();
+            var ids = settingsAuditor.SupportedDescriptorIds;
+            var rules = new SeverityRules();
+            var firstID = ids.FirstOrDefault();
 
             Assert.IsNotNull(firstID);
 
@@ -237,7 +204,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var descriptorId = QualitySettingsAnalyzer.PAS1007;
             var filter = "Project/Quality/Very Low";
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(descriptorId));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(descriptorId));
 
             Assert.GreaterOrEqual(issues.Length, 4);
             Assert.AreNotEqual(Severity.None, m_Rules.GetAction(descriptorId));
@@ -274,63 +241,80 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void Rule_CanCreateCustomRulesAndEditParams()
+        public void Rule_CanSerializeAndDeserialize()
         {
-            ValidateTargetPlatform();
+            const string k_id1 = "someid1";
+            const string k_id2 = "someid2";
+            const string k_filter = "Project/Quality/Very Low";
 
-            var rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
-            rules.Initialize();
-            rules.SetAnalysisPlatform(m_Platform);
+            m_Rules.ClearAllRules();
 
-            var paramVal = rules.GetParameter("TextureStreamingMipmapsSizeLimit", 4000);
-            Assert.AreEqual(paramVal, 4000);
-
-            rules.SetParameter(BuildTarget.NoTarget, "TextureStreamingMipmapsSizeLimit", 32);
-            paramVal = rules.GetParameter("TextureStreamingMipmapsSizeLimit", 4000);
-            Assert.AreEqual(paramVal, 32);
-
-            rules.SetParameter(m_Platform, "TextureStreamingMipmapsSizeLimit", 64);
-            paramVal = rules.GetParameter("TextureStreamingMipmapsSizeLimit", 4000);
-            Assert.AreEqual(paramVal, 64);
-        }
-
-        [Test]
-        public void Rule_CustomRulesImpactReports()
-        {
-            ValidateTargetPlatform();
-
-            var rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
-            rules.Initialize();
-            rules.SetAnalysisPlatform(m_Platform);
-
-            var projectAuditorParams = new ProjectAuditorParams
+            m_Rules.AddRule(new Rule
             {
-                Categories = new[] { IssueCategory.AssetDiagnostic },
-                Rules = rules
-            };
+                id = k_id1,
+                severity = Severity.None
+            });
 
-            var projectAuditor = new Editor.ProjectAuditor();
-            var report = projectAuditor.Audit(projectAuditorParams);
-            var foundIssues = report.GetAllIssues().Where(i => i.relativePath.Equals(m_TestTextureAsset.relativePath));
+            m_Rules.AddRule(new Rule
+            {
+                id = k_id2,
+                severity = Severity.Critical,
+                filter = k_filter
+            });
 
-            Assert.NotNull(foundIssues);
-            Assert.Null(foundIssues.FirstOrDefault(i => i.id.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor.id)));
+            Assert.AreEqual(2, m_Rules.NumRules);
 
-            // Texture would normally be too small to trigger this diagnostic, unless we specify a custom smaller limit
-            rules.SetParameter(BuildTarget.NoTarget, "TextureStreamingMipmapsSizeLimit", 32);
-            report = projectAuditor.Audit(projectAuditorParams);
-            foundIssues = report.GetAllIssues().Where(i => i.relativePath.Equals(m_TestTextureAsset.relativePath));
+            var jsonString = JsonConvert.SerializeObject(m_Rules, Formatting.None,
+                new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                });
 
-            Assert.NotNull(foundIssues);
-            Assert.NotNull(foundIssues.FirstOrDefault(i => i.id.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor.id)));
+            Assert.NotNull(jsonString);
+
+            m_Rules.ClearAllRules();
+            Assert.AreEqual(0, m_Rules.NumRules);
+
+            m_Rules = JsonConvert.DeserializeObject<SeverityRules>(jsonString, new JsonSerializerSettings
+            {
+                ObjectCreationHandling = ObjectCreationHandling.Replace
+            });
+
+            Assert.AreEqual(2, m_Rules.NumRules);
+
+            var rule1 = m_Rules.GetRule(k_id1);
+            Assert.AreEqual(rule1.id, k_id1);
+            Assert.AreEqual(rule1.severity, Severity.None);
+            Assert.AreEqual(rule1.filter, string.Empty);
+
+            var rule2 = m_Rules.GetRule(k_id2, k_filter);
+            Assert.AreEqual(rule2.id, k_id2);
+            Assert.AreEqual(rule2.severity, Severity.Critical);
+            Assert.AreEqual(rule2.filter, k_filter);
         }
 
         [Test]
-        public void Rule_LoadCustomRulesFromPath()
+        public void Rule_TemporaryRule_IsAdded()
         {
-            var projectAuditorParams = new ProjectAuditorParams(m_Platform, m_TestRulesAsset.relativePath);
-            var testParamValue = projectAuditorParams.Rules.GetParameter(k_TestParamName, 0);
-            Assert.AreEqual(testParamValue, 42);
+            var projectAuditorParams = new AnalysisParams { Platform = m_Platform };
+            var numRules = projectAuditorParams.Rules.NumRules;
+
+            projectAuditorParams.WithAdditionalDiagnosticRules(new List<Rule>(new[] {new Rule()}));
+
+            Assert.AreEqual(numRules + 1, projectAuditorParams.Rules.NumRules);
+        }
+
+        [Test]
+        public void Rule_TemporaryRule_DoesNotPersist()
+        {
+            var projectAuditorParams = new AnalysisParams { Platform = m_Platform };
+            var numRules = ProjectAuditorSettings.instance.Rules.NumRules;
+
+            projectAuditorParams.WithAdditionalDiagnosticRules(new List<Rule>(new[] {new Rule()}));
+
+            m_ProjectAuditor.Audit();
+
+            Assert.AreEqual(numRules, ProjectAuditorSettings.instance.Rules.NumRules);
         }
     }
 }

@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Module_BuiltinTypes_Exist()
         {
-            var types = TypeCache.GetTypesDerivedFrom(typeof(ProjectAuditorModule));
+            var types = TypeCache.GetTypesDerivedFrom(typeof(Module));
 
             Assert.NotNull(types.FirstOrDefault(type => type == typeof(CodeModule)));
             Assert.NotNull(types.FirstOrDefault(type => type == typeof(SettingsModule)));
@@ -83,7 +83,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var report = projectAuditor.Audit();
             var issues = report.FindByCategory(IssueCategory.Code);
-            Assert.NotNull(issues.FirstOrDefault(i => i.description.Equals("This is a test issue")));
+            Assert.NotNull(issues.FirstOrDefault(i => i.Description.Equals("This is a test issue")));
         }
     }
 }

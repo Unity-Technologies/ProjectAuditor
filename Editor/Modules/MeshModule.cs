@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using UnityEditor;
@@ -16,7 +14,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    class MeshModule : ProjectAuditorModuleWithAnalyzers<IMeshModuleAnalyzer>
+    class MeshModule : ModuleWithAnalyzers<IMeshModuleAnalyzer>
     {
         static readonly IssueLayout k_MeshLayout = new IssueLayout
         {
@@ -32,41 +30,50 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        public override string name => "Meshes";
+        public override string Name => "Meshes";
 
-        public override bool isEnabledByDefault => false;
+        public override bool IsEnabledByDefault => false;
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_MeshLayout,
             AssetsModule.k_IssueLayout
         };
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        const string k_MeshVertexCountLimit   = "MeshVertexCountLimit";
+        const string k_MeshTriangleCountLimit = "MeshTriangleCountLimit";
+
+        public override void RegisterParameters(DiagnosticParams diagnosticParams)
         {
-            var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
+            diagnosticParams.RegisterParameter(k_MeshVertexCountLimit, 5000);
+            diagnosticParams.RegisterParameter(k_MeshTriangleCountLimit, 5000);
+        }
+
+        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
+        {
+            var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
 
             var assetPaths = GetAssetPathsByFilter("t:mesh, a:assets");
 
             progress?.Start("Finding Meshes", "Search in Progress...", assetPaths.Length);
 
-            var rules = projectAuditorParams.Rules;
-            var meshVertexCountLimit = rules.GetParameter("MeshVertexCountLimit", 5000);
-            var meshTriangleCountLimit = rules.GetParameter("MeshTriangleCountLimit", 5000);
+            var diagnosticParams = analysisParams.DiagnosticParams;
+            var meshVertexCountLimit = diagnosticParams.GetParameter(k_MeshVertexCountLimit);
+            var meshTriangleCountLimit = diagnosticParams.GetParameter(k_MeshTriangleCountLimit);
 
             foreach (var assetPath in assetPaths)
             {
                 var context = new MeshAnalysisContext()
                 {
                     Importer = AssetImporter.GetAtPath(assetPath),
-                    Params = projectAuditorParams,
+                    Params = analysisParams,
                     MeshVertexCountLimit = meshVertexCountLimit,
                     MeshTriangleCountLimit = meshTriangleCountLimit
                 };
 
                 foreach (var analyzer in analyzers)
                 {
-                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(context));
+                    analysisParams.OnIncomingIssues(analyzer.Analyze(context));
                 }
 
                 progress?.Advance();
@@ -74,7 +81,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             progress?.Clear();
 
-            projectAuditorParams.OnModuleCompleted?.Invoke();
+            analysisParams.OnModuleCompleted?.Invoke();
         }
     }
 }

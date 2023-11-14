@@ -47,18 +47,11 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var module = projectAuditor.GetModule<BuildReportModule>();
-            var isSupported = module.isSupported;
-#if BUILD_REPORT_API_SUPPORT
+            var isSupported = module.IsSupported;
             Assert.True(isSupported);
-#else
-            Assert.False(isSupported);
-#endif
         }
 
         [Test]
-#if !BUILD_REPORT_API_SUPPORT
-        [Ignore("Not Supported in this version of Unity")]
-#endif
         public void BuildReport_IsNotAvailable()
         {
             var buildReport = BuildReportHelper.GetLast();
@@ -66,9 +59,6 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [UnityTest]
-#if !BUILD_REPORT_API_SUPPORT
-        [Ignore("Not Supported in this version of Unity")]
-#endif
         [TestCase(true, ExpectedResult = null)]
         [TestCase(false, ExpectedResult = null)]
         public IEnumerator BuildReport_AutoSave_Works(bool autoSave)
@@ -91,9 +81,6 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-#if !BUILD_REPORT_API_SUPPORT
-        [Ignore("Not Supported in this version of Unity")]
-#endif
         public void BuildReport_ObjectName_IsCorrect()
         {
             Build();
@@ -106,11 +93,10 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.True(assetName.StartsWith("Build_"));
         }
 
-#if BUILD_REPORT_API_SUPPORT
         [Test]
         public void BuildReport_Files_AreReported()
         {
-            var issues = AnalyzeBuild(IssueCategory.BuildFile, i => i.relativePath.Equals(m_TestAsset.relativePath));
+            var issues = AnalyzeBuild(IssueCategory.BuildFile, i => i.RelativePath.Equals(m_TestAsset.relativePath));
             var matchingIssue = issues.FirstOrDefault();
 
             Assert.NotNull(matchingIssue);
@@ -122,7 +108,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var reportedCorrectAssetBuildFile = buildReport.packedAssets.Any(p => p.shortPath == buildFile && p.contents.Any(c => c.sourceAssetPath == m_TestAsset.relativePath));
 
-            Assert.AreEqual(Path.GetFileNameWithoutExtension(m_TestAsset.relativePath), matchingIssue.description);
+            Assert.AreEqual(Path.GetFileNameWithoutExtension(m_TestAsset.relativePath), matchingIssue.Description);
             Assert.That(matchingIssue.GetNumCustomProperties(), Is.EqualTo((int)BuildReportFileProperty.Num));
             Assert.True(reportedCorrectAssetBuildFile);
             Assert.AreEqual(typeof(AssetImporter).FullName, matchingIssue.GetCustomProperty(BuildReportFileProperty.ImporterType));
@@ -130,21 +116,15 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.That(matchingIssue.GetCustomPropertyInt32(BuildReportFileProperty.Size), Is.Positive);
         }
 
-#endif
-
-
         [Test]
-#if !BUILD_REPORT_API_SUPPORT
-        [Ignore("Not Supported in this version of Unity")]
-#endif
         public void BuildReport_Steps_AreReported()
         {
             var issues = AnalyzeBuild(IssueCategory.BuildStep);
-            var step = issues.FirstOrDefault(i => i.description.Equals("Build player"));
+            var step = issues.FirstOrDefault(i => i.Description.Equals("Build player"));
             Assert.NotNull(step);
             Assert.That(step.GetCustomPropertyInt32(BuildReportStepProperty.Depth), Is.EqualTo(0));
 
-            step = issues.FirstOrDefault(i => i.description.Equals("Compile scripts"));
+            step = issues.FirstOrDefault(i => i.Description.Equals("Compile scripts"));
             Assert.NotNull(step, "\"Compile scripts\" string not found");
 #if UNITY_2021_1_OR_NEWER
             Assert.That(step.GetCustomPropertyInt32(BuildReportStepProperty.Depth), Is.EqualTo(3));
@@ -152,7 +132,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.That(step.GetCustomPropertyInt32(BuildReportStepProperty.Depth), Is.EqualTo(1));
 #endif
 
-            step = issues.FirstOrDefault(i => i.description.Equals("Postprocess built player"));
+            step = issues.FirstOrDefault(i => i.Description.Equals("Postprocess built player"));
             Assert.NotNull(step, "\"Postprocess built player\" string not found");
             Assert.That(step.GetCustomPropertyInt32(BuildReportStepProperty.Depth), Is.EqualTo(1));
         }

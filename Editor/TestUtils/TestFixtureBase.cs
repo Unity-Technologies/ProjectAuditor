@@ -22,6 +22,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         protected string m_BuildPath;
         protected ProjectAuditor m_ProjectAuditor;
         protected AndroidArchitecture m_OriginalTargetArchitecture;
+        protected List<Diagnostic.Rule> m_AdditionalRules = new List<Diagnostic.Rule>();
         protected string m_OriginalCompanyName;
         protected string m_OriginalProductName;
 
@@ -89,7 +90,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
             var foundIssues = new List<ProjectIssue>();
 
-            var projectAuditorParams = new ProjectAuditorParams
+            var analysisParams = new AnalysisParams
             {
                 CodeOptimization = m_CodeOptimization,
                 OnIncomingIssues = issues =>
@@ -97,8 +98,9 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
                     foundIssues.AddRange(predicate == null ? issues : issues.Where(predicate));
                 },
                 Platform = m_Platform
-            };
-            m_ProjectAuditor.Audit(projectAuditorParams);
+            }.WithAdditionalDiagnosticRules(m_AdditionalRules);
+
+            m_ProjectAuditor.Audit(analysisParams);
 
             return foundIssues.ToArray();
         }
@@ -109,20 +111,20 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
             var foundIssues = new List<ProjectIssue>();
             var projectAuditor = new ProjectAuditor();
-            var projectAuditorParams = new ProjectAuditorParams
+            var analysisParams = new AnalysisParams
             {
                 AssemblyNames = new[] { "Assembly-CSharp" },
                 Categories = new[] { category},
                 OnIncomingIssues = issues =>
                 {
-                    var categoryIssues = issues.Where(issue => issue.category == category);
+                    var categoryIssues = issues.Where(issue => issue.Category == category);
 
                     foundIssues.AddRange(predicate == null ? categoryIssues : categoryIssues.Where(predicate));
                 },
                 Platform = m_Platform
-            };
+            }.WithAdditionalDiagnosticRules(m_AdditionalRules);
 
-            projectAuditor.Audit(projectAuditorParams);
+            projectAuditor.Audit(analysisParams);
 
             return foundIssues.ToArray();
         }
@@ -130,7 +132,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         protected ProjectIssue[] AnalyzeAndFindAssetIssues(TestAsset testAsset,
             IssueCategory category = IssueCategory.Code)
         {
-            return Analyze(category, i => i.relativePath.Equals(testAsset.relativePath));
+            return Analyze(category, i => i.RelativePath.Equals(testAsset.relativePath));
         }
 
         protected ProjectIssue[] AnalyzeBuild(Func<ProjectIssue, bool> predicate = null, bool isDevelopment = true, string buildFileName = "test", Action preBuildAction = null, Action postBuildAction = null)

@@ -56,7 +56,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         public IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
 
-        public void Initialize(ProjectAuditorModule module)
+        public void Initialize(Module module)
         {
             module.RegisterDescriptor(k_DebugLogIssueDescriptor);
             module.RegisterDescriptor(k_DebugLogWarningIssueDescriptor);

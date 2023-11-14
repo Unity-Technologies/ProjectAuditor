@@ -107,11 +107,11 @@ namespace Unity.ProjectAuditor.EditorTests
                 "Built-in",                        // prefix for built-in resources such as textures (not a real prefix path)
             };
 
-            var issues = AnalyzeBuild(i => i.category != IssueCategory.ProjectSetting && i.category != IssueCategory.PrecompiledAssembly);
+            var issues = AnalyzeBuild(i => i.Category != IssueCategory.ProjectSetting && i.Category != IssueCategory.PrecompiledAssembly);
             foreach (var issue in issues)
             {
-                var relativePath = issue.relativePath;
-                Assert.True(string.IsNullOrEmpty(relativePath) || acceptablePrefixes.Any(prefix => relativePath.StartsWith(prefix)), "Path: " + relativePath + " Category: " + issue.category);
+                var relativePath = issue.RelativePath;
+                Assert.True(string.IsNullOrEmpty(relativePath) || acceptablePrefixes.Any(prefix => relativePath.StartsWith(prefix)), "Path: " + relativePath + " Category: " + issue.Category);
             }
         }
 

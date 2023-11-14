@@ -68,7 +68,7 @@ class ScriptWithStaticMember
             Assert.AreEqual(1, issues.Length);
 
             Assert.AreEqual("UDR0001", issues[0].GetCustomProperty(0));
-            Assert.AreEqual("No method with [RuntimeInitializeOnLoadMethod] attribute", issues[0].description);
+            Assert.AreEqual("No method with [RuntimeInitializeOnLoadMethod] attribute", issues[0].Description);
         }
     }
 }

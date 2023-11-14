@@ -139,11 +139,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         public static int GetPropertyCount(Shader shader)
         {
-#if PA_CAN_USE_SHADER_GETPROPERTY_METHODS
             return shader.GetPropertyCount();
-#else
-            return ShaderUtil.GetPropertyCount(shader);
-#endif
         }
 
         public static int GetTexturePropertyCount(Shader shader)
@@ -152,11 +148,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             var propertyCount = GetPropertyCount(shader);
             for (int i = 0; i < propertyCount; ++i)
             {
-#if PA_CAN_USE_SHADER_GETPROPERTY_METHODS
                 if (shader.GetPropertyType(i) == ShaderPropertyType.Texture)
-#else
-                if (ShaderUtil.GetPropertyType(shader, i) == ShaderUtil.ShaderPropertyType.TexEnv)
-#endif
                 {
                     ++texturePropertyCount;
                 }

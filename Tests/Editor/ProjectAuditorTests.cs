@@ -19,11 +19,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProjectAuditor_Module_IsSupported()
         {
-#if BUILD_REPORT_API_SUPPORT
             Assert.True(m_ProjectAuditor.IsModuleSupported(IssueCategory.BuildFile));
-#else
-            Assert.False(m_ProjectAuditor.IsModuleSupported(IssueCategory.BuildFile));
-#endif
         }
 
         [Test]
@@ -52,20 +48,22 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProjectAuditor_Params_DefaultsAreCorrect()
         {
-            var projectAuditorParams = new ProjectAuditorParams();
+            var analysisParams = new AnalysisParams();
 
-            Assert.IsNull(projectAuditorParams.Categories);
-            Assert.IsNull(projectAuditorParams.AssemblyNames);
-            Assert.AreEqual(EditorUserBuildSettings.activeBuildTarget, projectAuditorParams.Platform);
-            Assert.AreEqual(CodeOptimization.Release, projectAuditorParams.CodeOptimization);
+            Assert.IsNull(analysisParams.Categories);
+            Assert.IsNull(analysisParams.AssemblyNames);
+            // analysisParams.Platform defaults to NoTarget because we can't call EditorUserBuildSettings.activeBuildTarget
+            // during construction/serialization. Platform gets set when params is passed to an instance of ProjectAuditor
+            Assert.AreEqual(BuildTarget.NoTarget, analysisParams.Platform);
+            Assert.AreEqual(CodeOptimization.Release, analysisParams.CodeOptimization);
         }
 
         [Test]
         public void ProjectAuditor_Params_AreCopied()
         {
-            var rules = ScriptableObject.CreateInstance<ProjectAuditorRules>();
+            var rules = new SeverityRules();
 
-            var originalParams = new ProjectAuditorParams
+            var originalParams = new AnalysisParams
             {
                 Categories = new[] { IssueCategory.Code },
                 AssemblyNames = new[] { "Test" },
@@ -74,13 +72,13 @@ namespace Unity.ProjectAuditor.EditorTests
                 Rules = rules
             };
 
-            var projectAuditorParams = new ProjectAuditorParams(originalParams);
+            var analysisParams = new AnalysisParams(originalParams);
 
-            Assert.IsNotNull(projectAuditorParams.Categories);
-            Assert.IsNotNull(projectAuditorParams.AssemblyNames);
-            Assert.AreEqual(BuildTarget.Android, projectAuditorParams.Platform);
-            Assert.AreEqual(CodeOptimization.Debug, projectAuditorParams.CodeOptimization);
-            Assert.AreEqual(rules, projectAuditorParams.Rules);
+            Assert.IsNotNull(analysisParams.Categories);
+            Assert.IsNotNull(analysisParams.AssemblyNames);
+            Assert.AreEqual(BuildTarget.Android, analysisParams.Platform);
+            Assert.AreEqual(CodeOptimization.Debug, analysisParams.CodeOptimization);
+            Assert.AreEqual(rules, analysisParams.Rules);
         }
 
         [Test]
@@ -91,7 +89,7 @@ namespace Unity.ProjectAuditor.EditorTests
             int numModules = 0;
             ProjectReport projectReport = null;
 
-            projectAuditor.Audit(new ProjectAuditorParams
+            projectAuditor.Audit(new AnalysisParams
             {
                 Categories = new[] { IssueCategory.ProjectSetting },
                 OnModuleCompleted = () => numModules++,
@@ -116,7 +114,7 @@ namespace Unity.ProjectAuditor.EditorTests
             PlayerSettings.bakeCollisionMeshes = false;
 
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var report = projectAuditor.Audit(new ProjectAuditorParams
+            var report = projectAuditor.Audit(new AnalysisParams
             {
                 Categories = new[] { IssueCategory.ProjectSetting}
             });
@@ -129,7 +127,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.False(report.HasCategory(IssueCategory.ProjectSetting));
             Assert.Zero(report.FindByCategory(IssueCategory.ProjectSetting).Count);
 
-            projectAuditor.Audit(new ProjectAuditorParams
+            projectAuditor.Audit(new AnalysisParams
             {
                 Categories = new[] { IssueCategory.ProjectSetting},
                 ExistingReport = report

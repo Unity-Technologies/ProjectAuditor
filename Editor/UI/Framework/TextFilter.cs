@@ -4,7 +4,7 @@ using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Interfaces;
 
-namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     internal class TextFilter : IIssueFilter
     {
@@ -37,10 +37,10 @@ namespace Unity.ProjectAuditor.Editor
                 return true;
 
             // return true if the issue matches the any of the following string search criteria
-            if (MatchesSearch(issue.description))
+            if (MatchesSearch(issue.Description))
                 return true;
 
-            if (MatchesSearch(issue.filename))
+            if (MatchesSearch(issue.Filename))
                 return true;
 
             foreach (var customPropertyIndex in searchablePropertyIndices)
@@ -49,7 +49,7 @@ namespace Unity.ProjectAuditor.Editor
                     return true;
             }
 
-            var dependencies = issue.dependencies;
+            var dependencies = issue.Dependencies;
             if (dependencies != null)
             {
                 if (MatchesSearch(dependencies, searchDependencies))

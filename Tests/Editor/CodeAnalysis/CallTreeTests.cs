@@ -77,7 +77,7 @@ class HierarchyTest
 
             Assert.AreEqual(1, issues.Length);
 
-            var root = issues[0].dependencies as CallTreeNode;
+            var root = issues[0].Dependencies as CallTreeNode;
 
             Assert.NotNull(root);
             Assert.AreEqual("System.Object MyTestNamespace.SimpleTest::CallerMethod()", root.methodFullName);
@@ -93,7 +93,7 @@ class HierarchyTest
         {
             var issues = AnalyzeAndFindAssetIssues(m_TestAssetRecursive);
 
-            var root = issues[0].dependencies as CallTreeNode;
+            var root = issues[0].Dependencies as CallTreeNode;
 
             Assert.NotNull(root);
             Assert.AreEqual("X", root.prettyMethodName);
@@ -108,8 +108,8 @@ class HierarchyTest
 
             Assert.AreEqual(2, issues.Length);
 
-            var rootX = issues[0].dependencies as CallTreeNode;
-            var rootY = issues[1].dependencies as CallTreeNode;
+            var rootX = issues[0].Dependencies as CallTreeNode;
+            var rootY = issues[1].Dependencies as CallTreeNode;
 
             Assert.NotNull(rootX);
             Assert.NotNull(rootY);

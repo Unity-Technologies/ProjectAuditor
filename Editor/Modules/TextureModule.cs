@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using Unity.ProjectAuditor.Editor.Core;
@@ -22,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    class TextureModule : ProjectAuditorModuleWithAnalyzers<ITextureModuleAnalyzer>
+    class TextureModule : ModuleWithAnalyzers<ITextureModuleAnalyzer>
     {
         static readonly IssueLayout k_TextureLayout = new IssueLayout
         {
@@ -43,28 +42,38 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        public override string name => "Textures";
+        public override string Name => "Textures";
 
-        public override bool isEnabledByDefault => false;
+        public override bool IsEnabledByDefault => false;
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_TextureLayout,
             AssetsModule.k_IssueLayout
         };
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        const string k_TextureStreamingMipmapsSizeLimit = "TextureStreamingMipmapsSizeLimit";
+        const string k_TextureSizeLimit                 = "TextureSizeLimit";
+        const string k_SpriteAtlasEmptySpaceLimit       = "SpriteAtlasEmptySpaceLimit";
+
+        public override void RegisterParameters(DiagnosticParams diagnosticParams)
         {
-            var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
+            diagnosticParams.RegisterParameter(k_TextureStreamingMipmapsSizeLimit, 4000);
+            diagnosticParams.RegisterParameter(k_TextureSizeLimit, 2048);
+            diagnosticParams.RegisterParameter(k_SpriteAtlasEmptySpaceLimit, 50);
+        }
+
+        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
+        {
+            var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
             var assetPaths = GetAssetPathsByFilter("t:texture, a:assets");
 
             progress?.Start("Finding Textures", "Search in Progress...", assetPaths.Length);
 
-            var platformString = projectAuditorParams.Platform.ToString();
-            var rules = projectAuditorParams.Rules;
-            var textureStreamingMipmapsSizeLimit = rules.GetParameter("TextureStreamingMipmapsSizeLimit", 4000);
-            var textureSizeLimit = rules.GetParameter("TextureSizeLimit", 2048);
-            var spriteAtlasEmptySpaceLimit = rules.GetParameter("SpriteAtlasEmptySpaceLimit", 50);
+            var diagnosticParams = analysisParams.DiagnosticParams;
+            var textureStreamingMipmapsSizeLimit = diagnosticParams.GetParameter(k_TextureStreamingMipmapsSizeLimit);
+            var textureSizeLimit = diagnosticParams.GetParameter(k_TextureSizeLimit);
+            var spriteAtlasEmptySpaceLimit = diagnosticParams.GetParameter(k_SpriteAtlasEmptySpaceLimit);
 
             foreach (var assetPath in assetPaths)
             {
@@ -77,9 +86,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var context = new TextureAnalysisContext
                 {
                     Importer = textureImporter,
-                    ImporterPlatformSettings = textureImporter.GetPlatformTextureSettings(projectAuditorParams.PlatformString),
+                    ImporterPlatformSettings = textureImporter.GetPlatformTextureSettings(analysisParams.PlatformString),
                     Texture = AssetDatabase.LoadAssetAtPath<Texture>(assetPath),
-                    Params = projectAuditorParams,
+                    Params = analysisParams,
                     TextureStreamingMipmapsSizeLimit = textureStreamingMipmapsSizeLimit,
                     TextureSizeLimit = textureSizeLimit,
                     SpriteAtlasEmptySpaceLimit = spriteAtlasEmptySpaceLimit
@@ -92,7 +101,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var analyzer in analyzers)
                 {
-                    projectAuditorParams.OnIncomingIssues(analyzer.Analyze(context));
+                    analysisParams.OnIncomingIssues(analyzer.Analyze(context));
                 }
 
                 progress?.Advance();
@@ -100,7 +109,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             progress?.Clear();
 
-            projectAuditorParams.OnModuleCompleted?.Invoke();
+            analysisParams.OnModuleCompleted?.Invoke();
         }
     }
 }

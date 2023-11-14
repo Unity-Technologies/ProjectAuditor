@@ -8,7 +8,7 @@ using UnityEngine.Analytics;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    static class ProjectAuditorAnalytics
+    static class AnalyticsReporter
     {
         const int k_MaxEventsPerHour = 100;
         const int k_MaxEventItems = 1000;
@@ -152,7 +152,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         }
 
         [Serializable]
-        class ProjectAuditorUIButtonEventWithIssueStats
+        class ButtonEventWithIssueStats
         {
             public string action;
             public Int64 t_since_start;
@@ -161,7 +161,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             public IssueStats[] issue_stats;
 
-            public ProjectAuditorUIButtonEventWithIssueStats(string name, Analytic analytic, IssueStats[] payload)
+            public ButtonEventWithIssueStats(string name, Analytic analytic, IssueStats[] payload)
             {
                 action = name;
                 t_since_start = SecondsToMicroseconds(analytic.GetStartTime());
@@ -292,7 +292,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             foreach (var issue in selectedIssues)
             {
-                var id = issue.id;
+                var id = issue.Id;
 
                 IssueStats summary;
                 if (!selectionsDict.TryGetValue(id, out summary))
@@ -320,7 +320,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             var scriptIssues = projectReport.FindByCategory(IssueCategory.Code);
             foreach (var issue in scriptIssues)
             {
-                var id = issue.id;
+                var id = issue.Id;
                 IssueStats stats;
                 if (!statsDict.TryGetValue(id, out stats))
                 {
@@ -378,7 +378,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 var payload = CollectSelectionStats(selectedIssues);
 
-                var uiButtonEvent = new ProjectAuditorUIButtonEventWithIssueStats(GetEventName(uiButton), analytic, payload);
+                var uiButtonEvent = new ButtonEventWithIssueStats(GetEventName(uiButton), analytic, payload);
 
                 var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent, k_EventVersion);
                 return (result == AnalyticsResult.Ok);
@@ -394,7 +394,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 var payload = GetScriptIssuesSummary(projectReport);
 
-                var uiButtonEvent = new ProjectAuditorUIButtonEventWithIssueStats(GetEventName(uiButton), analytic, payload);
+                var uiButtonEvent = new ButtonEventWithIssueStats(GetEventName(uiButton), analytic, payload);
 
                 var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent, k_EventVersion);
                 return (result == AnalyticsResult.Ok);
