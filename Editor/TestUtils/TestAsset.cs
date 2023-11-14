@@ -63,7 +63,6 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             return tempAsset;
         }
 
-#if UNITY_2020_1_OR_NEWER
         //SpriteAtlasAsset Save is not compatible with the AssetDatabase save
         //Alternative function to create a TestAsset from a SpriteAtlas
         public static TestAsset SaveSpriteAtlasAsset(SpriteAtlasAsset asset, string fileName)
@@ -83,8 +82,6 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
             return tempAsset;
         }
-
-#endif
 
         public static void CreateTempFolder()
         {

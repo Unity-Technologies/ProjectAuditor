@@ -336,7 +336,6 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 
                     assemblyCompilationFinished(path, messages);
                 };
-#if UNITY_2020_2_OR_NEWER
                 assemblyBuilder.compilerOptions = new ScriptCompilerOptions
                 {
                     AdditionalCompilerArguments = assembly.compilerOptions.AdditionalCompilerArguments,
@@ -345,9 +344,6 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                     CodeOptimization = codeOptimization == CodeOptimization.Release ? UnityEditor.Compilation.CodeOptimization.Release : UnityEditor.Compilation.CodeOptimization.Debug, // assembly.compilerOptions.CodeOptimization,
                     RoslynAnalyzerDllPaths = roslynAnalyzers ?? Array.Empty<string>()
                 };
-#else
-                assemblyBuilder.compilerOptions = assembly.compilerOptions;
-#endif
 
                 switch (compilationMode)
                 {

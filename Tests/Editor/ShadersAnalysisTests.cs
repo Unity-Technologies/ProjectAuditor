@@ -414,7 +414,6 @@ Shader ""Custom/SRPBatchCompatible""
             Assert.Zero(ShadersModule.NumBuiltVariants(), "Build Data was not cleared after analysis");
         }
 
-#if BUILD_REPORT_API_SUPPORT
         [Test]
         public void ShadersAnalysis_Sizes_AreReported()
         {
@@ -430,7 +429,7 @@ Shader ""Custom/SRPBatchCompatible""
         }
 
         [Test]
-#if UNITY_2020_1_OR_NEWER && UNITY_EDITOR_LINUX
+#if UNITY_EDITOR_LINUX
         [Ignore("TODO: investigate but this looks to be related to Vulkan on Linux")]
 #endif
         public void ShadersAnalysis_Variants_AreReported()
@@ -562,7 +561,7 @@ Shader ""Custom/SRPBatchCompatible""
                 var unusedVariantsForPlatform = unusedVariants.Where(v => v.GetCustomProperty(ShaderVariantProperty.Platform).Equals(plat)).ToArray();
 
                 // TODO: look into why Vulkan on Linux generates and/or reports a different number of variants.
-#if UNITY_2020_1_OR_NEWER && UNITY_EDITOR_LINUX
+#if UNITY_EDITOR_LINUX
                 var expectedNumVariants = 2;
 #else
                 var expectedNumVariants = 4;
@@ -573,7 +572,7 @@ Shader ""Custom/SRPBatchCompatible""
                 // TODO: this is a mess, it clearly needs looking into but I'm happy to just get the test going and loop back on it later.
                 if (expectedNumVariants >= 3)
                 {
-#if (UNITY_2019_1_OR_NEWER && !UNITY_2021_1_OR_NEWER && UNITY_EDITOR_OSX) || (UNITY_2019_1_OR_NEWER && !UNITY_2020_1_OR_NEWER && UNITY_EDITOR_LINUX) || (UNITY_2019_1_OR_NEWER && !UNITY_2021_1_OR_NEWER && UNITY_EDITOR_WIN)
+#if (!UNITY_2021_1_OR_NEWER && UNITY_EDITOR_OSX) || (UNITY_EDITOR_LINUX) || (!UNITY_2021_1_OR_NEWER && UNITY_EDITOR_WIN)
                     var expectedPassName = "Pass 1";
 #else
                     var expectedPassName = string.Empty;
@@ -583,8 +582,6 @@ Shader ""Custom/SRPBatchCompatible""
                 }
             }
         }
-
-#endif
 
         [Test]
         public void ShadersAnalysis_Shader_IsReported()
@@ -605,12 +602,9 @@ Shader ""Custom/SRPBatchCompatible""
 #if UNITY_2021_1_OR_NEWER
             var expectedNumPasses = 2;
             var expectedNumKeywords = 12;
-#elif UNITY_2019_1_OR_NEWER
+#else
             var expectedNumPasses = 2;
             var expectedNumKeywords = 2;
-#else
-            var expectedNumPasses = 0;
-            var expectedNumKeywords = 0;
 #endif
 
             Assert.AreEqual(expectedNumPasses, shaderIssue.GetCustomPropertyInt32(ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumPasses));
@@ -624,7 +618,6 @@ Shader ""Custom/SRPBatchCompatible""
 //            Assert.AreEqual(isSrpBatcherSupported, shaderIssue.GetCustomPropertyAsBool(ShaderProperty.SrpBatcher), "SRP Batcher {0} supported but the SrpBatcher property does not match.", isSrpBatcherSupported ? "is" : "is not");
         }
 
-#if UNITY_2020_1_OR_NEWER
         // note that earlier Unity versions such as 2019.x do not report shader compiler messages
         [Test]
         public void ShadersAnalysis_CompilerMessage_IsReported()
@@ -640,8 +633,6 @@ Shader ""Custom/SRPBatchCompatible""
             Assert.AreEqual(40, message.line);
         }
 
-#endif
-
         [Test]
         public void ShadersAnalysis_ShaderUsingBuiltInKeyword_IsReported()
         {
@@ -655,12 +646,9 @@ Shader ""Custom/SRPBatchCompatible""
 #if UNITY_2021_1_OR_NEWER
             var expectedNumPasses = 1;
             var expectedNumKeywords = 10;
-#elif UNITY_2019_1_OR_NEWER
+#else
             var expectedNumPasses = 1;
             var expectedNumKeywords = 1;
-#else
-            var expectedNumPasses = 0;
-            var expectedNumKeywords = 0;
 #endif
             Assert.AreEqual(expectedNumPasses, shaderIssue.GetCustomPropertyInt32(ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumPasses));
             Assert.AreEqual(expectedNumKeywords, shaderIssue.GetCustomPropertyInt32(ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumKeywords));
@@ -682,12 +670,9 @@ Shader ""Custom/SRPBatchCompatible""
 #if UNITY_2021_1_OR_NEWER
             var expectedNumPasses = 4;
             var expectedNumKeywords = 52;
-#elif UNITY_2019_1_OR_NEWER
+#else
             var expectedNumPasses = 4;
             var expectedNumKeywords = 22;
-#else
-            var expectedNumPasses = 0;
-            var expectedNumKeywords = 0;
 #endif
             Assert.AreEqual(expectedNumPasses, shaderIssue.GetCustomPropertyInt32(ShaderProperty.NumPasses), "NumPasses was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumPasses));
             Assert.AreEqual(expectedNumKeywords, shaderIssue.GetCustomPropertyInt32(ShaderProperty.NumKeywords), "NumKeywords was : " + shaderIssue.GetCustomProperty(ShaderProperty.NumKeywords));
@@ -713,9 +698,6 @@ Shader ""Custom/SRPBatchCompatible""
         }
 
         [Test]
-#if !UNITY_2019_3_OR_NEWER
-        [Ignore("This requires the new Shader API")]
-#endif
         public void ShadersAnalysis_SRPNonCompatibleShader_IsReported()
         {
             if (!ShaderAnalyzer.IsSrpBatchingEnabled)
@@ -731,9 +713,6 @@ Shader ""Custom/SRPBatchCompatible""
         }
 
         [Test]
-#if !UNITY_2019_3_OR_NEWER
-        [Ignore("This requires the new Shader API")]
-#endif
         public void ShadersAnalysis_SRPCompatibleShader_IsNotReported()
         {
             if (!ShaderAnalyzer.IsSrpBatchingEnabled)

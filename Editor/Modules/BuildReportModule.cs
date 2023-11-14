@@ -49,7 +49,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             BuildReport GetBuildReport(BuildTarget platform);
         }
 
-#if BUILD_REPORT_API_SUPPORT
         const string k_KeyBuildPath = "Path";
         const string k_KeyPlatform = "Platform";
         const string k_KeyResult = "Result";
@@ -59,7 +58,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         const string k_KeyTotalTime = "Total Time";
         const string k_KeyTotalSize = "Total Size";
         const string k_Unknown = "Unknown";
-#endif
 
         static readonly IssueLayout k_MetaDataLayout = new IssueLayout
         {
@@ -111,9 +109,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override string Name => "Build Report";
 
-#if !BUILD_REPORT_API_SUPPORT
-        public override bool IsSupported => false;
-#endif
 
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
@@ -124,7 +119,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
-#if BUILD_REPORT_API_SUPPORT
             var buildReport = BuildReportProvider.GetBuildReport(analysisParams.Platform);
             if (buildReport != null)
             {
@@ -147,11 +141,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 analysisParams.OnIncomingIssues(AnalyzeBuildSteps(context));
                 analysisParams.OnIncomingIssues(AnalyzePackedAssets(context));
             }
-#endif
             analysisParams.OnModuleCompleted?.Invoke();
         }
 
-#if BUILD_REPORT_API_SUPPORT
         IEnumerable<ProjectIssue> AnalyzeBuildSteps(BuildAnalysisContext context)
         {
             foreach (var step in context.Report.steps)
@@ -215,7 +207,5 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return context.CreateWithoutDiagnostic(IssueCategory.BuildSummary, key)
                 .WithCustomProperties(new object[(int)BuildReportMetaData.Num] { value });
         }
-
-#endif
     }
 }

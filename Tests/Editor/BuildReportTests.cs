@@ -48,17 +48,10 @@ namespace Unity.ProjectAuditor.EditorTests
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var module = projectAuditor.GetModule<BuildReportModule>();
             var isSupported = module.IsSupported;
-#if BUILD_REPORT_API_SUPPORT
             Assert.True(isSupported);
-#else
-            Assert.False(isSupported);
-#endif
         }
 
         [Test]
-#if !BUILD_REPORT_API_SUPPORT
-        [Ignore("Not Supported in this version of Unity")]
-#endif
         public void BuildReport_IsNotAvailable()
         {
             var buildReport = BuildReportHelper.GetLast();
@@ -66,9 +59,6 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [UnityTest]
-#if !BUILD_REPORT_API_SUPPORT
-        [Ignore("Not Supported in this version of Unity")]
-#endif
         [TestCase(true, ExpectedResult = null)]
         [TestCase(false, ExpectedResult = null)]
         public IEnumerator BuildReport_AutoSave_Works(bool autoSave)
@@ -91,9 +81,6 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-#if !BUILD_REPORT_API_SUPPORT
-        [Ignore("Not Supported in this version of Unity")]
-#endif
         public void BuildReport_ObjectName_IsCorrect()
         {
             Build();
@@ -106,7 +93,6 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.True(assetName.StartsWith("Build_"));
         }
 
-#if BUILD_REPORT_API_SUPPORT
         [Test]
         public void BuildReport_Files_AreReported()
         {
@@ -130,13 +116,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.That(matchingIssue.GetCustomPropertyInt32(BuildReportFileProperty.Size), Is.Positive);
         }
 
-#endif
-
-
         [Test]
-#if !BUILD_REPORT_API_SUPPORT
-        [Ignore("Not Supported in this version of Unity")]
-#endif
         public void BuildReport_Steps_AreReported()
         {
             var issues = AnalyzeBuild(IssueCategory.BuildStep);
