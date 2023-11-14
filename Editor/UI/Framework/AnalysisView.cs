@@ -144,7 +144,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public virtual void AddIssues(IEnumerable<ProjectIssue> allIssues)
         {
-            var issues = allIssues.Where(i => i.category == m_Desc.category).ToArray();
+            var issues = allIssues.Where(i => i.Category == m_Desc.category).ToArray();
             if (issues.Length == 0)
                 return;
 
@@ -408,7 +408,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 else// if (issues.Length == 1)
                 {
                     var selection = issues[0];
-                    var dependencies = selection.dependencies;
+                    var dependencies = selection.Dependencies;
 
                     m_DependencyView.SetRoot(dependencies);
 

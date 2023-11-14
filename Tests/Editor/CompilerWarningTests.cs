@@ -41,14 +41,14 @@ class ScriptWithWarning {
             var issue = issues.First();
 
             // check ID
-            Assert.IsFalse(issue.id.IsValid());
+            Assert.IsFalse(issue.Id.IsValid());
 
             // check issue
-            Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessage));
-            Assert.AreEqual("The variable 'i' is assigned but its value is never used", issue.description);
-            Assert.True(issue.relativePath.StartsWith("Assets/"), "Relative path: " + issue.relativePath);
-            Assert.That(issue.line, Is.EqualTo(5));
-            Assert.That(issue.severity, Is.EqualTo(Severity.Warning));
+            Assert.That(issue.Category, Is.EqualTo(IssueCategory.CodeCompilerMessage));
+            Assert.AreEqual("The variable 'i' is assigned but its value is never used", issue.Description);
+            Assert.True(issue.RelativePath.StartsWith("Assets/"), "Relative path: " + issue.RelativePath);
+            Assert.That(issue.Line, Is.EqualTo(5));
+            Assert.That(issue.Severity, Is.EqualTo(Severity.Warning));
 
             // check properties
             Assert.AreEqual((int)CompilerMessageProperty.Num, issue.GetNumCustomProperties());

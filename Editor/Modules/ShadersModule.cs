@@ -773,13 +773,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (!compiledVariants.Any())
                 return ParseLogResult.NoCompiledVariants;
 
-            builtVariants = builtVariants.OrderBy(v => v.description).ToArray();
+            builtVariants = builtVariants.OrderBy(v => v.Description).ToArray();
             var shader = (Shader)null;
             foreach (var builtVariant in builtVariants)
             {
-                if (shader == null || !shader.name.Equals(builtVariant.description))
+                if (shader == null || !shader.name.Equals(builtVariant.Description))
                 {
-                    shader = Shader.Find(builtVariant.description);
+                    shader = Shader.Find(builtVariant.Description);
                 }
 
                 if (shader == null)

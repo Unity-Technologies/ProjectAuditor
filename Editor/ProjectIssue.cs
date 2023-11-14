@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -12,28 +13,38 @@ namespace Unity.ProjectAuditor.Editor
     [Serializable]
     public class ProjectIssue
     {
-        [JsonIgnore]
-        [SerializeField] DescriptorID m_DescriptorID;
-        [SerializeField] IssueCategory m_Category;
-        [SerializeField] string m_Description;
-        [SerializeField] Severity m_Severity;
+        [SerializeField] [JsonIgnore]
+        DescriptorID m_DescriptorId;
 
-        [SerializeField] DependencyNode m_Dependencies;
-        [SerializeField] Location m_Location;
-        [SerializeField] string[] m_CustomProperties;
+        [SerializeField]
+        IssueCategory m_Category;
+
+        [SerializeField]
+        string m_Description;
+
+        [SerializeField]
+        Severity m_Severity;
+
+        [SerializeField]
+        DependencyNode m_Dependencies;
+
+        [SerializeField]
+        Location m_Location;
+
+        [SerializeField]
+        string[] m_CustomProperties;
 
         /// <summary>
         /// Determines whether the issue was fixed. Only used for diagnostics
         /// </summary>
-        [JsonIgnore]
-        [SerializeField]
-        public bool wasFixed = false;
+        [SerializeField] [JsonIgnore]
+        public bool WasFixed = false;
 
         [JsonConstructor]
         internal ProjectIssue()
         {
             // only for json serialization purposes
-            m_DescriptorID = new DescriptorID(string.Empty);
+            m_DescriptorId = new DescriptorID(string.Empty);
         }
 
         /// <summary>
@@ -44,8 +55,8 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="args">Arguments to be used in the message formatting</param>
         internal ProjectIssue(IssueCategory category, string id, params object[] args)
         {
-            m_DescriptorID = new DescriptorID(id);
-            var descriptor = DescriptorLibrary.GetDescriptor(m_DescriptorID.AsInt());
+            m_DescriptorId = new DescriptorID(id);
+            var descriptor = DescriptorLibrary.GetDescriptor(m_DescriptorId.AsInt());
 
             m_Category = category;
 
@@ -68,7 +79,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="description">Issue description</param>
         internal ProjectIssue(IssueCategory category, string description)
         {
-            m_DescriptorID = new DescriptorID(null);  // Empty, invalid descriptor
+            m_DescriptorId = new DescriptorID(null);  // Empty, invalid descriptor
             m_Category = category;
             m_Description = description;
             m_Severity = Severity.Default;
@@ -78,20 +89,20 @@ namespace Unity.ProjectAuditor.Editor
         /// An unique identifier for the issue diagnostic. IDs must have exactly 3 upper case characters, followed by 4 digits
         /// </summary>
         [JsonIgnore]
-        public DescriptorID id
+        public DescriptorID Id
         {
-            get => m_DescriptorID;
-            internal set => m_DescriptorID = value;
+            get => m_DescriptorId;
+            internal set => m_DescriptorId = value;
         }
 
         [JsonProperty("diagnosticID")]
-        internal string diagnosticIDAsString
+        internal string DiagnosticIdAsString
         {
-            get { return m_DescriptorID.IsValid() ? m_DescriptorID.AsString() : null; }
+            get { return m_DescriptorId.IsValid() ? m_DescriptorId.AsString() : null; }
             set
             {
                 // TODO: check if ID is registered
-                m_DescriptorID = new DescriptorID(value);
+                m_DescriptorId = new DescriptorID(value);
             }
         }
 
@@ -99,7 +110,7 @@ namespace Unity.ProjectAuditor.Editor
         /// This issue's category
         /// </summary>
         [JsonProperty("category")]
-        public IssueCategory category
+        public IssueCategory Category
         {
             get => m_Category;
             internal set => m_Category = value;
@@ -109,7 +120,7 @@ namespace Unity.ProjectAuditor.Editor
         /// Custom properties
         /// </summary>
         [JsonProperty("properties")]
-        public string[] customProperties
+        public string[] CustomProperties
         {
             get => m_CustomProperties;
             internal set => m_CustomProperties = value;
@@ -119,7 +130,7 @@ namespace Unity.ProjectAuditor.Editor
         /// Project issue description
         /// </summary>
         [JsonProperty("description")]
-        public string description
+        public string Description
         {
             get => m_Description;
             internal set => m_Description = value;
@@ -128,7 +139,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Dependencies of this project issue
         /// </summary>
-        internal DependencyNode dependencies
+        internal DependencyNode Dependencies
         {
             get => m_Dependencies;
             /*public*/ set => m_Dependencies = value;
@@ -138,24 +149,25 @@ namespace Unity.ProjectAuditor.Editor
         /// Name of the file that contains this issue
         /// </summary>
         [JsonIgnore]
-        public string filename => m_Location == null ? string.Empty : m_Location.Filename;
+        public string Filename => m_Location == null ? string.Empty : m_Location.Filename;
 
         /// <summary>
         /// Relative path of the file that contains this issue
         /// </summary>
         [JsonIgnore]
-        public string relativePath => m_Location == null ? string.Empty : m_Location.Path;
+        public string RelativePath => m_Location == null ? string.Empty : m_Location.Path;
 
         /// <summary>
         /// Line in the file that contains this issue
         /// </summary>
         [JsonIgnore]
-        public int line => m_Location == null ? 0 : m_Location.Line;
+        public int Line => m_Location == null ? 0 : m_Location.Line;
 
         /// <summary>
         /// Location of the item or diagnostic
         /// </summary>
-        public Location location
+        [JsonProperty("location")]
+        public Location Location
         {
             get => m_Location;
             /*public*/ set => m_Location = value;
@@ -165,11 +177,11 @@ namespace Unity.ProjectAuditor.Editor
         /// Log level
         /// </summary>
         [JsonIgnore]
-        public LogLevel logLevel
+        public LogLevel LogLevel
         {
             get
             {
-                switch (severity)
+                switch (Severity)
                 {
                     case Severity.Error:
                         return LogLevel.Error;
@@ -186,14 +198,14 @@ namespace Unity.ProjectAuditor.Editor
         /// Diagnostics-specific severity
         /// </summary>
         [JsonIgnore]
-        public Severity severity
+        public Severity Severity
         {
-            get => m_Severity == Severity.Default && m_DescriptorID.IsValid() ? m_DescriptorID.GetDescriptor().defaultSeverity : m_Severity;
+            get => m_Severity == Severity.Default && m_DescriptorId.IsValid() ? m_DescriptorId.GetDescriptor().defaultSeverity : m_Severity;
             set => m_Severity = value;
         }
 
         [JsonProperty("severity")]
-        internal string severityString
+        internal string SeverityString
         {
             get => IsDiagnostic() ? m_Severity.ToString() : null;
             set => m_Severity = (Severity)Enum.Parse(typeof(Severity), value);
@@ -205,7 +217,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <returns>True if the issue's descriptor is not null and is valid. Otherwise, returns false.</returns>
         public bool IsDiagnostic()
         {
-            return id.IsValid();
+            return Id.IsValid();
         }
 
         /// <summary>
@@ -214,7 +226,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <returns>True of the issue's severity is Major or Critical. Otherwise, returns false.</returns>
         public bool IsMajorOrCritical()
         {
-            return severity == Severity.Critical || severity == Severity.Major;
+            return Severity == Severity.Critical || Severity == Severity.Major;
         }
 
         /// <summary>
@@ -223,7 +235,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <returns>True if the issue has a valid description string. Otherwise, returns false.</returns>
         public bool IsValid()
         {
-            return description != null;
+            return Description != null;
         }
 
         /// <summary>

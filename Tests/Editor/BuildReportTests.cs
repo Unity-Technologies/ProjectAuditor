@@ -96,7 +96,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void BuildReport_Files_AreReported()
         {
-            var issues = AnalyzeBuild(IssueCategory.BuildFile, i => i.relativePath.Equals(m_TestAsset.relativePath));
+            var issues = AnalyzeBuild(IssueCategory.BuildFile, i => i.RelativePath.Equals(m_TestAsset.relativePath));
             var matchingIssue = issues.FirstOrDefault();
 
             Assert.NotNull(matchingIssue);
@@ -108,7 +108,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var reportedCorrectAssetBuildFile = buildReport.packedAssets.Any(p => p.shortPath == buildFile && p.contents.Any(c => c.sourceAssetPath == m_TestAsset.relativePath));
 
-            Assert.AreEqual(Path.GetFileNameWithoutExtension(m_TestAsset.relativePath), matchingIssue.description);
+            Assert.AreEqual(Path.GetFileNameWithoutExtension(m_TestAsset.relativePath), matchingIssue.Description);
             Assert.That(matchingIssue.GetNumCustomProperties(), Is.EqualTo((int)BuildReportFileProperty.Num));
             Assert.True(reportedCorrectAssetBuildFile);
             Assert.AreEqual(typeof(AssetImporter).FullName, matchingIssue.GetCustomProperty(BuildReportFileProperty.ImporterType));
@@ -120,11 +120,11 @@ namespace Unity.ProjectAuditor.EditorTests
         public void BuildReport_Steps_AreReported()
         {
             var issues = AnalyzeBuild(IssueCategory.BuildStep);
-            var step = issues.FirstOrDefault(i => i.description.Equals("Build player"));
+            var step = issues.FirstOrDefault(i => i.Description.Equals("Build player"));
             Assert.NotNull(step);
             Assert.That(step.GetCustomPropertyInt32(BuildReportStepProperty.Depth), Is.EqualTo(0));
 
-            step = issues.FirstOrDefault(i => i.description.Equals("Compile scripts"));
+            step = issues.FirstOrDefault(i => i.Description.Equals("Compile scripts"));
             Assert.NotNull(step, "\"Compile scripts\" string not found");
 #if UNITY_2021_1_OR_NEWER
             Assert.That(step.GetCustomPropertyInt32(BuildReportStepProperty.Depth), Is.EqualTo(3));
@@ -132,7 +132,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.That(step.GetCustomPropertyInt32(BuildReportStepProperty.Depth), Is.EqualTo(1));
 #endif
 
-            step = issues.FirstOrDefault(i => i.description.Equals("Postprocess built player"));
+            step = issues.FirstOrDefault(i => i.Description.Equals("Postprocess built player"));
             Assert.NotNull(step, "\"Postprocess built player\" string not found");
             Assert.That(step.GetCustomPropertyInt32(BuildReportStepProperty.Depth), Is.EqualTo(1));
         }

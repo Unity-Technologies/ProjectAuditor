@@ -419,11 +419,11 @@ Shader ""Custom/SRPBatchCompatible""
         {
             var shaders = AnalyzeBuild(IssueCategory.Shader);
 
-            var builtInShader = shaders.FirstOrDefault(s => s.description.Equals("Hidden/BlitCopy"));
+            var builtInShader = shaders.FirstOrDefault(s => s.Description.Equals("Hidden/BlitCopy"));
             Assert.NotNull(builtInShader);
             Assert.AreEqual(ShadersModule.k_Unknown, builtInShader.GetCustomProperty(ShaderProperty.Size));
 
-            var testShader = shaders.FirstOrDefault(s => s.description.Equals(k_ShaderName));
+            var testShader = shaders.FirstOrDefault(s => s.Description.Equals(k_ShaderName));
             Assert.NotNull(testShader);
             Assert.True(testShader.GetCustomPropertyInt64(ShaderProperty.Size) > 0);
         }
@@ -438,9 +438,9 @@ Shader ""Custom/SRPBatchCompatible""
             var keywords = issues.Select(i => i.GetCustomProperty(ShaderVariantProperty.Keywords));
             Assert.True(keywords.Any(key => key.Equals(s_KeywordName)));
 
-            var variants = issues.Where(i => i.description.Equals(k_ShaderName)).ToArray();
+            var variants = issues.Where(i => i.Description.Equals(k_ShaderName)).ToArray();
             Assert.Positive(variants.Length);
-            Assert.True(variants.All(v => !v.id.IsValid()));
+            Assert.True(variants.All(v => !v.Id.IsValid()));
             Assert.True(variants.All(v => v.GetCustomProperty(ShaderVariantProperty.Tier).Equals("Tier1")));
 
             var shaderCompilerPlatforms = variants.Select(v => v.GetCustomProperty(ShaderVariantProperty.Platform)).Distinct();
@@ -481,7 +481,7 @@ Shader ""Custom/SRPBatchCompatible""
 
             Assert.True(keywords.Any(key => key.Equals(s_KeywordName)), "Keyword {0} not found in {1}", s_KeywordName, string.Join("\n", keywords));
 
-            var variants = issues.Where(i => i.description.Equals("Custom/ShaderUsingBuiltInKeyword")).ToArray();
+            var variants = issues.Where(i => i.Description.Equals("Custom/ShaderUsingBuiltInKeyword")).ToArray();
             Assert.Positive(variants.Length, "No shader variants found");
 
             // check custom properties
@@ -505,7 +505,7 @@ Shader ""Custom/SRPBatchCompatible""
 
             Assert.True(keywords.Any(key => key.Equals(s_KeywordName)), "Keyword {0} found in {1}", s_KeywordName, string.Join("\n", keywords));
 
-            var variants = issues.Where(i => i.description.Equals("Custom/MySurfShader")).ToArray();
+            var variants = issues.Where(i => i.Description.Equals("Custom/MySurfShader")).ToArray();
             Assert.Positive(variants.Count());
 
             // check custom property
@@ -539,7 +539,7 @@ Shader ""Custom/SRPBatchCompatible""
             var allVariants = AnalyzeBuild(IssueCategory.ShaderVariant);
             ShadersModule.ClearBuildData(); // cleanup
 
-            var variants = allVariants.Where(i => i.description.Equals(k_ShaderName) && i.category == IssueCategory.ShaderVariant).ToArray();
+            var variants = allVariants.Where(i => i.Description.Equals(k_ShaderName) && i.Category == IssueCategory.ShaderVariant).ToArray();
             Assert.Positive(variants.Length);
 
             var result = ShadersModule.ParsePlayerLog(m_PlayerLogResource.relativePath, variants);
@@ -587,13 +587,13 @@ Shader ""Custom/SRPBatchCompatible""
         public void ShadersAnalysis_Shader_IsReported()
         {
             ShadersModule.ClearBuildData();
-            var issues = Analyze(IssueCategory.Shader, i => i.description.Equals(k_ShaderName));
+            var issues = Analyze(IssueCategory.Shader, i => i.Description.Equals(k_ShaderName));
             var shaderIssue = issues.FirstOrDefault();
 
             Assert.NotNull(shaderIssue);
 
             // check ID
-            Assert.IsFalse(shaderIssue.id.IsValid());
+            Assert.IsFalse(shaderIssue.Id.IsValid());
 
             // check custom property
             Assert.AreEqual((int)ShaderProperty.Num, shaderIssue.GetNumCustomProperties());
@@ -622,21 +622,21 @@ Shader ""Custom/SRPBatchCompatible""
         [Test]
         public void ShadersAnalysis_CompilerMessage_IsReported()
         {
-            var compilerMessages = Analyze(IssueCategory.ShaderCompilerMessage, i => i.description.Equals("floating point division by zero"));
+            var compilerMessages = Analyze(IssueCategory.ShaderCompilerMessage, i => i.Description.Equals("floating point division by zero"));
             var message = compilerMessages.FirstOrDefault();
             Assert.NotNull(message);
 
             var allowedPlatforms = new[] {ShaderCompilerPlatform.Metal, ShaderCompilerPlatform.D3D, ShaderCompilerPlatform.OpenGLCore}.Select(p => p.ToString());
             Assert.True(allowedPlatforms.Contains(message.GetCustomProperty(ShaderMessageProperty.Platform)), "Platform: {0}", message.GetCustomProperty(ShaderMessageProperty.Platform));
             Assert.AreEqual(k_ShaderName, message.GetCustomProperty(ShaderMessageProperty.ShaderName), "Shader Name: {0}", message.GetCustomProperty(ShaderMessageProperty.ShaderName));
-            Assert.AreEqual(Severity.Warning, message.severity);
-            Assert.AreEqual(40, message.line);
+            Assert.AreEqual(Severity.Warning, message.Severity);
+            Assert.AreEqual(40, message.Line);
         }
 
         [Test]
         public void ShadersAnalysis_ShaderUsingBuiltInKeyword_IsReported()
         {
-            var issues = Analyze(IssueCategory.Shader, i => i.description.Equals("Custom/ShaderUsingBuiltInKeyword"));
+            var issues = Analyze(IssueCategory.Shader, i => i.Description.Equals("Custom/ShaderUsingBuiltInKeyword"));
             var shaderIssue = issues.FirstOrDefault();
             Assert.NotNull(shaderIssue);
 
@@ -660,7 +660,7 @@ Shader ""Custom/SRPBatchCompatible""
         [Test]
         public void ShadersAnalysis_SurfShader_IsReported()
         {
-            var issues = Analyze(IssueCategory.Shader, i => i.description.Equals("Custom/MySurfShader"));
+            var issues = Analyze(IssueCategory.Shader, i => i.Description.Equals("Custom/MySurfShader"));
             var shaderIssue = issues.FirstOrDefault();
             Assert.NotNull(shaderIssue);
 
@@ -684,7 +684,7 @@ Shader ""Custom/SRPBatchCompatible""
         [Test]
         public void ShadersAnalysis_EditorShader_IsNotReported()
         {
-            var issues = Analyze(IssueCategory.Shader, i => i.description.Equals("Custom/MyEditorShader"));
+            var issues = Analyze(IssueCategory.Shader, i => i.Description.Equals("Custom/MyEditorShader"));
 
             Assert.Zero(issues.Length);
         }
@@ -692,7 +692,7 @@ Shader ""Custom/SRPBatchCompatible""
         [Test]
         public void ShadersAnalysis_EditorDefaultResourcesShader_IsNotReported()
         {
-            var issues = Analyze(IssueCategory.Shader, i => i.relativePath.Contains("Editor Default Resources"));
+            var issues = Analyze(IssueCategory.Shader, i => i.RelativePath.Contains("Editor Default Resources"));
 
             Assert.Zero(issues.Length);
         }
@@ -708,7 +708,7 @@ Shader ""Custom/SRPBatchCompatible""
             var issues = AnalyzeAndFindAssetIssues(m_SrpBatchNonCompatibleShaderResource, IssueCategory.AssetDiagnostic);
 
             Assert.IsNotEmpty(issues);
-            Assert.IsTrue(issues.Any(issue => issue.id == ShaderAnalyzer.PAA2000),
+            Assert.IsTrue(issues.Any(issue => issue.Id == ShaderAnalyzer.PAA2000),
                 "The not compatible with SRP batcher shader should be reported.");
         }
 
@@ -722,7 +722,7 @@ Shader ""Custom/SRPBatchCompatible""
 
             var issues = AnalyzeAndFindAssetIssues(m_SrpBatchCompatibleShaderResource, IssueCategory.AssetDiagnostic);
 
-            Assert.IsFalse(issues.Any(issue => issue.id == ShaderAnalyzer.PAA2000),
+            Assert.IsFalse(issues.Any(issue => issue.Id == ShaderAnalyzer.PAA2000),
                 "The compatible with SRP batcher shader should not be reported.");
         }
     }

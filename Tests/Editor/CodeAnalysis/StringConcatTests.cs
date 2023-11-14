@@ -30,7 +30,7 @@ class StringConcat
             var issues = AnalyzeAndFindAssetIssues(m_TestAssetStringConcat);
 
             Assert.AreEqual(1, issues.Count());
-            Assert.AreEqual("'System.String.Concat' usage", issues.First().description);
+            Assert.AreEqual("'System.String.Concat' usage", issues.First().Description);
         }
     }
 }

@@ -82,18 +82,18 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var projectAuditor = new Editor.ProjectAuditor();
             var report = projectAuditor.Audit(analysisParams);
-            var foundIssues = report.GetAllIssues().Where(i => i.relativePath.Equals(m_TestTextureAsset.relativePath));
+            var foundIssues = report.GetAllIssues().Where(i => i.RelativePath.Equals(m_TestTextureAsset.relativePath));
 
             Assert.NotNull(foundIssues);
-            Assert.Null(foundIssues.FirstOrDefault(i => i.id.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor.id)));
+            Assert.Null(foundIssues.FirstOrDefault(i => i.Id.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor.id)));
 
             // Texture would normally be too small to trigger this diagnostic, unless we specify a custom smaller limit
             analysisParams.DiagnosticParams.SetParameter(BuildTarget.NoTarget, k_TextureStreamingMipmapsSizeLimit, 32);
             report = projectAuditor.Audit(analysisParams);
-            foundIssues = report.GetAllIssues().Where(i => i.relativePath.Equals(m_TestTextureAsset.relativePath));
+            foundIssues = report.GetAllIssues().Where(i => i.RelativePath.Equals(m_TestTextureAsset.relativePath));
 
             Assert.NotNull(foundIssues);
-            Assert.NotNull(foundIssues.FirstOrDefault(i => i.id.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor.id)));
+            Assert.NotNull(foundIssues.FirstOrDefault(i => i.Id.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor.id)));
         }
 
         [Test]

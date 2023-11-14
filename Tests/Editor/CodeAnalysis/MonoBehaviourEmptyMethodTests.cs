@@ -44,18 +44,18 @@ namespace Unity.ProjectAuditor.EditorTests
             var issue = scriptIssues.FirstOrDefault();
 
             Assert.NotNull(issue);
-            var descriptor = issue.id.GetDescriptor();
+            var descriptor = issue.Id.GetDescriptor();
 
             Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
-            Assert.AreEqual(EmptyMethodAnalyzer.GetDescriptorID(), issue.id.ToString());
+            Assert.AreEqual(EmptyMethodAnalyzer.GetDescriptorID(), issue.Id.ToString());
             Assert.True(string.IsNullOrEmpty(descriptor.type));
             Assert.True(string.IsNullOrEmpty(descriptor.method));
 
-            Assert.AreEqual(m_MonoBehaviourWithEmptyEventMethod.fileName, issue.filename);
-            Assert.AreEqual("MonoBehaviour method 'Update' is empty", issue.description);
+            Assert.AreEqual(m_MonoBehaviourWithEmptyEventMethod.fileName, issue.Filename);
+            Assert.AreEqual("MonoBehaviour method 'Update' is empty", issue.Description);
             Assert.AreEqual("System.Void MonoBehaviourWithEmptyEventMethod::Update()", issue.GetContext());
-            Assert.AreEqual(1, issue.line);
-            Assert.AreEqual(IssueCategory.Code, issue.category);
+            Assert.AreEqual(1, issue.Line);
+            Assert.AreEqual(IssueCategory.Code, issue.Category);
         }
 
         [Test]

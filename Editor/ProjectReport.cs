@@ -84,7 +84,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
-                return m_Issues.Where(i => !i.wasFixed).ToArray();
+                return m_Issues.Where(i => !i.WasFixed).ToArray();
             }
             set => m_Issues = value.ToList();
         }
@@ -180,7 +180,7 @@ namespace Unity.ProjectAuditor.Editor
         public int GetNumIssues(IssueCategory category)
         {
             s_Mutex.WaitOne();
-            var result = m_Issues.Count(i => i.category == category);
+            var result = m_Issues.Count(i => i.Category == category);
             s_Mutex.ReleaseMutex();
             return result;
         }
@@ -193,7 +193,7 @@ namespace Unity.ProjectAuditor.Editor
         public IReadOnlyCollection<ProjectIssue> FindByCategory(IssueCategory category)
         {
             s_Mutex.WaitOne();
-            var result = m_Issues.Where(i => i.category == category).ToArray();
+            var result = m_Issues.Where(i => i.Category == category).ToArray();
             s_Mutex.ReleaseMutex();
             return result;
         }
@@ -206,7 +206,7 @@ namespace Unity.ProjectAuditor.Editor
         public IReadOnlyCollection<ProjectIssue> FindByDiagnosticID(string id)
         {
             s_Mutex.WaitOne();
-            var result = m_Issues.Where(i => i.id.IsValid() && i.id.Equals(id)).ToArray();
+            var result = m_Issues.Where(i => i.Id.IsValid() && i.Id.Equals(id)).ToArray();
             s_Mutex.ReleaseMutex();
             return result;
         }
@@ -221,7 +221,7 @@ namespace Unity.ProjectAuditor.Editor
         public void ClearIssues(IssueCategory category)
         {
             s_Mutex.WaitOne();
-            m_Issues.RemoveAll(issue => issue.category == category);
+            m_Issues.RemoveAll(issue => issue.Category == category);
             foreach (var info in m_ModuleInfos)
             {
                 var categories = info.categories.ToList();
@@ -234,7 +234,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public void ExportToCsv(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
         {
-            var issues = m_Issues.Where(i => i.category == layout.category && (predicate == null || predicate(i))).ToArray();
+            var issues = m_Issues.Where(i => i.Category == layout.category && (predicate == null || predicate(i))).ToArray();
             using (var exporter = new CsvExporter(path, layout))
             {
                 exporter.WriteHeader();
@@ -249,7 +249,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public void ExportToHtml(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
         {
-            var issues = m_Issues.Where(i => i.category == layout.category && (predicate == null || predicate(i))).ToArray();
+            var issues = m_Issues.Where(i => i.Category == layout.category && (predicate == null || predicate(i))).ToArray();
             using (var exporter = new HtmlExporter(path, layout))
             {
                 exporter.WriteHeader();

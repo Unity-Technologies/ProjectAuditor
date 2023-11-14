@@ -196,7 +196,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             Profiler.BeginSample("MatchArea");
             var matchArea = m_AreaSelection.ContainsGroup("All") ||
-                (issue.id.IsValid() && m_AreaSelection.ContainsAny(issue.id.GetDescriptor().areas));
+                (issue.Id.IsValid() && m_AreaSelection.ContainsAny(issue.Id.GetDescriptor().areas));
 
             Profiler.EndSample();
             if (!matchArea)
@@ -475,7 +475,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     menu.AddItem(Contents.ShaderVariants, false, () =>
                     {
                         viewManager.ChangeView(IssueCategory.ShaderVariant);
-                        viewManager.GetActiveView().SetSearch(issue.description);
+                        viewManager.GetActiveView().SetSearch(issue.Description);
                     });
                 },
                 onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
@@ -1391,7 +1391,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         void UpdateAssemblyNames()
         {
             // update list of assembly names
-            var assemblyNames = m_ProjectReport.FindByCategory(IssueCategory.Assembly).Select(i => i.description).ToArray();
+            var assemblyNames = m_ProjectReport.FindByCategory(IssueCategory.Assembly).Select(i => i.Description).ToArray();
             m_AssemblyNames = assemblyNames.Distinct().OrderBy(str => str).ToArray();
         }
 

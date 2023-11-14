@@ -27,9 +27,9 @@ namespace Unity.ProjectAuditor.Editor.Core
         /// <param name="property"> value the properties will be set to </param>
         public IssueBuilder WithCustomProperties(int numProperties, object property)
         {
-            m_Issue.customProperties = new string[numProperties];
+            m_Issue.CustomProperties = new string[numProperties];
             for (var i = 0; i < numProperties; i++)
-                m_Issue.customProperties[i] = property.ToString();
+                m_Issue.CustomProperties[i] = property.ToString();
             return this;
         }
 
@@ -40,34 +40,34 @@ namespace Unity.ProjectAuditor.Editor.Core
         public IssueBuilder WithCustomProperties(object[] properties)
         {
             if (properties != null)
-                m_Issue.customProperties = properties.Select(p => p != null ? p.ToString() : string.Empty).ToArray();
+                m_Issue.CustomProperties = properties.Select(p => p != null ? p.ToString() : string.Empty).ToArray();
             else
-                m_Issue.customProperties = null;
+                m_Issue.CustomProperties = null;
 
             return this;
         }
 
         public IssueBuilder WithDescription(string description)
         {
-            m_Issue.description = description;
+            m_Issue.Description = description;
             return this;
         }
 
         public IssueBuilder WithDependencies(DependencyNode dependencies)
         {
-            m_Issue.dependencies = dependencies;
+            m_Issue.Dependencies = dependencies;
             return this;
         }
 
         public IssueBuilder WithLocation(Location location)
         {
-            m_Issue.location = location;
+            m_Issue.Location = location;
             return this;
         }
 
         public IssueBuilder WithLocation(string path, int line = 0)
         {
-            m_Issue.location = new Location(path, line);
+            m_Issue.Location = new Location(path, line);
             return this;
         }
 
@@ -76,13 +76,13 @@ namespace Unity.ProjectAuditor.Editor.Core
             switch (logLevel)
             {
                 case LogLevel.Error:
-                    m_Issue.severity = Severity.Error;
+                    m_Issue.Severity = Severity.Error;
                     break;
                 case LogLevel.Warning:
-                    m_Issue.severity = Severity.Warning;
+                    m_Issue.Severity = Severity.Warning;
                     break;
                 case LogLevel.Info:
-                    m_Issue.severity = Severity.Info;
+                    m_Issue.Severity = Severity.Info;
                     break;
             }
             return this;
@@ -90,7 +90,7 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         public IssueBuilder WithSeverity(Severity severity)
         {
-            m_Issue.severity = severity;
+            m_Issue.Severity = severity;
             return this;
         }
     }

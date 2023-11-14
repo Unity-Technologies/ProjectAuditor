@@ -93,8 +93,8 @@ class ParamsArrayAllocation
 
             var allocationIssue = issues.First();
 
-            Assert.AreEqual("'ObjectAllocation' allocation", allocationIssue.description);
-            Assert.AreEqual(IssueCategory.Code, allocationIssue.category);
+            Assert.AreEqual("'ObjectAllocation' allocation", allocationIssue.Description);
+            Assert.AreEqual(IssueCategory.Code, allocationIssue.Category);
         }
 
         [Test]
@@ -106,9 +106,9 @@ class ParamsArrayAllocation
 
             var issue = issues.First();
 
-            Assert.AreNotEqual(MonoCecilHelper.HiddenLine, issue.line);
-            Assert.AreEqual("Closure allocation in 'ClosureAllocation.Dummy'", issue.description);
-            Assert.AreEqual(IssueCategory.Code, issue.category);
+            Assert.AreNotEqual(MonoCecilHelper.HiddenLine, issue.Line);
+            Assert.AreEqual("Closure allocation in 'ClosureAllocation.Dummy'", issue.Description);
+            Assert.AreEqual(IssueCategory.Code, issue.Category);
         }
 
         [Test]
@@ -119,8 +119,8 @@ class ParamsArrayAllocation
 
             var allocationIssue = issues.First();
 
-            Assert.AreEqual("'Int32' array allocation", allocationIssue.description);
-            Assert.AreEqual(IssueCategory.Code, allocationIssue.category);
+            Assert.AreEqual("'Int32' array allocation", allocationIssue.Description);
+            Assert.AreEqual(IssueCategory.Code, allocationIssue.Category);
         }
 
         [Test]
@@ -131,8 +131,8 @@ class ParamsArrayAllocation
 
             var allocationIssue = issues.First();
 
-            Assert.AreEqual("'System.Int32[0...,0...]' allocation", allocationIssue.description);
-            Assert.AreEqual(IssueCategory.Code, allocationIssue.category);
+            Assert.AreEqual("'System.Int32[0...,0...]' allocation", allocationIssue.Description);
+            Assert.AreEqual(IssueCategory.Code, allocationIssue.Category);
         }
 
         [Test]
@@ -141,13 +141,13 @@ class ParamsArrayAllocation
             var issues = AnalyzeAndFindAssetIssues(m_TestAssetParamsArrayAllocation);
             Assert.AreEqual(2, issues.Count());
 
-            Assert.AreEqual(IssueCategory.Code, issues[0].category);
-            Assert.AreEqual(AllocationAnalyzer.PAC2004, issues[0].id.ToString());
-            Assert.AreEqual("'Object' array allocation", issues[0].description);
+            Assert.AreEqual(IssueCategory.Code, issues[0].Category);
+            Assert.AreEqual(AllocationAnalyzer.PAC2004, issues[0].Id.ToString());
+            Assert.AreEqual("'Object' array allocation", issues[0].Description);
 
-            Assert.AreEqual(IssueCategory.Code, issues[1].category);
-            Assert.AreEqual(AllocationAnalyzer.PAC2005, issues[1].id.ToString());
-            Assert.AreEqual("Parameters array 'Object[] args' allocation", issues[1].description);
+            Assert.AreEqual(IssueCategory.Code, issues[1].Category);
+            Assert.AreEqual(AllocationAnalyzer.PAC2005, issues[1].Id.ToString());
+            Assert.AreEqual("Parameters array 'Object[] args' allocation", issues[1].Description);
         }
     }
 }

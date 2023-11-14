@@ -69,7 +69,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var issues = AnalyzeAndFindAssetIssues(m_TestScriptAsset);
 
-            var allCamerasIssues = issues.Where(i => i.id == "PAC0066").ToArray();
+            var allCamerasIssues = issues.Where(i => i.Id == "PAC0066").ToArray();
 
             Assert.AreEqual(1, allCamerasIssues.Count());
 
@@ -78,7 +78,7 @@ namespace Unity.ProjectAuditor.EditorTests
             m_Rules.ClearAllRules();
 
             var callingMethod = issue.GetContext();
-            var action = m_Rules.GetAction(issue.id, callingMethod);
+            var action = m_Rules.GetAction(issue.Id, callingMethod);
 
             // expect default action specified in descriptor
             Assert.AreEqual(Severity.Default, action);
@@ -86,14 +86,14 @@ namespace Unity.ProjectAuditor.EditorTests
             // add rule with a filter.
             m_Rules.AddRule(new Rule
             {
-                id = issue.id,
+                id = issue.Id,
                 severity = Severity.None,
                 filter = callingMethod
             });
 
             Assert.AreEqual(1, m_Rules.NumRules);
 
-            action = m_Rules.GetAction(issue.id, callingMethod);
+            action = m_Rules.GetAction(issue.Id, callingMethod);
 
             // issue has been muted so it should not be reported
             Assert.AreEqual(Severity.None, action);
@@ -113,12 +113,12 @@ namespace Unity.ProjectAuditor.EditorTests
             // retry after domain reload
             var issues = AnalyzeAndFindAssetIssues(m_TestScriptAsset);
 
-            var allCamerasIssues = issues.Where(i => i.id.Equals("PAC0066")).ToArray();
+            var allCamerasIssues = issues.Where(i => i.Id.Equals("PAC0066")).ToArray();
 
             Assert.AreEqual(1, allCamerasIssues.Count());
 
             var callingMethod = allCamerasIssues[0].GetContext();
-            var action = m_SerializedRules.GetAction(allCamerasIssues[0].id, callingMethod);
+            var action = m_SerializedRules.GetAction(allCamerasIssues[0].Id, callingMethod);
 
             // issue has been muted so it should not be reported
             Assert.AreEqual(Severity.None, action);
@@ -204,7 +204,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var descriptorId = QualitySettingsAnalyzer.PAS1007;
             var filter = "Project/Quality/Very Low";
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(descriptorId));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(descriptorId));
 
             Assert.GreaterOrEqual(issues.Length, 4);
             Assert.AreNotEqual(Severity.None, m_Rules.GetAction(descriptorId));

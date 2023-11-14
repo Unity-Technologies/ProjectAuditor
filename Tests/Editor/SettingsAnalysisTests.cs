@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.EditorTests
             PlayerSettings.accelerometerFrequency = 1;
             m_Platform = BuildTarget.iOS;
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(PlayerSettingsAnalyzer.PAS0002));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(PlayerSettingsAnalyzer.PAS0002));
 
             m_Platform = platform;
             PlayerSettings.accelerometerFrequency = accelerometerFrequency;
@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.EditorTests
             PlayerSettings.accelerometerFrequency = 0;
             m_Platform = BuildTarget.iOS;
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(PlayerSettingsAnalyzer.PAS0002));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(PlayerSettingsAnalyzer.PAS0002));
 
             m_Platform = platform;
             PlayerSettings.accelerometerFrequency = accelerometerFrequency;
@@ -75,7 +75,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 for (var j = i; j < numLayers; ++j)
                     Physics.IgnoreLayerCollision(i, j, false);
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(PhysicsAnalyzer.PAS0013));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(PhysicsAnalyzer.PAS0013));
 
             count = 0;
             for (var i = 0; i < numLayers; ++i)
@@ -92,7 +92,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Physics.IgnoreLayerCollision(0, 0, true);
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(PhysicsAnalyzer.PAS0013));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(PhysicsAnalyzer.PAS0013));
 
             Physics.IgnoreLayerCollision(0, 0, oldValue);
 
@@ -114,7 +114,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 for (var j = i; j < numLayers; ++j)
                     Physics2D.IgnoreLayerCollision(i, j, false);
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(Physics2DAnalyzer.PAS0015));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(Physics2DAnalyzer.PAS0015));
 
             count = 0;
             for (var i = 0; i < numLayers; ++i)
@@ -131,7 +131,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Physics2D.IgnoreLayerCollision(0, 0, true);
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(Physics2DAnalyzer.PAS0015));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(Physics2DAnalyzer.PAS0015));
 
             Physics2D.IgnoreLayerCollision(0, 0, oldValue);
 
@@ -149,12 +149,12 @@ namespace Unity.ProjectAuditor.EditorTests
             var timeSlice = QualitySettings.asyncUploadTimeSlice;
             QualitySettings.asyncUploadTimeSlice = 2;
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(QualitySettingsAnalyzer.PAS0020));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(QualitySettingsAnalyzer.PAS0020));
 
             QualitySettings.asyncUploadTimeSlice = timeSlice;
             QualitySettings.SetQualityLevel(qualityLevel);
 
-            Assert.True(issues.Any(i => i.location.Path.Equals("Project/Quality")));
+            Assert.True(issues.Any(i => i.Location.Path.Equals("Project/Quality")));
         }
 
         [Test]
@@ -172,7 +172,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 QualitySettings.asyncUploadTimeSlice = 10;
             }
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(QualitySettingsAnalyzer.PAS0020));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(QualitySettingsAnalyzer.PAS0020));
 
             for (int i = 0; i < QualitySettings.names.Length; ++i)
             {
@@ -196,12 +196,12 @@ namespace Unity.ProjectAuditor.EditorTests
             var bufferSize = QualitySettings.asyncUploadBufferSize;
             QualitySettings.asyncUploadBufferSize = 4;
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(QualitySettingsAnalyzer.PAS0021));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(QualitySettingsAnalyzer.PAS0021));
 
             QualitySettings.asyncUploadBufferSize = bufferSize;
             QualitySettings.SetQualityLevel(qualityLevel);
 
-            Assert.True(issues.Any(i => i.location.Path.Equals("Project/Quality")));
+            Assert.True(issues.Any(i => i.Location.Path.Equals("Project/Quality")));
         }
 
         [Test]
@@ -219,7 +219,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 QualitySettings.asyncUploadBufferSize = 10;
             }
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(QualitySettingsAnalyzer.PAS0021));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(QualitySettingsAnalyzer.PAS0021));
 
             for (int i = 0; i < QualitySettings.names.Length; ++i)
             {
@@ -245,12 +245,12 @@ namespace Unity.ProjectAuditor.EditorTests
             var mipmapsActive = QualitySettings.streamingMipmapsActive;
             QualitySettings.streamingMipmapsActive = false;
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(QualitySettingsAnalyzer.PAS1007));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(QualitySettingsAnalyzer.PAS1007));
 
             QualitySettings.streamingMipmapsActive = mipmapsActive;
             QualitySettings.SetQualityLevel(qualityLevel);
 
-            Assert.True(issues.Any(i => i.location.Path.Equals("Project/Quality/" + settingsName)));
+            Assert.True(issues.Any(i => i.Location.Path.Equals("Project/Quality/" + settingsName)));
         }
 
         [Test]
@@ -266,12 +266,12 @@ namespace Unity.ProjectAuditor.EditorTests
             var mipmapsActive = QualitySettings.streamingMipmapsActive;
             QualitySettings.streamingMipmapsActive = true;
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(QualitySettingsAnalyzer.PAS1007));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(QualitySettingsAnalyzer.PAS1007));
 
             QualitySettings.streamingMipmapsActive = mipmapsActive;
             QualitySettings.SetQualityLevel(qualityLevel);
 
-            Assert.True(issues.Any(i => i.location.Path.Equals("Project/Quality/" + settingsName)) == false);
+            Assert.True(issues.Any(i => i.Location.Path.Equals("Project/Quality/" + settingsName)) == false);
         }
 
 #if !PACKAGE_HYBRID_RENDERER
@@ -311,7 +311,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             setterMethod.Invoke(null, setterArgs);
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id == HybridRenderingAnalyzer.PAS1000);
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id == HybridRenderingAnalyzer.PAS1000);
 
             setterMethod.Invoke(null, getterArgs);
 
@@ -355,7 +355,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             setterMethod.Invoke(null, setterArgs);
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id == HybridRenderingAnalyzer.PAS1000);
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id == HybridRenderingAnalyzer.PAS1000);
 
             setterMethod.Invoke(null, getterArgs);
 
@@ -369,15 +369,15 @@ namespace Unity.ProjectAuditor.EditorTests
             PlayerSettings.bakeCollisionMeshes = false;
 
             var issues = Analyze(IssueCategory.ProjectSetting, i =>
-                i.id.IsValid() && i.id.GetDescriptor().method.Equals("bakeCollisionMeshes"));
+                i.Id.IsValid() && i.Id.GetDescriptor().method.Equals("bakeCollisionMeshes"));
 
             var playerSettingIssue = issues.FirstOrDefault();
-            var descriptor = playerSettingIssue.id.GetDescriptor();
+            var descriptor = playerSettingIssue.Id.GetDescriptor();
 
             Assert.NotNull(playerSettingIssue, "Issue not found");
-            Assert.AreEqual("Player: Prebake Collision Meshes is disabled", playerSettingIssue.description);
-            Assert.AreEqual("Project/Player", playerSettingIssue.location.Path);
-            Assert.AreEqual("Player", playerSettingIssue.location.Filename);
+            Assert.AreEqual("Player: Prebake Collision Meshes is disabled", playerSettingIssue.Description);
+            Assert.AreEqual("Project/Player", playerSettingIssue.Location.Path);
+            Assert.AreEqual("Player", playerSettingIssue.Location.Filename);
             Assert.AreEqual(2, descriptor.GetAreas().Length);
             Assert.Contains(Area.BuildSize, descriptor.GetAreas());
             Assert.Contains(Area.LoadTime, descriptor.GetAreas());
@@ -394,16 +394,16 @@ namespace Unity.ProjectAuditor.EditorTests
             // 0.02f is the default Time.fixedDeltaTime value and will be reported as an issue
             Time.fixedDeltaTime = 0.02f;
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(TimeSettingsAnalyzer.PAS0016));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(TimeSettingsAnalyzer.PAS0016));
             var playerSettingIssue = issues.FirstOrDefault();
             Assert.NotNull(playerSettingIssue, "Issue not found");
-            Assert.AreEqual("Time: Fixed Timestep is set to the default value", playerSettingIssue.description);
-            Assert.AreEqual("Project/Time", playerSettingIssue.location.Path);
+            Assert.AreEqual("Time: Fixed Timestep is set to the default value", playerSettingIssue.Description);
+            Assert.AreEqual("Project/Time", playerSettingIssue.Location.Path);
 
             // "fix" fixedDeltaTime so it's not reported anymore
             Time.fixedDeltaTime = 0.021f;
 
-            issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(TimeSettingsAnalyzer.PAS0016));
+            issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(TimeSettingsAnalyzer.PAS0016));
             Assert.Null(issues.FirstOrDefault());
 
             // restore Time.fixedDeltaTime
@@ -433,7 +433,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var audioConfiguration = AudioSettings.GetConfiguration();
             AudioSettings.speakerMode = AudioSpeakerMode.Stereo;
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals("PAS0033"));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals("PAS0033"));
             var playerSettingIssue = issues.FirstOrDefault();
 
             Assert.NotNull(playerSettingIssue);
@@ -595,12 +595,12 @@ namespace Unity.ProjectAuditor.EditorTests
             serializedObject.ApplyModifiedProperties();
             Assert.IsTrue(FogStrippingAnalyzer.IsFogModeEnabled(fogMode));
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(FogStrippingAnalyzer.PAS1003));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(FogStrippingAnalyzer.PAS1003));
 
             Assert.AreEqual(1, issues.Length);
 
             var description = $"Graphics: Fog Mode '{fogMode}' shader variants are always included in the build";
-            Assert.AreEqual(description, issues[0].description);
+            Assert.AreEqual(description, issues[0].Description);
 
             linearFogModeProperty.boolValue = linearEnabled;
             expFogModeProperty.boolValue = expEnabled;
@@ -641,7 +641,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             serializedObject.ApplyModifiedProperties();
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(FogStrippingAnalyzer.PAS1003));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(FogStrippingAnalyzer.PAS1003));
             var playerSettingIssue = issues.FirstOrDefault();
 
             Assert.IsNull(playerSettingIssue);
@@ -673,7 +673,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 ? PlayerSettingsAnalyzer.PAS1004
                 : PlayerSettingsAnalyzer.PAS1005;
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(id));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(id));
 
             Assert.AreEqual(1, issues.Length);
 
@@ -694,7 +694,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var compilerConfiguration = PlayerSettings.GetIl2CppCompilerConfiguration(buildTargetGroup);
             PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, Il2CppCompilerConfiguration.Release);
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(id));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(id));
 
             Assert.AreEqual(0, issues.Length);
 
@@ -712,7 +712,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             PlayerSettings.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.Mono2x);
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(id));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(id));
 
             Assert.AreEqual(0, issues.Length);
 
@@ -746,7 +746,7 @@ namespace Unity.ProjectAuditor.EditorTests
             PlayerSettingsUtil.SetLightmapStreaming(buildTargetGroup, false);
 
             var id = PlayerSettingsAnalyzer.PAS1006;
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(id));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(id));
 
             Assert.AreEqual(1, issues.Length);
 
@@ -762,7 +762,7 @@ namespace Unity.ProjectAuditor.EditorTests
             PlayerSettingsUtil.SetLightmapStreaming(buildTargetGroup, true);
 
             var id = PlayerSettingsAnalyzer.PAS1006;
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(id));
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(id));
 
             Assert.AreEqual(0, issues.Length);
 
@@ -796,7 +796,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 QualitySettings.streamingMipmapsActive = false;
 
                 var id = QualitySettingsAnalyzer.PAS1007;
-                var issues = Analyze(IssueCategory.ProjectSetting, j => j.id.Equals(id));
+                var issues = Analyze(IssueCategory.ProjectSetting, j => j.Id.Equals(id));
                 var qualitySettingIssue = issues.FirstOrDefault();
 
                 Assert.NotNull(qualitySettingIssue);
@@ -821,7 +821,7 @@ namespace Unity.ProjectAuditor.EditorTests
             }
 
             var id = QualitySettingsAnalyzer.PAS1007;
-            var issues = Analyze(IssueCategory.ProjectSetting, j => j.id.Equals(id));
+            var issues = Analyze(IssueCategory.ProjectSetting, j => j.Id.Equals(id));
             var qualitySettingIssue = issues.FirstOrDefault();
 
             Assert.IsNull(qualitySettingIssue);
@@ -888,7 +888,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(renderPipeline, false);
             var issues = Analyze(IssueCategory.ProjectSetting,
-                i => i.id.IsValid() && i.id.GetDescriptor().id == SrpAssetSettingsAnalyzer.PAS1008);
+                i => i.Id.IsValid() && i.Id.GetDescriptor().id == SrpAssetSettingsAnalyzer.PAS1008);
             var srpBatchingIssue = issues.FirstOrDefault();
             Assert.NotNull(srpBatchingIssue);
             Assert.IsTrue(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
@@ -896,7 +896,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(renderPipeline, true);
             issues = Analyze(IssueCategory.ProjectSetting,
-                i => i.id.IsValid() && i.id.GetDescriptor().id == SrpAssetSettingsAnalyzer.PAS1008);
+                i => i.Id.IsValid() && i.Id.GetDescriptor().id == SrpAssetSettingsAnalyzer.PAS1008);
             Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have enabled SRP Batcher.");
 

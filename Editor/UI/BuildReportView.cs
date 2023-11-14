@@ -45,7 +45,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_GroupStats = list.Take(k_MaxGroupCount).ToArray();
             }
 
-            m_MetaData.AddRange(allIssues.Where(i => i.category == IssueCategory.BuildSummary));
+            m_MetaData.AddRange(allIssues.Where(i => i.Category == IssueCategory.BuildSummary));
         }
 
         public override void Clear()
@@ -58,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         protected override void DrawInfo()
         {
-            if (m_Issues.Any(i => i.category == IssueCategory.BuildSummary))
+            if (m_Issues.Any(i => i.Category == IssueCategory.BuildSummary))
             {
                 EditorGUILayout.LabelField("Build Report is not available. Please build your project and try again.");
                 return;
@@ -67,7 +67,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.BeginVertical();
             foreach (var issue in m_MetaData)
             {
-                DrawKeyValue(issue.description, issue.GetCustomProperty(BuildReportMetaData.Value));
+                DrawKeyValue(issue.Description, issue.GetCustomProperty(BuildReportMetaData.Value));
             }
             EditorGUILayout.EndVertical();
 
@@ -122,14 +122,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                 GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             else // if (selectedDescriptors.Length == 1)
             {
-                var description = selectedIssues[0].description;
+                var description = selectedIssues[0].Description;
                 if (m_Desc.category == IssueCategory.BuildStep)
                 {
                     description = selectedIssues[0].GetCustomProperty(BuildReportStepProperty.Message);
                 }
                 else if (m_Desc.category == IssueCategory.BuildFile)
                 {
-                    description = selectedIssues[0].relativePath;
+                    description = selectedIssues[0].RelativePath;
                 }
 
                 GUILayout.TextArea(description, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));

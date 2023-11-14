@@ -41,7 +41,7 @@ class FindObjectsOfTypeClass
         {
             var issues = AnalyzeAndFindAssetIssues(m_TestAsset);
 
-            Assert.AreEqual(4, issues.Count(i => i.id == "PAC0129"));
+            Assert.AreEqual(4, issues.Count(i => i.Id == "PAC0129"));
         }
 
         [Test]
@@ -49,7 +49,7 @@ class FindObjectsOfTypeClass
         {
             var issues = AnalyzeAndFindAssetIssues(m_TestAsset);
 
-            Assert.AreEqual(4, issues.Count(i => i.id == "PAC0234"));
+            Assert.AreEqual(4, issues.Count(i => i.Id == "PAC0234"));
         }
     }
 }

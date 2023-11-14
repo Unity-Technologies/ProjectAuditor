@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public override void DrawDetails(ProjectIssue[] selectedIssues)
         {
             Descriptor descriptor = null;
-            var selectedIDs = selectedIssues.Select(i => i.id).Distinct().ToArray();
+            var selectedIDs = selectedIssues.Select(i => i.Id).Distinct().ToArray();
             var numSelectedIDs = selectedIDs.Length;
             if (numSelectedIDs > 0)
             {
@@ -116,7 +116,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 if (descriptor.fixer != null)
                 {
-                    GUI.enabled = selectedIssues.Any(i => !i.wasFixed);
+                    GUI.enabled = selectedIssues.Any(i => !i.WasFixed);
 
                     DrawActionButton(Contents.QuickFix, () =>
                     {
@@ -219,7 +219,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             foreach (var issue in selectedIssues)
             {
                 var context = issue.GetContext();
-                var rule = m_Rules.GetRule(issue.id, context);
+                var rule = m_Rules.GetRule(issue.Id, context);
 
                 //If at least one issue in the selection is not ignored, consider the whole selection as not ignored
                 if (rule == null)
@@ -240,7 +240,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     exporter.WriteHeader();
 
                     var matchingIssues = m_Issues.Where(issue => predicate == null || predicate(issue));
-                    matchingIssues = matchingIssues.Where(issue => issue.id.IsValid() || m_Rules.GetAction(issue.id, issue.GetContext()) != Severity.None);
+                    matchingIssues = matchingIssues.Where(issue => issue.Id.IsValid() || m_Rules.GetAction(issue.Id, issue.GetContext()) != Severity.None);
                     exporter.WriteIssues(matchingIssues.ToArray());
                 }
 
@@ -260,7 +260,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             if (m_Table.showIgnoredIssues)
                 return true;
 
-            var id = issue.id;
+            var id = issue.Id;
             if (!id.IsValid())
                 return true;
 
