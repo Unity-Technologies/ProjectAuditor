@@ -39,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor
                 case PropertyType.Description:
                     return issue.Description;
                 case PropertyType.Descriptor:
-                    return issue.Id.GetDescriptor().title;
+                    return issue.Id.GetDescriptor().Title;
                 case PropertyType.Filename:
                     if (string.IsNullOrEmpty(issue.Filename))
                         return k_NotAvailable;
@@ -95,8 +95,8 @@ namespace Unity.ProjectAuditor.Editor
                 case PropertyType.Severity:
                     return issueA.Severity.CompareTo(issueB.Severity);
                 case PropertyType.Area:
-                    var areasA = issueA.Id.GetDescriptor().areas;
-                    var areasB = issueB.Id.GetDescriptor().areas;
+                    var areasA = issueA.Id.GetDescriptor().Areas;
+                    var areasB = issueB.Id.GetDescriptor().Areas;
 
                     var minLength = Math.Min(areasA.Length, areasB.Length);
 

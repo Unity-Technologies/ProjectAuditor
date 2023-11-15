@@ -369,7 +369,7 @@ namespace Unity.ProjectAuditor.EditorTests
             PlayerSettings.bakeCollisionMeshes = false;
 
             var issues = Analyze(IssueCategory.ProjectSetting, i =>
-                i.Id.IsValid() && i.Id.GetDescriptor().method.Equals("bakeCollisionMeshes"));
+                i.Id.IsValid() && i.Id.GetDescriptor().Method.Equals("bakeCollisionMeshes"));
 
             var playerSettingIssue = issues.FirstOrDefault();
             var descriptor = playerSettingIssue.Id.GetDescriptor();
@@ -888,7 +888,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(renderPipeline, false);
             var issues = Analyze(IssueCategory.ProjectSetting,
-                i => i.Id.IsValid() && i.Id.GetDescriptor().id == SrpAssetSettingsAnalyzer.PAS1008);
+                i => i.Id.IsValid() && i.Id.GetDescriptor().Id == SrpAssetSettingsAnalyzer.PAS1008);
             var srpBatchingIssue = issues.FirstOrDefault();
             Assert.NotNull(srpBatchingIssue);
             Assert.IsTrue(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
@@ -896,7 +896,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(renderPipeline, true);
             issues = Analyze(IssueCategory.ProjectSetting,
-                i => i.Id.IsValid() && i.Id.GetDescriptor().id == SrpAssetSettingsAnalyzer.PAS1008);
+                i => i.Id.IsValid() && i.Id.GetDescriptor().Id == SrpAssetSettingsAnalyzer.PAS1008);
             Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have enabled SRP Batcher.");
 

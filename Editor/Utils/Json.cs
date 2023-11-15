@@ -34,8 +34,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         public static T[] DeserializeArray<T>(string json)
         {
-            var wrapper = JsonUtility.FromJson<Wrapper<T>>(json);
-            return wrapper.Items;
+            var array = JsonConvert.DeserializeObject<T[]>(json, k_JsonSerializerSettings);
+            return array;
         }
 
         public static T[] DeserializeArrayFromFile<T>(string fileName)
@@ -49,20 +49,12 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         public static string SerializeArray<T>(T[] array)
         {
-            var wrapper = new Wrapper<T> {Items = array};
-            return JsonUtility.ToJson(wrapper);
+            return JsonConvert.SerializeObject(array);
         }
 
         public static string SerializeArray<T>(T[] array, bool prettyPrint)
         {
-            var wrapper = new Wrapper<T> {Items = array};
-            return JsonUtility.ToJson(wrapper, prettyPrint);
-        }
-
-        [Serializable]
-        class Wrapper<T>
-        {
-            public T[] Items;
+            return JsonConvert.SerializeObject(array, prettyPrint ? Newtonsoft.Json.Formatting.Indented :  Newtonsoft.Json.Formatting.None);
         }
     }
 }

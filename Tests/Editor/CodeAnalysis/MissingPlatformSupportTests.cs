@@ -72,11 +72,11 @@ class MicrophoneUsageTest
         {
             m_Platform = BuildTarget.WebGL;
 
-            var diagnostic = AnalyzeAndFindAssetIssues(m_TestAssetSystemNet).FirstOrDefault(i => i.Id.Equals(UnsupportedOnWebGLAnalyzer.k_DescriptorSystemNet.id));
+            var diagnostic = AnalyzeAndFindAssetIssues(m_TestAssetSystemNet).FirstOrDefault(i => i.Id.Equals(UnsupportedOnWebGLAnalyzer.k_DescriptorSystemNet.Id));
 
             Assert.NotNull(diagnostic);
             Assert.AreEqual("'System.Boolean System.Net.Sockets.TcpClient::get_Connected()' usage", diagnostic.Description);
-            Assert.Contains("Support", diagnostic.Id.GetDescriptor().areas);
+            Assert.Contains("Support", diagnostic.Id.GetDescriptor().Areas);
         }
 
         [Test]
@@ -85,11 +85,11 @@ class MicrophoneUsageTest
         {
             m_Platform = BuildTarget.WebGL;
 
-            var diagnostic = AnalyzeAndFindAssetIssues(m_TestAssetSystemThreading).FirstOrDefault(i => i.Id.Equals(UnsupportedOnWebGLAnalyzer.k_DescriptorSystemThreading.id));
+            var diagnostic = AnalyzeAndFindAssetIssues(m_TestAssetSystemThreading).FirstOrDefault(i => i.Id.Equals(UnsupportedOnWebGLAnalyzer.k_DescriptorSystemThreading.Id));
 
             Assert.NotNull(diagnostic);
             Assert.AreEqual("'System.Void System.Threading.Thread::Sleep(System.Int32)' usage", diagnostic.Description);
-            Assert.Contains("Support", diagnostic.Id.GetDescriptor().areas);
+            Assert.Contains("Support", diagnostic.Id.GetDescriptor().Areas);
         }
 
         [Test]
@@ -98,11 +98,11 @@ class MicrophoneUsageTest
         {
             m_Platform = BuildTarget.WebGL;
 
-            var diagnostic = AnalyzeAndFindAssetIssues(m_TestAssetMicrophone).FirstOrDefault(i => i.Id.Equals(UnsupportedOnWebGLAnalyzer.k_DescriptorMicrophone.id));
+            var diagnostic = AnalyzeAndFindAssetIssues(m_TestAssetMicrophone).FirstOrDefault(i => i.Id.Equals(UnsupportedOnWebGLAnalyzer.k_DescriptorMicrophone.Id));
 
             Assert.NotNull(diagnostic);
             Assert.AreEqual("'System.String[] UnityEngine.Microphone::get_devices()' usage", diagnostic.Description);
-            Assert.Contains("Support", diagnostic.Id.GetDescriptor().areas);
+            Assert.Contains("Support", diagnostic.Id.GetDescriptor().Areas);
         }
 
         [Test]

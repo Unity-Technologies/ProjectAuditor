@@ -62,14 +62,14 @@ namespace Unity.ProjectAuditor.Editor
 
             try
             {
-                m_Description = string.IsNullOrEmpty(descriptor.messageFormat) ? descriptor.title : string.Format(descriptor.messageFormat, args);
+                m_Description = string.IsNullOrEmpty(descriptor.MessageFormat) ? descriptor.Title : string.Format(descriptor.MessageFormat, args);
             }
             catch (Exception e)
             {
-                Debug.LogError("Error formatting message: " + descriptor.messageFormat + " with args: " + string.Join(", ", args) + " - " + e.Message);
-                m_Description = descriptor.title;
+                Debug.LogError("Error formatting message: " + descriptor.MessageFormat + " with args: " + string.Join(", ", args) + " - " + e.Message);
+                m_Description = descriptor.Title;
             }
-            m_Severity = descriptor.defaultSeverity;
+            m_Severity = descriptor.DefaultSeverity;
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace Unity.ProjectAuditor.Editor
         [JsonIgnore]
         public Severity Severity
         {
-            get => m_Severity == Severity.Default && m_DescriptorId.IsValid() ? m_DescriptorId.GetDescriptor().defaultSeverity : m_Severity;
+            get => m_Severity == Severity.Default && m_DescriptorId.IsValid() ? m_DescriptorId.GetDescriptor().DefaultSeverity : m_Severity;
             set => m_Severity = value;
         }
 

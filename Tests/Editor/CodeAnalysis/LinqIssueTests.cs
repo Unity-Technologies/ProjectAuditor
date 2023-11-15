@@ -43,10 +43,10 @@ class MyClass
             Assert.NotNull(myIssue);
             var descriptor = myIssue.Id.GetDescriptor();
 
-            Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
+            Assert.AreEqual(Severity.Moderate, descriptor.DefaultSeverity);
             Assert.AreEqual("PAC1000", myIssue.Id.ToString());
-            Assert.AreEqual("System.Linq", descriptor.type);
-            Assert.AreEqual("*", descriptor.method);
+            Assert.AreEqual("System.Linq", descriptor.Type);
+            Assert.AreEqual("*", descriptor.Method);
 
             Assert.AreEqual(m_TestAsset.fileName, myIssue.Filename);
             Assert.AreEqual("'System.Linq.Enumerable.Count' usage", myIssue.Description, "Description: {0}", myIssue.Description);

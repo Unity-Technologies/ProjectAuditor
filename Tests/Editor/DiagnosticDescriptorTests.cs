@@ -31,7 +31,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void Setup()
         {
-            DescriptorLibrary.RegisterDescriptor(m_Descriptor.id, m_Descriptor);
+            DescriptorLibrary.RegisterDescriptor(m_Descriptor.Id, m_Descriptor);
         }
 
         [Test]
@@ -75,7 +75,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 "do nothing"
                 );
 
-            Assert.AreEqual(p.id.GetHashCode(), p.GetHashCode());
+            Assert.AreEqual(p.Id.GetHashCode(), p.GetHashCode());
         }
 
         [Test]
@@ -93,40 +93,40 @@ namespace Unity.ProjectAuditor.EditorTests
             // check default values
             Assert.True(desc.IsVersionCompatible());
 
-            desc.minimumVersion = string.Empty;
-            desc.maximumVersion = string.Empty;
+            desc.MinimumVersion = string.Empty;
+            desc.MaximumVersion = string.Empty;
             Assert.True(desc.IsVersionCompatible());
 
-            desc.minimumVersion = "0.0";
-            desc.maximumVersion = null;
+            desc.MinimumVersion = "0.0";
+            desc.MaximumVersion = null;
             Assert.True(desc.IsVersionCompatible());
 
-            desc.minimumVersion = null;
-            desc.maximumVersion = "0.0";
+            desc.MinimumVersion = null;
+            desc.MaximumVersion = "0.0";
             Assert.False(desc.IsVersionCompatible());
 
-            desc.minimumVersion = null;
-            desc.maximumVersion = "9999.9";
+            desc.MinimumVersion = null;
+            desc.MaximumVersion = "9999.9";
             Assert.True(desc.IsVersionCompatible());
 
-            desc.minimumVersion = "9999.9";
-            desc.maximumVersion = null;
+            desc.MinimumVersion = "9999.9";
+            desc.MaximumVersion = null;
             Assert.False(desc.IsVersionCompatible());
 
             var unityVersionString = Application.unityVersion;
             unityVersionString = unityVersionString.Remove(
                 Regex.Match(unityVersionString, "[A-Za-z]").Index);
 
-            desc.minimumVersion = unityVersionString;
-            desc.maximumVersion = null;
+            desc.MinimumVersion = unityVersionString;
+            desc.MaximumVersion = null;
             Assert.True(desc.IsVersionCompatible());
 
-            desc.minimumVersion = null;
-            desc.maximumVersion = unityVersionString;
+            desc.MinimumVersion = null;
+            desc.MaximumVersion = unityVersionString;
             Assert.True(desc.IsVersionCompatible());
 
-            desc.minimumVersion = "1.1";
-            desc.maximumVersion = "1.0";
+            desc.MinimumVersion = "1.1";
+            desc.MaximumVersion = "1.0";
             var result = desc.IsVersionCompatible();
             LogAssert.Expect(LogType.Error, "Descriptor (TDD2001) minimumVersion (1.1) is greater than maximumVersion (1.0).");
             Assert.False(result);
@@ -175,7 +175,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 "do nothing"
                 )
             {
-                platforms = new[] { TestFixtureBase.GetStandaloneBuildTarget().ToString() }
+                Platforms = new[] { TestFixtureBase.GetStandaloneBuildTarget().ToString() }
             };
 
             Assert.True(desc.IsPlatformSupported());
@@ -193,7 +193,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 "do nothing"
                 )
             {
-                platforms = new[] { BuildTarget.WSAPlayer.ToString() }  // assuming WSAPlayer is not installed by default
+                Platforms = new[] { BuildTarget.WSAPlayer.ToString() }  // assuming WSAPlayer is not installed by default
             };
 
             Assert.False(desc.IsPlatformSupported());
@@ -208,10 +208,10 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var IDs = projectAuditor.GetDiagnosticIDs();
 
-            Assert.NotZero(IDs.Count(id => id.AsString() == m_Descriptor.id), "Descriptor {0} is not registered", m_Descriptor.id);
+            Assert.NotZero(IDs.Count(id => id.AsString() == m_Descriptor.Id), "Descriptor {0} is not registered", m_Descriptor.Id);
 
             // This will throw an exception if the Descriptor is somehow registered in the module but not in the DescriptorLibrary
-            var descriptor = new DescriptorID(m_Descriptor.id).GetDescriptor();
+            var descriptor = new DescriptorID(m_Descriptor.Id).GetDescriptor();
         }
 
         [Test]
@@ -224,13 +224,13 @@ namespace Unity.ProjectAuditor.EditorTests
             foreach (var id in IDs)
             {
                 var descriptor = id.GetDescriptor();
-                Assert.IsFalse(string.IsNullOrEmpty(descriptor.id), "Descriptor has no id (title: {0})", descriptor.title);
-                Assert.IsTrue(regExp.IsMatch(descriptor.id), "Descriptor id format is not valid: " + descriptor.id);
-                Assert.IsFalse(string.IsNullOrEmpty(descriptor.title), "Descriptor {0} has no title", descriptor.id);
-                Assert.IsFalse(string.IsNullOrEmpty(descriptor.description), "Descriptor {0} has no description", descriptor.id);
-                Assert.IsFalse(string.IsNullOrEmpty(descriptor.solution), "Descriptor {0} has no solution", descriptor.id);
+                Assert.IsFalse(string.IsNullOrEmpty(descriptor.Id), "Descriptor has no id (title: {0})", descriptor.Title);
+                Assert.IsTrue(regExp.IsMatch(descriptor.Id), "Descriptor id format is not valid: " + descriptor.Id);
+                Assert.IsFalse(string.IsNullOrEmpty(descriptor.Title), "Descriptor {0} has no title", descriptor.Id);
+                Assert.IsFalse(string.IsNullOrEmpty(descriptor.Description), "Descriptor {0} has no description", descriptor.Id);
+                Assert.IsFalse(string.IsNullOrEmpty(descriptor.Solution), "Descriptor {0} has no solution", descriptor.Id);
 
-                Assert.NotNull(descriptor.areas);
+                Assert.NotNull(descriptor.Areas);
             }
         }
 
@@ -242,15 +242,15 @@ namespace Unity.ProjectAuditor.EditorTests
             foreach (var id in IDs)
             {
                 var descriptor = id.GetDescriptor();
-                Assert.IsFalse(descriptor.title.EndsWith("."), "Descriptor {0} string must not end with a full stop. String: {1}", descriptor.id, descriptor.title);
-                Assert.IsTrue(descriptor.description.EndsWith("."), "Descriptor {0} string must end with a full stop. String: {1}", descriptor.id, descriptor.description);
-                Assert.IsTrue(descriptor.solution.EndsWith("."), "Descriptor {0} string must end with a full stop. String: {1}", descriptor.id, descriptor.solution);
-                Assert.IsFalse(descriptor.messageFormat.EndsWith("."), "Descriptor {0} string must not end with a full stop. String: {1}", descriptor.id, descriptor.messageFormat);
+                Assert.IsFalse(descriptor.Title.EndsWith("."), "Descriptor {0} string must not end with a full stop. String: {1}", descriptor.Id, descriptor.Title);
+                Assert.IsTrue(descriptor.Description.EndsWith("."), "Descriptor {0} string must end with a full stop. String: {1}", descriptor.Id, descriptor.Description);
+                Assert.IsTrue(descriptor.Solution.EndsWith("."), "Descriptor {0} string must end with a full stop. String: {1}", descriptor.Id, descriptor.Solution);
+                Assert.IsFalse(descriptor.MessageFormat.EndsWith("."), "Descriptor {0} string must not end with a full stop. String: {1}", descriptor.Id, descriptor.MessageFormat);
 
-                CheckHtmlTags(descriptor.description);
-                CheckHtmlTags(descriptor.solution);
+                CheckHtmlTags(descriptor.Description);
+                CheckHtmlTags(descriptor.Solution);
 
-                Assert.NotNull(descriptor.areas);
+                Assert.NotNull(descriptor.Areas);
             }
         }
 
@@ -321,8 +321,8 @@ namespace Unity.ProjectAuditor.EditorTests
                 // (We know incompatible Descriptors won't be registered in our instance of ProjectAuditor)
                 if (loadedDescriptor.IsPlatformSupported() && loadedDescriptor.IsVersionCompatible())
                 {
-                    Assert.NotZero(IDs.Count(id => id.AsString() == loadedDescriptor.id),
-                        "Descriptor {0} is not registered", loadedDescriptor.id);
+                    Assert.NotZero(IDs.Count(id => id.AsString() == loadedDescriptor.Id),
+                        "Descriptor {0} is not registered", loadedDescriptor.Id);
                 }
             }
         }
@@ -350,16 +350,16 @@ namespace Unity.ProjectAuditor.EditorTests
                 if (!desc.IsPlatformSupported() || !desc.IsVersionCompatible())
                     continue;
 
-                var type = types.FirstOrDefault(t => t.FullName.Equals(desc.type));
+                var type = types.FirstOrDefault(t => t.FullName.Equals(desc.Type));
 
-                Assert.True((desc.method.Equals("*") || type != null), "Invalid Type : " + desc.type);
+                Assert.True((desc.Method.Equals("*") || type != null), "Invalid Type : " + desc.Type);
 
-                if (skippableMethodNames.Contains(desc.method))
+                if (skippableMethodNames.Contains(desc.Method))
                     continue;
 
                 try
                 {
-                    Assert.True(type.GetMethod(desc.method) != null || type.GetProperty(desc.method) != null, "{0} does not belong to {1}", desc.method, desc.type);
+                    Assert.True(type.GetMethod(desc.Method) != null || type.GetProperty(desc.Method) != null, "{0} does not belong to {1}", desc.Method, desc.Type);
                 }
                 catch (AmbiguousMatchException)
                 {
@@ -377,10 +377,10 @@ namespace Unity.ProjectAuditor.EditorTests
             foreach (var id in IDs)
             {
                 var descriptor = id.GetDescriptor();
-                for (int i = 0; i < descriptor.areas.Length; i++)
+                for (int i = 0; i < descriptor.Areas.Length; i++)
                 {
                     Area area;
-                    Assert.True(Enum.TryParse(descriptor.areas[i], out area), "Invalid area {0} for descriptor {1}", descriptor.areas[i], descriptor.id);
+                    Assert.True(Enum.TryParse(descriptor.Areas[i], out area), "Invalid area {0} for descriptor {1}", descriptor.Areas[i], descriptor.Id);
                 }
             }
         }
@@ -396,10 +396,10 @@ namespace Unity.ProjectAuditor.EditorTests
             {
                 var descriptor = id.GetDescriptor();
 
-                if (string.IsNullOrEmpty(descriptor.documentationUrl))
+                if (string.IsNullOrEmpty(descriptor.DocumentationUrl))
                     continue;
 
-                var documentationUrl = descriptor.documentationUrl;
+                var documentationUrl = descriptor.DocumentationUrl;
                 var request = UnityWebRequest.Get(documentationUrl);
                 yield return request.SendWebRequest();
 

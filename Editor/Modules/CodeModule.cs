@@ -488,9 +488,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         RoslynTextLookup.GetDescription(message.code),
                         RoslynTextLookup.GetRecommendation(message.code));
 
-                    DescriptorLibrary.RegisterDescriptor(descriptor.id, descriptor);
+                    DescriptorLibrary.RegisterDescriptor(descriptor.Id, descriptor);
 
-                    yield return context.Create(IssueCategory.DomainReload, descriptor.id)
+                    yield return context.Create(IssueCategory.DomainReload, descriptor.Id)
                         .WithLocation(relativePath, message.line)
                         .WithLogLevel(CompilerMessageTypeToLogLevel(message.type))
                         .WithCustomProperties(new object[(int)CompilerMessageProperty.Num]

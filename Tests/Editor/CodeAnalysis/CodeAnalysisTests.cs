@@ -245,11 +245,11 @@ class GenericInstantiation
             Assert.NotNull(myIssue);
             var descriptor = myIssue.Id.GetDescriptor();
 
-            Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
+            Assert.AreEqual(Severity.Moderate, descriptor.DefaultSeverity);
             Assert.AreEqual(typeof(DescriptorID), myIssue.Id.GetType());
             Assert.AreEqual("PAC0066", myIssue.Id.ToString());
-            Assert.AreEqual("UnityEngine.Camera", descriptor.type);
-            Assert.AreEqual("allCameras", descriptor.method);
+            Assert.AreEqual("UnityEngine.Camera", descriptor.Type);
+            Assert.AreEqual("allCameras", descriptor.Method);
 
             Assert.AreEqual(m_TestAsset.fileName, myIssue.Filename);
             Assert.AreEqual("'UnityEngine.Camera.allCameras' usage", myIssue.Description);
@@ -378,7 +378,7 @@ class GenericInstantiation
 
             Assert.NotNull(issue);
             var descriptor = issue.Id.GetDescriptor();
-            Assert.AreEqual("System.Linq.*", descriptor.title);
+            Assert.AreEqual("System.Linq.*", descriptor.Title);
         }
 
         [Test]

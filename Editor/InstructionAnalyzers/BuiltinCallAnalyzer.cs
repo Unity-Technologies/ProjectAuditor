@@ -33,21 +33,21 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             }
 
             var methodDescriptors = descriptors.Where(
-                descriptor => !descriptor.method.Equals("*") &&
-                !string.IsNullOrEmpty(descriptor.type) &&
-                module.SupportsDescriptor(descriptor.id));
+                descriptor => !descriptor.Method.Equals("*") &&
+                !string.IsNullOrEmpty(descriptor.Type) &&
+                module.SupportsDescriptor(descriptor.Id));
 
             m_Descriptors = new Dictionary<string, List<Descriptor>>();
             foreach (var d in methodDescriptors)
             {
-                if (!m_Descriptors.ContainsKey(d.method))
+                if (!m_Descriptors.ContainsKey(d.Method))
                 {
-                    m_Descriptors.Add(d.method, new List<Descriptor>());
+                    m_Descriptors.Add(d.Method, new List<Descriptor>());
                 }
-                m_Descriptors[d.method].Add(d);
+                m_Descriptors[d.Method].Add(d);
             }
 
-            m_NamespaceOrClassDescriptors = descriptors.Where(descriptor => descriptor.method.Equals("*")).ToDictionary(d => d.type);
+            m_NamespaceOrClassDescriptors = descriptors.Where(descriptor => descriptor.Method.Equals("*")).ToDictionary(d => d.Type);
         }
 
         public IssueBuilder Analyze(InstructionAnalysisContext context)
@@ -78,24 +78,24 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                     return null;
 
                 Profiler.BeginSample("BuiltinCallAnalyzer.FindDescriptor");
-                descriptor = descriptors.Find(d => MonoCecilHelper.IsOrInheritedFrom(declaringType, d.type));
+                descriptor = descriptors.Find(d => MonoCecilHelper.IsOrInheritedFrom(declaringType, d.Type));
                 Profiler.EndSample();
 
                 if (descriptor == null)
                     return null;
 
                 // by default use descriptor issue description
-                description = string.Format("'{0}' usage", descriptor.title);
+                description = string.Format("'{0}' usage", descriptor.Title);
 
                 var genericInstanceMethod = callee as GenericInstanceMethod;
                 if (genericInstanceMethod != null && genericInstanceMethod.HasGenericArguments)
                 {
                     var genericTypeNames = genericInstanceMethod.GenericArguments.Select(a => a.FullName).ToArray();
-                    description = string.Format("'{0}' usage (with generic argument '{1}')", descriptor.title, string.Join(", ", genericTypeNames));
+                    description = string.Format("'{0}' usage (with generic argument '{1}')", descriptor.Title, string.Join(", ", genericTypeNames));
                 }
             }
 
-            return context.Create(IssueCategory.Code, descriptor.id)
+            return context.Create(IssueCategory.Code, descriptor.Id)
                 .WithDescription(description);
         }
     }

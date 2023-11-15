@@ -26,8 +26,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "In the iOS Player Settings, both Metal and OpenGLES graphics APIs are enabled.",
             "To reduce build size, remove OpenGLES graphics API if the minimum spec target device supports Metal.")
         {
-            documentationUrl = documentationUrl,
-            platforms = new[] { BuildTarget.iOS.ToString() }
+            DocumentationUrl = documentationUrl,
+            Platforms = new[] { BuildTarget.iOS.ToString() }
         };
 
         static readonly Descriptor k_MetalDescriptor = new Descriptor(
@@ -37,8 +37,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "In the iOS Player Settings, Metal is not enabled.",
             "Enable Metal graphics API for better CPU Performance.")
         {
-            documentationUrl = documentationUrl,
-            platforms = new[] { BuildTarget.iOS.ToString() }
+            DocumentationUrl = documentationUrl,
+            Platforms = new[] { BuildTarget.iOS.ToString() }
         };
 
         static readonly Descriptor k_VulkanDescriptor = new Descriptor(
@@ -48,8 +48,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "In the Android Player Settings, Vulkan graphics API is not enabled.",
             "Enable Vulkan graphics API for better CPU Performance.")
         {
-            documentationUrl = documentationUrl,
-            platforms = new[] { BuildTarget.Android.ToString() }
+            DocumentationUrl = documentationUrl,
+            Platforms = new[] { BuildTarget.Android.ToString() }
         };
 
         public void Initialize(Module module)
@@ -64,18 +64,18 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             if (context.Params.Platform == BuildTarget.iOS)
             {
                 if (IsUsingOpenGLESAndMetal())
-                    yield return context.Create(IssueCategory.ProjectSetting, k_OpenGLESAndMetalDescriptor.id)
+                    yield return context.Create(IssueCategory.ProjectSetting, k_OpenGLESAndMetalDescriptor.Id)
                         .WithLocation("Project/Player");
 
                 if (IsNotUsingMetal())
-                    yield return context.Create(IssueCategory.ProjectSetting, k_MetalDescriptor.id)
+                    yield return context.Create(IssueCategory.ProjectSetting, k_MetalDescriptor.Id)
                         .WithLocation("Project/Player");
             }
 
             if (context.Params.Platform == BuildTarget.Android)
             {
                 if (IsNotUsingVulkan())
-                    yield return context.Create(IssueCategory.ProjectSetting, k_VulkanDescriptor.id)
+                    yield return context.Create(IssueCategory.ProjectSetting, k_VulkanDescriptor.Id)
                         .WithLocation("Project/Player");
             }
         }

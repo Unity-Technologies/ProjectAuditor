@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -126,6 +127,14 @@ namespace Unity.ProjectAuditor.EditorTests
                     if (property is JObject issue)
                     {
                         AssertRequiredPropertyIsValid(issue, "category");
+
+                        var issueCategory = (IssueCategory)Enum.Parse(typeof(IssueCategory), issue["category"].Value<string>());
+                        if (issueCategory.Equals(IssueCategory.Code) ||
+                            issueCategory.Equals(IssueCategory.ProjectSetting) ||
+                            issueCategory.Equals(IssueCategory.AssetDiagnostic))
+                        {
+                            AssertRequiredProperty(issue, "diagnosticID");
+                        }
                         AssertRequiredPropertyIsValid(issue, "description");
                         AssertOptionalArrayIsValid(issue, "properties");
 
