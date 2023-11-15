@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -11,13 +11,22 @@ namespace Unity.ProjectAuditor.Editor.Analyzer
 {
     public class AnalyzerTool
     {
-        private Util.IdProvider<string> m_SerializedFileIdProvider = new ();
-        private Util.ObjectIdProvider m_ObjectIdProvider = new ();
+        private Util.IdProvider<string> m_SerializedFileIdProvider = new Util.IdProvider<string>();
+        private Util.ObjectIdProvider m_ObjectIdProvider = new Util.ObjectIdProvider();
 
-        private Regex m_RegexSceneFile = new(@"BuildPlayer-([^\.]+)(?:\.sharedAssets)?");
+        private Regex m_RegexSceneFile = new Regex(@"BuildPlayer-([^\.]+)(?:\.sharedAssets)?");
 
         // Used to map PPtr fileId to its corresponding serialized file id in the database.
-        Dictionary<int, int> m_LocalToDbFileId = new ();
+        Dictionary<int, int> m_LocalToDbFileId = new Dictionary<int, int>();
+
+        private string GetRelativePath(string folder, string path)
+        {
+            var stdFolder = folder.Replace("\\", "/");
+            if (!stdFolder.EndsWith("/"))
+                stdFolder += "/";
+            var newPath = path.Replace("\\", "/").Replace(stdFolder, "");
+            return newPath;
+        }
 
         public List<SerializedObjects.Shader> Analyze(string path, string searchPattern)
         {
@@ -32,7 +41,7 @@ namespace Unity.ProjectAuditor.Editor.Analyzer
                 {
                     using (var archive = UnityFileSystem.MountArchive(file, "archive:" + Path.DirectorySeparatorChar))
                     {
-                        var assetBundleName = Path.GetRelativePath(path, file);
+                        var assetBundleName = GetRelativePath(path, file);
 
                         foreach (var node in archive.Nodes)
                         {
@@ -47,16 +56,16 @@ namespace Unity.ProjectAuditor.Editor.Analyzer
                 {
                     // It wasn't an AssetBundle, try to open the file as a SerializedFile.
 
-                    var serializedFileName = Path.GetRelativePath(path, file);
+                    var serializedFileName = GetRelativePath(path, file);
 
                     try
                     {
                         AnalyzeSerializedFile(serializedFileName, path, shaders);
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {}
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {}
 
                 ++i;
@@ -67,7 +76,7 @@ namespace Unity.ProjectAuditor.Editor.Analyzer
 
         private void AnalyzeSerializedFile(string filename, string folder, List<SerializedObjects.Shader> shaders)
         {
-            var fullPath = Path.Join(folder, filename);
+            var fullPath = Path.Combine(folder, filename);
             using var sf = UnityFileSystem.OpenSerializedFile(fullPath);
             using var reader = new UnityFileReader(fullPath, 64 * 1024 * 1024);
             //using var pptrReader = new PPtrAndCrcProcessor(sf, reader, Path.GetDirectoryName(fullPath), AddReference);

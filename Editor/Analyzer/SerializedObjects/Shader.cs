@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor.Analyzer.SerializedObjects
             // Starting in some Unity 2021 version, keyword names are stored in m_KeywordNames.
             if (parsedForm.HasChild("m_KeywordNames"))
             {
-                keywordNames = new();
+                keywordNames = new Dictionary<int, string>();
 
                 int i = 0;
                 foreach (var keyword in parsedForm["m_KeywordNames"])
@@ -33,7 +33,7 @@ namespace Unity.ProjectAuditor.Editor.Analyzer.SerializedObjects
             }
 
             var subShadersReader = parsedForm["m_SubShaders"];
-            m_SubShaders = new (subShadersReader.GetArraySize());
+            m_SubShaders = new List<SubShader>(subShadersReader.GetArraySize());
 
             foreach (var subShader in subShadersReader)
             {
@@ -95,11 +95,11 @@ namespace Unity.ProjectAuditor.Editor.Analyzer.SerializedObjects
 
                 public Pass(KeywordSet keywordSet, RandomAccessReader reader, Dictionary<int, string> keywordNames)
                 {
-                    m_Programs = new();
+                    m_Programs = new Dictionary<string, IReadOnlyList<SubProgram>>();
 
                     if (keywordNames == null)
                     {
-                        keywordNames = new();
+                        keywordNames = new Dictionary<int, string>();
 
                         var nameIndices = reader["m_NameIndices"];
 
@@ -241,8 +241,8 @@ namespace Unity.ProjectAuditor.Editor.Analyzer.SerializedObjects
         {
             public IReadOnlyList<string> Keywords => m_Keywords;
 
-            private List<string> m_Keywords = new();
-            private Dictionary<string, int> m_KeywordToIndex = new();
+            private List<string> m_Keywords = new List<string>();
+            private Dictionary<string, int> m_KeywordToIndex = new Dictionary<string, int>();
 
             public int GetKeywordIndex(string name)
             {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -18,15 +18,15 @@ namespace Unity.ProjectAuditor.Editor.Analyzer
         private long m_ObjectId;
         private uint m_Crc32;
         private string m_Folder;
-        private StringBuilder m_StringBuilder = new();
+        private StringBuilder m_StringBuilder = new StringBuilder();
         private byte[] m_pptrBytes = new byte[4];
 
         private CallbackDelegate m_Callback;
 
-        private Dictionary<string, UnityFileReader> m_resourceReaders = new();
+        private Dictionary<string, UnityFileReader> m_resourceReaders = new Dictionary<string, UnityFileReader>();
 
         public PPtrAndCrcProcessor(SerializedFile serializedFile, UnityFileReader reader, string folder,
-            CallbackDelegate callback)
+                                   CallbackDelegate callback)
         {
             m_SerializedFile = serializedFile;
             m_Reader = reader;
@@ -54,7 +54,7 @@ namespace Unity.ProjectAuditor.Editor.Analyzer
 
             if (!m_resourceReaders.TryGetValue(filename, out var reader))
             {
-                reader = new UnityFileReader(Path.Join(m_Folder, filename), 4 * 1024 * 1024);
+                reader = new UnityFileReader(Path.Combine(m_Folder, filename), 4 * 1024 * 1024);
                 m_resourceReaders[filename] = reader;
             }
 
@@ -205,7 +205,6 @@ namespace Unity.ProjectAuditor.Editor.Analyzer
                 {
                     if (!isManagedReferenceRegistry)
                     {
-
                         var size = m_StringBuilder.Length;
                         m_StringBuilder.Append('[');
                         m_StringBuilder.Append(i);

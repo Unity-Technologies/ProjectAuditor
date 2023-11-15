@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace usingUnity.ProjectAuditor.Editor.UnityFileSystemApi
 {
@@ -26,6 +26,7 @@ namespace usingUnity.ProjectAuditor.Editor.UnityFileSystemApi
 
             return newPosition;
         }
+
         public long GetSize()
         {
             // This could be a property but as it may throw an exception, it's probably better as a method.

@@ -14,7 +14,7 @@ namespace Unity.ProjectAuditor.Editor.Analyzer.Util
 
             if (bidirectional)
             {
-                m_IdToKey = new();
+                m_IdToKey = new Dictionary<int, Key>();
             }
         }
 
