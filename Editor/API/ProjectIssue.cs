@@ -140,6 +140,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Location of the item or diagnostic (read-only).
         /// </summary>
+        [JsonProperty("location")]
         public Location Location
         {
             get => m_Location;
@@ -177,7 +178,7 @@ namespace Unity.ProjectAuditor.Editor
             internal set => m_Severity = value;
         }
 
-        [JsonProperty("Severity")]
+        [JsonProperty("severity")]
         internal string SeverityString
         {
             get => IsDiagnostic() ? m_Severity.ToString() : null;
