@@ -223,11 +223,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 assemblyInfos = assemblyInfos.Where(a => analysisParams.AssemblyNames.Contains(a.name)).ToArray();
             }
 
-#if !UNITY_2019_1_OR_NEWER
-            // on old versions of Unity, some assemblies cannot be found by the Assembly Resolver (specifically mscorlib and netstandard)
-            assemblyDirectories.AddRange(AssemblyCompilation.GetAssemblyReferencePaths(analysisParams.CompilationMode));
-#endif
-
             if (analysisParams.CompilationMode == CompilationMode.Editor ||
                 analysisParams.CompilationMode == CompilationMode.EditorPlayMode)
             {
@@ -298,9 +293,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             AnalyzeAssemblies(localAssemblyInfos, analysisParams.AssemblyNames, assemblyDirectories, onCallFound, onIssueFoundInternal, null, progress);
 
             var enableBackgroundAnalysis = UserPreferences.AnalyzeInBackground;
-#if !UNITY_2019_3_OR_NEWER
-            enableBackgroundAnalysis = false;
-#endif
+
             // second phase: analyze all remaining assemblies, in a separate thread if enableBackgroundAnalysis is enabled
             if (enableBackgroundAnalysis)
             {

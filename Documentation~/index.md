@@ -55,7 +55,7 @@ For information on a specific view, check the corresponding page.
 * [Shaders](Shaders.md)
 * [Shader Variants](Variants.md)
 
-### Build Information (Requires Unity 2019.4 or newer)
+### Build Information
 * [Build Steps](BuildSteps.md)
 * [Build Size](BuildSize.md)
 
