@@ -289,6 +289,7 @@ namespace Unity.ProjectAuditor.Editor
                 JsonConvert.SerializeObject(this, UserPreferences.PrettifyJsonOutput ? Formatting.Indented : Formatting.None,
                     new JsonSerializerSettings
                     {
+                        Converters = new List<JsonConverter> { new DescriptorJsonConverter() },
                         NullValueHandling = NullValueHandling.Ignore
                     }));
         }
