@@ -10,14 +10,13 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
     public enum Severity
     {
         /// <summary>
-        /// Default severity
+        /// Default Severity
         /// </summary>
         Default = 0,
 
         /// <summary>
-        /// An error that will prevent a successful build
+        /// An error that will prevent a successful build - for example, a code compile error encountered during code analysis
         /// </summary>
-        /// <description>For example, a code compile error encountered during code analysis</description>
         Error = 1,
 
         /// <summary>

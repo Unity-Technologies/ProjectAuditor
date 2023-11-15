@@ -17,6 +17,3 @@ apiRules:
   - exclude:
       uidRegex: \.LoadDatabase\(
       type: Method
-  - exclude:
-      uidRegex: Rule$
-      type: Type

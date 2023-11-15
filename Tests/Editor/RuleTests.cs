@@ -48,11 +48,11 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.AreEqual(0, m_SerializedRules.NumRules);
 
-            // add rule with a filter.
+            // add rule with a Filter.
             m_SerializedRules.AddRule(new Rule
             {
-                id = "someid",
-                severity = Severity.None
+                Id = "ABC0001",
+                Severity = Severity.None
             });
 
             Assert.AreEqual(1, m_SerializedRules.NumRules);
@@ -83,12 +83,12 @@ namespace Unity.ProjectAuditor.EditorTests
             // expect default action specified in descriptor
             Assert.AreEqual(Severity.Default, action);
 
-            // add rule with a filter.
+            // add rule with a Filter.
             m_Rules.AddRule(new Rule
             {
-                id = issue.id,
-                severity = Severity.None,
-                filter = callingMethod
+                Id = issue.id,
+                Severity = Severity.None,
+                Filter = callingMethod
             });
 
             Assert.AreEqual(1, m_Rules.NumRules);
@@ -142,12 +142,12 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var filter = "dummy";
 
-            // add rule with a filter.
+            // add rule with a Filter.
             rules.AddRule(new Rule
             {
-                id = firstID,
-                severity = Severity.None,
-                filter = filter
+                Id = firstID,
+                Severity = Severity.None,
+                Filter = filter
             });
 
             // search for non-specific rule for this descriptor
@@ -158,11 +158,11 @@ namespace Unity.ProjectAuditor.EditorTests
             rule = rules.GetRule(firstID, filter);
             Assert.IsNotNull(rule);
 
-            // add rule with no filter, which will replace any specific rule
+            // add rule with no Filter, which will replace any specific rule
             rules.AddRule(new Rule
             {
-                id = firstID,
-                severity = Severity.None
+                Id = firstID,
+                Severity = Severity.None
             });
 
             // search for specific rule again
@@ -189,8 +189,8 @@ namespace Unity.ProjectAuditor.EditorTests
 
             rules.AddRule(new Rule
             {
-                id = firstID,
-                severity = Severity.None
+                Id = firstID,
+                Severity = Severity.None
             });
             Assert.AreEqual(1, rules.NumRules);
 
@@ -213,28 +213,28 @@ namespace Unity.ProjectAuditor.EditorTests
             // ignore all issues corresponding to this descriptor
             m_Rules.AddRule(new Rule
             {
-                id = descriptorId,
-                severity = Severity.None
+                Id = descriptorId,
+                Severity = Severity.None
             });
 
-            // TODO: once override is implemented, the issue's severity should be Severity.None
-            //issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(descriptorId));
+            // TODO: once override is implemented, the issue's Severity should be Severity.None
+            //issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(descriptorId));
 
             Assert.AreEqual(Severity.None, m_Rules.GetAction(descriptorId));
             Assert.AreEqual(Severity.None, m_Rules.GetAction(descriptorId, filter));
 
             m_Rules.ClearRules(descriptorId);
 
-            // ignore only issues corresponding to this descriptor and filter
+            // ignore only issues corresponding to this descriptor and Filter
             m_Rules.AddRule(new Rule
             {
-                id = descriptorId,
-                severity = Severity.None,
-                filter = filter
+                Id = descriptorId,
+                Severity = Severity.None,
+                Filter = filter
             });
 
-            // TODO: once override is implemented, the issue's severity should be Severity.None
-            //issues = Analyze(IssueCategory.ProjectSetting, i => i.id.Equals(descriptorId));
+            // TODO: once override is implemented, the issue's Severity should be Severity.None
+            //issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(descriptorId));
 
             Assert.AreNotEqual(Severity.None, m_Rules.GetAction(descriptorId));
             Assert.AreEqual(Severity.None, m_Rules.GetAction(descriptorId, filter));
@@ -243,23 +243,23 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Rule_CanSerializeAndDeserialize()
         {
-            const string k_id1 = "someid1";
-            const string k_id2 = "someid2";
+            const string k_id1 = "ABC0001";
+            const string k_id2 = "ABC0002";
             const string k_filter = "Project/Quality/Very Low";
 
             m_Rules.ClearAllRules();
 
             m_Rules.AddRule(new Rule
             {
-                id = k_id1,
-                severity = Severity.None
+                Id = k_id1,
+                Severity = Severity.None
             });
 
             m_Rules.AddRule(new Rule
             {
-                id = k_id2,
-                severity = Severity.Critical,
-                filter = k_filter
+                Id = k_id2,
+                Severity = Severity.Critical,
+                Filter = k_filter
             });
 
             Assert.AreEqual(2, m_Rules.NumRules);
@@ -283,14 +283,14 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(2, m_Rules.NumRules);
 
             var rule1 = m_Rules.GetRule(k_id1);
-            Assert.AreEqual(rule1.id, k_id1);
-            Assert.AreEqual(rule1.severity, Severity.None);
-            Assert.AreEqual(rule1.filter, string.Empty);
+            Assert.True(rule1.Id.Equals(k_id1));
+            Assert.AreEqual(rule1.Severity, Severity.None);
+            Assert.AreEqual(rule1.Filter, string.Empty);
 
             var rule2 = m_Rules.GetRule(k_id2, k_filter);
-            Assert.AreEqual(rule2.id, k_id2);
-            Assert.AreEqual(rule2.severity, Severity.Critical);
-            Assert.AreEqual(rule2.filter, k_filter);
+            Assert.True(rule2.Id.Equals(k_id2));
+            Assert.AreEqual(rule2.Severity, Severity.Critical);
+            Assert.AreEqual(rule2.Filter, k_filter);
         }
 
         [Test]

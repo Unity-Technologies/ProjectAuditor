@@ -4,8 +4,13 @@ using UnityEngine;
 namespace Unity.ProjectAuditor.Editor
 {
     /// <summary>
-    /// Project-specific settings
+    /// Project-specific settings.
     /// </summary>
+    /// <remarks>
+    /// The settings in this class include the global <seealso cref="Unity.ProjectAuditor.Editor.DiagnosticParams"/> and a structure containing a list of <seealso cref="Unity.ProjectAuditor.Editor.Diagnostic.Rule"/>s.
+    /// These can be viewed and edited in the Settings > Project Auditor window in the Editor and are saved in ProjectSettings/ProjectAuditorSettings.asset, but
+    /// they are not directly exposed to scripts in the package API.
+    /// </remarks>
 #if UNITY_2020_1_OR_NEWER
     // FilePathAttribute.Location was private before 2020.1, meaning FilePathAttribute didn't work.
     // Everything else works fine if we disable this in old versions of Unity, except that Rules and DiagnosticParams
@@ -17,12 +22,12 @@ namespace Unity.ProjectAuditor.Editor
         // <summary>
         /// The SeverityRules object which defines which issues should be ignored or given increased severity when viewing reports.
         /// </summary>
-        public SeverityRules Rules;
+        [SerializeField] internal SeverityRules Rules;
 
         /// <summary>
         /// The DiagnosticParams object which defines the customizable thresholds for reporting certain diagnostics.
         /// </summary>
-        public DiagnosticParams DiagnosticParams;
+        [SerializeField] internal DiagnosticParams DiagnosticParams;
 
         /// <summary>
         /// Default constructor.

@@ -306,7 +306,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     rule = m_Rules.GetRule(id, issue.GetContext());
                     if (rule == null)
                         rule = m_Rules.GetRule(id); // try to find non-specific rule
-                    if (rule != null && rule.severity == Severity.None)
+                    if (rule != null && rule.Severity == Severity.None)
                         GUI.enabled = false;
                 }
 
@@ -406,7 +406,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
                 if (issue.wasFixed)
                     GUI.enabled = true;
-                else if (rule != null && rule.severity == Severity.None)
+                else if (rule != null && rule.Severity == Severity.None)
                     GUI.enabled = true;
             }
 

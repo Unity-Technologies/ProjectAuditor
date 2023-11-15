@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor
         ///   <para>Development player</para>
         /// </summary>
         /// <remarks>
-        /// Code will be compiled for analysis as it would be when making a development Player build for the specified target platform. Code inside #if DEVELOPMENT_BUILD will be included from this analysis.
+        /// Code will be compiled for analysis as it would be when making a development Player build for the specified target platform. Code inside #if DEVELOPMENT_BUILD will be included in this analysis.
         /// </remarks>
         DevelopmentPlayer,
 

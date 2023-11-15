@@ -3,8 +3,11 @@ using Newtonsoft.Json.Converters;
 
 namespace Unity.ProjectAuditor.Editor
 {
+    // stephenm TODO: Change the summary to the following in API phase 2, when we expose the ability to make custom modules. Right now it doesn't make sense to expose or mention GetOrRegisterCategory()
+    // Options for predefined categories of issues. Note that it is possible to register new categories at editor-time via ProjectAuditor.<seealso cref="ProjectAuditor.GetOrRegisterCategory"/>
+
     /// <summary>
-    /// Options for predefined categories of issues. Note that it is possible to register new categories at editor-time via ProjectAuditor.GetOrRegisterCategory()
+    /// Identifiers for all the categories of issues reported by Project Auditor.
     /// </summary>
     /// <remarks>
     /// As Project Auditor's remit has expanded, so has the definition of what constitutes an issue category.

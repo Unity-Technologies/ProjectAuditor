@@ -6,13 +6,13 @@ using Newtonsoft.Json;
 namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
     /// <summary>
-    /// Descriptor defines the problem and a possible recommendation
+    /// Descriptor defines a potential problem and a recommended course of action.
     /// </summary>
     [Serializable]
     public sealed class Descriptor : IEquatable<Descriptor>
     {
         /// <summary>
-        /// An unique identifier for the diagnostic. IDs must have exactly 3 upper case characters, followed by 4 digits
+        /// An unique identifier for the diagnostic. IDs must have exactly 3 upper case characters, followed by 4 digits.
         /// </summary>
         [JsonRequired]
         public string id;
@@ -24,13 +24,13 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public string title;
 
         /// <summary>
-        /// Message used to describe a specific instance of the diagnostic
+        /// Message used to describe a specific instance of the diagnostic.
         /// </summary>
         [JsonIgnore]
         public string messageFormat;
 
         /// <summary>
-        /// Default severity of the diagnostic
+        /// Default Severity of the diagnostic.
         /// </summary>
         [JsonIgnore]
         public Severity defaultSeverity;
@@ -47,25 +47,25 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public string[] areas;
 
         /// <summary>
-        /// Affected platforms. If null, the diagnostic applies to all platforms
+        /// Affected platforms. If null, the diagnostic applies to all platforms.
         /// </summary>
         [JsonProperty]
         public string[] platforms;
 
         /// <summary>
-        /// Description of the diagnostic
+        /// Description of the diagnostic.
         /// </summary>
         [JsonRequired]
         public string description;
 
         /// <summary>
-        /// Recommendation to fix the diagnostic
+        /// Recommendation to fix the diagnostic.
         /// </summary>
         [JsonRequired]
         public string solution;
 
         /// <summary>
-        /// Url to documentation
+        /// URL to documentation.
         /// </summary>
         [JsonIgnore]
         public string documentationUrl;
@@ -78,13 +78,13 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         }
 
         /// <summary>
-        /// Minimum Unity version this diagnostic applies to. If not specified, the diagnostic applies to all versions
+        /// Minimum Unity version this diagnostic applies to. If not specified, the diagnostic applies to all versions.
         /// </summary>
         [JsonIgnore]
         public string minimumVersion;
 
         /// <summary>
-        /// Maximum Unity version this diagnostic applies to. If not specified, the diagnostic applies to all versions
+        /// Maximum Unity version this diagnostic applies to. If not specified, the diagnostic applies to all versions.
         /// </summary>
         [JsonIgnore]
         public string maximumVersion;
@@ -96,19 +96,19 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public Action<ProjectIssue> fixer;
 
         /// <summary>
-        /// Name of the type (namespace and class/struct) of a known code API issue
+        /// Name of the type (namespace and class/struct) of a known code API issue.
         /// </summary>
         [JsonIgnore]
         public string type;
 
         /// <summary>
-        /// Name of the method of a known code API issue
+        /// Name of the method of a known code API issue.
         /// </summary>
         [JsonIgnore]
         public string method;
 
         /// <summary>
-        /// The evaluated value of a know code API issue
+        /// The evaluated value of a know code API issue.
         /// </summary>
         [JsonIgnore]
         public string value;
@@ -116,11 +116,11 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         [JsonConstructor]
         internal Descriptor()
         {
-            // only for json serialization purposes
+            // only for json serialization purposes.
         }
 
         /// <summary>
-        /// Initializes and returns an instance of Descriptor
+        /// Initializes and returns an instance of Descriptor.
         /// </summary>
         /// <param name="id">The Issue ID string.</param>
         /// <param name="title">A short human-readable 'name' for the issue</param>
@@ -142,7 +142,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         }
 
         /// <summary>
-        /// Initializes and returns an instance of Descriptor
+        /// Initializes and returns an instance of Descriptor.
         /// </summary>
         /// <param name="id">The Issue ID string.</param>
         /// <param name="title">A short human-readable 'name' for the issue</param>
@@ -155,7 +155,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         }
 
         /// <summary>
-        /// Initializes and returns an instance of Descriptor
+        /// Initializes and returns an instance of Descriptor.
         /// </summary>
         /// <param name="id">The Issue ID string.</param>
         /// <param name="title">A short human-readable 'name' for the issue</param>
@@ -197,8 +197,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             issue.wasFixed = true;
         }
 
-        /// <summary>Returns a hash code for the Descriptor.</summary>
-        /// <description>More specifically, returns the hash code for the Descriptor's Issue ID.</description>
+        /// <summary>Returns the hash code for the Descriptor's Issue ID.</summary>
         /// <returns>The computed hash code.</returns>
         public override int GetHashCode()
         {

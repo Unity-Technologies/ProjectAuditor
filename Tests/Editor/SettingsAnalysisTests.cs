@@ -925,7 +925,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
                 const string urpAssetTitle = "URP: URP Asset is not specified";
                 var issues = Analyze(IssueCategory.ProjectSetting,
-                    i => i.id.GetDescriptor().title.Equals(urpAssetTitle));
+                    i => i.Id.GetDescriptor().title.Equals(urpAssetTitle));
                 var urpIssue = issues.FirstOrDefault();
                 Assert.NotNull(urpIssue);
 
@@ -933,7 +933,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 QualitySettings.renderPipeline = qualityRP;
 
                 issues = Analyze(IssueCategory.ProjectSetting,
-                    i => i.id.GetDescriptor().title.Equals(urpAssetTitle));
+                    i => i.Id.GetDescriptor().title.Equals(urpAssetTitle));
                 urpIssue = issues.FirstOrDefault();
                 Assert.Null(urpIssue);
             }
@@ -956,13 +956,13 @@ namespace Unity.ProjectAuditor.EditorTests
 
                 cameraData.stopNaN = true;
                 var issues = Analyze(IssueCategory.ProjectSetting,
-                    i => i.id.GetDescriptor().title.Equals(stopNaNTitle));
+                    i => i.Id.GetDescriptor().title.Equals(stopNaNTitle));
                 var issuesLength = issues.Length;
                 Assert.IsTrue(issuesLength > 0);
 
                 cameraData.stopNaN = false;
                 issues = Analyze(IssueCategory.ProjectSetting,
-                    i => i.id.GetDescriptor().title.Equals(stopNaNTitle));
+                    i => i.Id.GetDescriptor().title.Equals(stopNaNTitle));
                 var issuesLength2 = issues.Length;
                 Assert.IsTrue(issuesLength - issuesLength2 == 1);
 
@@ -1023,13 +1023,13 @@ namespace Unity.ProjectAuditor.EditorTests
             const string hdrTitle = "URP: HDR is enabled";
             UniversalRenderPipelineAnalyzer.SetHdrSetting(renderPipeline, true);
             var issues = Analyze(IssueCategory.ProjectSetting,
-                i => i.id.GetDescriptor().title.Equals(hdrTitle));
+                i => i.Id.GetDescriptor().title.Equals(hdrTitle));
             Assert.IsTrue(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have enabled HDR.");
 
             UniversalRenderPipelineAnalyzer.SetHdrSetting(renderPipeline, false);
             issues = Analyze(IssueCategory.ProjectSetting,
-                i => i.id.GetDescriptor().title.Equals(hdrTitle));
+                i => i.Id.GetDescriptor().title.Equals(hdrTitle));
             Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have disabled HDR.");
 
@@ -1043,13 +1043,13 @@ namespace Unity.ProjectAuditor.EditorTests
             const string msaaTitle = "URP: MSAA is set to 4x or 8x";
             UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(renderPipeline, 4);
             var issues = Analyze(IssueCategory.ProjectSetting,
-                i => i.id.GetDescriptor().title.Equals(msaaTitle));
+                i => i.Id.GetDescriptor().title.Equals(msaaTitle));
             Assert.IsTrue(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have MSAA set to 4x.");
 
             UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(renderPipeline, 2);
             issues = Analyze(IssueCategory.ProjectSetting,
-                i => i.id.GetDescriptor().title.Equals(msaaTitle));
+                i => i.Id.GetDescriptor().title.Equals(msaaTitle));
             Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have MSAA set to 2x.");
 

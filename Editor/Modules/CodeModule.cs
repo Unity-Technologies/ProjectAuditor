@@ -267,7 +267,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var d in diagnostics)
                 {
-                    // bump severity if issue is found in a hot-path
+                    // bump Severity if issue is found in a hot-path
                     if (!d.IsMajorOrCritical() && d.dependencies != null && d.dependencies.perfCriticalContext)
                     {
                         switch (d.severity)

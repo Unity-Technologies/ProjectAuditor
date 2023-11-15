@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor
     public class AnalysisParams
     {
         /// <summary>
-        /// Issue Categories to include in the audit. If null, all categories will be included.
+        /// Issue Categories to include in the audit. If null, the analysis will include all categories except for those relating to assets.
         /// </summary>
         [SerializeField]
         public IssueCategory[] Categories;
@@ -75,16 +75,15 @@ namespace Unity.ProjectAuditor.Editor
         public Action OnModuleCompleted;
 
         /// <summary>
-        /// The SeverityRules object which defines which issues should be ignored or given increased severity.
-        /// By default, this makes a copy of ProjectAuditorSettings.<see cref="ProjectAuditorSettings.Rules"/>.
-        /// </summary>
-        public SeverityRules Rules;
-
-        /// <summary>
         /// The DiagnosticParams object which defines the customizable thresholds for reporting certain diagnostics.
         /// By default, this makes a copy of ProjectAuditorSettings.<see cref="ProjectAuditorSettings.DiagnosticParams"/>.
         /// </summary>
         public DiagnosticParams DiagnosticParams;
+
+        // AnalysisParams copy of the global rules. Can be added to with WithAdditionalDiagnosticRules but doesn't need
+        // to be exposed to the API.
+        [JsonProperty("Rules")]
+        internal SeverityRules Rules;
 
         [JsonIgnore]
         [NonSerialized]

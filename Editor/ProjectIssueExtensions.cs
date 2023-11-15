@@ -6,6 +6,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor
 {
+    // Extension methods for ProjectIssues which don't form part of the API: Used in UI, Tests, and HTML/CSV exporters
     internal static class ProjectIssueExtensions
     {
         internal const string k_NotAvailable = "N/A";

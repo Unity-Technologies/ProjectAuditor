@@ -76,7 +76,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             var renderPipeline = GraphicsSettings.currentRenderPipeline;
             if (renderPipeline == null || !(renderPipeline is UniversalRenderPipelineAsset))
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_URPAssetDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_URPAssetDescriptor.Id)
                     .WithLocation("Project/Graphics");
             }
 
@@ -92,7 +92,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             {
                 if (cameraData.stopNaN)
                     yield return context.Create(IssueCategory.ProjectSetting,
-                        k_CameraStopNanDescriptor.id);
+                        k_CameraStopNanDescriptor.Id);
             }
 #else
             yield break;
@@ -120,13 +120,13 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             if (k_HdrSettingDescriptor.IsApplicable(context.Params) && GetHdrSetting(renderPipeline))
             {
                 yield return RenderPipelineUtils.CreateAssetSettingIssue(context, qualityLevel, renderPipeline.name,
-                    k_HdrSettingDescriptor.id);
+                    k_HdrSettingDescriptor.Id);
             }
 
             if (k_MsaaSampleCountSettingDescriptor.IsApplicable(context.Params) && GetMsaaSampleCountSetting(renderPipeline) >= 4)
             {
                 yield return RenderPipelineUtils.CreateAssetSettingIssue(context, qualityLevel, renderPipeline.name,
-                    k_MsaaSampleCountSettingDescriptor.id);
+                    k_MsaaSampleCountSettingDescriptor.Id);
             }
 #else
             yield break;

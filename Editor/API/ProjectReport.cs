@@ -7,50 +7,102 @@ using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEngine;
 using Newtonsoft.Json;
-using UnityEngine.Serialization;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    // stephenm TODO: This whole class needs proper documentation comments
+    /// <summary>
+    /// Contains information about the session in which a <seealso cref="ProjectReport"/> was created.
+    /// </summary>
     [Serializable]
     public class SessionInfo : AnalysisParams
     {
-        // for serialization purposes only
+        /// <summary>
+        /// Default Constructor. For serialization purposes only.
+        /// </summary>
         public SessionInfo() : base(false) {}
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="serializedParams">AnalysisParams object which was passed to ProjectAuditor to create the ProjectReport</param>
         public SessionInfo(AnalysisParams serializedParams)
             : base(serializedParams)
         {}
 
+        /// <summary>
+        /// The version number of the Project Auditor package which was used.
+        /// </summary>
         public string ProjectAuditorVersion;
+
+        /// <summary>
+        /// The version of Unity which was used.
+        /// </summary>
         public string UnityVersion;
 
+        /// <summary>
+        /// The Company Name string in the project's Project Settings.
+        /// </summary>
         public string CompanyName;
+
+        /// <summary>
+        /// The `Application.cloudProjectId` identifier for the project.
+        /// </summary>
         public string ProjectId;
+
+        /// <summary>
+        /// The Product Name string in the project's Project Settings.
+        /// </summary>
         public string ProjectName;
+
+        /// <summary>
+        /// The Product Version string in the project's Project Settings.
+        /// </summary>
         public string ProjectRevision;
 
+        /// <summary>
+        /// The date and time at which the ProjectReport was created.
+        /// </summary>
         public string DateTime;
+
+        /// <summary>
+        /// The `SystemInfo.deviceName` identifier for the device on which the Unity Editor was running.
+        /// </summary>
         public string HostName;
+
+        /// <summary>
+        /// The `SystemInfo.operatingSystem` identifier for the operating system on which the Unity Editor was running.
+        /// </summary>
         public string HostPlatform;
 
+        /// <summary>
+        /// True if the "Use Roslyn Analyzers" checkbox was ticked in Preferences > Project Auditor.
+        /// </summary>
         public bool UseRoslynAnalyzers;
     }
 
     /// <summary>
-    /// ProjectReport contains a list of all issues found by ProjectAuditor
+    /// ProjectReport contains a list of all issues found by ProjectAuditor.
     /// </summary>
     [Serializable]
     public sealed class ProjectReport
     {
         const string k_CurrentVersion = "0.2";
 
-        [JsonProperty("version")]
-        [SerializeField]
-        public string Version = k_CurrentVersion;
+        [JsonIgnore] [SerializeField]
+        string m_Version = k_CurrentVersion;
 
-        // stephenm TODO: ModuleInfo serializes to JSON but isn't accessible in any meaningful way if a script just has a ProjectReport object it wants to query. Figure out some API for this?
-        // stephenm TODO: Keeping this internal for now. Exposing this means exposing IssueLayout, which means exposing PropertyDefinition, which to be useful means exposing every enum that can
+        /// <summary>
+        /// File format version of the ProjectReport (read-only).
+        /// </summary>
+        [JsonProperty("version")]
+        public string Version
+        {
+            get => m_Version;
+            internal set => m_Version = value;
+        }
+
+        // stephenm TODO: ModuleInfo serializes to JSON but isn't accessible in any meaningful way if a script just has a ProjectReport object it wants to query. Figure out some API for this? Phase 2.
+        // Keeping this internal for now. Exposing this means exposing IssueLayout, which means exposing PropertyDefinition, which to be useful means exposing every enum that can
         // be passed to PropertyTypeUtil.FromCustom() (basically one per view). I'd love to find a more elegant way to do this.
         [Serializable]
         class ModuleInfo
@@ -66,21 +118,19 @@ namespace Unity.ProjectAuditor.Editor
             public string endTime;
         }
 
-        // stephenm TODO: Check the serialization here. Changed this from private SessionInfo m_SessionInfo with a property but I don't see why this shouldn't work?
-        [JsonProperty("sessionInfo")]
-        [SerializeField]
+        /// <summary>
+        /// Contains information about the session in which this ProjectReport was created.
+        /// </summary>
+        [JsonProperty("sessionInfo")] [SerializeField]
         public SessionInfo SessionInfo;
 
-        [JsonProperty("moduleMetadata")]
-        [SerializeField]
+        [JsonProperty("moduleMetadata")] [SerializeField]
         List<ModuleInfo> m_ModuleInfos = new List<ModuleInfo>();
 
-        // stephenm TODO: Should we be able to access the DescriptorLibrary here? It serialises to JSON, but I'm leaning towards "no".
         [SerializeField]
         DescriptorLibrary m_DescriptorLibrary = new DescriptorLibrary();
 
-        [JsonIgnore]
-        [SerializeField]
+        [JsonIgnore] [SerializeField]
         List<ProjectIssue> m_Issues = new List<ProjectIssue>();
 
         [JsonProperty("issues")]
@@ -110,11 +160,12 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        // stephenm TODO: comment
+        /// <summary>
+        /// The total number of ProjectIssues included in this report.
+        /// </summary>
         [JsonIgnore]
         public int NumTotalIssues => m_Issues.Count;
 
-        // stephenm TODO: comment
         // for serialization purposes only
         internal ProjectReport()
         {}
@@ -140,13 +191,20 @@ namespace Unity.ProjectAuditor.Editor
             };
         }
 
-        // stephenm TODO: comment
+        /// <summary>
+        /// Checks whether the ProjectReport includes analysis for a given IssueCategory.
+        /// </summary>
+        /// <param name="category">The IssuesCategory to check</param>
+        /// <returns>True if ProjectAuditor ran one or more Modules that reports issues of the specified IssueCategory. Otherwise, returns false.</returns>
         public bool HasCategory(IssueCategory category)
         {
             return category == IssueCategory.Metadata || m_ModuleInfos.Any(m => m.categories.Contains(category));
         }
 
-        // stephenm TODO: comment
+        /// <summary>
+        /// Gets a read-only collection of all of the ProjectIssues included in the report.
+        /// </summary>
+        /// <returns>All the issues in the report</returns>
         public IReadOnlyCollection<ProjectIssue> GetAllIssues()
         {
             s_Mutex.WaitOne();
@@ -156,7 +214,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Get total number of issues for a specific IssueCategory
+        /// Get total number of issues for a specific IssueCategory.
         /// </summary>
         /// <param name="category"> Desired IssueCategory</param>
         /// <returns> Number of project issues</returns>
@@ -169,7 +227,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// find all issues for a specific IssueCategory
+        /// find all issues for a specific IssueCategory.
         /// </summary>
         /// <param name="category"> Desired IssueCategory</param>
         /// <returns> Array of project issues</returns>
@@ -182,11 +240,11 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Find all diagnostics that match a specific ID
+        /// Find all diagnostics that match a specific ID.
         /// </summary>
-        /// <param name="id"> Desired diagnostic ID</param>
+        /// <param name="id"> Desired Descriptor ID</param>
         /// <returns> Array of project issues</returns>
-        public IReadOnlyCollection<ProjectIssue> FindByDiagnosticID(string id)
+        public IReadOnlyCollection<ProjectIssue> FindByDescriptorID(string id)
         {
             s_Mutex.WaitOne();
             var result = m_Issues.Where(i => i.id.IsValid() && i.id.Equals(id)).ToArray();
@@ -194,7 +252,10 @@ namespace Unity.ProjectAuditor.Editor
             return result;
         }
 
-        // stephenm TODO: comment
+        /// <summary>
+        /// Clears all issues that match the specified IssueCategory from the report.
+        /// </summary>
+        /// <param name="category">The IssueCategory of the issues to remove.</param>
         public void ClearIssues(IssueCategory category)
         {
             s_Mutex.WaitOne();
@@ -209,13 +270,19 @@ namespace Unity.ProjectAuditor.Editor
             s_Mutex.ReleaseMutex();
         }
 
-        // stephenm TODO: comment
+        /// <summary>
+        /// Check whether all issues in the report are valid.
+        /// </summary>
+        /// <returns>True is none of the issues in the report have a null description string. Otherwise returns false.</returns>
         public bool IsValid()
         {
             return m_Issues.All(i => i.IsValid());
         }
 
-        // stephenm TODO: comment
+        /// <summary>
+        /// Save the ProjectReport as a JSON file.
+        /// </summary>
+        /// <param name="path">The file path at which to save the file</param>
         public void Save(string path)
         {
             File.WriteAllText(path,
@@ -226,7 +293,11 @@ namespace Unity.ProjectAuditor.Editor
                     }));
         }
 
-        // stephenm TODO: comment
+        /// <summary>
+        /// Load a ProjectReport from a JSON file at the specified path.
+        /// </summary>
+        /// <param name="path">File path of the report to load</param>
+        /// <returns>A loaded ProjectReport object</returns>
         public static ProjectReport Load(string path)
         {
             return JsonConvert.DeserializeObject<ProjectReport>(File.ReadAllText(path), new JsonSerializerSettings

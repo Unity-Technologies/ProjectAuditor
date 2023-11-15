@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.Core
             DescriptorLibrary.RegisterDescriptor(descriptor.id, descriptor);
 
             if (!m_Ids.Add(descriptor.id))
-                throw new Exception("Duplicate descriptor with id: " + descriptor.id);
+                throw new Exception("Duplicate descriptor with Id: " + descriptor.id);
         }
 
         public bool SupportsDescriptor(DescriptorID id)

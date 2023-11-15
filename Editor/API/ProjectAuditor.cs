@@ -73,7 +73,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Runs all Modules that are both supported and enabled, using default parameters.
+        /// Performs static analysis of the project, using default parameters.
         /// </summary>
         /// <param name="progress"> Progress bar, if applicable </param>
         /// <returns> Generated report </returns>
@@ -83,7 +83,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Runs all Modules that are both supported and enabled.
+        /// Performs static analysis of the project, using the supplied analysis parameters.
         /// </summary>
         /// <param name="analysisParams"> Parameters to control the audit process </param>
         /// <param name="progress"> Progress bar, if applicable </param>
@@ -102,7 +102,8 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Runs all Modules that are both supported and enabled.
+        /// Performs asynchronous static analysis of the project, using the supplied analysis parameters.
+        /// Provide a callback to the `OnCompleted` Action in analysisParams to obtain the <seealso cref="ProjectReport"/> when analysis is completed.
         /// </summary>
         /// <param name="analysisParams"> Parameters to control the audit process </param>
         /// <param name="progress"> Progress bar, if applicable </param>
@@ -226,8 +227,17 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        // stephenm TODO: Comment. This is explicitly called out in the IssueCategory documentation as being a user-facing way to extend the number of categories
-        public static IssueCategory GetOrRegisterCategory(string name)
+        /// <summary>
+        /// Registers an IssueCategory by name, and returns its value.
+        /// </summary>
+        /// <remarks>
+        /// It's possible to extend Project Auditor's analysis capabilities without modifying the package, by adding new custom Modules and Analyzers to your project code.
+        /// Custom analyzers may wish to report entirely new issue categories. This method is how those new categories are declared for use.
+        /// </remarks>
+        /// <param name="report">A custom category name.</param>
+        /// <returns>A value representing the custom category.</returns>
+        // stephenm TODO: Make this public in API phase 2, and see the TODO in IssueCategory as well.
+        internal static IssueCategory GetOrRegisterCategory(string name)
         {
             if (!s_CustomCategories.ContainsKey(name))
                 s_CustomCategories.Add(name, IssueCategory.FirstCustomCategory + s_CustomCategories.Count);
@@ -301,7 +311,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         // Only used for testing
-        internal DescriptorID[] GetDiagnosticIDs()
+        internal DescriptorID[] GetDescriptorIDs()
         {
             return m_Modules.SelectMany(m => m.SupportedDescriptorIds).ToArray();
         }

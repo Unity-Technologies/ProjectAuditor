@@ -227,7 +227,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         tooltip = "Error";
                     return EditorGUIUtility.TrIconContent(k_ErrorIconName, tooltip);
 
-                // severity icons
+                // Severity icons
                 case IconType.Critical:
                     if (string.IsNullOrEmpty(tooltip))
                         tooltip = "Critical";

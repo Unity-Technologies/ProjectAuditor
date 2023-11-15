@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.Core
 
             var rule = Params.Rules.GetRule(descriptor.id);
             if (rule != null)
-                return rule.severity != Severity.None;
+                return rule.Severity != Severity.None;
 
             return descriptor.isEnabledByDefault;
         }

@@ -48,20 +48,20 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             m_AdditionalRules.Add(new Rule
             {
-                id = TextureUtilizationAnalyzer.k_TextureSolidColorDescriptor.id,
-                severity = Severity.Moderate
+                Id = TextureUtilizationAnalyzer.k_TextureSolidColorDescriptor.id,
+                Severity = Severity.Moderate
             });
 
             m_AdditionalRules.Add(new Rule
             {
-                id = TextureUtilizationAnalyzer.k_TextureSolidColorNoFixerDescriptor.id,
-                severity = Severity.Moderate
+                Id = TextureUtilizationAnalyzer.k_TextureSolidColorNoFixerDescriptor.id,
+                Severity = Severity.Moderate
             });
 
             m_AdditionalRules.Add(new Rule
             {
-                id = TextureUtilizationAnalyzer.k_TextureAtlasEmptyDescriptor.id,
-                severity = Severity.Moderate
+                Id = TextureUtilizationAnalyzer.k_TextureAtlasEmptyDescriptor.id,
+                Severity = Severity.Moderate
             });
 
             var texture = new Texture2D(k_Resolution, k_Resolution);

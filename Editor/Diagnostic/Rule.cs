@@ -1,60 +1,52 @@
 using System;
-using UnityEngine;
+using Newtonsoft.Json;
+using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
-    // stephenm TODO: Comment
+    /// <summary>
+    /// Represents a rule which modifies the <seealso cref="Diagnostic.Severity"/> of a Diagnostic <seealso cref="ProjectIssue"/>
+    /// or all of the ProjectIssues that share a <seealso cref="Descriptor"/>.
+    /// </summary>
     [Serializable]
-    public class Rule : IEquatable<Rule>
+    public class Rule
     {
-        // stephenm TODO: Comments for these
-        public Severity severity;
-        public string filter;
-        public string id;
+        /// <summary>
+        /// The Severity level to apply to the issue(s) represented by this Rule
+        /// </summary>
+        [JsonProperty("severity")]
+        public Severity Severity;
 
-        // stephenm TODO: Comment
-        public bool Equals(Rule other)
+        /// <summary>
+        /// An optional location filter representing a ProjectIssue's location.
+        /// If specified, this Rule applies to a single ProjectIssue. If the string is null or empty, this Rule applies to every ProjectIssue matching the Id.
+        /// </summary>
+        [JsonProperty("filter")]
+        public string Filter;
+
+        /// <summary>
+        /// The Descriptor ID
+        /// </summary>
+        [JsonIgnore]
+        public DescriptorID Id;
+
+        [JsonProperty("id")]
+        private string idString
         {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            if (other.GetType() != GetType()) return false;
-            return id == other.id && filter == other.filter && severity == other.severity;
+            get => Id.AsString();
+            set => Id = value;
         }
 
-        // stephenm TODO: Comment
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as Rule);
-        }
-
-        // stephenm TODO: Comment
-        public static bool operator==(Rule a, Rule b)
-        {
-            if (ReferenceEquals(a, null))
-            {
-                if (ReferenceEquals(b, null))
-                    return true;
-                return false;
-            }
-
-            return a.Equals(b);
-        }
-
-        // stephenm TODO: Comment
-        public static bool operator!=(Rule a, Rule b)
-        {
-            return !(a == b);
-        }
-
-        // stephenm TODO: Comment
+        /// <summary>Get the hashed integer representation of the Rule.</summary>
+        /// <returns>The computed hash code.</returns>
         public override int GetHashCode()
         {
             unchecked
             {
                 var hash = 17;
-                hash = hash * 23 + id.GetHashCode();
-                hash = hash * 23 + filter.GetHashCode();
-                hash = hash * 23 + severity.GetHashCode();
+                hash = hash * 23 + Id.GetHashCode();
+                hash = hash * 23 + Filter.GetHashCode();
+                hash = hash * 23 + Severity.GetHashCode();
                 return hash;
             }
         }
