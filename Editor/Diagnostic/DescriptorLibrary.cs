@@ -54,7 +54,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             // edge case that it doesn't really seem worth spending time on.
             if (m_SerializedDescriptors != null)
             {
-                s_Descriptors = m_SerializedDescriptors.ToDictionary(m => new DescriptorID(m.id).AsInt(), m => m);
+                s_Descriptors = m_SerializedDescriptors.ToDictionary(m => new DescriptorID(m.Id).AsInt(), m => m);
                 m_SerializedDescriptors = null;
             }
         }

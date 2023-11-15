@@ -11,22 +11,22 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
     {
         public static Area[] GetAreas(this Descriptor descriptor)
         {
-            return descriptor.areas.Select(a => (Area)Enum.Parse(typeof(Area), a)).ToArray();
+            return descriptor.Areas.Select(a => (Area)Enum.Parse(typeof(Area), a)).ToArray();
         }
 
         public static string GetAreasSummary(this Descriptor descriptor)
         {
-            return Formatting.CombineStrings(descriptor.areas);
+            return Formatting.CombineStrings(descriptor.Areas);
         }
 
         public static string GetPlatformsSummary(this Descriptor descriptor)
         {
-            return (descriptor.platforms == null || descriptor.platforms.Length == 0) ? "Any" : Formatting.CombineStrings(descriptor.platforms);
+            return (descriptor.Platforms == null || descriptor.Platforms.Length == 0) ? "Any" : Formatting.CombineStrings(descriptor.Platforms);
         }
 
         public static string GetFullTypeName(this Descriptor descriptor)
         {
-            return descriptor.type + "." + descriptor.method;
+            return descriptor.Type + "." + descriptor.Method;
         }
 
         /// <summary>
@@ -34,9 +34,9 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// </summary>
         public static bool IsPlatformCompatible(this Descriptor descriptor, BuildTarget buildTarget)
         {
-            if (descriptor.platforms == null || descriptor.platforms.Length == 0)
+            if (descriptor.Platforms == null || descriptor.Platforms.Length == 0)
                 return true;
-            return descriptor.platforms.Contains(buildTarget.ToString());
+            return descriptor.Platforms.Contains(buildTarget.ToString());
         }
 
         public static bool IsApplicable(this Descriptor desc, AnalysisParams analysisParams)
@@ -49,7 +49,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// </summary>
         public static bool IsPlatformSupported(this Descriptor desc)
         {
-            var platforms = desc.platforms;
+            var platforms = desc.Platforms;
             if (platforms == null)
                 return true;
             foreach (var platform in platforms)
@@ -68,9 +68,9 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// </summary>
         public static bool IsPlatformSpecific(this Descriptor descriptor, BuildTarget buildTarget)
         {
-            if (descriptor.platforms == null || descriptor.platforms.Length != 1)
+            if (descriptor.Platforms == null || descriptor.Platforms.Length != 1)
                 return false;
-            return descriptor.platforms[0].Equals(buildTarget.ToString());
+            return descriptor.Platforms[0].Equals(buildTarget.ToString());
         }
 
         static Version s_UnityVersion = (Version)null;
@@ -91,33 +91,33 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             var minimumVersion = (Version)null;
             var maximumVersion = (Version)null;
 
-            if (!string.IsNullOrEmpty(desc.minimumVersion))
+            if (!string.IsNullOrEmpty(desc.MinimumVersion))
             {
                 try
                 {
-                    minimumVersion = new Version(desc.minimumVersion);
+                    minimumVersion = new Version(desc.MinimumVersion);
                 }
                 catch (Exception exception)
                 {
-                    Debug.LogErrorFormat("Descriptor ({0}) minimumVersion ({1}) is invalid. Exception: {2}", desc.id, desc.minimumVersion, exception.Message);
+                    Debug.LogErrorFormat("Descriptor ({0}) minimumVersion ({1}) is invalid. Exception: {2}", desc.Id, desc.MinimumVersion, exception.Message);
                 }
             }
 
-            if (!string.IsNullOrEmpty(desc.maximumVersion))
+            if (!string.IsNullOrEmpty(desc.MaximumVersion))
             {
                 try
                 {
-                    maximumVersion = new Version(desc.maximumVersion);
+                    maximumVersion = new Version(desc.MaximumVersion);
                 }
                 catch (Exception exception)
                 {
-                    Debug.LogErrorFormat("Descriptor ({0}) maximumVersion ({1}) is invalid. Exception: {2}", desc.id, desc.maximumVersion, exception.Message);
+                    Debug.LogErrorFormat("Descriptor ({0}) maximumVersion ({1}) is invalid. Exception: {2}", desc.Id, desc.MaximumVersion, exception.Message);
                 }
             }
 
             if (minimumVersion != null && maximumVersion != null && minimumVersion > maximumVersion)
             {
-                Debug.LogErrorFormat("Descriptor ({0}) minimumVersion ({1}) is greater than maximumVersion ({2}).", desc.id, minimumVersion, maximumVersion);
+                Debug.LogErrorFormat("Descriptor ({0}) minimumVersion ({1}) is greater than maximumVersion ({2}).", desc.Id, minimumVersion, maximumVersion);
                 return false;
             }
 

@@ -35,11 +35,11 @@ namespace Unity.ProjectAuditor.Editor.Core
             if (!descriptor.IsApplicable(Params))
                 return false;
 
-            var rule = Params.Rules.GetRule(descriptor.id);
+            var rule = Params.Rules.GetRule(descriptor.Id);
             if (rule != null)
                 return rule.Severity != Severity.None;
 
-            return descriptor.isEnabledByDefault;
+            return descriptor.IsEnabledByDefault;
         }
     }
 }

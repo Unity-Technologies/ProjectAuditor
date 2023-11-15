@@ -56,8 +56,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Update the package via Package Manager."
         )
         {
-            messageFormat = "'{0}' could be updated from version '{1}' to '{2}'",
-            defaultSeverity = Severity.Minor
+            MessageFormat = "'{0}' could be updated from version '{1}' to '{2}'",
+            DefaultSeverity = Severity.Minor
         };
 
         static readonly Descriptor k_RecommendPackagePreView = new Descriptor(
@@ -68,7 +68,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Experimental packages should only be used for testing purposes and to give feedback to Unity."
         )
         {
-            messageFormat = "'{0}' version '{1}' is a preview/experimental version"
+            MessageFormat = "'{0}' version '{1}' is a preview/experimental version"
         };
 
         public override string Name => "Packages";
@@ -134,13 +134,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 if (!recommendedVersionString.Equals(package.version))
                 {
-                    yield return context.Create(IssueCategory.PackageDiagnostic, k_RecommendPackageUpgrade.id, package.name, package.version, recommendedVersionString)
+                    yield return context.Create(IssueCategory.PackageDiagnostic, k_RecommendPackageUpgrade.Id, package.name, package.version, recommendedVersionString)
                         .WithLocation(package.assetPath);
                 }
             }
             else if (package.version.Contains("pre") || package.version.Contains("exp"))
             {
-                yield return context.Create(IssueCategory.PackageDiagnostic, k_RecommendPackagePreView.id, package.name, package.version)
+                yield return context.Create(IssueCategory.PackageDiagnostic, k_RecommendPackagePreView.Id, package.name, package.version)
                     .WithLocation(package.assetPath);
             }
         }

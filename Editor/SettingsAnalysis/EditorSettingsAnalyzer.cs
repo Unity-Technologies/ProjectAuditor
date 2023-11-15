@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "In Editor Settings, enable the <b>Enter Play Mode Settings > Enter Play Mode Options</b> option, then disable the <b>Reload Domain</b> option. Be sure to view the <b>Code/Domain Reload</b> view in this tool for additional things you may need to fix as a result of disabling domain reload."
         )
         {
-            maximumVersion = "2023.4",
+            MaximumVersion = "2023.4",
             fixer = (issue) =>
             {
                 EditorSettings.enterPlayModeOptionsEnabled = true;
@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "In Editor Settings, enable the <b>Enter Play Mode Settings > Enter Play Mode Options</b> option, then disable the <b>Reload Domain</b> checkbox. Be sure to view the <b>Code/Domain Reload</b> view in this tool for additional things you may need to fix as a result of disabling domain reload."
         )
         {
-            maximumVersion = "2023.4",
+            MaximumVersion = "2023.4",
             fixer = (issue) =>
             {
                 EditorSettings.enterPlayModeOptions |= EnterPlayModeOptions.DisableDomainReload;
@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             if (k_EnterPlayModeOptionsDescriptor.IsVersionCompatible() &&
                 !EditorSettings.enterPlayModeOptionsEnabled)
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_EnterPlayModeOptionsDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_EnterPlayModeOptionsDescriptor.Id)
                     .WithLocation("Project/Editor");
             }
             else
@@ -60,7 +60,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 if (k_DomainReloadDescriptor.IsVersionCompatible() &&
                     (EditorSettings.enterPlayModeOptions & EnterPlayModeOptions.DisableDomainReload) != EnterPlayModeOptions.DisableDomainReload)
                 {
-                    yield return context.Create(IssueCategory.ProjectSetting, k_DomainReloadDescriptor.id)
+                    yield return context.Create(IssueCategory.ProjectSetting, k_DomainReloadDescriptor.Id)
                         .WithLocation("Project/Editor");
                 }
             }

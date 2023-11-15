@@ -514,7 +514,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
 
                 var desc = item.ProjectIssue != null && item.ProjectIssue.Id.IsValid() ? item.ProjectIssue.Id.GetDescriptor() : null;
-                if (m_Desc.onOpenManual != null && desc != null && desc.type.StartsWith("UnityEngine."))
+                if (m_Desc.onOpenManual != null && desc != null && desc.Type.StartsWith("UnityEngine."))
                 {
                     menu.AddItem(Utility.OpenScriptReference, false, () =>
                     {

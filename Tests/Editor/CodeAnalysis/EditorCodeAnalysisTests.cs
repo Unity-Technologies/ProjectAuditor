@@ -23,8 +23,8 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var issues = projectReport.FindByCategory(IssueCategory.Code);
             var codeIssue = issues.FirstOrDefault(i => i.Id.IsValid() &&
-                i.Id.GetDescriptor().type.Equals("System.AppDomain") &&
-                i.Id.GetDescriptor().method.Equals("GetAssemblies") &&
+                i.Id.GetDescriptor().Type.Equals("System.AppDomain") &&
+                i.Id.GetDescriptor().Method.Equals("GetAssemblies") &&
                 i.GetCustomProperty(CodeProperty.Assembly).Equals("Unity.ProjectAuditor.Editor"));
 
             Assert.NotNull(codeIssue);
@@ -43,8 +43,8 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var issues = projectReport.FindByCategory(IssueCategory.Code);
             var codeIssue = issues.FirstOrDefault(i => i.Id.IsValid() &&
-                i.Id.GetDescriptor().type.Equals("UnityEditor.AssetDatabase") &&
-                i.Id.GetDescriptor().method.Equals("FindAssets") &&
+                i.Id.GetDescriptor().Type.Equals("UnityEditor.AssetDatabase") &&
+                i.Id.GetDescriptor().Method.Equals("FindAssets") &&
                 i.GetCustomProperty(CodeProperty.Assembly).Equals("Unity.ProjectAuditor.Editor"));
 
             Assert.NotNull(codeIssue);

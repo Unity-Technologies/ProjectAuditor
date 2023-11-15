@@ -13,23 +13,26 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             var descriptors = new List<Descriptor>(rawDescriptors.Length);
             foreach (var rawDescriptor in rawDescriptors)
             {
-                var desc = new Descriptor(rawDescriptor.id, rawDescriptor.title, rawDescriptor.areas, rawDescriptor.description, rawDescriptor.solution)
+                if (string.IsNullOrEmpty(rawDescriptor.Id))
+                    throw new Exception("Descriptor with null id loaded from " + name);
+
+                var desc = new Descriptor(rawDescriptor.Id, rawDescriptor.Title, rawDescriptor.Areas, rawDescriptor.Description, rawDescriptor.Solution)
                 {
-                    type = rawDescriptor.type ?? string.Empty,
-                    method = rawDescriptor.method ?? string.Empty,
-                    value = rawDescriptor.value,
-                    platforms = rawDescriptor.platforms,
-                    defaultSeverity = rawDescriptor.defaultSeverity == Severity.Default ? Severity.Moderate : rawDescriptor.defaultSeverity,
-                    documentationUrl = rawDescriptor.documentationUrl ?? string.Empty,
-                    minimumVersion = rawDescriptor.minimumVersion ?? string.Empty,
-                    maximumVersion = rawDescriptor.maximumVersion ?? string.Empty
+                    Type = rawDescriptor.Type ?? string.Empty,
+                    Method = rawDescriptor.Method ?? string.Empty,
+                    Value = rawDescriptor.Value,
+                    Platforms = rawDescriptor.Platforms,
+                    DefaultSeverity = rawDescriptor.DefaultSeverity == Severity.Default ? Severity.Moderate : rawDescriptor.DefaultSeverity,
+                    DocumentationUrl = rawDescriptor.DocumentationUrl ?? string.Empty,
+                    MinimumVersion = rawDescriptor.MinimumVersion ?? string.Empty,
+                    MaximumVersion = rawDescriptor.MaximumVersion ?? string.Empty
                 };
-                if (string.IsNullOrEmpty(desc.title))
+                if (string.IsNullOrEmpty(desc.Title))
                 {
-                    if (string.IsNullOrEmpty(desc.type) || string.IsNullOrEmpty(desc.method))
-                        desc.title = string.Empty;
+                    if (string.IsNullOrEmpty(desc.Type) || string.IsNullOrEmpty(desc.Method))
+                        desc.Title = string.Empty;
                     else
-                        desc.title = desc.GetFullTypeName();
+                        desc.Title = desc.GetFullTypeName();
                 }
 
                 descriptors.Add(desc);

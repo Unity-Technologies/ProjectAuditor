@@ -147,24 +147,18 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public static void DrawSelectedText(string text)
         {
-#if UNITY_2019_1_OR_NEWER
             var treeViewSelectionStyle = (GUIStyle)"TV Selection";
             var backgroundStyle = new GUIStyle(treeViewSelectionStyle);
 
             var treeViewLineStyle = (GUIStyle)"TV Line";
             var textStyle = new GUIStyle(treeViewLineStyle);
-#else
-            var textStyle = GUI.skin.label;
-#endif
 
             var content = new GUIContent(text, text);
             var size = textStyle.CalcSize(content);
             var rect = EditorGUILayout.GetControlRect(GUILayout.MaxWidth(size.x), GUILayout.Height(size.y));
             if (Event.current.type == EventType.Repaint)
             {
-#if UNITY_2019_1_OR_NEWER
                 backgroundStyle.Draw(rect, false, false, true, true);
-#endif
                 GUI.Label(rect, content, textStyle);
             }
         }

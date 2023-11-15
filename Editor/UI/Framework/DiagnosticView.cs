@@ -42,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             GUILayout.Width(LayoutSize.CopyToClipboardButtonSize),
                             GUILayout.Height(LayoutSize.CopyToClipboardButtonSize)))
                         {
-                            EditorInterop.CopyToClipboard(Formatting.StripRichTextTags(descriptor.description));
+                            EditorInterop.CopyToClipboard(Formatting.StripRichTextTags(descriptor.Description));
                         }
                     }
                 }
@@ -59,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             else
             {
-                GUILayout.TextArea(descriptor.description, SharedStyles.TextAreaWithDynamicSize,
+                GUILayout.TextArea(descriptor.Description, SharedStyles.TextAreaWithDynamicSize,
                     GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
 
@@ -78,7 +78,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             GUILayout.Width(LayoutSize.CopyToClipboardButtonSize),
                             GUILayout.Height(LayoutSize.CopyToClipboardButtonSize)))
                         {
-                            EditorInterop.CopyToClipboard(Formatting.StripRichTextTags(descriptor.solution));
+                            EditorInterop.CopyToClipboard(Formatting.StripRichTextTags(descriptor.Solution));
                         }
                     }
                 }
@@ -95,7 +95,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             else
             {
-                GUILayout.TextArea(descriptor.solution, SharedStyles.TextAreaWithDynamicSize,
+                GUILayout.TextArea(descriptor.Solution, SharedStyles.TextAreaWithDynamicSize,
                     GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
 
@@ -104,11 +104,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var issuesAreIgnored = AreIssuesIgnored(selectedIssues);
             if (numSelectedIDs == 1)
             {
-                if (!string.IsNullOrEmpty(descriptor.documentationUrl))
+                if (!string.IsNullOrEmpty(descriptor.DocumentationUrl))
                 {
                     DrawActionButton(Contents.Documentation, () =>
                     {
-                        Application.OpenURL(descriptor.documentationUrl);
+                        Application.OpenURL(descriptor.DocumentationUrl);
 
                         m_ViewManager.OnSelectedIssuesDocumentationRequested?.Invoke(selectedIssues);
                     });

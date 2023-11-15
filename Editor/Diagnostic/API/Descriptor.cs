@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
+using UnityEngine.Serialization;
 
 namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
@@ -14,80 +14,62 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// <summary>
         /// An unique identifier for the diagnostic. IDs must have exactly 3 upper case characters, followed by 4 digits.
         /// </summary>
-        [JsonRequired]
-        public string id;
+        public string Id;
 
         /// <summary>
         /// Diagnostic title
         /// </summary>
-        [JsonRequired]
-        public string title;
+        public string Title;
 
         /// <summary>
         /// Message used to describe a specific instance of the diagnostic.
         /// </summary>
-        [JsonIgnore]
-        public string messageFormat;
+        public string MessageFormat;
 
         /// <summary>
         /// Default Severity of the diagnostic.
         /// </summary>
-        [JsonIgnore]
-        public Severity defaultSeverity;
+        public Severity DefaultSeverity;
 
         /// <summary>
         /// Returns true if the diagnostic is enabled by default.
         /// </summary>
-        public bool isEnabledByDefault = true;
+        public bool IsEnabledByDefault = true;
 
         /// <summary>
         /// Affected areas
         /// </summary>
-        [JsonRequired]
-        public string[] areas;
+        public string[] Areas;
 
         /// <summary>
         /// Affected platforms. If null, the diagnostic applies to all platforms.
         /// </summary>
-        [JsonProperty]
-        public string[] platforms;
+        public string[] Platforms;
 
         /// <summary>
         /// Description of the diagnostic.
         /// </summary>
-        [JsonRequired]
-        public string description;
+        public string Description;
 
         /// <summary>
         /// Recommendation to fix the diagnostic.
         /// </summary>
-        [JsonRequired]
-        public string solution;
+        public string Solution;
 
         /// <summary>
         /// URL to documentation.
         /// </summary>
-        [JsonIgnore]
-        public string documentationUrl;
-
-        [JsonProperty("documentationUrl")]
-        internal string documentationUrlForJson
-        {
-            get => string.IsNullOrEmpty(documentationUrl) ? null : documentationUrl;
-            set => documentationUrl = string.IsNullOrEmpty(value) ? String.Empty : value;
-        }
+        public string DocumentationUrl;
 
         /// <summary>
         /// Minimum Unity version this diagnostic applies to. If not specified, the diagnostic applies to all versions.
         /// </summary>
-        [JsonIgnore]
-        public string minimumVersion;
+        public string MinimumVersion;
 
         /// <summary>
         /// Maximum Unity version this diagnostic applies to. If not specified, the diagnostic applies to all versions.
         /// </summary>
-        [JsonIgnore]
-        public string maximumVersion;
+        public string MaximumVersion;
 
         /// <summary>
         /// Optional Auto-fixer
@@ -98,20 +80,17 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// <summary>
         /// Name of the type (namespace and class/struct) of a known code API issue.
         /// </summary>
-        [JsonIgnore]
-        public string type;
+        public string Type;
 
         /// <summary>
         /// Name of the method of a known code API issue.
         /// </summary>
-        [JsonIgnore]
-        public string method;
+        public string Method;
 
         /// <summary>
         /// The evaluated value of a know code API issue.
         /// </summary>
-        [JsonIgnore]
-        public string value;
+        public string Value;
 
         [JsonConstructor]
         internal Descriptor()
@@ -129,16 +108,16 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// <param name="solution">Advice on how to resolve the issue.</param>
         public Descriptor(string id, string title, string[] areas, string description, string solution)
         {
-            this.id = id;
-            this.title = title;
-            this.areas = areas;
-            this.messageFormat = string.Empty;
-            this.description = description;
-            this.solution = solution;
+            Id = id;
+            Title = title;
+            Areas = areas;
+            MessageFormat = string.Empty;
+            Description = description;
+            Solution = solution;
 
-            type = string.Empty;
-            method = string.Empty;
-            defaultSeverity = Severity.Moderate;
+            Type = string.Empty;
+            Method = string.Empty;
+            DefaultSeverity = Severity.Moderate;
         }
 
         /// <summary>
@@ -174,7 +153,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return id == other.id;
+            return Id == other.Id;
         }
 
         /// <summary>Returns true if the Descriptor is equal to a given object, false otherwise.</summary>
@@ -201,7 +180,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// <returns>The computed hash code.</returns>
         public override int GetHashCode()
         {
-            return id.GetHashCode();
+            return Id.GetHashCode();
         }
     }
 }
