@@ -11,10 +11,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
 {
     internal class SpriteAtlasAnalyzer : ISpriteAtlasModuleAnalyzer
     {
-        internal const string PAA0006 = nameof(PAA0006);
+        internal const string PAA0008 = nameof(PAA0008);
 
         internal static readonly Descriptor k_SpriteAtlasEmptyDescriptor = new Descriptor(
-            PAA0006,
+            PAA0008,
             "Sprite Atlas: Too much empty space",
             new[] {Area.Memory},
             "The Sprite Atlas texture contains a lot of empty space. Empty space contributes to texture memory usage.",
