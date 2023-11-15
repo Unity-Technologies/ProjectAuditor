@@ -1,5 +1,8 @@
 namespace Unity.ProjectAuditor.Editor
 {
+    /// <summary>
+    /// Provides methods to create and manage an object which can represent progress of the project analysis process.
+    /// </summary>
     public interface IProgress
     {
         /// <summary>

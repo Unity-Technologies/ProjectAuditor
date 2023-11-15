@@ -22,8 +22,19 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         [SerializeField]
         string m_AsString;
 
+        /// <summary>Implicit conversion of DescriptorID to string.</summary>
+        /// <param name="d">A DescriptorID to convert</param>
+        /// <returns>A string representation of the ID</returns>
         public static implicit operator string(DescriptorID d) => d.m_AsString;
+
+        /// <summary>Implicit conversion of string to DescriptorID.</summary>
+        /// <param name="id">A string to convert</param>
+        /// <returns>A DescriptorID constructed using the string ID</returns>
         public static implicit operator DescriptorID(string id) => new DescriptorID(id);
+
+        /// <summary>Implicit conversion of DescriptorID to int.</summary>
+        /// <param name="d">A DescriptorID to convert</param>
+        /// <returns>The integer hash of the ID</returns>
         public static implicit operator int(DescriptorID d) => d.m_AsInt;
 
         /// <summary>

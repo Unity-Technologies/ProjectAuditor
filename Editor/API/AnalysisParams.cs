@@ -101,7 +101,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// AnalysisParams constructor
+        /// AnalysisParams constructor.
         /// </summary>
         /// <param name="copyParamsFromGlobal">If true, the global ProjectSettings will register DiagnosticParams defaults, save any changes and copy the data into this object. This is usually the desired behaviour, but is not allowed during serialization. </param>
         public AnalysisParams(bool copyParamsFromGlobal = true)
@@ -122,7 +122,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Copy constructor
+        /// Copy constructor.
         /// </summary>
         /// <param name="original">The AnalysisParams object to copy from.</param>
         public AnalysisParams(AnalysisParams original)
@@ -144,9 +144,10 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Adds a list of additional Rules which will be applied during analysis
+        /// Adds a list of additional Rules which will be applied during analysis.
         /// </summary>
         /// <param name="rules">Additional Rules to impose.</param>
+        /// <returns>This AnalysisParams object, after adding the additional Rules.</returns>
         public AnalysisParams WithAdditionalDiagnosticRules(List<Diagnostic.Rule> rules)
         {
             foreach (var rule in rules)
