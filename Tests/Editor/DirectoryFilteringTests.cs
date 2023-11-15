@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor.Utils;
 
@@ -38,12 +38,12 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.False(emptyDefault("_______________"));
             Assert.Null(DirectoryFiltering.Rule.CreateFilterPredicateForRules(new DirectoryFiltering.Rule[] {}, true));
 
-            Assert.NotNull(DirectoryFiltering.Rule.CreateFilterPredicateForRules(new [] { nullRule }));
-            var noValidRulesDefault = DirectoryFiltering.Rule.CreateFilterPredicateForRules(new [] { nullRule });
+            Assert.NotNull(DirectoryFiltering.Rule.CreateFilterPredicateForRules(new[] { nullRule }));
+            var noValidRulesDefault = DirectoryFiltering.Rule.CreateFilterPredicateForRules(new[] { nullRule });
             Assert.NotNull(noValidRulesDefault);
             Assert.False(noValidRulesDefault("AnyRandomString"));
             Assert.False(noValidRulesDefault("_______________"));
-            Assert.Null(DirectoryFiltering.Rule.CreateFilterPredicateForRules(new [] { nullRule }, true));
+            Assert.Null(DirectoryFiltering.Rule.CreateFilterPredicateForRules(new[] { nullRule }, true));
         }
 
         [Test]
@@ -61,7 +61,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void DirectoryFiltering_Rules_Ordering()
         {
-            var rules = new []
+            var rules = new[]
             {
                 new DirectoryFiltering.Rule(FilteringMode.Block, "Assets/Textures/UI"),
                 new DirectoryFiltering.Rule(FilteringMode.Allow, "Assets/Textures"),
@@ -120,7 +120,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.Null(DirectoryFiltering.CreateMatchesPredicate((string[])null));
             Assert.Null(DirectoryFiltering.CreateMatchesPredicate(Array.Empty<string>()));
-            Assert.Null(DirectoryFiltering.CreateMatchesPredicate(new [] { "ThisIsValidBut", null , "Isn't" }));
+            Assert.Null(DirectoryFiltering.CreateMatchesPredicate(new[] { "ThisIsValidBut", null , "Isn't" }));
         }
 
         [Test]

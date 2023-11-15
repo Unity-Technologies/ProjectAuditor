@@ -59,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor
                 }
             }
 
-            [NonReorderable] [JsonIgnore] [SerializeField]
+            [NonReorderable][JsonIgnore][SerializeField]
             List<ParamKeyValue> m_SerializedParams = new List<ParamKeyValue>();
 
             public PlatformParams()
@@ -119,10 +119,10 @@ namespace Unity.ProjectAuditor.Editor
         }
         #endregion
 
-        [NonReorderable] [JsonProperty("paramsStack")] [SerializeField]
+        [NonReorderable][JsonProperty("paramsStack")][SerializeField]
         internal List<PlatformParams> m_ParamsStack = new List<PlatformParams>();
 
-        [JsonProperty] [SerializeField]
+        [JsonProperty][SerializeField]
         internal int CurrentParamsIndex;
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace Unity.ProjectAuditor.Editor
         /// Sets the target analysis platform. When retrieving parameters, DiagnosticParams will first check the values specific to this platform.
         /// </summary>
         /// <param name="platform">Target platform for analysis.</param>
-         public void SetAnalysisPlatform(BuildTarget platform)
+        public void SetAnalysisPlatform(BuildTarget platform)
         {
             EnsureDefaults();
 

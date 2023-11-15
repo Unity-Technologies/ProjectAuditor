@@ -16,7 +16,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
     [Serializable]
     public struct DescriptorID : IEquatable<DescriptorID>
     {
-        [SerializeField] [HideInInspector]
+        [SerializeField][HideInInspector]
         int m_AsInt;
 
         [SerializeField]

@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.Editor
     [Serializable]
     public class ProjectIssue
     {
-        [SerializeField] [JsonIgnore]
+        [SerializeField][JsonIgnore]
         DescriptorID m_DescriptorId;
 
         [SerializeField]

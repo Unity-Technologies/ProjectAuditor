@@ -88,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor
     {
         const string k_CurrentVersion = "0.2";
 
-        [JsonProperty("version")] [SerializeField]
+        [JsonProperty("version")][SerializeField]
         string m_Version = k_CurrentVersion;
 
         /// <summary>
@@ -121,16 +121,16 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Contains information about the session in which this ProjectReport was created.
         /// </summary>
-        [JsonProperty("sessionInfo")] [SerializeField]
+        [JsonProperty("sessionInfo")][SerializeField]
         public SessionInfo SessionInfo;
 
-        [JsonProperty("moduleMetadata")] [SerializeField]
+        [JsonProperty("moduleMetadata")][SerializeField]
         List<ModuleInfo> m_ModuleInfos = new List<ModuleInfo>();
 
         [SerializeField]
         DescriptorLibrary m_DescriptorLibrary = new DescriptorLibrary();
 
-        [JsonIgnore] [SerializeField]
+        [JsonIgnore][SerializeField]
         List<ProjectIssue> m_Issues = new List<ProjectIssue>();
 
         [JsonProperty("issues")]
