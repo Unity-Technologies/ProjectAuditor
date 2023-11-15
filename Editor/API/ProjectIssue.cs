@@ -8,7 +8,7 @@ using UnityEngine.Serialization;
 namespace Unity.ProjectAuditor.Editor
 {
     /// <summary>
-    /// ProjectAuditor Issue found in the current project
+    /// Describes an issue that ProjectAuditor reports in the Unity project.
     /// </summary>
     [Serializable]
     public class ProjectIssue
@@ -35,10 +35,155 @@ namespace Unity.ProjectAuditor.Editor
         string[] m_CustomProperties;
 
         /// <summary>
-        /// Determines whether the issue was fixed. Only used for diagnostics
+        /// Determines whether the issue was fixed. Only used for diagnostics.
         /// </summary>
-        [SerializeField] [JsonIgnore]
-        public bool WasFixed = false;
+        [JsonIgnore]
+        [SerializeField]
+        internal bool WasFixed = false;
+
+        /// <summary>
+        /// An unique identifier for the issue diagnostic (read-only).
+        /// </summary>
+        /// <remarks>
+        /// Project Reports can contain two different types of ProjectIssue:
+        /// - Diagnostic issues, which indicate a potential problem which should be investigated and possibly fixed: for example, a texture with its Read/Write Enabled checkbox ticked.
+        /// - Non-diagnostic issues, for informational purposes: for example, general information about a texture in the project.
+        ///
+        /// Diagnostic issues can be identified by having a valid <seealso cref="DescriptorID"/>. See also: the <seealso cref="ProjectIssue.IsDiagnostic"/> method.
+        /// </remarks>
+        [JsonIgnore]
+        public DescriptorID Id
+        {
+            get => m_DescriptorId;
+            internal set => m_DescriptorId = value;
+        }
+
+        [JsonProperty("diagnosticID")]
+        internal string DiagnosticIDAsString
+        {
+            get { return m_DescriptorId.IsValid() ? m_DescriptorId.AsString() : null; }
+            set
+            {
+                // TODO: check if ID is registered
+                m_DescriptorId = new DescriptorID(value);
+            }
+        }
+
+        /// <summary>
+        /// This issue's category (read-only).
+        /// </summary>
+        [JsonProperty("category")]
+        public IssueCategory Category
+        {
+            get => m_Category;
+            internal set => m_Category = value;
+        }
+
+        /// <summary>
+        /// Custom properties.
+        /// See the "moduleMetadata" section of an exported Project Report JSON file for information on the formats and
+        /// meanings of the custom properties for each IssueCategory.
+        /// </summary>
+        [JsonProperty("properties")]
+        public string[] CustomProperties
+        {
+            get => m_CustomProperties;
+            internal set => m_CustomProperties = value;
+        }
+
+        /// <summary>
+        /// Project issue Description (read-only).
+        /// </summary>
+        [JsonProperty("description")]
+        public string Description
+        {
+            get => m_Description;
+            internal set => m_Description = value;
+        }
+
+        /// <summary>
+        /// Dependencies of this project issue.
+        /// </summary>
+        internal DependencyNode Dependencies
+        {
+            get => m_Dependencies;
+            set => m_Dependencies = value;
+        }
+
+        /// <summary>
+        /// Name of the file that contains this issue.
+        /// </summary>
+        [JsonIgnore]
+        public string Filename
+        {
+            get { return m_Location == null ? string.Empty : m_Location.Filename; }
+        }
+
+        /// <summary>
+        /// Relative path of the file that contains this issue.
+        /// </summary>
+        [JsonIgnore]
+        public string RelativePath
+        {
+            get { return m_Location == null ? string.Empty : m_Location.Path; }
+        }
+
+        /// <summary>
+        /// Line in the file that contains this issue.
+        /// </summary>
+        [JsonIgnore]
+        public int Line
+        {
+            get { return m_Location == null ? 0 : m_Location.Line; }
+        }
+
+        /// <summary>
+        /// Location of the item or diagnostic (read-only).
+        /// </summary>
+        [JsonProperty("location")]
+        public Location Location
+        {
+            get => m_Location;
+            internal set => m_Location = value;
+        }
+
+        /// <summary>
+        /// Log level.
+        /// </summary>
+        [JsonIgnore]
+        public LogLevel LogLevel
+        {
+            get
+            {
+                switch (Severity)
+                {
+                    case Severity.Error:
+                        return LogLevel.Error;
+                    case Severity.Warning:
+                        return LogLevel.Warning;
+                    case Severity.Info:
+                    default:
+                        return LogLevel.Info;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Diagnostics-specific Severity (read-only).
+        /// </summary>
+        [JsonIgnore]
+        public Severity Severity
+        {
+            get => m_Severity == Severity.Default && m_DescriptorId.IsValid() ? m_DescriptorId.GetDescriptor().DefaultSeverity : m_Severity;
+            internal set => m_Severity = value;
+        }
+
+        [JsonProperty("severity")]
+        internal string SeverityString
+        {
+            get => IsDiagnostic() ? m_Severity.ToString() : null;
+            set => m_Severity = (Severity)Enum.Parse(typeof(Severity), value);
+        }
 
         [JsonConstructor]
         internal ProjectIssue()
@@ -48,7 +193,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Constructs and returns an instance of ProjectIssue
+        /// Constructs and returns an instance of ProjectIssue.
         /// </summary>
         /// <param name="category">Issue category</param>
         /// <param name="id">Diagnostic descriptor ID</param>
@@ -73,7 +218,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Constructs and returns an instance of ProjectIssue
+        /// Constructs and returns an instance of ProjectIssue.
         /// </summary>
         /// <param name="category">Issue category</param>
         /// <param name="description">Issue description</param>
@@ -86,151 +231,25 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// An unique identifier for the issue diagnostic. IDs must have exactly 3 upper case characters, followed by 4 digits
+        /// Checks whether this issue is a diagnostic.
         /// </summary>
-        [JsonIgnore]
-        public DescriptorID Id
-        {
-            get => m_DescriptorId;
-            internal set => m_DescriptorId = value;
-        }
-
-        [JsonProperty("diagnosticID")]
-        internal string DiagnosticIdAsString
-        {
-            get { return m_DescriptorId.IsValid() ? m_DescriptorId.AsString() : null; }
-            set
-            {
-                // TODO: check if ID is registered
-                m_DescriptorId = new DescriptorID(value);
-            }
-        }
-
-        /// <summary>
-        /// This issue's category
-        /// </summary>
-        [JsonProperty("category")]
-        public IssueCategory Category
-        {
-            get => m_Category;
-            internal set => m_Category = value;
-        }
-
-        /// <summary>
-        /// Custom properties
-        /// </summary>
-        [JsonProperty("properties")]
-        public string[] CustomProperties
-        {
-            get => m_CustomProperties;
-            internal set => m_CustomProperties = value;
-        }
-
-        /// <summary>
-        /// Project issue description
-        /// </summary>
-        [JsonProperty("description")]
-        public string Description
-        {
-            get => m_Description;
-            internal set => m_Description = value;
-        }
-
-        /// <summary>
-        /// Dependencies of this project issue
-        /// </summary>
-        internal DependencyNode Dependencies
-        {
-            get => m_Dependencies;
-            /*public*/ set => m_Dependencies = value;
-        }
-
-        /// <summary>
-        /// Name of the file that contains this issue
-        /// </summary>
-        [JsonIgnore]
-        public string Filename => m_Location == null ? string.Empty : m_Location.Filename;
-
-        /// <summary>
-        /// Relative path of the file that contains this issue
-        /// </summary>
-        [JsonIgnore]
-        public string RelativePath => m_Location == null ? string.Empty : m_Location.Path;
-
-        /// <summary>
-        /// Line in the file that contains this issue
-        /// </summary>
-        [JsonIgnore]
-        public int Line => m_Location == null ? 0 : m_Location.Line;
-
-        /// <summary>
-        /// Location of the item or diagnostic
-        /// </summary>
-        [JsonProperty("location")]
-        public Location Location
-        {
-            get => m_Location;
-            /*public*/ set => m_Location = value;
-        }
-
-        /// <summary>
-        /// Log level
-        /// </summary>
-        [JsonIgnore]
-        public LogLevel LogLevel
-        {
-            get
-            {
-                switch (Severity)
-                {
-                    case Severity.Error:
-                        return LogLevel.Error;
-                    case Severity.Warning:
-                        return LogLevel.Warning;
-                    case Severity.Info:
-                    default:
-                        return LogLevel.Info;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Diagnostics-specific severity
-        /// </summary>
-        [JsonIgnore]
-        public Severity Severity
-        {
-            get => m_Severity == Severity.Default && m_DescriptorId.IsValid() ? m_DescriptorId.GetDescriptor().DefaultSeverity : m_Severity;
-            set => m_Severity = value;
-        }
-
-        [JsonProperty("severity")]
-        internal string SeverityString
-        {
-            get => IsDiagnostic() ? m_Severity.ToString() : null;
-            set => m_Severity = (Severity)Enum.Parse(typeof(Severity), value);
-        }
-
-        /// <summary>
-        /// Checks whether this issue is a diagnostic
-        /// </summary>
-        /// <returns>True if the issue's descriptor is not null and is valid. Otherwise, returns false.</returns>
+        /// <returns>True if the issue's descriptor ID is valid. Otherwise, returns false.</returns>
         public bool IsDiagnostic()
         {
             return Id.IsValid();
         }
 
         /// <summary>
-        /// Checks whether this issue is major or critical
+        /// Checks whether this issue is major or critical.
         /// </summary>
-        /// <returns>True of the issue's severity is Major or Critical. Otherwise, returns false.</returns>
+        /// <returns>True if the issue's Severity is Major or Critical. Otherwise, returns false.</returns>
         public bool IsMajorOrCritical()
         {
             return Severity == Severity.Critical || Severity == Severity.Major;
         }
 
         /// <summary>
-        /// Checks whether this issue is valid
+        /// Checks whether this issue is valid.
         /// </summary>
         /// <returns>True if the issue has a valid description string. Otherwise, returns false.</returns>
         public bool IsValid()
@@ -239,7 +258,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Gets the number of custom properties this issue has
+        /// Gets the number of custom properties this issue has.
         /// </summary>
         /// <returns>The number of custom property strings</returns>
         public int GetNumCustomProperties()
@@ -247,8 +266,9 @@ namespace Unity.ProjectAuditor.Editor
             return m_CustomProperties != null ? m_CustomProperties.Length : 0;
         }
 
+        // stephenm TODO: The Get/SetCustomProperty methods need more explanation - like how do you find out what enum is used for a given ProjectIssue. Phase 2.
         /// <summary>
-        /// Get a custom property string given an enum
+        /// Get a custom property string given an enum.
         /// </summary>
         /// <param name="propertyEnum">Enum value indicating a property.</param>
         /// <typeparam name="T">Can be any struct, but the method expects an enum</typeparam>
@@ -259,7 +279,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Get a custom property string given an index into the custom properties array
+        /// Get a custom property string given an index into the custom properties array.
         /// </summary>
         /// <param name="index">Custom property index</param>
         /// <returns>Property name string. Returns empty string if the custom properties array is null or empty or if the index is out of range.</returns>
@@ -274,7 +294,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Check whether a custom property is a boolean type and whether its value is true
+        /// Check whether a custom property is a boolean type and whether its value is true.
         /// </summary>
         /// <param name="propertyEnum">Enum value indicating a property.</param>
         /// <typeparam name="T">Can be any struct, but the method expects an enum</typeparam>
@@ -289,7 +309,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Check whether a custom property is an integer type and return its value
+        /// Check whether a custom property is an integer type and return its value.
         /// </summary>
         /// <param name="propertyEnum">Enum value indicating a property.</param>
         /// <typeparam name="T">Can be any struct, but the method expects an enum</typeparam>
@@ -304,7 +324,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Check whether a custom property is a long type and return its value
+        /// Check whether a custom property is a long type and return its value.
         /// </summary>
         /// <param name="propertyEnum">Enum value indicating a property.</param>
         /// <typeparam name="T">Can be any struct, but the method expects an enum</typeparam>
@@ -319,7 +339,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Check whether a custom property is a ulong type and return its value
+        /// Check whether a custom property is a ulong type and return its value.
         /// </summary>
         /// <param name="propertyEnum">Enum value indicating a property.</param>
         /// <typeparam name="T">Can be any struct, but the method expects an enum</typeparam>
@@ -334,7 +354,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Check whether a custom property is a float type and return its value
+        /// Check whether a custom property is a float type and return its value.
         /// </summary>
         /// <param name="propertyEnum">Enum value indicating a property.</param>
         /// <typeparam name="T">Can be any struct, but the method expects an enum</typeparam>
@@ -346,7 +366,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Check whether a custom property is a double type and return its value
+        /// Check whether a custom property is a double type and return its value.
         /// </summary>
         /// <param name="propertyEnum">Enum value indicating a property.</param>
         /// <typeparam name="T">Can be any struct, but the method expects an enum</typeparam>
@@ -358,7 +378,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Set a custom property
+        /// Set a custom property.
         /// </summary>
         /// /// <param name="propertyEnum">Enum value indicating a property.</param>
         /// <typeparam name="T">Can be any struct, but the method expects an enum</typeparam>

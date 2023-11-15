@@ -221,7 +221,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         tooltip = "Error";
                     return EditorGUIUtility.TrIconContent(k_ErrorIconName, tooltip);
 
-                // severity icons
+                // Severity icons
                 case IconType.Critical:
                     if (string.IsNullOrEmpty(tooltip))
                         tooltip = "Critical";
@@ -286,15 +286,15 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return null;
         }
 
-        public static GUIContent GetLogLevelIcon(Core.LogLevel logLevel, string tooltip = null)
+        public static GUIContent GetLogLevelIcon(LogLevel logLevel, string tooltip = null)
         {
             switch (logLevel)
             {
-                case Core.LogLevel.Info:
+                case LogLevel.Info:
                     return GetIcon(IconType.Info, tooltip);
-                case Core.LogLevel.Warning:
+                case LogLevel.Warning:
                     return GetIcon(IconType.Warning, tooltip);
-                case Core.LogLevel.Error:
+                case LogLevel.Error:
                     return GetIcon(IconType.Error, tooltip);
                 default:
                     return GetIcon(IconType.Help, tooltip);

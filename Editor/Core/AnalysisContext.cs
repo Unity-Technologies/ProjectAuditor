@@ -2,6 +2,7 @@ using Unity.ProjectAuditor.Editor.Diagnostic;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
+    // stephenm TODO: We probably need to make this public (and document it properly) as a class to inherit from for people making custom modules. And move it to API/not Core. Phase 2.
     internal class AnalysisContext
     {
         public AnalysisParams Params;
@@ -36,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.Core
 
             var rule = Params.Rules.GetRule(descriptor.Id);
             if (rule != null)
-                return rule.severity != Severity.None;
+                return rule.Severity != Severity.None;
 
             return descriptor.IsEnabledByDefault;
         }
