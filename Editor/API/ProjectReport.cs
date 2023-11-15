@@ -88,14 +88,18 @@ namespace Unity.ProjectAuditor.Editor
     {
         const string k_CurrentVersion = "0.2";
 
-        [JsonIgnore] [SerializeField]
+        [JsonProperty("version")] [SerializeField]
         string m_Version = k_CurrentVersion;
 
         /// <summary>
         /// File format version of the ProjectReport (read-only).
         /// </summary>
-        [JsonProperty("version")]
-        public string Version = k_CurrentVersion;
+        [JsonIgnore]
+        public string Version
+        {
+            get => m_Version;
+            internal set => m_Version = value;
+        }
 
         // stephenm TODO: ModuleInfo serializes to JSON but isn't accessible in any meaningful way if a script just has a ProjectReport object it wants to query. Figure out some API for this? Phase 2.
         // Keeping this internal for now. Exposing this means exposing IssueLayout, which means exposing PropertyDefinition, which to be useful means exposing every enum that can
