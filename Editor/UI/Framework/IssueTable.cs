@@ -25,6 +25,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         List<IssueTableItem> m_TreeViewItemGroups = new List<IssueTableItem>();
         Dictionary<int, IssueTableItem> m_TreeViewItemIssues;
+        List<IssueTableItem> m_SelectedIssues = new List<IssueTableItem>();
         int m_NextId;
         int m_NumMatchingIssues;
         bool m_FlatView;
@@ -471,24 +472,25 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return m_NumMatchingIssues;
         }
 
-        public IssueTableItem[] GetSelectedItems()
+        public List<IssueTableItem> GetSelectedItems()
         {
             var ids = GetSelection();
+
+            m_SelectedIssues.Clear();
 
             var count = ids.Count();
             if (count > 0)
             {
-                var selectedItems = new List<IssueTableItem>();
                 for (int i = 0; i < count; ++i)
                 {
                     if (m_TreeViewItemIssues.TryGetValue(ids[i], out var item))
-                        selectedItems.Add(item);
+                        m_SelectedIssues.Add(item);
                 }
 
-                return selectedItems.ToArray();
+                return m_SelectedIssues;
             }
 
-            return new IssueTableItem[0];
+            return m_SelectedIssues;
         }
 
         void OnSortingChanged(MultiColumnHeader _multiColumnHeader)

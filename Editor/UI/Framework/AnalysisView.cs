@@ -455,7 +455,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public void FrameSelection()
         {
             var selectedItems = m_Table.GetSelectedItems();
-            if (selectedItems.Length > 0)
+            if (selectedItems.Count > 0)
             {
                 var firstItem = selectedItems[0];
                 m_Table.FrameItem(firstItem.id);
