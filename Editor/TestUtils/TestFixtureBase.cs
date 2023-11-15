@@ -117,7 +117,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
                 Categories = new[] { category},
                 OnIncomingIssues = issues =>
                 {
-                    var categoryIssues = issues.Where(issue => issue.category == category);
+                    var categoryIssues = issues.Where(issue => issue.Category == category);
 
                     foundIssues.AddRange(predicate == null ? categoryIssues : categoryIssues.Where(predicate));
                 },
@@ -132,7 +132,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         protected ProjectIssue[] AnalyzeAndFindAssetIssues(TestAsset testAsset,
             IssueCategory category = IssueCategory.Code)
         {
-            return Analyze(category, i => i.relativePath.Equals(testAsset.relativePath));
+            return Analyze(category, i => i.RelativePath.Equals(testAsset.relativePath));
         }
 
         protected ProjectIssue[] AnalyzeBuild(Func<ProjectIssue, bool> predicate = null, bool isDevelopment = true, string buildFileName = "test", Action preBuildAction = null, Action postBuildAction = null)

@@ -22,13 +22,13 @@ namespace Unity.ProjectAuditor.EditorTests
             });
 
             var issues = projectReport.FindByCategory(IssueCategory.Code);
-            var codeIssue = issues.FirstOrDefault(i => i.id.IsValid() &&
-                i.id.GetDescriptor().type.Equals("System.AppDomain") &&
-                i.id.GetDescriptor().method.Equals("GetAssemblies") &&
+            var codeIssue = issues.FirstOrDefault(i => i.Id.IsValid() &&
+                i.Id.GetDescriptor().type.Equals("System.AppDomain") &&
+                i.Id.GetDescriptor().method.Equals("GetAssemblies") &&
                 i.GetCustomProperty(CodeProperty.Assembly).Equals("Unity.ProjectAuditor.Editor"));
 
             Assert.NotNull(codeIssue);
-            Assert.AreEqual("'System.AppDomain.GetAssemblies' usage", codeIssue.description);
+            Assert.AreEqual("'System.AppDomain.GetAssemblies' usage", codeIssue.Description);
         }
 
         [Test]
@@ -42,14 +42,14 @@ namespace Unity.ProjectAuditor.EditorTests
             });
 
             var issues = projectReport.FindByCategory(IssueCategory.Code);
-            var codeIssue = issues.FirstOrDefault(i => i.id.IsValid() &&
-                i.id.GetDescriptor().type.Equals("UnityEditor.AssetDatabase") &&
-                i.id.GetDescriptor().method.Equals("FindAssets") &&
+            var codeIssue = issues.FirstOrDefault(i => i.Id.IsValid() &&
+                i.Id.GetDescriptor().type.Equals("UnityEditor.AssetDatabase") &&
+                i.Id.GetDescriptor().method.Equals("FindAssets") &&
                 i.GetCustomProperty(CodeProperty.Assembly).Equals("Unity.ProjectAuditor.Editor"));
 
             Assert.NotNull(codeIssue);
-            Assert.AreEqual("'UnityEditor.AssetDatabase.FindAssets' usage", codeIssue.description);
-            Assert.AreEqual("PAC0232", codeIssue.id.ToString());
+            Assert.AreEqual("'UnityEditor.AssetDatabase.FindAssets' usage", codeIssue.Description);
+            Assert.AreEqual("PAC0232", codeIssue.Id.ToString());
         }
     }
 }

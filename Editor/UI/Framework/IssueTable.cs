@@ -105,7 +105,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     else
                         depth = 0;
                 }
-                var item = new IssueTableItem(m_NextId++, depth, issue.description, issue, issue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
+                var item = new IssueTableItem(m_NextId++, depth, issue.Description, issue, issue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
                 itemsList.Add(item);
             }
 
@@ -298,11 +298,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 Rule rule = null;
                 var issue = item.ProjectIssue;
-                if (issue.wasFixed)
+                if (issue.WasFixed)
                     GUI.enabled = false;
-                else if (issue.id.IsValid())
+                else if (issue.Id.IsValid())
                 {
-                    var id = issue.id;
+                    var id = issue.Id;
                     rule = m_Rules.GetRule(id, issue.GetContext());
                     if (rule == null)
                         rule = m_Rules.GetRule(id); // try to find non-specific rule
@@ -314,7 +314,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 {
                     case PropertyType.LogLevel:
                     {
-                        var icon = Utility.GetLogLevelIcon(issue.logLevel);
+                        var icon = Utility.GetLogLevelIcon(issue.LogLevel);
                         if (icon != null)
                         {
                             EditorGUI.LabelField(cellRect, icon, labelStyle);
@@ -324,20 +324,20 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                     case PropertyType.Severity:
                     {
-                        EditorGUI.LabelField(cellRect, Utility.GetSeverityIconWithText(issue.severity), labelStyle);
+                        EditorGUI.LabelField(cellRect, Utility.GetSeverityIconWithText(issue.Severity), labelStyle);
                     }
                     break;
 
                     case PropertyType.Area:
-                        var areaNames = issue.id.GetDescriptor().GetAreasSummary();
+                        var areaNames = issue.Id.GetDescriptor().GetAreasSummary();
                         EditorGUI.LabelField(cellRect, new GUIContent(areaNames, Tooltip.Area), labelStyle);
                         break;
                     case PropertyType.Description:
                         GUIContent guiContent = null;
-                        if (issue.location != null && m_Desc.descriptionWithIcon)
+                        if (issue.Location != null && m_Desc.descriptionWithIcon)
                         {
                             guiContent =
-                                Utility.GetTextContentWithAssetIcon(item.GetDisplayName(), issue.location.Path);
+                                Utility.GetTextContentWithAssetIcon(item.GetDisplayName(), issue.Location.Path);
                         }
                         else
                         {
@@ -404,7 +404,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                         break;
                 }
-                if (issue.wasFixed)
+                if (issue.WasFixed)
                     GUI.enabled = true;
                 else if (rule != null && rule.Severity == Severity.None)
                     GUI.enabled = true;
@@ -440,9 +440,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 return;
 
             var issue = tableItem.ProjectIssue;
-            if (issue != null && issue.location != null && issue.location.IsValid())
+            if (issue != null && issue.Location != null && issue.Location.IsValid())
             {
-                m_Desc.onOpenIssue(issue.location);
+                m_Desc.onOpenIssue(issue.Location);
             }
         }
 
@@ -492,28 +492,28 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 if (item.ProjectIssue != null)
                 {
-                    if (m_Desc.onOpenIssue != null && item.ProjectIssue.location != null)
+                    if (m_Desc.onOpenIssue != null && item.ProjectIssue.Location != null)
                     {
                         menu.AddItem(Utility.OpenIssue, false, () =>
                         {
-                            m_Desc.onOpenIssue(item.ProjectIssue.location);
+                            m_Desc.onOpenIssue(item.ProjectIssue.Location);
                         });
                     }
-                    menu.AddItem(new GUIContent($"Filter by '{item.ProjectIssue.description.Replace("/", "\u2215")}'") , false, () =>
+                    menu.AddItem(new GUIContent($"Filter by '{item.ProjectIssue.Description.Replace("/", "\u2215")}'") , false, () =>
                     {
-                        m_View.SetSearch(item.ProjectIssue.description);
+                        m_View.SetSearch(item.ProjectIssue.Description);
                     });
                 }
 
-                if (m_Desc.onOpenIssue != null && item.ProjectIssue != null && item.ProjectIssue.location != null)
+                if (m_Desc.onOpenIssue != null && item.ProjectIssue != null && item.ProjectIssue.Location != null)
                 {
                     menu.AddItem(Utility.OpenIssue, false, () =>
                     {
-                        m_Desc.onOpenIssue(item.ProjectIssue.location);
+                        m_Desc.onOpenIssue(item.ProjectIssue.Location);
                     });
                 }
 
-                var desc = item.ProjectIssue != null && item.ProjectIssue.id.IsValid() ? item.ProjectIssue.id.GetDescriptor() : null;
+                var desc = item.ProjectIssue != null && item.ProjectIssue.Id.IsValid() ? item.ProjectIssue.Id.GetDescriptor() : null;
                 if (m_Desc.onOpenManual != null && desc != null && desc.type.StartsWith("UnityEngine."))
                 {
                     menu.AddItem(Utility.OpenScriptReference, false, () =>

@@ -59,10 +59,7 @@ namespace Unity.ProjectAuditor.Editor
                 }
             }
 
-#if UNITY_2020_2_OR_NEWER
-            [NonReorderable]
-#endif
-            [JsonIgnore] [SerializeField]
+            [NonReorderable] [JsonIgnore] [SerializeField]
             List<ParamKeyValue> m_SerializedParams = new List<ParamKeyValue>();
 
             public PlatformParams()
@@ -122,10 +119,7 @@ namespace Unity.ProjectAuditor.Editor
         }
         #endregion
 
-#if UNITY_2020_2_OR_NEWER
-        [NonReorderable]
-#endif
-        [JsonProperty("paramsStack")] [SerializeField]
+        [NonReorderable] [JsonProperty("paramsStack")] [SerializeField]
         internal List<PlatformParams> m_ParamsStack = new List<PlatformParams>();
 
         [JsonProperty] [SerializeField]

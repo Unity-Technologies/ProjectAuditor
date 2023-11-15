@@ -64,11 +64,11 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var description = "a title";
             var diagnostic = new ProjectIssue(IssueCategory.Code, description);
-            Assert.AreEqual(string.Empty, diagnostic.filename);
-            Assert.AreEqual(string.Empty, diagnostic.relativePath);
+            Assert.AreEqual(string.Empty, diagnostic.Filename);
+            Assert.AreEqual(string.Empty, diagnostic.RelativePath);
             Assert.AreEqual(string.Empty, diagnostic.GetContext());
-            Assert.AreEqual(description, diagnostic.description);
-            Assert.AreNotEqual(Severity.Critical, diagnostic.severity);
+            Assert.AreEqual(description, diagnostic.Description);
+            Assert.AreNotEqual(Severity.Critical, diagnostic.Severity);
 
             Assert.IsFalse(diagnostic.IsMajorOrCritical());
         }
@@ -78,11 +78,11 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var description = "a title";
             var diagnostic = new ProjectIssue(IssueCategory.Code, m_Descriptor.id,  "dummy");
-            Assert.AreEqual(string.Empty, diagnostic.filename);
-            Assert.AreEqual(string.Empty, diagnostic.relativePath);
+            Assert.AreEqual(string.Empty, diagnostic.Filename);
+            Assert.AreEqual(string.Empty, diagnostic.RelativePath);
             Assert.AreEqual(string.Empty, diagnostic.GetContext());
-            Assert.AreEqual(description, diagnostic.description);
-            Assert.AreNotEqual(Severity.Critical, diagnostic.severity);
+            Assert.AreEqual(description, diagnostic.Description);
+            Assert.AreNotEqual(Severity.Critical, diagnostic.Severity);
 
             Assert.IsFalse(diagnostic.IsMajorOrCritical());
         }
@@ -91,11 +91,11 @@ namespace Unity.ProjectAuditor.EditorTests
         public void ProjectIssue_NewIssue_IsFormatted()
         {
             var diagnostic = new ProjectIssue(IssueCategory.Code, m_DescriptorWithMessage.id, "dummy");
-            Assert.AreEqual(string.Empty, diagnostic.filename);
-            Assert.AreEqual(string.Empty, diagnostic.relativePath);
+            Assert.AreEqual(string.Empty, diagnostic.Filename);
+            Assert.AreEqual(string.Empty, diagnostic.RelativePath);
             Assert.AreEqual(string.Empty, diagnostic.GetContext());
-            Assert.AreEqual("this is a message with argument dummy", diagnostic.description);
-            Assert.AreNotEqual(Severity.Critical, diagnostic.severity);
+            Assert.AreEqual("this is a message with argument dummy", diagnostic.Description);
+            Assert.AreNotEqual(Severity.Critical, diagnostic.Severity);
 
             Assert.IsFalse(diagnostic.IsMajorOrCritical());
         }
@@ -105,13 +105,13 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var description = "a title of a critical problem";
             var diagnostic = new ProjectIssue(IssueCategory.Code, m_CriticalIssueDescriptor.id, description);
-            Assert.AreEqual(string.Empty, diagnostic.filename);
-            Assert.AreEqual(string.Empty, diagnostic.relativePath);
+            Assert.AreEqual(string.Empty, diagnostic.Filename);
+            Assert.AreEqual(string.Empty, diagnostic.RelativePath);
             Assert.AreEqual(string.Empty, diagnostic.GetContext());
-            Assert.AreEqual(description, diagnostic.description);
+            Assert.AreEqual(description, diagnostic.Description);
 
             // the issue should be critical as per the descriptor
-            Assert.AreEqual(Severity.Critical, diagnostic.severity);
+            Assert.AreEqual(Severity.Critical, diagnostic.Severity);
 
             Assert.IsTrue(diagnostic.IsMajorOrCritical());
         }
@@ -120,13 +120,13 @@ namespace Unity.ProjectAuditor.EditorTests
         public IEnumerator ProjectIssue_Priority_PersistsAfterDomainReload()
         {
             m_Issue = new ProjectIssue(IssueCategory.Code, m_Descriptor.id);
-            m_Issue.severity = Severity.Major;
+            m_Issue.Severity = Severity.Major;
 
 #if UNITY_2019_3_OR_NEWER
             EditorUtility.RequestScriptReload();
             yield return new WaitForDomainReload();
 
-            Assert.AreEqual(Severity.Major, m_Issue.severity);
+            Assert.AreEqual(Severity.Major, m_Issue.Severity);
 #else
             yield return null;
 #endif
@@ -204,7 +204,7 @@ namespace Unity.ProjectAuditor.EditorTests
             ProjectIssue issue = context.Create(IssueCategory.Code, m_Descriptor.id)
                 .WithLogLevel(logLevel);
 
-            Assert.AreEqual(logLevel, issue.logLevel);
+            Assert.AreEqual(logLevel, issue.LogLevel);
             Assert.AreEqual(logLevel.ToString(), issue.GetProperty(PropertyType.LogLevel));
         }
     }

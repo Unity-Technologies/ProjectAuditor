@@ -11,27 +11,16 @@ namespace Unity.ProjectAuditor.Editor
     /// These can be viewed and edited in the Settings > Project Auditor window in the Editor and are saved in ProjectSettings/ProjectAuditorSettings.asset, but
     /// they are not directly exposed to scripts in the package API.
     /// </remarks>
-#if UNITY_2020_1_OR_NEWER
-    // FilePathAttribute.Location was private before 2020.1, meaning FilePathAttribute didn't work.
-    // Everything else works fine if we disable this in old versions of Unity, except that Rules and DiagnosticParams
-    // unfortunately don't persist between sessions and can't be edited in the Settings window.
     [FilePath("ProjectSettings/ProjectAuditorSettings.asset", FilePathAttribute.Location.ProjectFolder)]
-#endif
     public class ProjectAuditorSettings : ScriptableSingleton<ProjectAuditorSettings>
     {
-        // <summary>
-        /// The SeverityRules object which defines which issues should be ignored or given increased severity when viewing reports.
-        /// </summary>
+        // The SeverityRules object which defines which issues should be ignored or given increased severity when viewing reports.
         [SerializeField] internal SeverityRules Rules;
 
-        /// <summary>
-        /// The DiagnosticParams object which defines the customizable thresholds for reporting certain diagnostics.
-        /// </summary>
+        // The DiagnosticParams object which defines the customizable thresholds for reporting certain diagnostics.
         [SerializeField] internal DiagnosticParams DiagnosticParams;
 
-        /// <summary>
-        /// Default constructor.
-        /// </summary>
+        // Default constructor.
         internal ProjectAuditorSettings()
         {
             Rules = new SeverityRules();

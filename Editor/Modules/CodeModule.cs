@@ -256,10 +256,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var onCompleteInternal = new Action<IProgress>(bar =>
             {
                 // remove issues if platform does not match
-                foundIssues.RemoveAll(i => i.id.IsValid() &&
-                    !i.id.GetDescriptor().IsApplicable(analysisParams));
+                foundIssues.RemoveAll(i => i.Id.IsValid() &&
+                    !i.Id.GetDescriptor().IsApplicable(analysisParams));
 
-                var diagnostics = foundIssues.Where(i => i.category != IssueCategory.GenericInstance).ToList();
+                var diagnostics = foundIssues.Where(i => i.Category != IssueCategory.GenericInstance).ToList();
                 Profiler.BeginSample("CodeModule.Audit.BuildCallHierarchies");
                 compilationPipeline.Dispose();
                 callCrawler.BuildCallHierarchies(diagnostics, bar);
@@ -267,16 +267,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var d in diagnostics)
                 {
-                    // bump Severity if issue is found in a hot-path
-                    if (!d.IsMajorOrCritical() && d.dependencies != null && d.dependencies.perfCriticalContext)
+                    // bump severity if issue is found in a hot-path
+                    if (!d.IsMajorOrCritical() && d.Dependencies != null && d.Dependencies.perfCriticalContext)
                     {
-                        switch (d.severity)
+                        switch (d.Severity)
                         {
                             case Severity.Minor:
-                                d.severity = Severity.Moderate;
+                                d.Severity = Severity.Moderate;
                                 break;
                             case Severity.Moderate:
-                                d.severity = Severity.Major;
+                                d.Severity = Severity.Major;
                                 break;
                         }
                     }

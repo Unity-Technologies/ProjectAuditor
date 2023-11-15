@@ -194,7 +194,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
                 return;
 
             fixer(issue);
-            issue.wasFixed = true;
+            issue.WasFixed = true;
         }
 
         /// <summary>Returns the hash code for the Descriptor's Issue ID.</summary>

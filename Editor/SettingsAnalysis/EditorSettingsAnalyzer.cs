@@ -4,7 +4,6 @@ using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using UnityEditor;
 
-#if UNITY_2020_1_OR_NEWER
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
     class EditorSettingsAnalyzer : ISettingsModuleAnalyzer
@@ -12,7 +11,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         internal const string PAS0035 = nameof(PAS0035);
         internal const string PAS0036 = nameof(PAS0036);
 
-        private static readonly Descriptor k_EnterPlayModeOptionsDescriptor = new Descriptor(
+        static readonly Descriptor k_EnterPlayModeOptionsDescriptor = new Descriptor(
             PAS0035,
             "Editor: Enter Play Mode Options is not enabled",
             new[] { Area.IterationTime },
@@ -27,7 +26,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             }
         };
 
-        private static readonly Descriptor k_DomainReloadDescriptor = new Descriptor(
+        static readonly Descriptor k_DomainReloadDescriptor = new Descriptor(
             PAS0036,
             "Editor: Reload Domain is enabled",
             new[] { Area.IterationTime },
@@ -68,4 +67,3 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         }
     }
 }
-#endif

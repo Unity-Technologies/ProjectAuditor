@@ -28,11 +28,9 @@ namespace Unity.ProjectAuditor.Editor.Utils
             // Skip textures of unsupported dimensions
             if (!(
                 texture.dimension == UnityEngine.Rendering.TextureDimension.Tex2D
-#if PA_CAN_USE_TEXTURE_MIPMAPCOUNT
                 || texture.dimension == UnityEngine.Rendering.TextureDimension.Tex2DArray
                 || texture.dimension == UnityEngine.Rendering.TextureDimension.Tex3D
                 || texture.dimension == UnityEngine.Rendering.TextureDimension.Cube
-#endif
                 ))
                 return false;
 
@@ -84,7 +82,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
                     break;
                 }
 
-#if PA_CAN_USE_TEXTURE_MIPMAPCOUNT
                 case UnityEngine.Rendering.TextureDimension.Tex2DArray:
                 {
                     Texture2DArray texture2DArray = texture as Texture2DArray;
@@ -156,7 +153,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
                     break;
                 }
-#endif
             }
 
             return isTooBig;
@@ -467,37 +463,14 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         static Texture2D CopyTexture(Texture2D texture)
         {
-#if PA_CAN_USE_TEXTURE_MIPMAPCOUNT
-            Texture2D newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1);
+            var newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1);
             Graphics.CopyTexture(texture, newTexture);
-#else
-            RenderTexture tmp = RenderTexture.GetTemporary(
-                texture.width,
-                texture.height,
-                0,
-                RenderTextureFormat.ARGB32,
-                RenderTextureReadWrite.Default);
 
-
-            // Backup the currently set RenderTexture
-            RenderTexture previous = RenderTexture.active;
-
-            Graphics.Blit(texture, tmp);
-            RenderTexture.active = tmp;
-
-            Texture2D newTexture = new Texture2D(texture.width, texture.height);
-            newTexture.ReadPixels(new Rect(0, 0, tmp.width, tmp.height), 0, 0);
-            newTexture.Apply();
-
-            RenderTexture.active = previous;
-            RenderTexture.ReleaseTemporary(tmp);
-#endif
             newTexture.name = texture.name + " (temp)";
 
             return newTexture;
         }
 
-#if PA_CAN_USE_TEXTURE_MIPMAPCOUNT
         static Texture2DArray CopyTexture(Texture2DArray texture)
         {
             Texture2DArray newTexture = new Texture2DArray(texture.width, texture.height, texture.depth, texture.format, texture.mipmapCount != 1);
@@ -524,8 +497,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             return newTexture;
         }
-
-#endif
 
         static TextureFormat GetUncrunchedFormat(TextureFormat format)
         {

@@ -1,6 +1,4 @@
 test_editors:
-  - version: 2018.4
-  - version: 2019.4
   - version: 2020.3
   - version: 2021.3
   - version: 2022.3

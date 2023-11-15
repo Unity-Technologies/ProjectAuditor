@@ -127,7 +127,7 @@ class ShaderWarmUpIssueIsCritical
         {
             var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInSimpleClass);
             var issue = issues.First();
-            Assert.AreEqual(Severity.Moderate, issue.severity);
+            Assert.AreEqual(Severity.Moderate, issue.Severity);
         }
 
         [Test]
@@ -135,7 +135,7 @@ class ShaderWarmUpIssueIsCritical
         {
             var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInMonoBehaviourUpdate);
             var issue = issues.First();
-            Assert.AreEqual(Severity.Major, issue.severity);
+            Assert.AreEqual(Severity.Major, issue.Severity);
         }
 
         [Test]
@@ -143,7 +143,7 @@ class ShaderWarmUpIssueIsCritical
         {
             var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInMonoBehaviourOnAnimatorMove);
             var issue = issues.First();
-            Assert.AreEqual(Severity.Major, issue.severity);
+            Assert.AreEqual(Severity.Major, issue.Severity);
         }
 
         [Test]
@@ -151,7 +151,7 @@ class ShaderWarmUpIssueIsCritical
         {
             var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInMonoBehaviourOnRenderObject);
             var issue = issues.First();
-            Assert.AreEqual(Severity.Major, issue.severity);
+            Assert.AreEqual(Severity.Major, issue.Severity);
         }
 
         [Test]
@@ -161,7 +161,7 @@ class ShaderWarmUpIssueIsCritical
                 AnalyzeAndFindAssetIssues(
                     m_TestAssetIssueInClassMethodCalledFromMonoBehaviourUpdate);
             var issue = issues.First();
-            Assert.AreEqual(Severity.Major, issue.severity);
+            Assert.AreEqual(Severity.Major, issue.Severity);
         }
 
         [Test]
@@ -171,7 +171,7 @@ class ShaderWarmUpIssueIsCritical
                 AnalyzeAndFindAssetIssues(
                     m_TestAssetIssueInClassInheritedFromMonoBehaviour);
             var issue = issues.First();
-            Assert.AreEqual(Severity.Major, issue.severity);
+            Assert.AreEqual(Severity.Major, issue.Severity);
         }
 
         [UnityTest]
@@ -182,12 +182,12 @@ class ShaderWarmUpIssueIsCritical
                     m_TestAssetIssueInClassInheritedFromMonoBehaviour);
             m_Issue = issues.First();
 
-            Assert.AreEqual(Severity.Major, m_Issue.severity);
+            Assert.AreEqual(Severity.Major, m_Issue.Severity);
 #if UNITY_2019_3_OR_NEWER
             EditorUtility.RequestScriptReload();
             yield return new WaitForDomainReload();
 
-            Assert.AreEqual(Severity.Major, m_Issue.severity);
+            Assert.AreEqual(Severity.Major, m_Issue.Severity);
 #else
             yield return null;
 #endif
@@ -200,7 +200,7 @@ class ShaderWarmUpIssueIsCritical
                 AnalyzeAndFindAssetIssues(
                     m_TestAssetShaderWarmupIssueIsCritical);
             var issue = issues.First();
-            Assert.AreEqual(Severity.Major, issue.severity);
+            Assert.AreEqual(Severity.Major, issue.Severity);
         }
     }
 }

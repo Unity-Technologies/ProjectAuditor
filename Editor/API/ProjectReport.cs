@@ -91,16 +91,6 @@ namespace Unity.ProjectAuditor.Editor
         [JsonIgnore] [SerializeField]
         string m_Version = k_CurrentVersion;
 
-        /// <summary>
-        /// File format version of the ProjectReport (read-only).
-        /// </summary>
-        [JsonProperty("version")]
-        public string Version
-        {
-            get => m_Version;
-            internal set => m_Version = value;
-        }
-
         // stephenm TODO: ModuleInfo serializes to JSON but isn't accessible in any meaningful way if a script just has a ProjectReport object it wants to query. Figure out some API for this? Phase 2.
         // Keeping this internal for now. Exposing this means exposing IssueLayout, which means exposing PropertyDefinition, which to be useful means exposing every enum that can
         // be passed to PropertyTypeUtil.FromCustom() (basically one per view). I'd love to find a more elegant way to do this.
@@ -138,7 +128,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
-                return m_Issues.Where(i => !i.wasFixed).ToArray();
+                return m_Issues.Where(i => !i.WasFixed).ToArray();
             }
             set => m_Issues = value.ToList();
         }
@@ -166,6 +156,15 @@ namespace Unity.ProjectAuditor.Editor
         [JsonIgnore]
         public int NumTotalIssues => m_Issues.Count;
 
+        /// <summary>
+        /// File format version of the ProjectReport (read-only).
+        /// </summary>
+        [JsonProperty("version")]
+        public string Version
+        {
+            get => m_Version;
+            internal set => m_Version = value;
+        }
         // for serialization purposes only
         internal ProjectReport()
         {}
@@ -194,11 +193,11 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Checks whether the ProjectReport includes analysis for a given IssueCategory.
         /// </summary>
-        /// <param name="category">The IssuesCategory to check</param>
+        /// <param name="Category">The IssuesCategory to check</param>
         /// <returns>True if ProjectAuditor ran one or more Modules that reports issues of the specified IssueCategory. Otherwise, returns false.</returns>
-        public bool HasCategory(IssueCategory category)
+        public bool HasCategory(IssueCategory Category)
         {
-            return category == IssueCategory.Metadata || m_ModuleInfos.Any(m => m.categories.Contains(category));
+            return Category == IssueCategory.Metadata || m_ModuleInfos.Any(m => m.categories.Contains(Category));
         }
 
         /// <summary>
@@ -216,12 +215,12 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Get total number of issues for a specific IssueCategory.
         /// </summary>
-        /// <param name="category"> Desired IssueCategory</param>
+        /// <param name="Category"> Desired IssueCategory</param>
         /// <returns> Number of project issues</returns>
-        public int GetNumIssues(IssueCategory category)
+        public int GetNumIssues(IssueCategory Category)
         {
             s_Mutex.WaitOne();
-            var result = m_Issues.Count(i => i.category == category);
+            var result = m_Issues.Count(i => i.Category == Category);
             s_Mutex.ReleaseMutex();
             return result;
         }
@@ -229,12 +228,12 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// find all issues for a specific IssueCategory.
         /// </summary>
-        /// <param name="category"> Desired IssueCategory</param>
+        /// <param name="Category"> Desired IssueCategory</param>
         /// <returns> Array of project issues</returns>
-        public IReadOnlyCollection<ProjectIssue> FindByCategory(IssueCategory category)
+        public IReadOnlyCollection<ProjectIssue> FindByCategory(IssueCategory Category)
         {
             s_Mutex.WaitOne();
-            var result = m_Issues.Where(i => i.category == category).ToArray();
+            var result = m_Issues.Where(i => i.Category == Category).ToArray();
             s_Mutex.ReleaseMutex();
             return result;
         }
@@ -247,7 +246,7 @@ namespace Unity.ProjectAuditor.Editor
         public IReadOnlyCollection<ProjectIssue> FindByDescriptorID(string id)
         {
             s_Mutex.WaitOne();
-            var result = m_Issues.Where(i => i.id.IsValid() && i.id.Equals(id)).ToArray();
+            var result = m_Issues.Where(i => i.Id.IsValid() && i.Id.Equals(id)).ToArray();
             s_Mutex.ReleaseMutex();
             return result;
         }
@@ -255,15 +254,15 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Clears all issues that match the specified IssueCategory from the report.
         /// </summary>
-        /// <param name="category">The IssueCategory of the issues to remove.</param>
-        public void ClearIssues(IssueCategory category)
+        /// <param name="Category">The IssueCategory of the issues to remove.</param>
+        public void ClearIssues(IssueCategory Category)
         {
             s_Mutex.WaitOne();
-            m_Issues.RemoveAll(issue => issue.category == category);
+            m_Issues.RemoveAll(issue => issue.Category == Category);
             foreach (var info in m_ModuleInfos)
             {
                 var categories = info.categories.ToList();
-                categories.RemoveAll(c => c == category);
+                categories.RemoveAll(c => c == Category);
                 info.categories = categories.ToArray();
             }
             m_ModuleInfos.RemoveAll(info => info.categories.Length == 0);
@@ -310,7 +309,7 @@ namespace Unity.ProjectAuditor.Editor
         // and if they should, it means also exposing IssueLayout and the data types it uses, which opens a whole can of worms.
         internal void ExportToCsv(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
         {
-            var issues = m_Issues.Where(i => i.category == layout.category && (predicate == null || predicate(i))).ToArray();
+            var issues = m_Issues.Where(i => i.Category == layout.category && (predicate == null || predicate(i))).ToArray();
             using (var exporter = new CsvExporter(path, layout))
             {
                 exporter.WriteHeader();
@@ -322,7 +321,7 @@ namespace Unity.ProjectAuditor.Editor
         // and if they should, it means also exposing IssueLayout and the data types it uses, which opens a whole can of worms.
         internal void ExportToHtml(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
         {
-            var issues = m_Issues.Where(i => i.category == layout.category && (predicate == null || predicate(i))).ToArray();
+            var issues = m_Issues.Where(i => i.Category == layout.category && (predicate == null || predicate(i))).ToArray();
             using (var exporter = new HtmlExporter(path, layout))
             {
                 exporter.WriteHeader();

@@ -66,11 +66,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         static bool IsNotUsingSimulationModeScript()
         {
-#if UNITY_2020_2_OR_NEWER
             return Physics2D.simulationMode != SimulationMode2D.Script;
-#else
-            return false;
-#endif
         }
     }
 }

@@ -41,18 +41,18 @@ class MyClass
             var myIssue = issues.FirstOrDefault();
 
             Assert.NotNull(myIssue);
-            var descriptor = myIssue.id.GetDescriptor();
+            var descriptor = myIssue.Id.GetDescriptor();
 
             Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
-            Assert.AreEqual("PAC1000", myIssue.id.ToString());
+            Assert.AreEqual("PAC1000", myIssue.Id.ToString());
             Assert.AreEqual("System.Linq", descriptor.type);
             Assert.AreEqual("*", descriptor.method);
 
-            Assert.AreEqual(m_TestAsset.fileName, myIssue.filename);
-            Assert.AreEqual("'System.Linq.Enumerable.Count' usage", myIssue.description, "Description: {0}", myIssue.description);
+            Assert.AreEqual(m_TestAsset.fileName, myIssue.Filename);
+            Assert.AreEqual("'System.Linq.Enumerable.Count' usage", myIssue.Description, "Description: {0}", myIssue.Description);
             Assert.AreEqual("System.Int32 MyClass::Dummy(System.Collections.Generic.List`1<System.Int32>)", myIssue.GetContext());
-            Assert.AreEqual(9, myIssue.line);
-            Assert.AreEqual(IssueCategory.Code, myIssue.category);
+            Assert.AreEqual(9, myIssue.Line);
+            Assert.AreEqual(IssueCategory.Code, myIssue.Category);
         }
     }
 }

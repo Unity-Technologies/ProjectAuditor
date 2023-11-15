@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Removed
 * Actions section and Mute/Unmute buttons
 * Settings from ProjectAuditorConfig
+* Support for Unity 2018 and 2019.
 
 ### Fixed
 * Analysis never completes if an exception is thrown
