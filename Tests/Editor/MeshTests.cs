@@ -30,9 +30,6 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-#if !UNITY_2019_3_OR_NEWER
-        [Ignore("This requires the new Mesh API")]
-#endif
         public void Mesh_Using32bitIndexFormat_IsReported()
         {
             var foundIssues = AnalyzeAndFindAssetIssues(m_TestSmallMeshAsset, IssueCategory.AssetDiagnostic);

@@ -20,12 +20,7 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_TestAsmdef;
 #pragma warning restore 0414
 
-#if UNITY_2020_1_OR_NEWER
         static readonly string k_ExpectedDescription = "Invalid token '}' in class, record, struct, or interface member declaration";
-#else
-        static readonly string k_ExpectedDescription = "Invalid token '}' in class, struct, or interface member declaration";
-#endif
-
         static readonly string k_ExpectedMessage = $"{PathUtils.Combine(TestAsset.TempAssetsFolder,"ScriptWithError.cs")}(6,1): error CS1519: {k_ExpectedDescription}";
 
         const string k_ExpectedCode = "CS1519";

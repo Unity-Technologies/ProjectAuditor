@@ -24,10 +24,10 @@ namespace Unity.ProjectAuditor.Editor.Core
         /// <summary>
         /// Whether this node forms part of a performance-critical context
         /// </summary>
-        /// <description>
+        /// <remarks>
         /// If the node represents part of a code call stack, perfCriticalContext is true if that callstack
         /// includes a known update method (for example, a MonoBehaviour.Update())
-        /// </description>
+        /// </remarks>
         public bool perfCriticalContext;
 
         /// <summary>

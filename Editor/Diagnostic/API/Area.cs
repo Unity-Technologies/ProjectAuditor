@@ -1,7 +1,7 @@
 namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
     /// <summary>
-    /// Affected area
+    /// Which area(s) of a project may be affected by a ProjectIssue.
     /// </summary>
     public enum Area
     {

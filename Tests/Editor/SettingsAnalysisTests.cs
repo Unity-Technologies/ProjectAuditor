@@ -138,142 +138,6 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.True(issues.Length == 0);
         }
 
-        [Test]
-        public void SettingsAnalysis_Default_QualityAsyncUploadTimeSlice_IsReported()
-        {
-            Assert.True(QualitySettings.names.Length > 0, "Expected at least one Quality Settings entry, not zero/none. Test is incomplete.");
-
-            var qualityLevel = QualitySettings.GetQualityLevel();
-            QualitySettings.SetQualityLevel(0);
-
-            var timeSlice = QualitySettings.asyncUploadTimeSlice;
-            QualitySettings.asyncUploadTimeSlice = 2;
-
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(QualitySettingsAnalyzer.PAS0020));
-
-            QualitySettings.asyncUploadTimeSlice = timeSlice;
-            QualitySettings.SetQualityLevel(qualityLevel);
-
-            Assert.True(issues.Any(i => i.Location.Path.Equals("Project/Quality")));
-        }
-
-        [Test]
-        public void SettingsAnalysis_NonDefault_QualityAsyncUploadTimeSlice_IsNotReported()
-        {
-            Assert.True(QualitySettings.names.Length > 0, "Expected at least one Quality Settings entry, not zero/none. Test is incomplete.");
-
-            var qualityLevel = QualitySettings.GetQualityLevel();
-            var timeSliceValues = new int[QualitySettings.names.Length];
-
-            for (int i = 0; i < QualitySettings.names.Length; ++i)
-            {
-                QualitySettings.SetQualityLevel(i);
-                timeSliceValues[i] = QualitySettings.asyncUploadTimeSlice;
-                QualitySettings.asyncUploadTimeSlice = 10;
-            }
-
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(QualitySettingsAnalyzer.PAS0020));
-
-            for (int i = 0; i < QualitySettings.names.Length; ++i)
-            {
-                QualitySettings.SetQualityLevel(i);
-                QualitySettings.asyncUploadTimeSlice = timeSliceValues[i];
-            }
-
-            QualitySettings.SetQualityLevel(qualityLevel);
-
-            Assert.True(issues.Length == 0);
-        }
-
-        [Test]
-        public void SettingsAnalysis_Default_QualityAsyncUploadBufferSize_IsReported()
-        {
-            Assert.True(QualitySettings.names.Length > 0, "Expected at least one Quality Settings entry, not zero/none. Test is incomplete.");
-
-            var qualityLevel = QualitySettings.GetQualityLevel();
-            QualitySettings.SetQualityLevel(0);
-
-            var bufferSize = QualitySettings.asyncUploadBufferSize;
-            QualitySettings.asyncUploadBufferSize = 4;
-
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(QualitySettingsAnalyzer.PAS0021));
-
-            QualitySettings.asyncUploadBufferSize = bufferSize;
-            QualitySettings.SetQualityLevel(qualityLevel);
-
-            Assert.True(issues.Any(i => i.Location.Path.Equals("Project/Quality")));
-        }
-
-        [Test]
-        public void SettingsAnalysis_NonDefault_QualityAsyncUploadBufferSize_IsNotReported()
-        {
-            Assert.True(QualitySettings.names.Length > 0, "Expected at least one Quality Settings entry, not zero/none. Test is incomplete.");
-
-            var qualityLevel = QualitySettings.GetQualityLevel();
-            var bufferValues = new int[QualitySettings.names.Length];
-
-            for (int i = 0; i < QualitySettings.names.Length; ++i)
-            {
-                QualitySettings.SetQualityLevel(i);
-                bufferValues[i] = QualitySettings.asyncUploadBufferSize;
-                QualitySettings.asyncUploadBufferSize = 10;
-            }
-
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(QualitySettingsAnalyzer.PAS0021));
-
-            for (int i = 0; i < QualitySettings.names.Length; ++i)
-            {
-                QualitySettings.SetQualityLevel(i);
-                QualitySettings.asyncUploadBufferSize = bufferValues[i];
-            }
-
-            QualitySettings.SetQualityLevel(qualityLevel);
-
-            Assert.True(issues.Length == 0);
-        }
-
-        [Test]
-        public void SettingsAnalysis_Quality_Disabled_TextureStreaming_IsReported()
-        {
-            Assert.True(QualitySettings.names.Length > 0, "Expected at least one Quality Settings entry, not zero/none. Test is incomplete.");
-
-            var settingsName = QualitySettings.names[0];
-
-            var qualityLevel = QualitySettings.GetQualityLevel();
-            QualitySettings.SetQualityLevel(0);
-
-            var mipmapsActive = QualitySettings.streamingMipmapsActive;
-            QualitySettings.streamingMipmapsActive = false;
-
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(QualitySettingsAnalyzer.PAS1007));
-
-            QualitySettings.streamingMipmapsActive = mipmapsActive;
-            QualitySettings.SetQualityLevel(qualityLevel);
-
-            Assert.True(issues.Any(i => i.Location.Path.Equals("Project/Quality/" + settingsName)));
-        }
-
-        [Test]
-        public void SettingsAnalysis_Quality_Enabled_TextureStreaming_IsNotReported()
-        {
-            Assert.True(QualitySettings.names.Length > 0, "Expected at least one Quality Settings entry, not zero/none. Test is incomplete.");
-
-            var settingsName = QualitySettings.names[0];
-
-            var qualityLevel = QualitySettings.GetQualityLevel();
-            QualitySettings.SetQualityLevel(0);
-
-            var mipmapsActive = QualitySettings.streamingMipmapsActive;
-            QualitySettings.streamingMipmapsActive = true;
-
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(QualitySettingsAnalyzer.PAS1007));
-
-            QualitySettings.streamingMipmapsActive = mipmapsActive;
-            QualitySettings.SetQualityLevel(qualityLevel);
-
-            Assert.True(issues.Any(i => i.Location.Path.Equals("Project/Quality/" + settingsName)) == false);
-        }
-
 #if !PACKAGE_HYBRID_RENDERER
         [Ignore("This requires the Hybrid Renderer package")]
 #endif
@@ -483,9 +347,8 @@ namespace Unity.ProjectAuditor.EditorTests
             var tier1settings = EditorGraphicsSettings.GetTierSettings(buildTargetGroup, GraphicsTier.Tier1);
             var tier2settings = EditorGraphicsSettings.GetTierSettings(buildTargetGroup, GraphicsTier.Tier2);
             var tier3settings = EditorGraphicsSettings.GetTierSettings(buildTargetGroup, GraphicsTier.Tier3);
-#if UNITY_2019_3_OR_NEWER
             var defaultRenderPipeline = GraphicsSettings.defaultRenderPipeline;
-#endif
+
             tier1settings.standardShaderQuality = ShaderQuality.High;
             tier2settings.standardShaderQuality = ShaderQuality.High;
             tier3settings.standardShaderQuality = isMixed ? ShaderQuality.Low : ShaderQuality.High;
@@ -493,17 +356,16 @@ namespace Unity.ProjectAuditor.EditorTests
             EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier1, tier1settings);
             EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier2, tier2settings);
             EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier3, tier3settings);
-#if UNITY_2019_3_OR_NEWER
+
             GraphicsSettings.defaultRenderPipeline = null;
-#endif
+
             Assert.AreEqual(isMixed, BuiltinRenderPipelineAnalyzer.IsMixedStandardShaderQuality(buildTarget));
 
             EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier1, savedTier1settings);
             EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier2, savedTier2settings);
             EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier3, savedTier3settings);
-#if UNITY_2019_3_OR_NEWER
+
             GraphicsSettings.defaultRenderPipeline = defaultRenderPipeline;
-#endif
         }
 
         [TestCase(RenderingPath.Forward)]
@@ -519,9 +381,8 @@ namespace Unity.ProjectAuditor.EditorTests
             var tier1settings = EditorGraphicsSettings.GetTierSettings(buildTargetGroup, GraphicsTier.Tier1);
             var tier2settings = EditorGraphicsSettings.GetTierSettings(buildTargetGroup, GraphicsTier.Tier2);
             var tier3settings = EditorGraphicsSettings.GetTierSettings(buildTargetGroup, GraphicsTier.Tier3);
-#if UNITY_2019_3_OR_NEWER
             var defaultRenderPipeline = GraphicsSettings.defaultRenderPipeline;
-#endif
+
             tier1settings.renderingPath = renderingPath;
             tier2settings.renderingPath = renderingPath;
             tier3settings.renderingPath = renderingPath;
@@ -529,9 +390,9 @@ namespace Unity.ProjectAuditor.EditorTests
             EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier1, tier1settings);
             EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier2, tier2settings);
             EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier3, tier3settings);
-#if UNITY_2019_3_OR_NEWER
+
             GraphicsSettings.defaultRenderPipeline = null;
-#endif
+
             if (renderingPath == RenderingPath.Forward)
             {
                 Assert.AreEqual(true, BuiltinRenderPipelineAnalyzer.IsUsingForwardRendering(buildTarget));
@@ -546,9 +407,8 @@ namespace Unity.ProjectAuditor.EditorTests
             EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier1, savedTier1settings);
             EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier2, savedTier2settings);
             EditorGraphicsSettings.SetTierSettings(buildTargetGroup, GraphicsTier.Tier3, savedTier3settings);
-#if UNITY_2019_3_OR_NEWER
+
             GraphicsSettings.defaultRenderPipeline = defaultRenderPipeline;
-#endif
         }
 
         [Test]
@@ -784,88 +644,8 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void SettingsAnalysis_MipmapStreaming_Disabled_Reported()
-        {
-            int initialQualityLevel = QualitySettings.GetQualityLevel();
-            List<bool> qualityLevelsValues = new List<bool>();
-
-            for (var i = 0; i < QualitySettings.names.Length; i++)
-            {
-                QualitySettings.SetQualityLevel(i);
-                qualityLevelsValues.Add(QualitySettings.streamingMipmapsActive);
-                QualitySettings.streamingMipmapsActive = false;
-
-                var id = QualitySettingsAnalyzer.PAS1007;
-                var issues = Analyze(IssueCategory.ProjectSetting, j => j.Id.Equals(id));
-                var qualitySettingIssue = issues.FirstOrDefault();
-
-                Assert.NotNull(qualitySettingIssue);
-            }
-
-            ResetQualityLevelsValues(qualityLevelsValues);
-            QualitySettings.SetQualityLevel(initialQualityLevel);
-        }
-
-        [Test]
-        public void SettingsAnalysis_MipmapStreaming_Enabled_Is_Not_Reported()
-        {
-            var initialQualityLevel = QualitySettings.GetQualityLevel();
-            var qualityLevelsValues = new List<bool>();
-
-            for (var i = 0; i < QualitySettings.names.Length; i++)
-            {
-                QualitySettings.SetQualityLevel(i);
-                qualityLevelsValues.Add(QualitySettings.streamingMipmapsActive);
-
-                QualitySettings.streamingMipmapsActive = true;
-            }
-
-            var id = QualitySettingsAnalyzer.PAS1007;
-            var issues = Analyze(IssueCategory.ProjectSetting, j => j.Id.Equals(id));
-            var qualitySettingIssue = issues.FirstOrDefault();
-
-            Assert.IsNull(qualitySettingIssue);
-
-            ResetQualityLevelsValues(qualityLevelsValues);
-            QualitySettings.SetQualityLevel(initialQualityLevel);
-        }
-
-        [Test]
-        public void SettingsAnalysis_Enable_StreamingMipmap()
-        {
-            var initialQualityLevel = QualitySettings.GetQualityLevel();
-            var qualityLevelsValues = new List<bool>();
-
-            for (var i = 0; i < QualitySettings.names.Length; i++)
-            {
-                QualitySettings.SetQualityLevel(i);
-                qualityLevelsValues.Add(QualitySettings.streamingMipmapsActive);
-                QualitySettings.streamingMipmapsActive = false;
-
-                QualitySettingsAnalyzer.EnableStreamingMipmap(i);
-                Assert.IsTrue(QualitySettings.streamingMipmapsActive);
-            }
-
-            ResetQualityLevelsValues(qualityLevelsValues);
-            QualitySettings.SetQualityLevel(initialQualityLevel);
-        }
-
-        void ResetQualityLevelsValues(List<bool> values)
-        {
-            for (var i = 0; i < QualitySettings.names.Length; i++)
-            {
-                QualitySettings.SetQualityLevel(i);
-                QualitySettings.streamingMipmapsActive = values[i];
-            }
-        }
-
-        [Test]
-#if !UNITY_2019_3_OR_NEWER
-        [Ignore("This requires the new Shader API")]
-#endif
         public void SrpAssetSettingsAnalysis_SrpBatching_IsNotReportedOnceFixed()
         {
-#if UNITY_2019_3_OR_NEWER
             RenderPipelineAsset defaultRP = GraphicsSettings.defaultRenderPipeline;
             RenderPipelineAsset qualityRP = QualitySettings.renderPipeline;
 
@@ -878,10 +658,8 @@ namespace Unity.ProjectAuditor.EditorTests
             {
                 TestSrpBatchingSetting(qualityRP, QualitySettings.GetQualityLevel());
             }
-#endif
         }
 
-#if UNITY_2019_3_OR_NEWER
         void TestSrpBatchingSetting(RenderPipelineAsset renderPipeline, int qualityLevel)
         {
             bool? initialSetting = SrpAssetSettingsAnalyzer.GetSrpBatcherSetting(renderPipeline);
@@ -906,15 +684,13 @@ namespace Unity.ProjectAuditor.EditorTests
             }
         }
 
-#endif
-
         [Test]
-#if !UNITY_2019_3_OR_NEWER || !PACKAGE_URP
+#if !PACKAGE_URP
         [Ignore("This requires the URP package")]
 #endif
         public void UrpAssetIsSpecifiedAnalysis_IsNotReportedOnceFixed()
         {
-#if UNITY_2019_3_OR_NEWER && PACKAGE_URP
+#if PACKAGE_URP
             RenderPipelineAsset defaultRP = GraphicsSettings.defaultRenderPipeline;
             RenderPipelineAsset qualityRP = QualitySettings.renderPipeline;
 
@@ -925,7 +701,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
                 const string urpAssetTitle = "URP: URP Asset is not specified";
                 var issues = Analyze(IssueCategory.ProjectSetting,
-                    i => i.Id.GetDescriptor().title.Equals(urpAssetTitle));
+                    i => i.Id.GetDescriptor().Title.Equals(urpAssetTitle));
                 var urpIssue = issues.FirstOrDefault();
                 Assert.NotNull(urpIssue);
 
@@ -933,7 +709,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 QualitySettings.renderPipeline = qualityRP;
 
                 issues = Analyze(IssueCategory.ProjectSetting,
-                    i => i.Id.GetDescriptor().title.Equals(urpAssetTitle));
+                    i => i.Id.GetDescriptor().Title.Equals(urpAssetTitle));
                 urpIssue = issues.FirstOrDefault();
                 Assert.Null(urpIssue);
             }
@@ -1023,13 +799,13 @@ namespace Unity.ProjectAuditor.EditorTests
             const string hdrTitle = "URP: HDR is enabled";
             UniversalRenderPipelineAnalyzer.SetHdrSetting(renderPipeline, true);
             var issues = Analyze(IssueCategory.ProjectSetting,
-                i => i.Id.GetDescriptor().title.Equals(hdrTitle));
+                i => i.Id.GetDescriptor().Title.Equals(hdrTitle));
             Assert.IsTrue(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have enabled HDR.");
 
             UniversalRenderPipelineAnalyzer.SetHdrSetting(renderPipeline, false);
             issues = Analyze(IssueCategory.ProjectSetting,
-                i => i.Id.GetDescriptor().title.Equals(hdrTitle));
+                i => i.Id.GetDescriptor().Title.Equals(hdrTitle));
             Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have disabled HDR.");
 
@@ -1043,13 +819,13 @@ namespace Unity.ProjectAuditor.EditorTests
             const string msaaTitle = "URP: MSAA is set to 4x or 8x";
             UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(renderPipeline, 4);
             var issues = Analyze(IssueCategory.ProjectSetting,
-                i => i.Id.GetDescriptor().title.Equals(msaaTitle));
+                i => i.Id.GetDescriptor().Title.Equals(msaaTitle));
             Assert.IsTrue(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have MSAA set to 4x.");
 
             UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(renderPipeline, 2);
             issues = Analyze(IssueCategory.ProjectSetting,
-                i => i.Id.GetDescriptor().title.Equals(msaaTitle));
+                i => i.Id.GetDescriptor().Title.Equals(msaaTitle));
             Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have MSAA set to 2x.");
 

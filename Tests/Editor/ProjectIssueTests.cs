@@ -122,14 +122,10 @@ namespace Unity.ProjectAuditor.EditorTests
             m_Issue = new ProjectIssue(IssueCategory.Code, m_Descriptor.Id);
             m_Issue.Severity = Severity.Major;
 
-#if UNITY_2019_3_OR_NEWER
             EditorUtility.RequestScriptReload();
             yield return new WaitForDomainReload();
 
             Assert.AreEqual(Severity.Major, m_Issue.Severity);
-#else
-            yield return null;
-#endif
         }
 
         [Test]

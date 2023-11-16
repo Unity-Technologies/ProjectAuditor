@@ -141,7 +141,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 }
             }
 
-            QualitySettings.SetQualityLevel(initialQualityLevel);
+            if (initialQualityLevel != QualitySettings.GetQualityLevel())
+                QualitySettings.SetQualityLevel(initialQualityLevel);
             return usingLowTextureQuality;
         }
 
@@ -161,7 +162,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 }
             }
 
-            QualitySettings.SetQualityLevel(initialQualityLevel);
+            if (initialQualityLevel != QualitySettings.GetQualityLevel())
+                QualitySettings.SetQualityLevel(initialQualityLevel);
             return usingDefaultAsyncUploadTimeslice;
         }
 
@@ -181,7 +183,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 }
             }
 
-            QualitySettings.SetQualityLevel(initialQualityLevel);
+            if (initialQualityLevel != QualitySettings.GetQualityLevel())
+                QualitySettings.SetQualityLevel(initialQualityLevel);
             return usingDefaultAsyncUploadBufferSize;
         }
 
@@ -200,7 +203,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 }
             }
 
-            QualitySettings.SetQualityLevel(initialQualityLevel);
+            if (initialQualityLevel != QualitySettings.GetQualityLevel())
+                QualitySettings.SetQualityLevel(initialQualityLevel);
             return qualityIndexes;
         }
 
@@ -211,7 +215,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             QualitySettings.SetQualityLevel(qualityLevelIndex);
             QualitySettings.streamingMipmapsActive = true;
 
-            QualitySettings.SetQualityLevel(initialQualityLevel);
+            if (initialQualityLevel != QualitySettings.GetQualityLevel())
+                QualitySettings.SetQualityLevel(initialQualityLevel);
         }
     }
 }

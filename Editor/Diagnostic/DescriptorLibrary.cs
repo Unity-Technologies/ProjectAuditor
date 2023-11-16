@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
     [Serializable]
-    public class DescriptorLibrary : ISerializationCallbackReceiver
+    class DescriptorLibrary : ISerializationCallbackReceiver
     {
         static Dictionary<int, Descriptor> s_Descriptors;
 

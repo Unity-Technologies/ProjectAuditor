@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Unity.ProjectAuditor.Editor
 {
     /// <summary>
-    /// Location of a reported issue
+    /// Represents the location of a reported issue.
     /// </summary>
     [Serializable]
     public class Location

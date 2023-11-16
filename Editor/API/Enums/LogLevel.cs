@@ -1,22 +1,22 @@
-namespace Unity.ProjectAuditor.Editor.Core
+namespace Unity.ProjectAuditor.Editor
 {
     /// <summary>
-    /// Describes the log level
+    /// Describes the message log level of a code issue
     /// </summary>
     public enum LogLevel
     {
         /// <summary>
-        /// Reports an error
+        /// An error message
         /// </summary>
         Error,
 
         /// <summary>
-        /// Reports a potential issue
+        /// A warning message
         /// </summary>
         Warning,
 
         /// <summary>
-        /// Reports general information
+        /// A general information message
         /// </summary>
         Info
     }

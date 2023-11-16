@@ -35,7 +35,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Clear table selection on unmuting issues
 * Move some data that should be user-configurable to UserPreferences
 * ProjectReport serialization files changed so that saved JSON is <= half the size it was before
-* Reworked ProjectAuditor configuration: ProjectAuditorConfig and ProjectAuditorDiagnosticParams have been replaced with ProjectAuditorRules.
+* Reworked ProjectAuditor configuration: ProjectAuditorConfig and ProjectAuditorDiagnosticParams have been replaced with SeverityRules and DiagnosticParams.
+* Configuration is now handled via a ProjectAuditorSettings class/asset
+* Refactored and documented public API to allow CI/CD integration
 
 ### Removed
 * Actions section and Mute/Unmute buttons

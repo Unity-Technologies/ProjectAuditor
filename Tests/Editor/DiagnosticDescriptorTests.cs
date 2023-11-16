@@ -206,7 +206,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             projectAuditor.GetModules(IssueCategory.Code)[0].RegisterDescriptor(m_Descriptor);
 
-            var IDs = projectAuditor.GetDiagnosticIDs();
+            var IDs = projectAuditor.GetDescriptorIDs();
 
             Assert.NotZero(IDs.Count(id => id.AsString() == m_Descriptor.Id), "Descriptor {0} is not registered", m_Descriptor.Id);
 
@@ -220,15 +220,15 @@ namespace Unity.ProjectAuditor.EditorTests
             var regExp = new Regex("^[A-Z]{3}\\d{4}$", RegexOptions.IgnoreCase);
 
             var projectAuditor = new Editor.ProjectAuditor();
-            var IDs = projectAuditor.GetDiagnosticIDs();
+            var IDs = projectAuditor.GetDescriptorIDs();
             foreach (var id in IDs)
             {
                 var descriptor = id.GetDescriptor();
-                Assert.IsFalse(string.IsNullOrEmpty(descriptor.Id), "Descriptor has no id (title: {0})", descriptor.Title);
-                Assert.IsTrue(regExp.IsMatch(descriptor.Id), "Descriptor id format is not valid: " + descriptor.Id);
-                Assert.IsFalse(string.IsNullOrEmpty(descriptor.Title), "Descriptor {0} has no title", descriptor.Id);
-                Assert.IsFalse(string.IsNullOrEmpty(descriptor.Description), "Descriptor {0} has no description", descriptor.Id);
-                Assert.IsFalse(string.IsNullOrEmpty(descriptor.Solution), "Descriptor {0} has no solution", descriptor.Id);
+                Assert.IsFalse(string.IsNullOrEmpty(descriptor.Id), "Descriptor has no Id (Title: {0})", descriptor.Title);
+                Assert.IsTrue(regExp.IsMatch(descriptor.Id), "Descriptor Id format is not valid: " + descriptor.Id);
+                Assert.IsFalse(string.IsNullOrEmpty(descriptor.Title), "Descriptor {0} has no Title", descriptor.Id);
+                Assert.IsFalse(string.IsNullOrEmpty(descriptor.Description), "Descriptor {0} has no Description", descriptor.Id);
+                Assert.IsFalse(string.IsNullOrEmpty(descriptor.Solution), "Descriptor {0} has no Solution", descriptor.Id);
 
                 Assert.NotNull(descriptor.Areas);
             }
@@ -238,7 +238,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void DiagnosticDescriptor_Descriptors_AreFormatted()
         {
             var projectAuditor = new Editor.ProjectAuditor();
-            var IDs = projectAuditor.GetDiagnosticIDs();
+            var IDs = projectAuditor.GetDescriptorIDs();
             foreach (var id in IDs)
             {
                 var descriptor = id.GetDescriptor();
@@ -312,7 +312,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void DiagnosticDescriptor_Descriptors_AreRegistered(string jsonFilename)
         {
             var projectAuditor = new Editor.ProjectAuditor();
-            var IDs = projectAuditor.GetDiagnosticIDs();
+            var IDs = projectAuditor.GetDescriptorIDs();
 
             var loadedDescriptors = DescriptorLoader.LoadFromJson(Editor.ProjectAuditor.s_DataPath, jsonFilename);
             foreach (var loadedDescriptor in loadedDescriptors)
@@ -368,12 +368,11 @@ namespace Unity.ProjectAuditor.EditorTests
             }
         }
 
-#if UNITY_2019_1_OR_NEWER
         [Test]
         public void DiagnosticDescriptor_Areas_Exist()
         {
             var projectAuditor = new Editor.ProjectAuditor();
-            var IDs = projectAuditor.GetDiagnosticIDs();
+            var IDs = projectAuditor.GetDescriptorIDs();
             foreach (var id in IDs)
             {
                 var descriptor = id.GetDescriptor();
@@ -385,13 +384,11 @@ namespace Unity.ProjectAuditor.EditorTests
             }
         }
 
-#endif
-
         [UnityTest]
         public IEnumerator DiagnosticDescriptor_DocumentationUrl_Exist()
         {
             var projectAuditor = new Editor.ProjectAuditor();
-            var IDs = projectAuditor.GetDiagnosticIDs();
+            var IDs = projectAuditor.GetDescriptorIDs();
             foreach (var id in IDs)
             {
                 var descriptor = id.GetDescriptor();
@@ -404,11 +401,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 yield return request.SendWebRequest();
 
                 Assert.True(request.isDone);
-#if UNITY_2020_1_OR_NEWER
                 Assert.AreEqual(UnityWebRequest.Result.Success, request.result, $"Page {documentationUrl} not found.");
-#else
-                Assert.IsFalse(request.isNetworkError || request.isHttpError, $"Page {documentationUrl} not found.");
-#endif
             }
         }
 
@@ -416,7 +409,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void DiagnosticDescriptor_UnsupportedPlatform_IsNotRegistered()
         {
             var projectAuditor = new Editor.ProjectAuditor();
-            var IDs = projectAuditor.GetDiagnosticIDs();
+            var IDs = projectAuditor.GetDescriptorIDs();
 
             // PAS0005 should only be available if iOS Editor component is installed
             var foundID = IDs.Contains(new DescriptorID("PAS0005"));

@@ -1,5 +1,3 @@
-#if UNITY_2020_1_OR_NEWER
-
 using System.IO;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
@@ -8,7 +6,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    public class BuiltinRoslynAnalyzerTests : TestFixtureBase
+    class BuiltinRoslynAnalyzerTests : TestFixtureBase
     {
         bool m_SavedUseRoslynAnalyzers;
 
@@ -72,4 +70,3 @@ class ScriptWithStaticMember
         }
     }
 }
-#endif
