@@ -3,10 +3,10 @@ There are several ways to install Project Auditor. Choose the most appropriate m
 > **Note**: To install Project Auditor for development purposes, go to this [page](Developing.md) instead.
 
 ## Installing as read-only Package
-At this time, Project Auditor is not discoverable via Package Manager so it has to be installed from its Git repository. The instructions that follow are specific to Project Auditor, however, more infromation on how a package can be added to a project as a dependency from Git, you can check the Package Manager [documentation](https://docs.unity3d.com/Manual/upm-git.html).
+At this time, Project Auditor is not discoverable via Package Manager so it has to be installed from its Git repository. The instructions that follow are specific to Project Auditor, however, more information on how a package can be added to a project as a dependency from Git, you can check the Package Manager [documentation](https://docs.unity3d.com/Manual/upm-git.html).
 
 ### Package Manager UI (Recommended)
-The easiest way to install Project Auditor in Unity 2018 (or newer) is via Package Manager with the following steps:
+The easiest way to install Project Auditor in Unity 2020 LTS (or newer) is via Package Manager with the following steps:
 
 Click on _Code_ and copy the repository __HTTPS__ URL to the clipboard
 

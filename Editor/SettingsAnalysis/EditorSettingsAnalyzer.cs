@@ -4,7 +4,6 @@ using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using UnityEditor;
 
-#if UNITY_2020_1_OR_NEWER
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
     class EditorSettingsAnalyzer : ISettingsModuleAnalyzer
@@ -12,7 +11,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         internal const string PAS0035 = nameof(PAS0035);
         internal const string PAS0036 = nameof(PAS0036);
 
-        private static readonly Descriptor k_EnterPlayModeOptionsDescriptor = new Descriptor(
+        static readonly Descriptor k_EnterPlayModeOptionsDescriptor = new Descriptor(
             PAS0035,
             "Editor: Enter Play Mode Options is not enabled",
             new[] { Area.IterationTime },
@@ -20,14 +19,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "In Editor Settings, enable the <b>Enter Play Mode Settings > Enter Play Mode Options</b> option, then disable the <b>Reload Domain</b> option. Be sure to view the <b>Code/Domain Reload</b> view in this tool for additional things you may need to fix as a result of disabling domain reload."
         )
         {
-            maximumVersion = "2023.4",
+            MaximumVersion = "2023.4",
             fixer = (issue) =>
             {
                 EditorSettings.enterPlayModeOptionsEnabled = true;
             }
         };
 
-        private static readonly Descriptor k_DomainReloadDescriptor = new Descriptor(
+        static readonly Descriptor k_DomainReloadDescriptor = new Descriptor(
             PAS0036,
             "Editor: Reload Domain is enabled",
             new[] { Area.IterationTime },
@@ -35,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "In Editor Settings, enable the <b>Enter Play Mode Settings > Enter Play Mode Options</b> option, then disable the <b>Reload Domain</b> checkbox. Be sure to view the <b>Code/Domain Reload</b> view in this tool for additional things you may need to fix as a result of disabling domain reload."
         )
         {
-            maximumVersion = "2023.4",
+            MaximumVersion = "2023.4",
             fixer = (issue) =>
             {
                 EditorSettings.enterPlayModeOptions |= EnterPlayModeOptions.DisableDomainReload;
@@ -53,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             if (k_EnterPlayModeOptionsDescriptor.IsVersionCompatible() &&
                 !EditorSettings.enterPlayModeOptionsEnabled)
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_EnterPlayModeOptionsDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_EnterPlayModeOptionsDescriptor.Id)
                     .WithLocation("Project/Editor");
             }
             else
@@ -61,11 +60,10 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 if (k_DomainReloadDescriptor.IsVersionCompatible() &&
                     (EditorSettings.enterPlayModeOptions & EnterPlayModeOptions.DisableDomainReload) != EnterPlayModeOptions.DisableDomainReload)
                 {
-                    yield return context.Create(IssueCategory.ProjectSetting, k_DomainReloadDescriptor.id)
+                    yield return context.Create(IssueCategory.ProjectSetting, k_DomainReloadDescriptor.Id)
                         .WithLocation("Project/Editor");
                 }
             }
         }
     }
 }
-#endif

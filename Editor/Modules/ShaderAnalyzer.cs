@@ -20,8 +20,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Consider adding SRP Batcher compatibility to the shader. This will reduce the CPU time Unity requires to prepare and dispatch draw calls for materials that use the same shader variant."
         )
         {
-            messageFormat = "Shader '{0}' is not compatible with SRP Batcher",
-            documentationUrl = "https://docs.unity3d.com/Manual/SRPBatcher.html"
+            MessageFormat = "Shader '{0}' is not compatible with SRP Batcher",
+            DocumentationUrl = "https://docs.unity3d.com/Manual/SRPBatcher.html"
         };
 
         public void Initialize(Module module)
@@ -42,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (!isSrpBatchingCompatible && IsSrpBatchingEnabled)
             {
-                yield return context.Create(IssueCategory.AssetDiagnostic, k_SrpBatcherDescriptor.id, context.Shader.name)
+                yield return context.Create(IssueCategory.AssetDiagnostic, k_SrpBatcherDescriptor.Id, context.Shader.name)
                     .WithLocation(context.AssetPath);
             }
 #endif

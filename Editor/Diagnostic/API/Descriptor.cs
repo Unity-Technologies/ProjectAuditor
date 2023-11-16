@@ -1,93 +1,75 @@
 using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
+using UnityEngine.Serialization;
 
 namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
     /// <summary>
-    /// Descriptor defines the problem and a possible recommendation
+    /// Descriptor defines a potential problem and a recommended course of action.
     /// </summary>
     [Serializable]
     public sealed class Descriptor : IEquatable<Descriptor>
     {
         /// <summary>
-        /// An unique identifier for the diagnostic. IDs must have exactly 3 upper case characters, followed by 4 digits
+        /// An unique identifier for the diagnostic. IDs must have exactly 3 upper case characters, followed by 4 digits.
         /// </summary>
-        [JsonRequired]
-        public string id;
+        public string Id;
 
         /// <summary>
         /// Diagnostic title
         /// </summary>
-        [JsonRequired]
-        public string title;
+        public string Title;
 
         /// <summary>
-        /// Message used to describe a specific instance of the diagnostic
+        /// Message used to describe a specific instance of the diagnostic.
         /// </summary>
-        [JsonIgnore]
-        public string messageFormat;
+        public string MessageFormat;
 
         /// <summary>
-        /// Default severity of the diagnostic
+        /// Default Severity of the diagnostic.
         /// </summary>
-        [JsonIgnore]
-        public Severity defaultSeverity;
+        public Severity DefaultSeverity;
 
         /// <summary>
         /// Returns true if the diagnostic is enabled by default.
         /// </summary>
-        public bool isEnabledByDefault = true;
+        public bool IsEnabledByDefault = true;
 
         /// <summary>
         /// Affected areas
         /// </summary>
-        [JsonRequired]
-        public string[] areas;
+        public string[] Areas;
 
         /// <summary>
-        /// Affected platforms. If null, the diagnostic applies to all platforms
+        /// Affected platforms. If null, the diagnostic applies to all platforms.
         /// </summary>
-        [JsonProperty]
-        public string[] platforms;
+        public string[] Platforms;
 
         /// <summary>
-        /// Description of the diagnostic
+        /// Description of the diagnostic.
         /// </summary>
-        [JsonRequired]
-        public string description;
+        public string Description;
 
         /// <summary>
-        /// Recommendation to fix the diagnostic
+        /// Recommendation to fix the diagnostic.
         /// </summary>
-        [JsonRequired]
-        public string solution;
+        public string Solution;
 
         /// <summary>
-        /// Url to documentation
+        /// URL to documentation.
         /// </summary>
-        [JsonIgnore]
-        public string documentationUrl;
-
-        [JsonProperty("documentationUrl")]
-        internal string documentationUrlForJson
-        {
-            get => string.IsNullOrEmpty(documentationUrl) ? null : documentationUrl;
-            set => documentationUrl = string.IsNullOrEmpty(value) ? String.Empty : value;
-        }
+        public string DocumentationUrl;
 
         /// <summary>
-        /// Minimum Unity version this diagnostic applies to. If not specified, the diagnostic applies to all versions
+        /// Minimum Unity version this diagnostic applies to. If not specified, the diagnostic applies to all versions.
         /// </summary>
-        [JsonIgnore]
-        public string minimumVersion;
+        public string MinimumVersion;
 
         /// <summary>
-        /// Maximum Unity version this diagnostic applies to. If not specified, the diagnostic applies to all versions
+        /// Maximum Unity version this diagnostic applies to. If not specified, the diagnostic applies to all versions.
         /// </summary>
-        [JsonIgnore]
-        public string maximumVersion;
+        public string MaximumVersion;
 
         /// <summary>
         /// Optional Auto-fixer
@@ -96,31 +78,28 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public Action<ProjectIssue> fixer;
 
         /// <summary>
-        /// Name of the type (namespace and class/struct) of a known code API issue
+        /// Name of the type (namespace and class/struct) of a known code API issue.
         /// </summary>
-        [JsonIgnore]
-        public string type;
+        public string Type;
 
         /// <summary>
-        /// Name of the method of a known code API issue
+        /// Name of the method of a known code API issue.
         /// </summary>
-        [JsonIgnore]
-        public string method;
+        public string Method;
 
         /// <summary>
-        /// The evaluated value of a know code API issue
+        /// The evaluated value of a know code API issue.
         /// </summary>
-        [JsonIgnore]
-        public string value;
+        public string Value;
 
         [JsonConstructor]
         internal Descriptor()
         {
-            // only for json serialization purposes
+            // only for json serialization purposes.
         }
 
         /// <summary>
-        /// Initializes and returns an instance of Descriptor
+        /// Initializes and returns an instance of Descriptor.
         /// </summary>
         /// <param name="id">The Issue ID string.</param>
         /// <param name="title">A short human-readable 'name' for the issue</param>
@@ -129,20 +108,20 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// <param name="solution">Advice on how to resolve the issue.</param>
         public Descriptor(string id, string title, string[] areas, string description, string solution)
         {
-            this.id = id;
-            this.title = title;
-            this.areas = areas;
-            this.messageFormat = string.Empty;
-            this.description = description;
-            this.solution = solution;
+            Id = id;
+            Title = title;
+            Areas = areas;
+            MessageFormat = string.Empty;
+            Description = description;
+            Solution = solution;
 
-            type = string.Empty;
-            method = string.Empty;
-            defaultSeverity = Severity.Moderate;
+            Type = string.Empty;
+            Method = string.Empty;
+            DefaultSeverity = Severity.Moderate;
         }
 
         /// <summary>
-        /// Initializes and returns an instance of Descriptor
+        /// Initializes and returns an instance of Descriptor.
         /// </summary>
         /// <param name="id">The Issue ID string.</param>
         /// <param name="title">A short human-readable 'name' for the issue</param>
@@ -155,7 +134,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         }
 
         /// <summary>
-        /// Initializes and returns an instance of Descriptor
+        /// Initializes and returns an instance of Descriptor.
         /// </summary>
         /// <param name="id">The Issue ID string.</param>
         /// <param name="title">A short human-readable 'name' for the issue</param>
@@ -174,7 +153,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return id == other.id;
+            return Id == other.Id;
         }
 
         /// <summary>Returns true if the Descriptor is equal to a given object, false otherwise.</summary>
@@ -194,15 +173,14 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
                 return;
 
             fixer(issue);
-            issue.wasFixed = true;
+            issue.WasFixed = true;
         }
 
-        /// <summary>Returns a hash code for the Descriptor.</summary>
-        /// <description>More specifically, returns the hash code for the Descriptor's Issue ID.</description>
+        /// <summary>Returns the hash code for the Descriptor's Issue ID.</summary>
         /// <returns>The computed hash code.</returns>
         public override int GetHashCode()
         {
-            return id.GetHashCode();
+            return Id.GetHashCode();
         }
     }
 }

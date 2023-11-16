@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
             if (IsDefaultLayerCollisionMatrix())
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_DefaultLayerCollisionMatrixDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_DefaultLayerCollisionMatrixDescriptor.Id)
                     .WithLocation("Project/Physics");
             }
         }

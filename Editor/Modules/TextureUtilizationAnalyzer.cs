@@ -23,9 +23,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Consider shrinking the texture to 1x1 size."
         )
         {
-            isEnabledByDefault = false,
-            messageFormat = "Texture '{0}' is a solid color and not 1x1 size",
-            fixer = (issue) => { ShrinkSolidTexture(issue.relativePath); }
+            IsEnabledByDefault = false,
+            MessageFormat = "Texture '{0}' is a solid color and not 1x1 size",
+            fixer = (issue) => { ShrinkSolidTexture(issue.RelativePath); }
         };
 
         // NOTE:  This is only here to run the same analysis without a quick fix button.  Clean up when we either have appropriate quick fix for other dimensions or improved fixer support.
@@ -37,8 +37,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Consider shrinking the texture to 1x1 size."
         )
         {
-            isEnabledByDefault = false,
-            messageFormat = "Texture '{0}' is a solid color and not 1x1 size"
+            IsEnabledByDefault = false,
+            MessageFormat = "Texture '{0}' is a solid color and not 1x1 size"
         };
 
         internal static readonly Descriptor k_TextureAtlasEmptyDescriptor = new Descriptor(
@@ -49,8 +49,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Consider reorganizing your texture atlas in order to reduce the amount of empty space."
         )
         {
-            isEnabledByDefault = false,
-            messageFormat = "Texture Atlas '{0}' has too much empty space ({1})"
+            IsEnabledByDefault = false,
+            MessageFormat = "Texture Atlas '{0}' has too much empty space ({1})"
         };
 
         public void Initialize(Module module)
@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (context.IsDescriptorEnabled(dimensionAppropriateDescriptor) &&
                 TextureUtils.IsTextureSolidColorTooBig(context.Importer, context.Texture))
             {
-                yield return context.Create(IssueCategory.AssetDiagnostic, dimensionAppropriateDescriptor.id, context.Name)
+                yield return context.Create(IssueCategory.AssetDiagnostic, dimensionAppropriateDescriptor.Id, context.Name)
                     .WithLocation(context.Importer.assetPath);
             }
 
@@ -76,7 +76,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var emptyPercent = TextureUtils.GetEmptyPixelsPercent(texture2D);
                 if (emptyPercent > context.SpriteAtlasEmptySpaceLimit)
                 {
-                    yield return context.Create(IssueCategory.AssetDiagnostic, k_TextureAtlasEmptyDescriptor.id, context.Name, Formatting.FormatPercentage(emptyPercent / 100.0f))
+                    yield return context.Create(IssueCategory.AssetDiagnostic, k_TextureAtlasEmptyDescriptor.Id, context.Name, Formatting.FormatPercentage(emptyPercent / 100.0f))
                         .WithLocation(context.Importer.assetPath);
                 }
             }

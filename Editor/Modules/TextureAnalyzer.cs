@@ -26,10 +26,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Consider enabling mipmaps using the <b>Advanced > Generate Mip Maps</b> option in the Texture Import Settings."
         )
         {
-            messageFormat = "Texture '{0}' mipmaps generation is not enabled",
+            MessageFormat = "Texture '{0}' mipmaps generation is not enabled",
             fixer = (issue) =>
             {
-                var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
+                var textureImporter = AssetImporter.GetAtPath(issue.RelativePath) as TextureImporter;
                 if (textureImporter != null)
                 {
                     textureImporter.mipmapEnabled = true;
@@ -46,10 +46,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Consider disabling mipmaps using the <b>Advanced > Generate Mip Maps</b> option in the texture inspector. This will also reduce your build size."
         )
         {
-            messageFormat = "Texture '{0}' mipmaps generation is enabled",
+            MessageFormat = "Texture '{0}' mipmaps generation is enabled",
             fixer = (issue) =>
             {
-                var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
+                var textureImporter = AssetImporter.GetAtPath(issue.RelativePath) as TextureImporter;
                 if (textureImporter != null)
                 {
                     textureImporter.mipmapEnabled = false;
@@ -66,11 +66,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "If not required, disable the <b>Read/Write Enabled</b> option in the Texture Import Settings."
         )
         {
-            messageFormat = "Texture '{0}' Read/Write is enabled",
-            documentationUrl = "https://docs.unity3d.com/Manual/class-TextureImporter.html",
+            MessageFormat = "Texture '{0}' Read/Write is enabled",
+            DocumentationUrl = "https://docs.unity3d.com/Manual/class-TextureImporter.html",
             fixer = (issue) =>
             {
-                var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
+                var textureImporter = AssetImporter.GetAtPath(issue.RelativePath) as TextureImporter;
                 if (textureImporter != null)
                 {
                     textureImporter.isReadable = false;
@@ -87,10 +87,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Consider enabling the <b>Streaming Mipmaps</b> option in the Texture Import Settings."
         )
         {
-            messageFormat = "Texture '{0}' mipmaps streaming is not enabled",
+            MessageFormat = "Texture '{0}' mipmaps streaming is not enabled",
             fixer = (issue) =>
             {
-                var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
+                var textureImporter = AssetImporter.GetAtPath(issue.RelativePath) as TextureImporter;
                 if (textureImporter != null)
                 {
                     textureImporter.streamingMipmaps = true;
@@ -107,11 +107,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Consider setting the <b>Anisotropic Level</b> to 1."
         )
         {
-            platforms = new[] {"Android", "iOS", "Switch"},
-            messageFormat = "Texture '{0}' anisotropic level is set to '{1}'",
+            Platforms = new[] {"Android", "iOS", "Switch"},
+            MessageFormat = "Texture '{0}' anisotropic level is set to '{1}'",
             fixer = (issue) =>
             {
-                var textureImporter = AssetImporter.GetAtPath(issue.relativePath) as TextureImporter;
+                var textureImporter = AssetImporter.GetAtPath(issue.RelativePath) as TextureImporter;
                 if (textureImporter != null)
                 {
                     textureImporter.anisoLevel = 1;
@@ -167,7 +167,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (!context.Importer.mipmapEnabled && context.Importer.textureType == TextureImporterType.Default)
             {
                 yield return context.Create(IssueCategory.AssetDiagnostic,
-                    k_TextureMipMapNotEnabledDescriptor.id, context.Name)
+                    k_TextureMipMapNotEnabledDescriptor.Id, context.Name)
                     .WithLocation(assetPath);
             }
 
@@ -176,26 +176,26 @@ namespace Unity.ProjectAuditor.Editor.Modules
             )
             {
                 yield return context.Create(IssueCategory.AssetDiagnostic,
-                    k_TextureMipMapEnabledDescriptor.id, context.Name)
+                    k_TextureMipMapEnabledDescriptor.Id, context.Name)
                     .WithLocation(assetPath);
             }
 
             if (context.Importer.isReadable)
             {
-                yield return context.Create(IssueCategory.AssetDiagnostic, k_TextureReadWriteEnabledDescriptor.id, context.Name)
+                yield return context.Create(IssueCategory.AssetDiagnostic, k_TextureReadWriteEnabledDescriptor.Id, context.Name)
                     .WithLocation(context.Importer.assetPath);
             }
 
             if (context.Importer.mipmapEnabled && !context.Importer.streamingMipmaps && size > Mathf.Pow(context.TextureStreamingMipmapsSizeLimit, 2))
             {
-                yield return context.Create(IssueCategory.AssetDiagnostic, k_TextureStreamingMipMapEnabledDescriptor.id, context.Name)
+                yield return context.Create(IssueCategory.AssetDiagnostic, k_TextureStreamingMipMapEnabledDescriptor.Id, context.Name)
                     .WithLocation(context.Importer.assetPath);
             }
 
             if (k_TextureAnisotropicLevelDescriptor.IsApplicable(context.Params) &&
                 context.Importer.mipmapEnabled && context.Importer.filterMode != FilterMode.Point && context.Importer.anisoLevel > 1)
             {
-                yield return context.Create(IssueCategory.AssetDiagnostic, k_TextureAnisotropicLevelDescriptor.id, context.Name, context.Importer.anisoLevel)
+                yield return context.Create(IssueCategory.AssetDiagnostic, k_TextureAnisotropicLevelDescriptor.Id, context.Name, context.Importer.anisoLevel)
                     .WithLocation(context.Importer.assetPath);
             }
         }

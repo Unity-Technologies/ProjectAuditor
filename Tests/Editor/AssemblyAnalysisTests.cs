@@ -26,7 +26,7 @@ class MyClass
         [Test]
         public void AssemblyAnalysis_DefaultAssembly_IsReported()
         {
-            var issues = Analyze(IssueCategory.Assembly, issue => issue.description.Equals(AssemblyInfo.DefaultAssemblyName));
+            var issues = Analyze(IssueCategory.Assembly, issue => issue.Description.Equals(AssemblyInfo.DefaultAssemblyName));
 
             Assert.AreEqual(1, issues.Length);
             Assert.False(issues[0].GetCustomPropertyBool(AssemblyProperty.ReadOnly));
@@ -38,7 +38,7 @@ class MyClass
 #endif
         public void AssemblyAnalysis_BuiltinPackage_IsReported()
         {
-            var issues = Analyze(IssueCategory.Assembly, issue => issue.description.Equals("UnityEngine.UI"));
+            var issues = Analyze(IssueCategory.Assembly, issue => issue.Description.Equals("UnityEngine.UI"));
 
             Assert.AreEqual(1, issues.Length);
             Assert.True(issues[0].GetCustomPropertyBool(AssemblyProperty.ReadOnly));

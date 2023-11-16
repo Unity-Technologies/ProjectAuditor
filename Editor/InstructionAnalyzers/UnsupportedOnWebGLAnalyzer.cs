@@ -22,8 +22,8 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "Do not use the System.Net API on this platform."
             )
         {
-            messageFormat = "'{0}' usage",
-            platforms = new[] { "WebGL" }
+            MessageFormat = "'{0}' usage",
+            Platforms = new[] { "WebGL" }
         };
 
         internal static readonly Descriptor k_DescriptorSystemThreading = new Descriptor
@@ -35,8 +35,8 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "Do not use the <b>System.Threading</b> API on this platform."
             )
         {
-            messageFormat = "'{0}' usage",
-            platforms = new[] { "WebGL" }
+            MessageFormat = "'{0}' usage",
+            Platforms = new[] { "WebGL" }
         };
 
         internal static readonly Descriptor k_DescriptorMicrophone = new Descriptor
@@ -48,8 +48,8 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "Do not use the Microphone API on this platform."
             )
         {
-            messageFormat = "'{0}' usage",
-            platforms = new[] { "WebGL" }
+            MessageFormat = "'{0}' usage",
+            Platforms = new[] { "WebGL" }
         };
 
         readonly OpCode[] m_OpCodes =
@@ -70,9 +70,9 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             module.RegisterDescriptor(k_DescriptorSystemThreading);
             module.RegisterDescriptor(k_DescriptorMicrophone);
 
-            descriptorSystemNetSupported = module.SupportsDescriptor(k_DescriptorSystemNet.id);
-            descriptorSystemThreadingSupported = module.SupportsDescriptor(k_DescriptorSystemThreading.id);
-            descriptorMicrophoneSupported = module.SupportsDescriptor(k_DescriptorMicrophone.id);
+            descriptorSystemNetSupported = module.SupportsDescriptor(k_DescriptorSystemNet.Id);
+            descriptorSystemThreadingSupported = module.SupportsDescriptor(k_DescriptorSystemThreading.Id);
+            descriptorMicrophoneSupported = module.SupportsDescriptor(k_DescriptorMicrophone.Id);
         }
 
         public IssueBuilder Analyze(InstructionAnalysisContext context)
@@ -80,15 +80,15 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             var methodReference = (MethodReference)context.Instruction.Operand;
             if (descriptorSystemNetSupported && methodReference.DeclaringType.FullName.StartsWith("System.Net."))
             {
-                return context.Create(IssueCategory.Code, k_DescriptorSystemNet.id, methodReference.FullName);
+                return context.Create(IssueCategory.Code, k_DescriptorSystemNet.Id, methodReference.FullName);
             }
             if (descriptorSystemThreadingSupported && methodReference.DeclaringType.FullName.StartsWith("System.Threading."))
             {
-                return context.Create(IssueCategory.Code, k_DescriptorSystemThreading.id, methodReference.FullName);
+                return context.Create(IssueCategory.Code, k_DescriptorSystemThreading.Id, methodReference.FullName);
             }
             if (descriptorMicrophoneSupported && methodReference.DeclaringType.FullName.Equals("UnityEngine.Microphone"))
             {
-                return context.Create(IssueCategory.Code, k_DescriptorMicrophone.id, methodReference.FullName);
+                return context.Create(IssueCategory.Code, k_DescriptorMicrophone.Id, methodReference.FullName);
             }
 
             return null;

@@ -196,7 +196,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             Profiler.BeginSample("MatchArea");
             var matchArea = m_AreaSelection.ContainsGroup("All") ||
-                (issue.id.IsValid() && m_AreaSelection.ContainsAny(issue.id.GetDescriptor().areas));
+                (issue.Id.IsValid() && m_AreaSelection.ContainsAny(issue.Id.GetDescriptor().Areas));
 
             Profiler.EndSample();
             if (!matchArea)
@@ -475,7 +475,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     menu.AddItem(Contents.ShaderVariants, false, () =>
                     {
                         viewManager.ChangeView(IssueCategory.ShaderVariant);
-                        viewManager.GetActiveView().SetSearch(issue.description);
+                        viewManager.GetActiveView().SetSearch(issue.Description);
                     });
                 },
                 onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
@@ -493,7 +493,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 analyticsEvent = (int)AnalyticsReporter.UIButton.Materials
             });
 
-#if UNITY_2019_1_OR_NEWER
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.ShaderCompilerMessage,
@@ -504,8 +503,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onOpenIssue = EditorInterop.OpenTextFile<Shader>,
                 analyticsEvent = (int)AnalyticsReporter.UIButton.ShaderCompilerMessages
             });
-
-#endif
 
             ViewDescriptor.Register(new ViewDescriptor
             {
@@ -1391,7 +1388,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         void UpdateAssemblyNames()
         {
             // update list of assembly names
-            var assemblyNames = m_ProjectReport.FindByCategory(IssueCategory.Assembly).Select(i => i.description).ToArray();
+            var assemblyNames = m_ProjectReport.FindByCategory(IssueCategory.Assembly).Select(i => i.Description).ToArray();
             m_AssemblyNames = assemblyNames.Distinct().OrderBy(str => str).ToArray();
         }
 
@@ -1447,9 +1444,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
             {
-#if UNITY_2019_1_OR_NEWER
                 GUILayout.Label(Utility.GetPlatformIcon(BuildPipeline.GetBuildTargetGroup(m_Platform)), SharedStyles.IconLabel, GUILayout.Width(AnalysisView.ToolbarIconSize));
-#endif
 
                 if (m_AnalysisState == AnalysisState.InProgress)
                 {
@@ -1702,15 +1697,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent SettingsTitle = new GUIContent("Settings");
             public static readonly GUIContent NewSettingsButton = new GUIContent("Create New Settings");
 
-#if UNITY_2019_1_OR_NEWER
             public static readonly GUIContent SaveButton = Utility.GetIcon(Utility.IconType.Save, "Save current report to json file");
             public static readonly GUIContent LoadButton = Utility.GetIcon(Utility.IconType.Load, "Load report from json file");
             public static readonly GUIContent DiscardButton = Utility.GetIcon(Utility.IconType.Trash, "Discard the current report.");
-#else
-            public static readonly GUIContent SaveButton = new GUIContent("Save", "Save current report to json file");
-            public static readonly GUIContent LoadButton = new GUIContent("Load", "Load report from json file");
-            public static readonly GUIContent DiscardButton = new GUIContent("Discard", "Discard the current report.");
-#endif
 
             public static readonly GUIContent HelpButton = Utility.GetIcon(Utility.IconType.Help, "Open Manual (in a web browser)");
             public static readonly GUIContent PreferencesMenuItem = EditorGUIUtility.TrTextContent("Preferences", $"Open User Preferences for {k_ProjectAuditorName}");

@@ -32,7 +32,6 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void SetUp()
         {
-#if UNITY_2020_1_OR_NEWER
             //Full Sprite Atlas Generation
             var fullSpriteAtlasAsset = new SpriteAtlasAsset();
             fullSpriteAtlasAsset.name = k_SpriteAtlasNameFull;
@@ -69,34 +68,30 @@ namespace Unity.ProjectAuditor.EditorTests
 
             emptySpriteAtlasAsset.Add(new Object[] {emptySquareSprite, emptySquareSprite});
             m_TestSpriteAtlasEmpty = TestAsset.SaveSpriteAtlasAsset(emptySpriteAtlasAsset, k_SpriteAtlasNameEmpty + ".spriteatlasv2");
-#endif
         }
 
         //SpriteAtlasAsset does not exist before Unity 2020
-#if UNITY_2020_1_OR_NEWER
         [Test]
         [Ignore("TODO: investigate reason for test failure")]
-        public void SpriteAtlas_Not_Empty_Is_Not_Reported()
+        public void SpriteAtlas_Full_IsNotReported()
         {
             var textureDiagnostic =
                 AnalyzeAndFindAssetIssues(m_TestSpriteAtlasFull, IssueCategory.AssetDiagnostic)
-                    .FirstOrDefault(i => i.id.Equals(SpriteAtlasAnalyzer.k_SpriteAtlasEmptyDescriptor.id));
+                    .FirstOrDefault(i => i.Id.Equals(SpriteAtlasAnalyzer.k_SpriteAtlasEmptyDescriptor.Id));
 
             Assert.Null(textureDiagnostic);
         }
 
         [Test]
         [Ignore("TODO: investigate reason for test failure")]
-        public void SpriteAtlas_Empty_Is_Reported()
+        public void SpriteAtlas_Empty_IsReported()
         {
             var textureDiagnostic =
                 AnalyzeAndFindAssetIssues(m_TestSpriteAtlasEmpty, IssueCategory.AssetDiagnostic)
-                    .FirstOrDefault(i => i.id.Equals(SpriteAtlasAnalyzer.k_SpriteAtlasEmptyDescriptor.id));
+                    .FirstOrDefault(i => i.Id.Equals(SpriteAtlasAnalyzer.k_SpriteAtlasEmptyDescriptor.Id));
 
             Assert.IsNotNull(textureDiagnostic);
         }
-
-#endif
 
         void GenerateTestSpritesForFullSpriteAtlasTest()
         {

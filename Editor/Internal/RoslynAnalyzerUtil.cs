@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Unity.ProjectAuditor.Editor.Internal
 {
-    public class RoslynAnalyzerUtil
+    class RoslynAnalyzerUtil
     {
         public static void ImportDLL()
         {

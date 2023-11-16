@@ -109,17 +109,17 @@ namespace Unity.ProjectAuditor.EditorTests
                 AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad);
 
             var issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.id.Equals(AudioClipAnalyzer.k_AudioLongClipDoesNotStreamDescriptor.id));
+                .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioLongClipDoesNotStreamDescriptor.Id));
 
             Assert.NotNull(issue);
-            var descriptor = issue.id.GetDescriptor();
+            var descriptor = issue.Id.GetDescriptor();
             Assert.NotNull(descriptor.fixer);
-            Assert.AreEqual(AudioClipAnalyzer.PAA4000, issue.id.ToString());
+            Assert.AreEqual(AudioClipAnalyzer.PAA4000, issue.Id.ToString());
 
             descriptor.Fix(issue);
 
             issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.id.Equals(AudioClipAnalyzer.k_AudioLongClipDoesNotStreamDescriptor.id));
+                .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioLongClipDoesNotStreamDescriptor.Id));
 
             Assert.Null(issue);
         }
@@ -129,11 +129,11 @@ namespace Unity.ProjectAuditor.EditorTests
         public void AudioClip_ShortStreaming_IsReported()
         {
             var issue = AnalyzeAndFindAssetIssues(m_TestShortStreamingClipAsset, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.id.Equals(AudioClipAnalyzer.k_AudioShortClipStreamsDescriptor.id));
+                .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioShortClipStreamsDescriptor.Id));
 
             Assert.NotNull(issue);
-            Assert.IsTrue(issue.id.IsValid());
-            Assert.AreEqual(AudioClipAnalyzer.PAA4001, issue.id.ToString());
+            Assert.IsTrue(issue.Id.IsValid());
+            Assert.AreEqual(AudioClipAnalyzer.PAA4001, issue.Id.ToString());
         }
 
         // PAA4002 Stereo clips not forced to Mono on mobile platforms
@@ -149,17 +149,17 @@ namespace Unity.ProjectAuditor.EditorTests
                 AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad);
 
             var issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.id.Equals(AudioClipAnalyzer.k_AudioStereoClipsOnMobileDescriptor.id));
+                .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioStereoClipsOnMobileDescriptor.Id));
 
             Assert.NotNull(issue);
-            Assert.IsTrue(issue.id.IsValid());
-            Assert.AreEqual(AudioClipAnalyzer.PAA4002, issue.id.ToString());
+            Assert.IsTrue(issue.Id.IsValid());
+            Assert.AreEqual(AudioClipAnalyzer.PAA4002, issue.Id.ToString());
 
-            var descriptor = issue.id.GetDescriptor();
+            var descriptor = issue.Id.GetDescriptor();
             descriptor.Fix(issue);
 
             issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.id.Equals(AudioClipAnalyzer.k_AudioStereoClipsOnMobileDescriptor.id));
+                .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioStereoClipsOnMobileDescriptor.Id));
 
             Assert.Null(issue);
 
@@ -175,17 +175,17 @@ namespace Unity.ProjectAuditor.EditorTests
                 AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad);
 
             var issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.id.Equals(AudioClipAnalyzer.k_AudioStereoClipWhichIsNotStreamingDescriptor.id));
+                .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioStereoClipWhichIsNotStreamingDescriptor.Id));
 
             Assert.NotNull(issue);
-            Assert.IsTrue(issue.id.IsValid());
-            Assert.AreEqual(AudioClipAnalyzer.PAA4003, issue.id.ToString());
+            Assert.IsTrue(issue.Id.IsValid());
+            Assert.AreEqual(AudioClipAnalyzer.PAA4003, issue.Id.ToString());
 
-            var descriptor = issue.id.GetDescriptor();
+            var descriptor = issue.Id.GetDescriptor();
             descriptor.Fix(issue);
 
             issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.id.Equals(AudioClipAnalyzer.k_AudioStereoClipWhichIsNotStreamingDescriptor.id));
+                .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioStereoClipWhichIsNotStreamingDescriptor.Id));
 
             Assert.Null(issue);
         }
@@ -195,11 +195,11 @@ namespace Unity.ProjectAuditor.EditorTests
         public void AudioClip_LongClipDecompressOnLoad_IsReported()
         {
             var issue = AnalyzeAndFindAssetIssues(m_TestLongNonStreamingClipAsset, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.id.Equals(AudioClipAnalyzer.k_AudioLongDecompressedClipDescriptor.id));
+                .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioLongDecompressedClipDescriptor.Id));
 
             Assert.NotNull(issue);
-            Assert.IsTrue(issue.id.IsValid());
-            Assert.AreEqual(AudioClipAnalyzer.PAA4004, issue.id.ToString());
+            Assert.IsTrue(issue.Id.IsValid());
+            Assert.AreEqual(AudioClipAnalyzer.PAA4004, issue.Id.ToString());
         }
 
         // PAA4005 Compressed In Memory used with compression formats that are not trivial to decompress (e.g. everything other than PCM or ADPCM)
@@ -207,11 +207,11 @@ namespace Unity.ProjectAuditor.EditorTests
         public void AudioClip_CompressedInMemory_IsReported()
         {
             var issue = AnalyzeAndFindAssetIssues(m_TestCompressedInMemoryClipAsset, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.id.Equals(AudioClipAnalyzer.k_AudioCompressedInMemoryDescriptor.id));
+                .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioCompressedInMemoryDescriptor.Id));
 
             Assert.NotNull(issue);
-            Assert.IsTrue(issue.id.IsValid());
-            Assert.AreEqual(AudioClipAnalyzer.PAA4005, issue.id.ToString());
+            Assert.IsTrue(issue.Id.IsValid());
+            Assert.AreEqual(AudioClipAnalyzer.PAA4005, issue.Id.ToString());
         }
 
         // PAA4006 Large compressed samples on mobile: Decrease quality or downsample
@@ -223,11 +223,11 @@ namespace Unity.ProjectAuditor.EditorTests
             m_Platform = BuildTarget.Android;
 
             var issue = AnalyzeAndFindAssetIssues(m_TestCompressedInMemoryClipAsset, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.id.Equals(AudioClipAnalyzer.k_AudioLargeCompressedMobileDescriptor.id));
+                .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioLargeCompressedMobileDescriptor.Id));
 
             Assert.NotNull(issue);
-            Assert.IsTrue(issue.id.IsValid());
-            Assert.AreEqual(AudioClipAnalyzer.PAA4006, issue.id.ToString());
+            Assert.IsTrue(issue.Id.IsValid());
+            Assert.AreEqual(AudioClipAnalyzer.PAA4006, issue.Id.ToString());
 
             m_Platform = platform;
         }
@@ -242,17 +242,17 @@ namespace Unity.ProjectAuditor.EditorTests
                 AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad, true);
 
             var issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.id.Equals(AudioClipAnalyzer.k_Audio48KHzDescriptor.id));
+                .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_Audio48KHzDescriptor.Id));
 
             Assert.NotNull(issue);
-            Assert.IsTrue(issue.id.IsValid());
-            Assert.AreEqual(AudioClipAnalyzer.PAA4007, issue.id.ToString());
+            Assert.IsTrue(issue.Id.IsValid());
+            Assert.AreEqual(AudioClipAnalyzer.PAA4007, issue.Id.ToString());
 
-            var descriptor = issue.id.GetDescriptor();
+            var descriptor = issue.Id.GetDescriptor();
             descriptor.Fix(issue);
 
             issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.id.Equals(AudioClipAnalyzer.k_Audio48KHzDescriptor.id));
+                .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_Audio48KHzDescriptor.Id));
 
             Assert.Null(issue);
         }
@@ -266,17 +266,17 @@ namespace Unity.ProjectAuditor.EditorTests
                 AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad, true, true);
 
             var issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.id.Equals(AudioClipAnalyzer.k_AudioPreloadDescriptor.id));
+                .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioPreloadDescriptor.Id));
 
             Assert.NotNull(issue);
-            Assert.IsTrue(issue.id.IsValid());
-            Assert.AreEqual(AudioClipAnalyzer.PAA4008, issue.id.ToString());
+            Assert.IsTrue(issue.Id.IsValid());
+            Assert.AreEqual(AudioClipAnalyzer.PAA4008, issue.Id.ToString());
 
-            var descriptor = issue.id.GetDescriptor();
+            var descriptor = issue.Id.GetDescriptor();
             descriptor.Fix(issue);
 
             issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.id.Equals(AudioClipAnalyzer.k_AudioPreloadDescriptor.id));
+                .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioPreloadDescriptor.Id));
 
             Assert.Null(issue);
         }
@@ -290,17 +290,17 @@ namespace Unity.ProjectAuditor.EditorTests
                 AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad);
 
             var issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.id.Equals(AudioClipAnalyzer.k_AudioLoadInBackgroundDisabledDescriptor.id));
+                .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioLoadInBackgroundDisabledDescriptor.Id));
 
             Assert.NotNull(issue);
-            Assert.IsTrue(issue.id.IsValid());
-            Assert.AreEqual(AudioClipAnalyzer.PAA4009, issue.id.ToString());
+            Assert.IsTrue(issue.Id.IsValid());
+            Assert.AreEqual(AudioClipAnalyzer.PAA4009, issue.Id.ToString());
 
-            var descriptor = issue.id.GetDescriptor();
+            var descriptor = issue.Id.GetDescriptor();
             descriptor.Fix(issue);
 
             issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.id.Equals(AudioClipAnalyzer.k_AudioLoadInBackgroundDisabledDescriptor.id));
+                .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioLoadInBackgroundDisabledDescriptor.Id));
 
             Assert.Null(issue);
         }
@@ -318,17 +318,17 @@ namespace Unity.ProjectAuditor.EditorTests
                 AudioCompressionFormat.MP3, AudioClipLoadType.DecompressOnLoad);
 
             var issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.id.Equals(AudioClipAnalyzer.k_AudioMP3Descriptor.id));
+                .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioMP3Descriptor.Id));
 
             Assert.NotNull(issue);
-            Assert.IsTrue(issue.id.IsValid());
-            Assert.AreEqual(AudioClipAnalyzer.PAA4010, issue.id.ToString());
+            Assert.IsTrue(issue.Id.IsValid());
+            Assert.AreEqual(AudioClipAnalyzer.PAA4010, issue.Id.ToString());
 
-            var descriptor = issue.id.GetDescriptor();
+            var descriptor = issue.Id.GetDescriptor();
             descriptor.Fix(issue);
 
             issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.id.Equals(AudioClipAnalyzer.k_AudioMP3Descriptor.id));
+                .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioMP3Descriptor.Id));
 
             Assert.Null(issue);
 
@@ -354,21 +354,21 @@ namespace Unity.ProjectAuditor.EditorTests
             m_Platform = BuildTarget.Android;
 
             var foundIssues = AnalyzeAndFindAssetIssues(m_TestShortNonStreamingClipAsset, IssueCategory.AssetDiagnostic);
-            Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4002));
+            Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4002));
 
             foundIssues = AnalyzeAndFindAssetIssues(m_TestLongNonStreamingClipAsset, IssueCategory.AssetDiagnostic);
-            Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4003));
+            Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4003));
 
             m_Platform = platform; // restore standalone platform
 
             foundIssues = AnalyzeAndFindAssetIssues(m_TestLongStreamingClipAsset, IssueCategory.AssetDiagnostic);
-            Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4002));
+            Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4002));
 
             foundIssues = AnalyzeAndFindAssetIssues(m_TestShortNonStreamingClipAsset, IssueCategory.AssetDiagnostic);
-            Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4003));
+            Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4003));
 
             foundIssues = AnalyzeAndFindAssetIssues(m_TestCompressedInMemoryClipAsset, IssueCategory.AssetDiagnostic);
-            Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4006));
+            Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4006));
         }
 
         // Testing to make sure we don't report false positives for:
@@ -385,31 +385,31 @@ namespace Unity.ProjectAuditor.EditorTests
         public void AudioClip_FalsePositives_AreNotReported()
         {
             var foundIssues = AnalyzeAndFindAssetIssues(m_TestShortNonStreamingClipAsset, IssueCategory.AssetDiagnostic);
-            Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4000));
-            Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4001));
-            Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4004));
-            Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4005));
-            Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4006));
-            Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4007)); // Compression clamps bitrate to 48KHz
-            Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4010));
-            Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4011));
+            Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4000));
+            Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4001));
+            Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4004));
+            Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4005));
+            Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4006));
+            Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4007)); // Compression clamps bitrate to 48KHz
+            Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4010));
+            Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4011));
 
             foundIssues = AnalyzeAndFindAssetIssues(m_TestLongStreamingClipAsset, IssueCategory.AssetDiagnostic);
-            Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4000));
-            Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4001));
-            Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4004));
-            Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4005));
+            Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4000));
+            Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4001));
+            Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4004));
+            Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4005));
 
             foundIssues = AnalyzeAndFindAssetIssues(m_TestPCMInMemoryClipAsset, IssueCategory.AssetDiagnostic);
-            Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4005));
-            Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4006));
-            Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4009)); // It has loadInBackground = true
+            Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4005));
+            Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4006));
+            Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4009)); // It has loadInBackground = true
 
             var asset = CreateTestAudioClip(
                 "xPAA4008.wav", m_ShortWavData, m_BuildTargetString,
                 AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad, true, false);
             foundIssues = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic);
-            Assert.IsFalse(foundIssues.Any(issue => issue.id == AudioClipAnalyzer.PAA4008));
+            Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4008));
         }
     }
 }

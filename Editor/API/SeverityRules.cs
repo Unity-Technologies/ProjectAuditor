@@ -7,11 +7,11 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    /// <summary>
-    /// Rules to specify the severity of individual diagnostic issues
-    /// </summary>
+    // Rules to specify the Severity of individual diagnostic issues.
+    // Project Auditor interacts with this to Ignore/Display issues, and it's exposed in the Settings window, but we don't need it in the API.
+    // Users can simply construct a List<Rule> and pass it to AnalysisParams.WithAdditionalDiagnosticRules()
     [Serializable]
-    public class SeverityRules
+    internal sealed class SeverityRules
     {
         public SeverityRules()
         {
@@ -24,9 +24,9 @@ namespace Unity.ProjectAuditor.Editor
             {
                 m_Rules.Add(new Rule
                 {
-                    severity = rule.severity,
-                    filter = rule.filter,
-                    id = rule.id
+                    Severity = rule.Severity,
+                    Filter = rule.Filter,
+                    Id = rule.Id
                 });
             }
         }
@@ -34,18 +34,18 @@ namespace Unity.ProjectAuditor.Editor
 #if UNITY_2020_2_OR_NEWER
         [NonReorderable]
 #endif
-        [JsonProperty("rules")] [SerializeField]
+        [JsonProperty("rules")][SerializeField]
         List<Rule> m_Rules = new List<Rule>();
 
         internal int NumRules => m_Rules.Count;
 
         internal void AddRule(Rule ruleToAdd)
         {
-            if (string.IsNullOrEmpty(ruleToAdd.filter))
+            if (string.IsNullOrEmpty(ruleToAdd.Filter))
             {
-                ruleToAdd.filter = string.Empty; // make sure it's empty, as opposed to null
+                ruleToAdd.Filter = string.Empty; // make sure it's empty, as opposed to null
 
-                var rules = m_Rules.Where(r => r.id == ruleToAdd.id).ToArray();
+                var rules = m_Rules.Where(r => r.Id.Equals(ruleToAdd.Id)).ToArray();
                 foreach (var ruleToDelete in rules)
                     m_Rules.Remove(ruleToDelete);
             }
@@ -53,26 +53,20 @@ namespace Unity.ProjectAuditor.Editor
             m_Rules.Add(ruleToAdd);
         }
 
-        internal Rule GetRule(string id, string filter = "")
+        internal Rule GetRule(DescriptorID id, string filter = "")
         {
             // do not use Linq to avoid managed allocations
             foreach (var r in m_Rules)
             {
-                if (r.id == id && r.filter.Equals(filter))
+                if (r.Id.Equals(id) && r.Filter.Equals(filter))
                     return r;
             }
             return null;
         }
 
-        // Only used for testing
-        internal void ClearAllRules()
+        internal void ClearRules(DescriptorID id, string filter = "")
         {
-            m_Rules.Clear();
-        }
-
-        internal void ClearRules(string id, string filter = "")
-        {
-            var rules = m_Rules.Where(r => r.id == id && r.filter.Equals(filter)).ToArray();
+            var rules = m_Rules.Where(r => r.Id.Equals(id) && r.Filter.Equals(filter)).ToArray();
 
             foreach (var rule in rules)
                 m_Rules.Remove(rule);
@@ -80,28 +74,28 @@ namespace Unity.ProjectAuditor.Editor
 
         internal void ClearRules(ProjectIssue issue)
         {
-            var id = issue.id;
+            var id = issue.Id;
             ClearRules(id, issue.GetContext());
         }
 
-        internal Severity GetAction(string id, string filter = "")
+        internal Severity GetAction(DescriptorID id, string filter = "")
         {
-            // is there a rule that matches the filter?
+            // is there a rule that matches the Filter?
             var projectRule = GetRule(id, filter);
             if (projectRule != null)
-                return projectRule.severity;
+                return projectRule.Severity;
 
             // is there a rule that matches descriptor?
             projectRule = GetRule(id);
             if (projectRule != null)
-                return projectRule.severity;
+                return projectRule.Severity;
 
             return Severity.Default;
         }
 
         internal void SetRule(ProjectIssue issue, Severity ruleSeverity)
         {
-            var id = issue.id;
+            var id = issue.Id;
 
             // FIXME: GetContext will return empty string on code issues after domain reload
             var context = issue.GetContext();
@@ -110,12 +104,18 @@ namespace Unity.ProjectAuditor.Editor
             if (rule == null)
                 AddRule(new Rule
                 {
-                    id = id,
-                    filter = context,
-                    severity = ruleSeverity
+                    Id = id,
+                    Filter = context,
+                    Severity = ruleSeverity
                 });
             else
-                rule.severity = ruleSeverity;
+                rule.Severity = ruleSeverity;
+        }
+
+        // Only used for testing
+        internal void ClearAllRules()
+        {
+            m_Rules.Clear();
         }
     }
 }

@@ -6,7 +6,7 @@ Project Auditor is a static analysis tool that analyzes assets, settings, and sc
 * Assets information
 
 ## Requirements
-* Project Auditor is compatible with Unity versions from 2018.4 to the latest [Long-Term Support](https://unity3d.com/unity/qa/lts-releases) (recommended). 
+* Project Auditor is compatible with Unity versions from 2020.3 to the latest [Long-Term Support](https://unity3d.com/unity/qa/lts-releases) (recommended). 
 * .NET 4.x is required. Check the Project Settings to make sure a compatible .NET is selected.  
 <img src="images/dot-net.png">
 
@@ -55,7 +55,7 @@ For information on a specific view, check the corresponding page.
 * [Shaders](Shaders.md)
 * [Shader Variants](Variants.md)
 
-### Build Information (Requires Unity 2019.4 or newer)
+### Build Information
 * [Build Steps](BuildSteps.md)
 * [Build Size](BuildSize.md)
 

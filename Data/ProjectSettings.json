@@ -1,122 +1,120 @@
-{
-    "Items": [
-        {
-            "id": "PAS0000",
-            "title": "Player: Metal API Validation is enabled",
-            "type": "UnityEditor.PlayerSettings",
-            "method": "enableMetalAPIValidation",
-            "value": "True",
-            "areas": ["CPU"],
-            "platforms": ["iOS", "StandaloneOSX", "tvOS"],
-            "description": "The <b>Metal API Validation</b> option is enabled in the iOS Player Settings. This option can negatively impact rendering performance in test builds, resulting in inaccurate profiling results.",
-            "solution": "We recommend disabling <b>Metal API Validation</b>. This option will only affect builds running from Xcode, but it rarely highlights anything that the user will have control over.",
-            "minimumVersion": "2018.1"
-        },
-        {
-            "id": "PAS0001",
-            "title": "Player: Graphics Jobs is disabled",
-            "type": "UnityEditor.PlayerSettings",
-            "method": "graphicsJobs",
-            "value": "False",
-            "areas": ["CPU"],
-            "description": "The <b>Graphics Jobs</b> option in Player Settings is disabled. This may introduce CPU rendering performance bottlenecks.",
-            "solution": "Try enabling <b>Graphics Jobs</b> and testing your application. This option spreads the task of building the render command buffer every frame across as many CPU cores as possible, rather than performing all the work in the render thread which is often a bottleneck. Performance will vary depending on the project.\n\nNote: This feature is experimental on specific Unity versions and may introduce new crashes. It is recommended to test accordingly."
-        },
-        {
-            "id": "PAS0007",
-            "title": "Player: Prebake Collision Meshes is disabled",
-            "type": "UnityEditor.PlayerSettings",
-            "method": "bakeCollisionMeshes",
-            "value": "False",
-            "areas": ["BuildSize","LoadTime"],
-            "description": "The <b>Prebake Collision Meshes</b> option in Player Settings is disabled. This may result in longer application load times, although enabling the option may increase build times and sizes.",
-            "solution": "If you are using physics in your application, consider enabling <b>Prebake Collision Meshes</b>, at least before creating release and profiling builds. Prebaked collision meshes can result in an increase in build times and sizes, but reduce loading/initialization times in your application, because serializing prebaked meshes is faster than baking them at runtime."
-        },
-        {
-            "id": "PAS0008",
-            "title": "Player: Optimize Mesh Data is disabled",
-            "type": "UnityEditor.PlayerSettings",
-            "method": "stripUnusedMeshComponents",
-            "value": "False",
-            "areas": ["BuildSize","LoadTime","GPU"],
-            "description": "The <b>Optimize Mesh Data</b> option in Player Settings is disabled. Your project may be building and loading unused vertex channel information.",
-            "solution": "Consider enabling <b>Optimize Mesh Data</b>. This option strips out vertex channels on meshes which are not used by the materials which are applied to them. This can reduce the file size of your meshes and the time to load them, and increase GPU rendering performance. It can, however, cause problems if mesh materials are changed at runtime, since the new materials might rely on vertex channels which have been removed, and it may contribute to longer build times."
-        },
-        {
-            "id": "PAS0010",
-            "title": "Player (WebGL): Data Caching is disabled",
-            "type": "UnityEditor.PlayerSettings+WebGL",
-            "method": "dataCaching",
-            "value": "False",
-            "areas": ["LoadTime"],
-            "platforms": ["WebGL"],
-            "description": "The <b>Data Caching</b> option in Player Settings is disabled. Asset data will be re-downloaded every time the content is loaded in a browser. This can increase load times.",
-            "solution": "Enable <b>Data Caching</b> to cache build files in the browser cache."
-        },
-        {
-            "id": "PAS0011",
-            "title": "Player (WebGL): Linker Target is deprecated",
-            "type": "UnityEditor.PlayerSettings+WebGL",
-            "method": "linkerTarget",
-            "value": "Asm",
-            "areas": ["CPU","Memory"],
-            "platforms": ["WebGL"],
-            "description": "<b>WebGLLinkerTarget.Asm</b> linker target setting is deprecated.",
-            "solution": "Set <b>UnityEditor.PlayerSettings.WebGL.linkerTarget</b> to <b>WebGLLinkerTarget.Wasm</b> to generate code in WebAssembly format.",
-            "minimumVersion": "2018.1"
-        },
-        {
-            "id": "PAS0012",
-            "title": "Physics: Auto Sync Transforms is enabled",
-            "type": "UnityEngine.Physics",
-            "method": "autoSyncTransforms",
-            "value": "True",
-            "areas": ["CPU"],
-            "description": "In Physics Settings, <b>Auto Sync Transforms</b> is enabled. This option ensures backwards compatibility with the behaviour of older versions of Unity in which physics transforms were always kept in sync with GameObject transforms. In newer versions of Unity, transform syncs are batched for greater efficiency on the CPU. Enabling this option means that transforms are always synced before physics queries (e.g. Physics.Raycast()); before reading data back from the physics engine (e.g. Rigidbody.position); before simulating particles that compute collisions, and before updating the camera flares effect. This adds an additional CPU cost.",
-            "solution": "Consider disabling <b>Auto Sync Transforms</b> and testing your game to identify any areas where physics behavior is affected by the change. If there are areas of the game where more frequent synchronization is required to maintain the desired behaviour, this can be enforced by calling Physics.SyncTransforms() directly."
-        },
-        {
-            "id": "PAS0014",
-            "title": "Physics2D: Auto Sync Transforms is enabled",
-            "type": "UnityEngine.Physics2D",
-            "method": "autoSyncTransforms",
-            "value": "True",
-            "areas": ["CPU"],
-            "description": "In Physics 2D Settings, <b>Auto Sync Transforms</b> is enabled. This option ensures backwards compatibility with the behaviour of older versions of Unity in which physics transforms were always kept in sync with GameObject transforms. In newer versions of Unity, transform syncs are batched for greater efficiency on the CPU. Enabling this option means that transforms are always synced before physics queries (e.g. Physics2D.Raycast()); before reading data back from the physics engine (e.g. Rigidbody2D.position); before simulating particles that compute collisions, and before updating the camera flares effect. This adds an additional CPU cost.",
-            "solution": "Consider disabling <b>Auto Sync Transforms</b> and testing your game to identify any areas where physics behavior is affected by the change. If there are areas of the game where more frequent synchronization is required to maintain the desired behaviour, this can be enforced by calling Physics2D.SyncTransforms() directly."
-        },
-        {
-            "id": "PAS0027",
-            "title": "Player: Mipmap Stripping is disabled",
-            "type": "UnityEditor.PlayerSettings",
-            "method": "mipStripping",
-            "value": "False",
-            "areas": ["BuildSize"],
-            "description": "The <b>Texture MipMap Stripping</b> option in Player Settings is disabled. As a result, the generated build might be larger than necessary.",
-            "solution": "Enable <b>Texture MipMap Stripping</b>. Note that this feature will only reduce the build size if no quality levels on the platform use highest mip(s). Furthermore, if code drives the <b>masterTextureLevel</b> to a value higher than those in the quality level settings the mip will no longer be available if this is enabled.",
-            "minimumVersion": "2020.2"
-        },
-        {
-            "id": "PAS0028",
-            "title": "Physics: Reuse Collision Callbacks is disabled",
-            "type": "UnityEngine.Physics",
-            "method": "reuseCollisionCallbacks",
-            "value": "False",
-            "areas": ["Memory"],
-            "description": "The <b>Reuse Collision Callbacks</b> option in Physics Settings is disabled. For each OnCollision* callback, a temporary managed object is allocated.",
-            "solution": "When this option is enabled, only a single instance of the Collision type is created and reused for each individual callback. This reduces waste for the garbage collector to handle and improves performance.",
-            "minimumVersion": "2018.3"
-        },
-        {
-            "id": "PAS0034",
-            "title": "Player: Use incremental GC is disabled",
-            "type": "UnityEditor.PlayerSettings",
-            "method": "gcIncremental",
-            "value": "False",
-            "areas": ["CPU"],
-            "description": "The <b>Incremental Garbage Collection</b> feature is disabled. This might lead to CPU spikes due to Garbage Collection.",
-            "solution": "To enable this feature, enable option <b>Project Settings > Player > Other Settings > Configuration > Use incremental GC</b>. Note this is not a substitute for reducing per-frame managed allocations.",
-            "minimumVersion": "2019.1"
-        }
-    ]
-}
+[
+    {
+        "id": "PAS0000",
+        "title": "Player: Metal API Validation is enabled",
+        "type": "UnityEditor.PlayerSettings",
+        "method": "enableMetalAPIValidation",
+        "value": "True",
+        "areas": ["CPU"],
+        "platforms": ["iOS", "StandaloneOSX", "tvOS"],
+        "description": "The <b>Metal API Validation</b> option is enabled in the iOS Player Settings. This option can negatively impact rendering performance in test builds, resulting in inaccurate profiling results.",
+        "solution": "We recommend disabling <b>Metal API Validation</b>. This option will only affect builds running from Xcode, but it rarely highlights anything that the user will have control over.",
+        "minimumVersion": "2018.1"
+    },
+    {
+        "id": "PAS0001",
+        "title": "Player: Graphics Jobs is disabled",
+        "type": "UnityEditor.PlayerSettings",
+        "method": "graphicsJobs",
+        "value": "False",
+        "areas": ["CPU"],
+        "description": "The <b>Graphics Jobs</b> option in Player Settings is disabled. This may introduce CPU rendering performance bottlenecks.",
+        "solution": "Try enabling <b>Graphics Jobs</b> and testing your application. This option spreads the task of building the render command buffer every frame across as many CPU cores as possible, rather than performing all the work in the render thread which is often a bottleneck. Performance will vary depending on the project.\n\nNote: This feature is experimental on specific Unity versions and may introduce new crashes. It is recommended to test accordingly."
+    },
+    {
+        "id": "PAS0007",
+        "title": "Player: Prebake Collision Meshes is disabled",
+        "type": "UnityEditor.PlayerSettings",
+        "method": "bakeCollisionMeshes",
+        "value": "False",
+        "areas": ["BuildSize","LoadTime"],
+        "description": "The <b>Prebake Collision Meshes</b> option in Player Settings is disabled. This may result in longer application load times, although enabling the option may increase build times and sizes.",
+        "solution": "If you are using physics in your application, consider enabling <b>Prebake Collision Meshes</b>, at least before creating release and profiling builds. Prebaked collision meshes can result in an increase in build times and sizes, but reduce loading/initialization times in your application, because serializing prebaked meshes is faster than baking them at runtime."
+    },
+    {
+        "id": "PAS0008",
+        "title": "Player: Optimize Mesh Data is disabled",
+        "type": "UnityEditor.PlayerSettings",
+        "method": "stripUnusedMeshComponents",
+        "value": "False",
+        "areas": ["BuildSize","LoadTime","GPU"],
+        "description": "The <b>Optimize Mesh Data</b> option in Player Settings is disabled. Your project may be building and loading unused vertex channel information.",
+        "solution": "Consider enabling <b>Optimize Mesh Data</b>. This option strips out vertex channels on meshes which are not used by the materials which are applied to them. This can reduce the file size of your meshes and the time to load them, and increase GPU rendering performance. It can, however, cause problems if mesh materials are changed at runtime, since the new materials might rely on vertex channels which have been removed, and it may contribute to longer build times."
+    },
+    {
+        "id": "PAS0010",
+        "title": "Player (WebGL): Data Caching is disabled",
+        "type": "UnityEditor.PlayerSettings+WebGL",
+        "method": "dataCaching",
+        "value": "False",
+        "areas": ["LoadTime"],
+        "platforms": ["WebGL"],
+        "description": "The <b>Data Caching</b> option in Player Settings is disabled. Asset data will be re-downloaded every time the content is loaded in a browser. This can increase load times.",
+        "solution": "Enable <b>Data Caching</b> to cache build files in the browser cache."
+    },
+    {
+        "id": "PAS0011",
+        "title": "Player (WebGL): Linker Target is deprecated",
+        "type": "UnityEditor.PlayerSettings+WebGL",
+        "method": "linkerTarget",
+        "value": "Asm",
+        "areas": ["CPU","Memory"],
+        "platforms": ["WebGL"],
+        "description": "<b>WebGLLinkerTarget.Asm</b> linker target setting is deprecated.",
+        "solution": "Set <b>UnityEditor.PlayerSettings.WebGL.linkerTarget</b> to <b>WebGLLinkerTarget.Wasm</b> to generate code in WebAssembly format.",
+        "minimumVersion": "2018.1"
+    },
+    {
+        "id": "PAS0012",
+        "title": "Physics: Auto Sync Transforms is enabled",
+        "type": "UnityEngine.Physics",
+        "method": "autoSyncTransforms",
+        "value": "True",
+        "areas": ["CPU"],
+        "description": "In Physics Settings, <b>Auto Sync Transforms</b> is enabled. This option ensures backwards compatibility with the behaviour of older versions of Unity in which physics transforms were always kept in sync with GameObject transforms. In newer versions of Unity, transform syncs are batched for greater efficiency on the CPU. Enabling this option means that transforms are always synced before physics queries (e.g. Physics.Raycast()); before reading data back from the physics engine (e.g. Rigidbody.position); before simulating particles that compute collisions, and before updating the camera flares effect. This adds an additional CPU cost.",
+        "solution": "Consider disabling <b>Auto Sync Transforms</b> and testing your game to identify any areas where physics behavior is affected by the change. If there are areas of the game where more frequent synchronization is required to maintain the desired behaviour, this can be enforced by calling Physics.SyncTransforms() directly."
+    },
+    {
+        "id": "PAS0014",
+        "title": "Physics2D: Auto Sync Transforms is enabled",
+        "type": "UnityEngine.Physics2D",
+        "method": "autoSyncTransforms",
+        "value": "True",
+        "areas": ["CPU"],
+        "description": "In Physics 2D Settings, <b>Auto Sync Transforms</b> is enabled. This option ensures backwards compatibility with the behaviour of older versions of Unity in which physics transforms were always kept in sync with GameObject transforms. In newer versions of Unity, transform syncs are batched for greater efficiency on the CPU. Enabling this option means that transforms are always synced before physics queries (e.g. Physics2D.Raycast()); before reading data back from the physics engine (e.g. Rigidbody2D.position); before simulating particles that compute collisions, and before updating the camera flares effect. This adds an additional CPU cost.",
+        "solution": "Consider disabling <b>Auto Sync Transforms</b> and testing your game to identify any areas where physics behavior is affected by the change. If there are areas of the game where more frequent synchronization is required to maintain the desired behaviour, this can be enforced by calling Physics2D.SyncTransforms() directly."
+    },
+    {
+        "id": "PAS0027",
+        "title": "Player: Mipmap Stripping is disabled",
+        "type": "UnityEditor.PlayerSettings",
+        "method": "mipStripping",
+        "value": "False",
+        "areas": ["BuildSize"],
+        "description": "The <b>Texture MipMap Stripping</b> option in Player Settings is disabled. As a result, the generated build might be larger than necessary.",
+        "solution": "Enable <b>Texture MipMap Stripping</b>. Note that this feature will only reduce the build size if no quality levels on the platform use highest mip(s). Furthermore, if code drives the <b>masterTextureLevel</b> to a value higher than those in the quality level settings the mip will no longer be available if this is enabled.",
+        "minimumVersion": "2020.2"
+    },
+    {
+        "id": "PAS0028",
+        "title": "Physics: Reuse Collision Callbacks is disabled",
+        "type": "UnityEngine.Physics",
+        "method": "reuseCollisionCallbacks",
+        "value": "False",
+        "areas": ["Memory"],
+        "description": "The <b>Reuse Collision Callbacks</b> option in Physics Settings is disabled. For each OnCollision* callback, a temporary managed object is allocated.",
+        "solution": "When this option is enabled, only a single instance of the Collision type is created and reused for each individual callback. This reduces waste for the garbage collector to handle and improves performance.",
+        "minimumVersion": "2018.3"
+    },
+    {
+        "id": "PAS0034",
+        "title": "Player: Use incremental GC is disabled",
+        "type": "UnityEditor.PlayerSettings",
+        "method": "gcIncremental",
+        "value": "False",
+        "areas": ["CPU"],
+        "description": "The <b>Incremental Garbage Collection</b> feature is disabled. This might lead to CPU spikes due to Garbage Collection.",
+        "solution": "To enable this feature, enable option <b>Project Settings > Player > Other Settings > Configuration > Use incremental GC</b>. Note this is not a substitute for reducing per-frame managed allocations.",
+        "minimumVersion": "2019.1"
+    }
+]

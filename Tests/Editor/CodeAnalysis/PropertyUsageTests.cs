@@ -15,9 +15,7 @@ namespace Unity.ProjectAuditor.EditorTests
     {
         TestAsset m_TestAssetObjectName;
         TestAsset m_TestAssetBaseTypePropertyUsage;
-#if UNITY_2019_1_OR_NEWER
         TestAsset m_TestAssetUxmlAttributeDescriptionPropertyUsage;
-#endif
 
         [OneTimeSetUp]
         public void SetUp()
@@ -60,7 +58,6 @@ class BaseTypePropertyUsage
 }
 ");
 
-#if UNITY_2019_1_OR_NEWER
             m_TestAssetUxmlAttributeDescriptionPropertyUsage = new TestAsset("UxmlAttributeDescriptionPropertyUsage.cs", @"
 using System.Collections;
 using System.Collections.Generic;
@@ -78,7 +75,6 @@ class UxmlAttributeDescriptionPropertyUsage
     }
 }
 ");
-#endif
         }
 
         [Test]
@@ -86,10 +82,10 @@ class UxmlAttributeDescriptionPropertyUsage
         {
             var issues = AnalyzeAndFindAssetIssues(m_TestAssetObjectName);
 
-            var propertyNameIssues = issues.Where(i => i.id == "PAC0231").ToArray();
+            var propertyNameIssues = issues.Where(i => i.Id == "PAC0231").ToArray();
 
             Assert.AreEqual(3, propertyNameIssues.Length);
-            Assert.True(propertyNameIssues.All(i => i.description.Equals("'UnityEngine.Object.name' usage")));
+            Assert.True(propertyNameIssues.All(i => i.Description.Equals("'UnityEngine.Object.name' usage")));
         }
 
         [Test]
@@ -98,24 +94,21 @@ class UxmlAttributeDescriptionPropertyUsage
             var issues = AnalyzeAndFindAssetIssues(m_TestAssetBaseTypePropertyUsage);
 
             var propertyOfBaseTypeIssues = issues.Where(
-                i => i.id == "PAC0039" || i.id == "PAC0084" || i.id == "PAC0085")
+                i => i.Id == "PAC0039" || i.Id == "PAC0084" || i.Id == "PAC0085")
                 .ToArray();
 
             Assert.AreEqual(6, propertyOfBaseTypeIssues.Length);
         }
 
-#if UNITY_2019_1_OR_NEWER
         [Test]
         public void CodeAnalysis_PropertyUxmlAttributeDescription_IsReported()
         {
             var issues = AnalyzeAndFindAssetIssues(m_TestAssetUxmlAttributeDescriptionPropertyUsage);
 
-            var propertyUxmlAttributeIssues = issues.Where(i => i.id == "PAC0191").ToArray();
+            var propertyUxmlAttributeIssues = issues.Where(i => i.Id == "PAC0191").ToArray();
 
             Assert.AreEqual(1, propertyUxmlAttributeIssues.Length);
-            Assert.AreEqual("'UnityEngine.UIElements.UxmlAttributeDescription.obsoleteNames' usage", propertyUxmlAttributeIssues[0].description);
+            Assert.AreEqual("'UnityEngine.UIElements.UxmlAttributeDescription.obsoleteNames' usage", propertyUxmlAttributeIssues[0].Description);
         }
-
-#endif
     }
 }

@@ -42,23 +42,23 @@ namespace Unity.ProjectAuditor.EditorTests
 
             // check issue
             Assert.NotNull(boxingInt);
-            Assert.AreEqual(m_TestAssetBoxingInt.fileName, boxingInt.filename);
-            Assert.AreEqual("Conversion from value type 'Int32' to ref type", boxingInt.description);
+            Assert.AreEqual(m_TestAssetBoxingInt.fileName, boxingInt.Filename);
+            Assert.AreEqual("Conversion from value type 'Int32' to ref type", boxingInt.Description);
             Assert.AreEqual("System.Object BoxingIntTest::Dummy()", boxingInt.GetContext());
-            Assert.AreEqual(1, boxingInt.line);
-            Assert.AreEqual(IssueCategory.Code, boxingInt.category);
+            Assert.AreEqual(1, boxingInt.Line);
+            Assert.AreEqual(IssueCategory.Code, boxingInt.Category);
 
             // check ID
-            Assert.True(boxingInt.id.IsValid());
+            Assert.True(boxingInt.Id.IsValid());
 
-            Assert.AreEqual(BoxingAnalyzer.PAC2000, boxingInt.id.ToString());
+            Assert.AreEqual(BoxingAnalyzer.PAC2000, boxingInt.Id.ToString());
 
-            var descriptor = boxingInt.id.GetDescriptor();
-            Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
-            Assert.True(string.IsNullOrEmpty(descriptor.type));
-            Assert.True(string.IsNullOrEmpty(descriptor.method));
-            Assert.False(string.IsNullOrEmpty(descriptor.title));
-            Assert.AreEqual("Boxing Allocation", descriptor.title);
+            var descriptor = boxingInt.Id.GetDescriptor();
+            Assert.AreEqual(Severity.Moderate, descriptor.DefaultSeverity);
+            Assert.True(string.IsNullOrEmpty(descriptor.Type));
+            Assert.True(string.IsNullOrEmpty(descriptor.Method));
+            Assert.False(string.IsNullOrEmpty(descriptor.Title));
+            Assert.AreEqual("Boxing Allocation", descriptor.Title);
         }
 
         [Test]
@@ -72,23 +72,23 @@ namespace Unity.ProjectAuditor.EditorTests
 
             // check issue
             Assert.NotNull(boxingFloat);
-            Assert.AreEqual(m_TestAssetBoxingFloat.fileName, boxingFloat.filename);
-            Assert.AreEqual("Conversion from value type 'float' to ref type", boxingFloat.description);
+            Assert.AreEqual(m_TestAssetBoxingFloat.fileName, boxingFloat.Filename);
+            Assert.AreEqual("Conversion from value type 'float' to ref type", boxingFloat.Description);
             Assert.AreEqual("System.Object BoxingFloatTest::Dummy()", boxingFloat.GetContext());
-            Assert.AreEqual(1, boxingFloat.line);
-            Assert.AreEqual(IssueCategory.Code, boxingFloat.category);
+            Assert.AreEqual(1, boxingFloat.Line);
+            Assert.AreEqual(IssueCategory.Code, boxingFloat.Category);
 
             // check ID
-            Assert.True(boxingFloat.id.IsValid());
+            Assert.True(boxingFloat.Id.IsValid());
 
-            Assert.AreEqual(BoxingAnalyzer.PAC2000, boxingFloat.id.ToString());
+            Assert.AreEqual(BoxingAnalyzer.PAC2000, boxingFloat.Id.ToString());
 
-            var descriptor = boxingFloat.id.GetDescriptor();
-            Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
-            Assert.True(string.IsNullOrEmpty(descriptor.type));
-            Assert.True(string.IsNullOrEmpty(descriptor.method));
-            Assert.False(string.IsNullOrEmpty(descriptor.title));
-            Assert.AreEqual("Boxing Allocation", descriptor.title);
+            var descriptor = boxingFloat.Id.GetDescriptor();
+            Assert.AreEqual(Severity.Moderate, descriptor.DefaultSeverity);
+            Assert.True(string.IsNullOrEmpty(descriptor.Type));
+            Assert.True(string.IsNullOrEmpty(descriptor.Method));
+            Assert.False(string.IsNullOrEmpty(descriptor.Title));
+            Assert.AreEqual("Boxing Allocation", descriptor.Title);
         }
 
         [Test]

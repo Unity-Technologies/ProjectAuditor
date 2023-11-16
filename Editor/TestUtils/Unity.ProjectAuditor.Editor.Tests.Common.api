@@ -19,10 +19,9 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
     public abstract class TestFixtureBase
     {
+        protected System.Collections.Generic.List<Unity.ProjectAuditor.Editor.Diagnostic.Rule> m_AdditionalRules;
         protected string m_BuildPath;
         protected Unity.ProjectAuditor.Editor.AssemblyUtils.CodeOptimization m_CodeOptimization = Unity.ProjectAuditor.Editor.AssemblyUtils.CodeOptimization.Release;
-        protected ProjectAuditorConfig m_Config;
-        protected ProjectAuditorDiagnosticParamsProvider m_DiagnosticParamsProvider;
         protected string m_OriginalCompanyName;
         protected string m_OriginalProductName;
         protected UnityEditor.AndroidArchitecture m_OriginalTargetArchitecture;

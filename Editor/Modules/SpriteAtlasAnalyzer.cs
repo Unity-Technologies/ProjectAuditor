@@ -11,17 +11,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
 {
     internal class SpriteAtlasAnalyzer : ISpriteAtlasModuleAnalyzer
     {
-        internal const string PAA0006 = nameof(PAA0006);
+        internal const string PAA0008 = nameof(PAA0008);
 
         internal static readonly Descriptor k_SpriteAtlasEmptyDescriptor = new Descriptor(
-            PAA0006,
+            PAA0008,
             "Sprite Atlas: Too much empty space",
             new[] {Area.Memory},
             "The Sprite Atlas texture contains a lot of empty space. Empty space contributes to texture memory usage.",
             "Consider reorganizing your Sprite Atlas Texture in order to reduce the amount of empty space."
         )
         {
-            messageFormat = "Sprite Atlas '{0}' has too much empty space ({1})"
+            MessageFormat = "Sprite Atlas '{0}' has too much empty space ({1})"
         };
 
         public void Initialize(Module module)
@@ -40,7 +40,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (emptyPercent > context.SpriteAtlasEmptySpaceLimit)
             {
                 yield return context.Create(IssueCategory.AssetDiagnostic,
-                    k_SpriteAtlasEmptyDescriptor.id, spriteAtlas.name, Formatting.FormatPercentage(emptyPercent / 100.0f, 0))
+                    k_SpriteAtlasEmptyDescriptor.Id, spriteAtlas.name, Formatting.FormatPercentage(emptyPercent / 100.0f, 0))
                     .WithLocation(context.AssetPath);
             }
         }

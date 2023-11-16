@@ -31,7 +31,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "<b>Simulation Mode</b> in Physics2D Settings is set to either <b>FixedUpdate</b> or <b>Update</b>. As a result, 2D physics simulation is executed on every update which might be expensive for some projects.",
             "Change <b>Project Settings > Physics 2D > Simulation Mode</b> to <b>Script</b> to disable the 2d physics processing each frame. If physics simulation is required for certain special rendering, use <b>Script</b> mode to control <b>Physics2d.Simulate</b> on a per frame basis.")
         {
-            minimumVersion = "2020.2"
+            MinimumVersion = "2020.2"
         };
 
         public void Initialize(Module module)
@@ -44,12 +44,12 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
             if (IsDefaultLayerCollisionMatrix())
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_DefaultLayerCollisionMatrixDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_DefaultLayerCollisionMatrixDescriptor.Id)
                     .WithLocation("Project/Physics 2D");
             }
             if (k_SimulationModeDescriptor.IsApplicable(context.Params) && IsNotUsingSimulationModeScript())
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_SimulationModeDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_SimulationModeDescriptor.Id)
                     .WithLocation("Project/Physics 2D");
             }
         }
@@ -66,11 +66,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         static bool IsNotUsingSimulationModeScript()
         {
-#if UNITY_2020_2_OR_NEWER
             return Physics2D.simulationMode != SimulationMode2D.Script;
-#else
-            return false;
-#endif
         }
     }
 }

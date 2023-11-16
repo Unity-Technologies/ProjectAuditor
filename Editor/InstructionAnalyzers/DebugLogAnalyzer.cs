@@ -29,9 +29,9 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "Remove logging code, or strip it from release builds by using scripting symbols for conditional compilation (#if ... #endif) or the <b>ConditionalAttribute</b> on a custom logging method that calls Debug.Log. Where logging is required in release builds, CPU times can be reduced by disabling stack traces in log messages. You can do this by setting <b>Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None)</b>."
             )
         {
-            documentationUrl = "https://docs.unity3d.com/Manual/BestPracticeUnderstandingPerformanceInUnity7.html",
-            messageFormat = "Use of Debug.{0} in '{1}'",
-            defaultSeverity = Severity.Minor
+            DocumentationUrl = "https://docs.unity3d.com/Manual/BestPracticeUnderstandingPerformanceInUnity7.html",
+            MessageFormat = "Use of Debug.{0} in '{1}'",
+            DefaultSeverity = Severity.Minor
         };
 
         static readonly Descriptor k_DebugLogWarningIssueDescriptor = new Descriptor
@@ -43,9 +43,9 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "Remove logging code, or strip it from release builds by using scripting symbols for conditional compilation (#if ... #endif) or the <b>ConditionalAttribute</b> on a custom logging method that calls Debug.LogWarning. Where logging is required in release builds, CPU times can be reduced by disabling stack traces in log messages. You can do this by setting <b>Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None)</b>."
             )
         {
-            documentationUrl = "https://docs.unity3d.com/Manual/BestPracticeUnderstandingPerformanceInUnity7.html",
-            messageFormat = "Use of Debug.{0} in '{1}'",
-            defaultSeverity = Severity.Minor
+            DocumentationUrl = "https://docs.unity3d.com/Manual/BestPracticeUnderstandingPerformanceInUnity7.html",
+            MessageFormat = "Use of Debug.{0} in '{1}'",
+            DefaultSeverity = Severity.Minor
         };
 
         readonly OpCode[] m_OpCodes =
@@ -100,10 +100,10 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             {
                 case "Log":
                 case "LogFormat":
-                    return context.Create(IssueCategory.Code, k_DebugLogIssueDescriptor.id, methodName, context.MethodDefinition.Name);
+                    return context.Create(IssueCategory.Code, k_DebugLogIssueDescriptor.Id, methodName, context.MethodDefinition.Name);
                 case "LogWarning":
                 case "LogWarningFormat":
-                    return context.Create(IssueCategory.Code, k_DebugLogWarningIssueDescriptor.id, methodName, context.MethodDefinition.Name);
+                    return context.Create(IssueCategory.Code, k_DebugLogWarningIssueDescriptor.Id, methodName, context.MethodDefinition.Name);
                 default:
                     return null;
             }

@@ -37,19 +37,19 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             base.AddIssues(allIssues);
 
-            m_Stats.numBuildSteps += allIssues.Count(i => i.category == IssueCategory.BuildStep);
-            m_Stats.numCodeIssues += allIssues.Count(i => i.category == IssueCategory.Code);
-            m_Stats.numSettingIssues += allIssues.Count(i => i.category == IssueCategory.ProjectSetting);
-            m_Stats.numAssetIssues += allIssues.Count(i => i.category == IssueCategory.AssetDiagnostic);
-            m_Stats.numShaders += allIssues.Count(i => i.category == IssueCategory.Shader);
-            m_Stats.numPackages += allIssues.Count(i => i.category == IssueCategory.Package);
-            m_Stats.numPackageDiagnostics += allIssues.Count(i => i.category == IssueCategory.PackageDiagnostic);
+            m_Stats.numBuildSteps += allIssues.Count(i => i.Category == IssueCategory.BuildStep);
+            m_Stats.numCodeIssues += allIssues.Count(i => i.Category == IssueCategory.Code);
+            m_Stats.numSettingIssues += allIssues.Count(i => i.Category == IssueCategory.ProjectSetting);
+            m_Stats.numAssetIssues += allIssues.Count(i => i.Category == IssueCategory.AssetDiagnostic);
+            m_Stats.numShaders += allIssues.Count(i => i.Category == IssueCategory.Shader);
+            m_Stats.numPackages += allIssues.Count(i => i.Category == IssueCategory.Package);
+            m_Stats.numPackageDiagnostics += allIssues.Count(i => i.Category == IssueCategory.PackageDiagnostic);
 
-            var compilerMessages = allIssues.Where(i => i.category == IssueCategory.CodeCompilerMessage);
-            m_Stats.numCompilerErrors += compilerMessages.Count(i => i.severity == Severity.Error);
+            var compilerMessages = allIssues.Where(i => i.Category == IssueCategory.CodeCompilerMessage);
+            m_Stats.numCompilerErrors += compilerMessages.Count(i => i.Severity == Severity.Error);
 
-            m_Stats.numCompiledAssemblies += allIssues.Count(i => i.category == IssueCategory.Assembly && i.severity != Severity.Error);
-            m_Stats.numTotalAssemblies += allIssues.Count(i => i.category == IssueCategory.Assembly);
+            m_Stats.numCompiledAssemblies += allIssues.Count(i => i.Category == IssueCategory.Assembly && i.Severity != Severity.Error);
+            m_Stats.numTotalAssemblies += allIssues.Count(i => i.Category == IssueCategory.Assembly);
         }
 
         public override void Clear()
@@ -179,14 +179,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (viewLink)
             {
-#if UNITY_2019_2_OR_NEWER
                 if (GUILayout.Button(valueAsString, SharedStyles.LinkLabel))
                     m_ViewManager.ChangeView(category);
-#else
-                EditorGUILayout.LabelField(valueAsString, GUILayout.MaxWidth(90), GUILayout.ExpandWidth(false));
-                if (GUILayout.Button("View", EditorStyles.miniButton, GUILayout.Width(50)))
-                    m_ViewManager.ChangeView(category);
-#endif
             }
             else
             {

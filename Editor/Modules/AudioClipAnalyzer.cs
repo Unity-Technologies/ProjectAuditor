@@ -42,10 +42,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Consider setting <b>Load Type</b> to <b>Streaming</b> in the AudioClip Import Settings."
         )
         {
-            messageFormat = "AudioClip '{0}' Load Type is not set to Streaming",
+            MessageFormat = "AudioClip '{0}' Load Type is not set to Streaming",
             fixer = (issue) =>
             {
-                var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
+                var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
                 {
                     var sampleSettings = audioImporter.GetOverrideSampleSettings(s_PlatformString);
@@ -64,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Set <b>Load Type</b> to <b>Compressed in Memory</b> or <b>Decompress On Load</b> in the AudioClip Import Settings."
         )
         {
-            messageFormat = "AudioClip '{0}' Load Type is set to Streaming",
+            MessageFormat = "AudioClip '{0}' Load Type is set to Streaming",
         };
 
         internal static readonly Descriptor k_AudioStereoClipsOnMobileDescriptor = new Descriptor(
@@ -75,17 +75,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Tick the <b>Force To Mono</b> checkbox in the AudioClip Import Settings."
         )
         {
-            messageFormat = "AudioClip '{0}' is stereo",
+            MessageFormat = "AudioClip '{0}' is stereo",
             fixer = (issue) =>
             {
-                var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
+                var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
                 {
                     audioImporter.forceToMono = true;
                     audioImporter.SaveAndReimport();
                 }
             },
-            platforms = new[] {"Android", "iOS"}
+            Platforms = new[] {"Android", "iOS"}
         };
 
         internal static readonly Descriptor k_AudioStereoClipWhichIsNotStreamingDescriptor = new Descriptor(
@@ -96,10 +96,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Tick the <b>Force To Mono</b> checkbox in the AudioClip Import Settings."
         )
         {
-            messageFormat = "AudioClip '{0}' is stereo",
+            MessageFormat = "AudioClip '{0}' is stereo",
             fixer = (issue) =>
             {
-                var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
+                var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
                 {
                     audioImporter.forceToMono = true;
@@ -116,7 +116,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Consider setting the <b>Load Type</b> to <b>Compressed In Memory</b> or <b>Streaming</b>. If you have concerns about the CPU cost of decompressing <b>Compressed In Memory</b> clips for playback, consider a format which is fast to decompress, such as <b>ADPCM</b>."
         )
         {
-            messageFormat = "AudioClip '{0}' is set to Decompress On Load",
+            MessageFormat = "AudioClip '{0}' is set to Decompress On Load",
         };
 
         internal static readonly Descriptor k_AudioCompressedInMemoryDescriptor = new Descriptor(
@@ -127,7 +127,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "If runtime performance is impacted, either set the <b>Load Type</b> to <b>Decompress On Load</b> or set the <b>Compression Format</b> to <b>ADPCM</b>, which is fast to decompress."
         )
         {
-            messageFormat = "AudioClip '{0}' is Compressed In Memory",
+            MessageFormat = "AudioClip '{0}' is Compressed In Memory",
         };
 
         // Large compressed samples on mobile: Decrease quality or downsample
@@ -139,8 +139,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Reduce the <b>Quality</b> slider as far as possible without introducing audible artefacts. Alternatively, try setting the <b>Sample Rate Setting</b> to <b>Override</b> and the <b>Sample Rate</b> to a suitable value. <b>22050</b> Hz or is fine for most sounds, and <b>44100</b> Hz (CD Quality) can be useful for prominent sounds or music if they include high frequencies."
         )
         {
-            messageFormat = "AudioClip '{0}' Compressed clip could be optimized for mobile",
-            platforms = new[] {"Android", "iOS"}
+            MessageFormat = "AudioClip '{0}' Compressed clip could be optimized for mobile",
+            Platforms = new[] {"Android", "iOS"}
         };
 
         internal static readonly Descriptor k_Audio48KHzDescriptor = new Descriptor(
@@ -151,10 +151,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Set the <b>Sample Rate Setting</b> to <b>Override</b> and the <b>Sample Rate</b> to <b>48000</b> Hz or lower."
         )
         {
-            messageFormat = "AudioClip '{0}' Sample Rate is over 48KHz",
+            MessageFormat = "AudioClip '{0}' Sample Rate is over 48KHz",
             fixer = (issue) =>
             {
-                var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
+                var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
                 {
                     var sampleSettings = audioImporter.GetOverrideSampleSettings(s_PlatformString);
@@ -174,10 +174,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Consider un-ticking the <b>Preload Audio Data</b> checkbox. Audio preloading is only required when the AudioClip must play at the exact moment the scene begins simulating, or if the audio timing must be very precise the first time it is played."
         )
         {
-            messageFormat = "AudioClip '{0}' is set to Preload Audio Data",
+            MessageFormat = "AudioClip '{0}' is set to Preload Audio Data",
             fixer = (issue) =>
             {
-                var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
+                var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
                 {
 #if UNITY_2022_2_OR_NEWER
@@ -200,10 +200,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Tick the <b>Load In Background</b> checkbox in the AudioClip Import Settings."
         )
         {
-            messageFormat = "AudioClip '{0}' Load In Background is not enabled",
+            MessageFormat = "AudioClip '{0}' Load In Background is not enabled",
             fixer = (issue) =>
             {
-                var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
+                var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
                 {
                     audioImporter.loadInBackground = true;
@@ -220,10 +220,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Set the <b>Compression Format</b> to <b>Vorbis</b> in the AudioClip's Import Settings."
         )
         {
-            messageFormat = "AudioClip '{0}' Compression Format is MP3",
+            MessageFormat = "AudioClip '{0}' Compression Format is MP3",
             fixer = (issue) =>
             {
-                var audioImporter = AssetImporter.GetAtPath(issue.relativePath) as AudioImporter;
+                var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
                 {
                     var sampleSettings = audioImporter.GetOverrideSampleSettings(s_PlatformString);
@@ -243,7 +243,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Wherever possible, select a lossless file format such as .WAV or .AIFF for source assets."
         )
         {
-            messageFormat = "AudioClip '{0}' source asset is in a lossy compressed format",
+            MessageFormat = "AudioClip '{0}' source asset is in a lossy compressed format",
         };
 
         public void Initialize(Module module)
@@ -355,14 +355,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (runtimeSize > context.StreamingClipThresholdBytes && !isStreaming)
             {
                 yield return context.Create(
-                    IssueCategory.AssetDiagnostic, k_AudioLongClipDoesNotStreamDescriptor.id, clipName)
+                    IssueCategory.AssetDiagnostic, k_AudioLongClipDoesNotStreamDescriptor.Id, clipName)
                     .WithLocation(assetPath);
             }
 
             if (decompressedClipSize < context.StreamingClipThresholdBytes && isStreaming)
             {
                 yield return context.Create(
-                    IssueCategory.AssetDiagnostic, k_AudioShortClipStreamsDescriptor.id, clipName)
+                    IssueCategory.AssetDiagnostic, k_AudioShortClipStreamsDescriptor.Id, clipName)
                     .WithLocation(assetPath);
             }
 
@@ -371,13 +371,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 if (isMobileTarget)
                 {
                     yield return context.Create(
-                        IssueCategory.AssetDiagnostic, k_AudioStereoClipsOnMobileDescriptor.id, clipName)
+                        IssueCategory.AssetDiagnostic, k_AudioStereoClipsOnMobileDescriptor.Id, clipName)
                         .WithLocation(assetPath);
                 }
                 else if (!isStreaming)
                 {
                     yield return context.Create(
-                        IssueCategory.AssetDiagnostic, k_AudioStereoClipWhichIsNotStreamingDescriptor.id, clipName)
+                        IssueCategory.AssetDiagnostic, k_AudioStereoClipWhichIsNotStreamingDescriptor.Id, clipName)
                         .WithLocation(assetPath);
                 }
             }
@@ -386,7 +386,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 sampleSettings.loadType == AudioClipLoadType.DecompressOnLoad)
             {
                 yield return context.Create(
-                    IssueCategory.AssetDiagnostic, k_AudioLongDecompressedClipDescriptor.id, clipName)
+                    IssueCategory.AssetDiagnostic, k_AudioLongDecompressedClipDescriptor.Id, clipName)
                     .WithLocation(assetPath);
             }
 
@@ -395,7 +395,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 sampleSettings.compressionFormat != AudioCompressionFormat.ADPCM)
             {
                 yield return context.Create(
-                    IssueCategory.AssetDiagnostic, k_AudioCompressedInMemoryDescriptor.id, clipName)
+                    IssueCategory.AssetDiagnostic, k_AudioCompressedInMemoryDescriptor.Id, clipName)
                     .WithLocation(assetPath);
             }
 
@@ -407,7 +407,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 sampleSettings.quality == 1.0f)
             {
                 yield return context.Create(
-                    IssueCategory.AssetDiagnostic, k_AudioLargeCompressedMobileDescriptor.id, clipName)
+                    IssueCategory.AssetDiagnostic, k_AudioLargeCompressedMobileDescriptor.Id, clipName)
                     .WithLocation(assetPath);
             }
 
@@ -417,28 +417,28 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (audioClip.frequency > 48000)
             {
                 yield return context.Create(
-                    IssueCategory.AssetDiagnostic, k_Audio48KHzDescriptor.id, clipName)
+                    IssueCategory.AssetDiagnostic, k_Audio48KHzDescriptor.Id, clipName)
                     .WithLocation(assetPath);
             }
 
             if (preloadAudioData)
             {
                 yield return context.Create(
-                    IssueCategory.AssetDiagnostic, k_AudioPreloadDescriptor.id, clipName)
+                    IssueCategory.AssetDiagnostic, k_AudioPreloadDescriptor.Id, clipName)
                     .WithLocation(assetPath);
             }
 
             if (!context.Importer.loadInBackground && compSize > context.LoadInBackGroundClipSizeThresholdBytes)
             {
                 yield return context.Create(
-                    IssueCategory.AssetDiagnostic, k_AudioLoadInBackgroundDisabledDescriptor.id, clipName)
+                    IssueCategory.AssetDiagnostic, k_AudioLoadInBackgroundDisabledDescriptor.Id, clipName)
                     .WithLocation(assetPath);
             }
 
             if (sampleSettings.compressionFormat == AudioCompressionFormat.MP3)
             {
                 yield return context.Create(
-                    IssueCategory.AssetDiagnostic, k_AudioMP3Descriptor.id, clipName)
+                    IssueCategory.AssetDiagnostic, k_AudioMP3Descriptor.Id, clipName)
                     .WithLocation(assetPath);
             }
 
@@ -447,7 +447,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 sourceFileExtension != "AIF")
             {
                 yield return context.Create(
-                    IssueCategory.AssetDiagnostic, k_AudioCompressedSourceAssetDescriptor.id, clipName)
+                    IssueCategory.AssetDiagnostic, k_AudioCompressedSourceAssetDescriptor.Id, clipName)
                     .WithLocation(assetPath);
             }
         }

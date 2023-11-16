@@ -81,6 +81,7 @@ Builtin asset-specific diagnostics:
 | PAA0005 | Texture: Solid color texture bigger than 1x1 with fixer     | Graphics                    | Any                             |
 | PAA0006 | Texture: Solid color texture bigger than 1x1 without fixer  | Graphics                    | Any                             |
 | PAA0007 | Texture Atlas: Too much empty space                         | Graphics                    | Any                             |
+| PAA0008 | Sprite Atlas: Too much empty space                          | Graphics                    | Any                             |
 | PAA1000 | Mesh: Read/Write enabled                                    | Graphics                    | Any                             |
 | PAA1001 | Mesh: Index Format is 32 bits                               | Graphics                    | Any                             |
 | PAA2000 | Shader: Not compatible with SRP batcher                     | Graphics                    | Any                             |

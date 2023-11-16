@@ -31,7 +31,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "<b>Accelerometer Frequency</b> in iOS Player Settings is not set to Disabled. Polling the device's accelerometer incurs a small amount of CPU processing time.",
             "Set <b>Accelerometer Frequency</b> to <b>Disabled</b> if your application doesn't make use of the device's accelerometer.")
         {
-            platforms = new[] { BuildTarget.iOS.ToString() }
+            Platforms = new[] { BuildTarget.iOS.ToString() }
         };
 
         static readonly Descriptor k_SplashScreenDescriptor = new Descriptor(
@@ -48,7 +48,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "<b>Default Speaker Mode</b> in Audio Settings is not set to <b>Mono</b>. This may result in a build which is larger than necessary and which occupies more audio memory at runtime. Many mobile devices have limited or nonexistent stereo speaker options.",
             "Change <b>Project Settings > Audio > Default Speaker Mode</b> to <b>Mono</b>. You should also consider enabling the <b>Force To Mono</b> AudioClip import setting to reduce import times and build size.")
         {
-            platforms = new[] { "Android", "iOS"},
+            Platforms = new[] { "Android", "iOS"},
             fixer = (issue =>
             {
                 FixSpeakerMode();
@@ -68,7 +68,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 SetIL2CPPConfigurationToRelease(buildTargetGroup);
             }),
 
-            messageFormat = "Player: C++ Compiler Configuration is set to 'Master'"
+            MessageFormat = "Player: C++ Compiler Configuration is set to 'Master'"
         };
 
         static readonly Descriptor k_IL2CPPCompilerConfigurationDebugDescriptor = new Descriptor(
@@ -84,7 +84,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 SetIL2CPPConfigurationToRelease(buildTargetGroup);
             }),
 
-            messageFormat = "Player: C++ Compiler Configuration is set to 'Debug'"
+            MessageFormat = "Player: C++ Compiler Configuration is set to 'Debug'"
         };
 
         static readonly Descriptor k_LightmapStreamingEnabledDescriptor = new Descriptor(
@@ -115,36 +115,36 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
             if (k_AccelerometerDescriptor.IsApplicable(context.Params) && IsAccelerometerEnabled())
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_AccelerometerDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_AccelerometerDescriptor.Id)
                     .WithLocation("Project/Player");
             }
             if (IsSplashScreenEnabledAndCanBeDisabled())
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_SplashScreenDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_SplashScreenDescriptor.Id)
                     .WithLocation("Project/Player");
             }
             if (k_SpeakerModeDescriptor.IsApplicable(context.Params) && !IsSpeakerModeMono())
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_SpeakerModeDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_SpeakerModeDescriptor.Id)
                     .WithLocation("Project/Player");
             }
 
             var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(context.Params.Platform);
             if (CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration.Master, context.Params))
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_IL2CPPCompilerConfigurationMasterDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_IL2CPPCompilerConfigurationMasterDescriptor.Id)
                     .WithCustomProperties(new object[] {buildTargetGroup})
                     .WithLocation("Project/Player");
             }
             if (CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration.Debug, context.Params))
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_IL2CPPCompilerConfigurationDebugDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_IL2CPPCompilerConfigurationDebugDescriptor.Id)
                     .WithCustomProperties(new object[] {buildTargetGroup})
                     .WithLocation("Project/Player");
             }
             if (!PlayerSettingsUtil.IsLightmapStreamingEnabled(buildTargetGroup))
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_LightmapStreamingEnabledDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_LightmapStreamingEnabledDescriptor.Id)
                     .WithCustomProperties(new object[] {buildTargetGroup})
                     .WithLocation("Project/Player");
             }

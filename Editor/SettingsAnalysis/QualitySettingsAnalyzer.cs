@@ -58,8 +58,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 EnableStreamingMipmap(issue.GetCustomPropertyInt32(0));
             }),
 
-            documentationUrl = "https://docs.unity3d.com/Manual/TextureStreaming.html",
-            messageFormat = "Quality: Texture streaming on Quality Level '{0}' is turned off"
+            DocumentationUrl = "https://docs.unity3d.com/Manual/TextureStreaming.html",
+            MessageFormat = "Quality: Texture streaming on Quality Level '{0}' is turned off"
         };
 
         public void Initialize(Module module)
@@ -75,25 +75,25 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
             if (IsUsingDefaultSettings())
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_DefaultSettingsDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_DefaultSettingsDescriptor.Id)
                     .WithLocation("Project/Quality");
             }
 
             if (IsUsingLowQualityTextures())
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_UsingLowQualityTexturesDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_UsingLowQualityTexturesDescriptor.Id)
                     .WithLocation("Project/Quality");
             }
 
             if (IsDefaultAsyncUploadTimeSlice())
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_DefaultAsyncUploadTimeSliceDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_DefaultAsyncUploadTimeSliceDescriptor.Id)
                     .WithLocation("Project/Quality");
             }
 
             if (IsDefaultAsyncUploadBufferSize())
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_DefaultAsyncUploadBufferSizeSliceDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_DefaultAsyncUploadBufferSizeSliceDescriptor.Id)
                     .WithLocation("Project/Quality");
             }
 
@@ -103,7 +103,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 foreach (var levelIndex in qualityLevels)
                 {
                     var levelName = QualitySettings.names[levelIndex];
-                    yield return context.Create(IssueCategory.ProjectSetting, k_TextureStreamingDisabledDescriptor.id, levelName)
+                    yield return context.Create(IssueCategory.ProjectSetting, k_TextureStreamingDisabledDescriptor.Id, levelName)
                         .WithCustomProperties(new object[] {levelIndex})
                         .WithLocation("Project/Quality/" + levelName);
                 }
@@ -141,7 +141,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 }
             }
 
-            QualitySettings.SetQualityLevel(initialQualityLevel);
+            if (initialQualityLevel != QualitySettings.GetQualityLevel())
+                QualitySettings.SetQualityLevel(initialQualityLevel);
             return usingLowTextureQuality;
         }
 
@@ -161,7 +162,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 }
             }
 
-            QualitySettings.SetQualityLevel(initialQualityLevel);
+            if (initialQualityLevel != QualitySettings.GetQualityLevel())
+                QualitySettings.SetQualityLevel(initialQualityLevel);
             return usingDefaultAsyncUploadTimeslice;
         }
 
@@ -181,7 +183,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 }
             }
 
-            QualitySettings.SetQualityLevel(initialQualityLevel);
+            if (initialQualityLevel != QualitySettings.GetQualityLevel())
+                QualitySettings.SetQualityLevel(initialQualityLevel);
             return usingDefaultAsyncUploadBufferSize;
         }
 
@@ -200,7 +203,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 }
             }
 
-            QualitySettings.SetQualityLevel(initialQualityLevel);
+            if (initialQualityLevel != QualitySettings.GetQualityLevel())
+                QualitySettings.SetQualityLevel(initialQualityLevel);
             return qualityIndexes;
         }
 
@@ -211,7 +215,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             QualitySettings.SetQualityLevel(qualityLevelIndex);
             QualitySettings.streamingMipmapsActive = true;
 
-            QualitySettings.SetQualityLevel(initialQualityLevel);
+            if (initialQualityLevel != QualitySettings.GetQualityLevel())
+                QualitySettings.SetQualityLevel(initialQualityLevel);
         }
     }
 }

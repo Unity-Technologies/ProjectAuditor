@@ -22,8 +22,8 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             "Try to avoid boxing when possible. Create methods and APIs that can accept value types."
             )
         {
-            documentationUrl = "https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/types/boxing-and-unboxing",
-            messageFormat = "Conversion from value type '{0}' to ref type"
+            DocumentationUrl = "https://learn.microsoft.com/en-us/dotnet/csharp/programming-guide/types/boxing-and-unboxing",
+            MessageFormat = "Conversion from value type '{0}' to ref type"
         };
 
         readonly OpCode[] m_OpCodes =
@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             else if (type.FullName.Equals("System.Double"))
                 typeName = "double";
 
-            return context.Create(IssueCategory.Code, k_Descriptor.id, typeName);
+            return context.Create(IssueCategory.Code, k_Descriptor.Id, typeName);
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void SetUp()
         {
-            DescriptorLibrary.RegisterDescriptor(m_Descriptor.id, m_Descriptor);
+            DescriptorLibrary.RegisterDescriptor(m_Descriptor.Id, m_Descriptor);
 
             m_TestAsset = new TestAsset("MyClass.cs", @"
 using UnityEngine;
@@ -228,7 +228,7 @@ class MyClass : MonoBehaviour
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
             AnalyzeAndExport(category, path, "csv", issue =>
             {
-                return issue.description.StartsWith("Conversion");
+                return issue.Description.StartsWith("Conversion");
             });
             var issueExported = false;
             using (var file = new StreamReader(path))
@@ -255,7 +255,7 @@ class MyClass : MonoBehaviour
             var path = string.Format("project-auditor-report-{0}.html", category.ToString()).ToLower();
             AnalyzeAndExport(category, path, "html", issue =>
             {
-                return issue.description.StartsWith("Conversion");
+                return issue.Description.StartsWith("Conversion");
             });
             var issueExported = false;
             var filterCorrect = true;
@@ -348,13 +348,13 @@ class MyClass : MonoBehaviour
 
             var category = IssueCategory.ProjectSetting;
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
-            var issues = AnalyzeAndExport(category,  path, "csv", i => i.id.Equals("PAS0007"));
+            var issues = AnalyzeAndExport(category,  path, "csv", i => i.Id.Equals("PAS0007"));
 
             Assert.AreEqual(1, issues.Count);
 
             var issue = issues.First();
-            var descriptor = issue.id.GetDescriptor();
-            var expectedIssueLine = $"\"{issue.description}\",\"{Severity.Moderate}\",\"{descriptor.GetAreasSummary()}\",\"{issue.filename}\",\"{descriptor.GetPlatformsSummary()}\"";
+            var descriptor = issue.Id.GetDescriptor();
+            var expectedIssueLine = $"\"{issue.Description}\",\"{Severity.Moderate}\",\"{descriptor.GetAreasSummary()}\",\"{issue.Filename}\",\"{descriptor.GetPlatformsSummary()}\"";
 
             var issueExported = false;
             using (var file = new StreamReader(path))
@@ -382,12 +382,12 @@ class MyClass : MonoBehaviour
 
             var category = IssueCategory.ProjectSetting;
             var path = string.Format("project-auditor-report-{0}.html", category.ToString().ToLower());
-            var issues = AnalyzeAndExport(category,  path, "html", i => i.id.Equals("PAS0007"));
+            var issues = AnalyzeAndExport(category,  path, "html", i => i.Id.Equals("PAS0007"));
 
             Assert.AreEqual(1, issues.Count);
 
             var issue = issues.First();
-            var descriptor = issue.id.GetDescriptor();
+            var descriptor = issue.Id.GetDescriptor();
             var issueExported = false;
             var formatCorrect = false;
             using (var file = new StreamReader(path))
@@ -424,7 +424,7 @@ class MyClass : MonoBehaviour
                             index++;
                         }
                         line = file.ReadLine();
-                        if (line.Equals($"<td>{issue.description}</td>"))
+                        if (line.Equals($"<td>{issue.Description}</td>"))
                         {
                             index++;
                         }
@@ -439,7 +439,7 @@ class MyClass : MonoBehaviour
                             index++;
                         }
                         line = file.ReadLine();
-                        if (line.Equals($"<td>{issue.filename}</td>"))
+                        if (line.Equals($"<td>{issue.Filename}</td>"))
                         {
                             index++;
                         }

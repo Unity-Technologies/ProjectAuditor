@@ -39,14 +39,14 @@ To view Roslyn Analyzer diagnostics, make sure Roslyn Analyzer DLLs use the <b>R
                     return;
                 }
 
-                var selectedDescriptors = selectedIssues.Select(i => i.id.IsValid()).Distinct().ToArray();
+                var selectedDescriptors = selectedIssues.Select(i => i.GetCustomProperty(0)).Distinct().ToArray();
                 if (selectedDescriptors.Length > 1)
                 {
                     GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                     return;
                 }
 
-                GUILayout.TextArea(selectedIssues[0].description, SharedStyles.TextAreaWithDynamicSize,
+                GUILayout.TextArea(selectedIssues[0].Description, SharedStyles.TextAreaWithDynamicSize,
                     GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
         }
@@ -85,7 +85,7 @@ To view Roslyn Analyzer diagnostics, make sure Roslyn Analyzer DLLs use the <b>R
 
         public override bool Match(ProjectIssue issue)
         {
-            switch (issue.severity)
+            switch (issue.Severity)
             {
                 case Severity.Info:
                     if (!m_ShowInfo)

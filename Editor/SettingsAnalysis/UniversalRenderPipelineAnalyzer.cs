@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "Graphics Settings do not refer to a URP Asset.",
             "Check the settings: Graphics > Scriptable Render Pipeline Settings > Render Pipeline Asset.")
         {
-            messageFormat = "URP: URP Asset is not specified"
+            MessageFormat = "URP: URP Asset is not specified"
         };
 
         static readonly Descriptor k_HdrSettingDescriptor = new Descriptor(
@@ -34,8 +34,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "<b>HDR</b> (High Dynamic Range) is enabled in a URP Asset for mobile platforms. HDR rendering can be very intensive on low-end mobile GPUs.",
             "Disable <b>HDR</b> in the URP Asset.")
         {
-            platforms = new[] {"Android", "iOS", "Switch"},
-            messageFormat = "URP: HDR is enabled in {0}.asset in {1}",
+            Platforms = new[] {"Android", "iOS", "Switch"},
+            MessageFormat = "URP: HDR is enabled in {0}.asset in {1}",
             fixer = FixHdrSetting
         };
 
@@ -46,8 +46,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "<b>Anti Aliasing (MSAA)</b> is set to <b>4x</b> or <b>8x</b> in a URP Asset for mobile platforms. MSAA 4x/8x rendering can be intensive on low-end mobile GPUs.",
             "Decrease <b>Anti Aliasing (MSAA)</b> value to <b>2x</b> in the URP Asset.")
         {
-            platforms = new[] {"Android", "iOS", "Switch"},
-            messageFormat = "URP: MSAA is set to 4x or 8x in {0}.asset in {1}",
+            Platforms = new[] {"Android", "iOS", "Switch"},
+            MessageFormat = "URP: MSAA is set to 4x or 8x in {0}.asset in {1}",
             fixer = FixMsaaSampleCountSetting
         };
 
@@ -59,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "Disable <b>Stop NaNs</b> on as Camera components as you can."
         )
         {
-            platforms = new[] { "Android", "iOS", "Switch" }
+            Platforms = new[] { "Android", "iOS", "Switch" }
         };
 
         public void Initialize(Module module)
@@ -76,7 +76,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             var renderPipeline = GraphicsSettings.currentRenderPipeline;
             if (renderPipeline == null || !(renderPipeline is UniversalRenderPipelineAsset))
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_URPAssetDescriptor.id)
+                yield return context.Create(IssueCategory.ProjectSetting, k_URPAssetDescriptor.Id)
                     .WithLocation("Project/Graphics");
             }
 
@@ -92,7 +92,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             {
                 if (cameraData.stopNaN)
                     yield return context.Create(IssueCategory.ProjectSetting,
-                        k_CameraStopNanDescriptor.id);
+                        k_CameraStopNanDescriptor.Id);
             }
 #else
             yield break;
@@ -120,13 +120,13 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             if (k_HdrSettingDescriptor.IsApplicable(context.Params) && GetHdrSetting(renderPipeline))
             {
                 yield return RenderPipelineUtils.CreateAssetSettingIssue(context, qualityLevel, renderPipeline.name,
-                    k_HdrSettingDescriptor.id);
+                    k_HdrSettingDescriptor.Id);
             }
 
             if (k_MsaaSampleCountSettingDescriptor.IsApplicable(context.Params) && GetMsaaSampleCountSetting(renderPipeline) >= 4)
             {
                 yield return RenderPipelineUtils.CreateAssetSettingIssue(context, qualityLevel, renderPipeline.name,
-                    k_MsaaSampleCountSettingDescriptor.id);
+                    k_MsaaSampleCountSettingDescriptor.Id);
             }
 #else
             yield break;

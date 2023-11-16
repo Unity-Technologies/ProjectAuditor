@@ -23,8 +23,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "If not required, disable the <b>Read/Write Enabled</b> option in the Model Import Settings."
         )
         {
-            messageFormat = "Mesh '{0}' Read/Write is enabled",
-            documentationUrl = "https://docs.unity3d.com/Manual/FBXImporter-Model.html"
+            MessageFormat = "Mesh '{0}' Read/Write is enabled",
+            DocumentationUrl = "https://docs.unity3d.com/Manual/FBXImporter-Model.html"
         };
 
         internal static readonly Descriptor k_Mesh32BitIndexFormatUsedDescriptor = new Descriptor(
@@ -35,8 +35,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Consider using changing the <b>Index Format</b> option in the Model Import Settings. This should be set to either <b>16 bits</b> or <b>Auto</b>."
         )
         {
-            messageFormat = "Mesh '{0}' Index Format is 32 bits",
-            documentationUrl = "https://docs.unity3d.com/Manual/FBXImporter-Model.html"
+            MessageFormat = "Mesh '{0}' Index Format is 32 bits",
+            DocumentationUrl = "https://docs.unity3d.com/Manual/FBXImporter-Model.html"
         };
 
         public void Initialize(Module module)
@@ -79,7 +79,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 if (mesh.isReadable)
                 {
-                    yield return context.Create(IssueCategory.AssetDiagnostic, k_MeshReadWriteEnabledDescriptor.id, meshName)
+                    yield return context.Create(IssueCategory.AssetDiagnostic, k_MeshReadWriteEnabledDescriptor.Id, meshName)
                         .WithLocation(assetPath);
                 }
 
@@ -87,7 +87,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     mesh.vertexCount <= 65535)
                 {
                     yield return context.Create(IssueCategory.AssetDiagnostic,
-                        k_Mesh32BitIndexFormatUsedDescriptor.id, meshName)
+                        k_Mesh32BitIndexFormatUsedDescriptor.Id, meshName)
                         .WithLocation(assetPath);
                 }
             }

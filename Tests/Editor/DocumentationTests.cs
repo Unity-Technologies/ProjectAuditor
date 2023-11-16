@@ -30,11 +30,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 yield return request.SendWebRequest();
 
                 Assert.True(request.isDone);
-#if UNITY_2020_1_OR_NEWER
                 Assert.AreEqual(UnityWebRequest.Result.Success, request.result, $"Page {documentationUrl} not found.");
-#else
-                Assert.IsFalse(request.isNetworkError || request.isHttpError, $"Page {documentationUrl} not found.");
-#endif
             }
         }
     }
