@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void SetUp()
         {
-            DescriptorLibrary.RegisterDescriptor(m_Descriptor.id, m_Descriptor);
+            DescriptorLibrary.RegisterDescriptor(m_Descriptor.Id, m_Descriptor);
 
             m_TestAsset = new TestAsset("MyClass.cs", @"
 using UnityEngine;

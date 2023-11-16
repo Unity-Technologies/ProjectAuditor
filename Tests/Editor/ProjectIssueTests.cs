@@ -33,7 +33,7 @@ namespace Unity.ProjectAuditor.EditorTests
             "do nothing"
             )
         {
-            messageFormat = "this is a message with argument {0}"
+            MessageFormat = "this is a message with argument {0}"
         };
 
         Descriptor m_CriticalIssueDescriptor = new Descriptor
@@ -45,7 +45,7 @@ namespace Unity.ProjectAuditor.EditorTests
             "do nothing"
             )
         {
-            defaultSeverity = Severity.Critical
+            DefaultSeverity = Severity.Critical
         };
 
         [SerializeField]
@@ -54,9 +54,9 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void SetUp()
         {
-            DescriptorLibrary.RegisterDescriptor(m_Descriptor.id, m_Descriptor);
-            DescriptorLibrary.RegisterDescriptor(m_DescriptorWithMessage.id, m_DescriptorWithMessage);
-            DescriptorLibrary.RegisterDescriptor(m_CriticalIssueDescriptor.id, m_CriticalIssueDescriptor);
+            DescriptorLibrary.RegisterDescriptor(m_Descriptor.Id, m_Descriptor);
+            DescriptorLibrary.RegisterDescriptor(m_DescriptorWithMessage.Id, m_DescriptorWithMessage);
+            DescriptorLibrary.RegisterDescriptor(m_CriticalIssueDescriptor.Id, m_CriticalIssueDescriptor);
         }
 
         [Test]
@@ -77,7 +77,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void ProjectIssue_NewIssue_IsNotFormatted()
         {
             var description = "a title";
-            var diagnostic = new ProjectIssue(IssueCategory.Code, m_Descriptor.id,  "dummy");
+            var diagnostic = new ProjectIssue(IssueCategory.Code, m_Descriptor.Id,  "dummy");
             Assert.AreEqual(string.Empty, diagnostic.Filename);
             Assert.AreEqual(string.Empty, diagnostic.RelativePath);
             Assert.AreEqual(string.Empty, diagnostic.GetContext());
@@ -90,7 +90,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProjectIssue_NewIssue_IsFormatted()
         {
-            var diagnostic = new ProjectIssue(IssueCategory.Code, m_DescriptorWithMessage.id, "dummy");
+            var diagnostic = new ProjectIssue(IssueCategory.Code, m_DescriptorWithMessage.Id, "dummy");
             Assert.AreEqual(string.Empty, diagnostic.Filename);
             Assert.AreEqual(string.Empty, diagnostic.RelativePath);
             Assert.AreEqual(string.Empty, diagnostic.GetContext());
@@ -104,7 +104,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void ProjectIssue_NewIssue_IsCritical()
         {
             var description = "a title of a critical problem";
-            var diagnostic = new ProjectIssue(IssueCategory.Code, m_CriticalIssueDescriptor.id, description);
+            var diagnostic = new ProjectIssue(IssueCategory.Code, m_CriticalIssueDescriptor.Id, description);
             Assert.AreEqual(string.Empty, diagnostic.Filename);
             Assert.AreEqual(string.Empty, diagnostic.RelativePath);
             Assert.AreEqual(string.Empty, diagnostic.GetContext());
@@ -119,7 +119,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [UnityTest]
         public IEnumerator ProjectIssue_Priority_PersistsAfterDomainReload()
         {
-            m_Issue = new ProjectIssue(IssueCategory.Code, m_Descriptor.id);
+            m_Issue = new ProjectIssue(IssueCategory.Code, m_Descriptor.Id);
             m_Issue.Severity = Severity.Major;
 
 #if UNITY_2019_3_OR_NEWER
@@ -141,7 +141,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 "property #1"
             };
             var context = new AnalysisContext();
-            var issue = (ProjectIssue)context.Create(IssueCategory.Code, m_Descriptor.id)
+            var issue = (ProjectIssue)context.Create(IssueCategory.Code, m_Descriptor.Id)
                 .WithCustomProperties(properties);
 
             Assert.AreEqual(2, issue.GetNumCustomProperties());
@@ -152,7 +152,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProjectIssue_CustomProperties_AreNotSet()
         {
-            var issue = new ProjectIssue(IssueCategory.Code, m_Descriptor.id);
+            var issue = new ProjectIssue(IssueCategory.Code, m_Descriptor.Id);
 
             Assert.AreEqual(0, issue.GetNumCustomProperties());
         }
@@ -167,7 +167,7 @@ namespace Unity.ProjectAuditor.EditorTests
             };
             var description = "a title";
             var context = new AnalysisContext();
-            var issue = (ProjectIssue)context.Create(IssueCategory.Code, m_Descriptor.id)
+            var issue = (ProjectIssue)context.Create(IssueCategory.Code, m_Descriptor.Id)
                 .WithCustomProperties(properties)
                 .WithLocation("Assets/Dummy.cs");
 
@@ -187,7 +187,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProjectIssue_NoFileProperties_AreSet()
         {
-            var issue = new ProjectIssue(IssueCategory.Code, m_Descriptor.id);
+            var issue = new ProjectIssue(IssueCategory.Code, m_Descriptor.Id);
 
             Assert.AreEqual(ProjectIssueExtensions.k_NotAvailable, issue.GetProperty(PropertyType.Path));
             Assert.AreEqual(ProjectIssueExtensions.k_NotAvailable, issue.GetProperty(PropertyType.Filename));
@@ -201,7 +201,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void ProjectIssue_Issue_IsCreatedWithLogLevel(LogLevel logLevel)
         {
             var context = new AnalysisContext();
-            ProjectIssue issue = context.Create(IssueCategory.Code, m_Descriptor.id)
+            ProjectIssue issue = context.Create(IssueCategory.Code, m_Descriptor.Id)
                 .WithLogLevel(logLevel);
 
             Assert.AreEqual(logLevel, issue.LogLevel);

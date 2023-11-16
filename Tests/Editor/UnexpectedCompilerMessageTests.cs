@@ -117,11 +117,11 @@ class MyClass
             var descriptor = myIssue.Id.GetDescriptor();
             Assert.NotNull(descriptor);
 
-            Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
+            Assert.AreEqual(Severity.Moderate, descriptor.DefaultSeverity);
             Assert.AreEqual(typeof(DescriptorID), myIssue.Id.GetType());
             Assert.AreEqual("PAC0066", myIssue.Id.ToString());
-            Assert.AreEqual("UnityEngine.Camera", descriptor.type);
-            Assert.AreEqual("allCameras", descriptor.method);
+            Assert.AreEqual("UnityEngine.Camera", descriptor.Type);
+            Assert.AreEqual("allCameras", descriptor.Method);
 
             Assert.AreEqual(m_ScriptWithDiagnostic.fileName, myIssue.Filename);
             Assert.AreEqual("'UnityEngine.Camera.allCameras' usage", myIssue.Description);

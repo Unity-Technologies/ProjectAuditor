@@ -36,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Use AssetBundles or Addressables when possible."
             )
         {
-            messageFormat = "'{0}' {1}"
+            MessageFormat = "'{0}' {1}"
         };
 
         static readonly Descriptor k_StreamingAssetsFolderDescriptor = new Descriptor(
@@ -47,8 +47,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             $"Try to move files outside this folder and use Asset Bundles or Addressables when possible."
         )
         {
-            platforms = new[] {"Android", "iOS"},
-            messageFormat = "StreamingAssets folder contains {0} of data",
+            Platforms = new[] {"Android", "iOS"},
+            MessageFormat = "StreamingAssets folder contains {0} of data",
         };
 
         public override bool IsEnabledByDefault => false;
@@ -135,7 +135,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 if (totalBytes > folderSizeLimitMB * 1024 * 1024)
                 {
                     issues.Add(
-                        context.Create(IssueCategory.AssetDiagnostic, k_StreamingAssetsFolderDescriptor.id,
+                        context.Create(IssueCategory.AssetDiagnostic, k_StreamingAssetsFolderDescriptor.Id,
                             Formatting.FormatSize((ulong)totalBytes))
                     );
                 }
@@ -170,7 +170,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             issues.Add(context.Create
                 (
                     IssueCategory.AssetDiagnostic,
-                    k_AssetInResourcesFolderDescriptor.id,
+                    k_AssetInResourcesFolderDescriptor.Id,
                     Path.GetFileName(assetPath), isInResources ? "is in a Resources folder" : "is a dependency of a Resources folder asset"
                 )
                 .WithDependencies(dependencyNode)

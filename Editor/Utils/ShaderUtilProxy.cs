@@ -90,7 +90,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         public static int GetSRPBatcherCompatibilityCode(Shader shader, int subShaderIdx)
         {
-#if UNITY_2019_1_OR_NEWER
             if (s_TypeShaderUtil == null)
                 Init();
 
@@ -99,9 +98,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
             if (RenderPipelineManager.currentPipeline == null)
                 return -1;
             return (int)s_MethodGetSRPBatcherCompatibilityCode.Invoke(null, new object[] { shader, subShaderIdx});
-#else
-            return -1;
-#endif
         }
 
         public static ulong GetVariantCount(Shader shader)

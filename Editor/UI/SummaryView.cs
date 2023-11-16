@@ -179,14 +179,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             if (viewLink)
             {
-#if UNITY_2019_2_OR_NEWER
                 if (GUILayout.Button(valueAsString, SharedStyles.LinkLabel))
                     m_ViewManager.ChangeView(category);
-#else
-                EditorGUILayout.LabelField(valueAsString, GUILayout.MaxWidth(90), GUILayout.ExpandWidth(false));
-                if (GUILayout.Button("View", EditorStyles.miniButton, GUILayout.Width(50)))
-                    m_ViewManager.ChangeView(category);
-#endif
             }
             else
             {
