@@ -1,5 +1,3 @@
-#if UNITY_2020_1_OR_NEWER
-
 using System.IO;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
@@ -72,4 +70,3 @@ class ScriptWithStaticMember
         }
     }
 }
-#endif

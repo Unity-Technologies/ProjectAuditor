@@ -489,11 +489,10 @@ Shader ""Custom/SRPBatchCompatible""
 
             var expectedRequirements = Formatting.CombineStrings(new[] {ShaderRequirements.BaseShaders, ShaderRequirements.Derivatives}.Select(r => r.ToString()).ToArray());
             Assert.True(variants.Any(v => v.GetCustomProperty(ShaderVariantProperty.Requirements).Equals(expectedRequirements)), "No shader variants found with {0} requirements", expectedRequirements);
-#if UNITY_2019_1_OR_NEWER
-            //this one fails on yamato
+
+            //these asserts fail on Yamato and need investigation.
             //Assert.True(variants.Any(v => v.GetCustomProperty(ShaderVariantProperty.Keywords).Equals("INSTANCING_ON")), "No shader variants found with INSTANCING_ON keyword");
             //Assert.True(variants.Any(v => v.GetCustomProperty(ShaderVariantProperty.Requirements).Equals("BaseShaders, Derivatives, Instancing")), "No shader variants found with Instancing requirement");
-#endif
         }
 
         [Test]

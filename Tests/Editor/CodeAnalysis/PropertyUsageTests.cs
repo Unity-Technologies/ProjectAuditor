@@ -15,9 +15,7 @@ namespace Unity.ProjectAuditor.EditorTests
     {
         TestAsset m_TestAssetObjectName;
         TestAsset m_TestAssetBaseTypePropertyUsage;
-#if UNITY_2019_1_OR_NEWER
         TestAsset m_TestAssetUxmlAttributeDescriptionPropertyUsage;
-#endif
 
         [OneTimeSetUp]
         public void SetUp()
@@ -60,7 +58,6 @@ class BaseTypePropertyUsage
 }
 ");
 
-#if UNITY_2019_1_OR_NEWER
             m_TestAssetUxmlAttributeDescriptionPropertyUsage = new TestAsset("UxmlAttributeDescriptionPropertyUsage.cs", @"
 using System.Collections;
 using System.Collections.Generic;
@@ -78,7 +75,6 @@ class UxmlAttributeDescriptionPropertyUsage
     }
 }
 ");
-#endif
         }
 
         [Test]
@@ -104,7 +100,6 @@ class UxmlAttributeDescriptionPropertyUsage
             Assert.AreEqual(6, propertyOfBaseTypeIssues.Length);
         }
 
-#if UNITY_2019_1_OR_NEWER
         [Test]
         public void CodeAnalysis_PropertyUxmlAttributeDescription_IsReported()
         {
@@ -115,7 +110,5 @@ class UxmlAttributeDescriptionPropertyUsage
             Assert.AreEqual(1, propertyUxmlAttributeIssues.Length);
             Assert.AreEqual("'UnityEngine.UIElements.UxmlAttributeDescription.obsoleteNames' usage", propertyUxmlAttributeIssues[0].Description);
         }
-
-#endif
     }
 }

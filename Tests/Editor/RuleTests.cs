@@ -38,7 +38,6 @@ namespace Unity.ProjectAuditor.EditorTests
             m_Rules = new SeverityRules();
         }
 
-#if UNITY_2019_4_OR_NEWER
         [UnityTest]
         public IEnumerator Rule_Persist_AfterDomainReload()
         {
@@ -61,8 +60,6 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.AreEqual(1, m_SerializedRules.NumRules);
         }
-
-#endif
 
         [Test]
         public void Rule_MutedIssue_IsNotReported()
@@ -99,7 +96,6 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(Severity.None, action);
         }
 
-#if UNITY_2019_4_OR_NEWER
         [UnityTest]
         public IEnumerator Rule_MutedIssue_IsNotReportedAfterDomainReload()
         {
@@ -123,8 +119,6 @@ namespace Unity.ProjectAuditor.EditorTests
             // issue has been muted so it should not be reported
             Assert.AreEqual(Severity.None, action);
         }
-
-#endif
 
         [Test]
         public void Rule_Test_CanBeAddedAndRemoved()

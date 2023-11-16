@@ -15,19 +15,15 @@ namespace Unity.ProjectAuditor.EditorTests
         [OneTimeSetUp]
         public void SetUp()
         {
-#if UNITY_2019_1_OR_NEWER
             AddPackage("com.unity.2d.pixel-perfect@3.0.2");
             AddPackage("com.unity.services.vivox");
-#endif
         }
 
         [OneTimeTearDown]
         public void TearDown()
         {
-#if UNITY_2019_1_OR_NEWER
             RemovePackage("com.unity.2d.pixel-perfect");
             RemovePackage("com.unity.services.vivox");
-#endif
         }
 
         void AddPackage(string packageIdOrName)
@@ -50,10 +46,6 @@ namespace Unity.ProjectAuditor.EditorTests
         public void Packages_Installed_AreValid()
         {
             var installedPackages = Analyze(IssueCategory.Package);
-#if !UNITY_2019_1_OR_NEWER
-            // for some reason com.unity.ads is missing the description in 2018.x
-            installedPackages = installedPackages.Where(p => !p.GetCustomProperty(PackageProperty.Name).Equals("com.unity.ads")).ToArray();
-#endif
             foreach (var package in installedPackages)
             {
                 var name = package.GetCustomProperty(PackageProperty.Name);
@@ -67,12 +59,8 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-#if UNITY_2019_1_OR_NEWER
         [TestCase("Test Framework", "com.unity.test-framework", PackageSource.Registry, new[] { "com.unity.ext.nunit", "com.unity.modules.imgui", "com.unity.modules.jsonserialize"})]
         [TestCase("Project Auditor", Editor.ProjectAuditor.k_PackageName, PackageSource.LocalTarball, new string[] { "com.unity.nuget.mono-cecil" })]
-#else
-        [TestCase("Project Auditor", Editor.ProjectAuditor.k_PackageName, PackageSource.Unknown, new string[] { "com.unity.nuget.mono-cecil" })]
-#endif
         [TestCase("Audio", "com.unity.modules.audio", PackageSource.BuiltIn)]
         public void Package_Installed_IsReported(string description, string name, PackageSource source, string[] dependencies = null)
         {
@@ -100,9 +88,6 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-#if !UNITY_2019_1_OR_NEWER
-        [Ignore("Package version is not available in 2018.4")]
-#endif
         public void Package_Upgrade_IsRecommended()
         {
             var packageDiagnostics = Analyze(IssueCategory.PackageDiagnostic);
@@ -114,9 +99,6 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-#if !UNITY_2019_1_OR_NEWER
-        [Ignore("Package dependency com.unity.services.core does not compile in 2018.4")]
-#endif
         public void Package_Preview_IsReported()
         {
             var packageDiagnostics = Analyze(IssueCategory.PackageDiagnostic);

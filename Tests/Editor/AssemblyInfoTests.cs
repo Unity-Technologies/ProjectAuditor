@@ -26,12 +26,8 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-#if UNITY_2020_2_OR_NEWER
         [TestCase("/Managed/UnityEngine/UnityEditor.dll")]
         [TestCase("/Managed/UnityEngine/UnityEditor.CoreModule.dll")]
-#else
-        [TestCase("/Managed/UnityEditor.dll")]
-#endif
         public void AssemblyInfo_UnityEditorAssemblyPath_IsFound(string assemblyRelativePath)
         {
             var paths = AssemblyInfoProvider.GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.UnityEditor);
@@ -53,33 +49,6 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotNull(result);
         }
 
-#if !UNITY_2019_2_OR_NEWER
-        [Test]
-        [TestCase("UnityEditor.Networking.dll")]
-        [TestCase("UnityEditor.UI.dll")]
-        [TestCase("UnityEditor.Timeline.dll")]
-        public void AssemblyInfo_UnityEditorExtensionAssemblyPath_IsFound(string assemblyName)
-        {
-            var paths = AssemblyInfoProvider.GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.All);
-            var result = paths.FirstOrDefault(path => path.EndsWith(assemblyName));
-
-            Assert.NotNull(result);
-        }
-
-        [Test]
-        [TestCase("UnityEngine.Networking.dll")]
-        [TestCase("UnityEngine.UI.dll")]
-        [TestCase("UnityEngine.Timeline.dll")]
-        public void AssemblyInfo_UnityEngineExtensionAssemblyPath_IsFound(string assemblyName)
-        {
-            var paths = AssemblyInfoProvider.GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.UnityEngine);
-            var result = paths.FirstOrDefault(path => path.EndsWith(assemblyName));
-
-            Assert.NotNull(result);
-        }
-
-#endif
-
         [Test]
         public void AssemblyInfo_PackageAssemblyPath_IsFound()
         {
@@ -95,9 +64,6 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var acceptablePrefixes = new[]
             {
-#if !UNITY_2019_1_OR_NEWER
-                "Library/PackageCache/",
-#endif
                 "Assets/",
                 "Packages/",
                 "Resources/unity_builtin_extra",
@@ -167,13 +133,10 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual("Packages/com.unity.ugui/Runtime/UI/Core/AnimationTriggers.cs", path, "Resolved Path is: " + path);
         }
 
-#if UNITY_2019_1_OR_NEWER
         [Test]
         public void AssemblyInfo_RegistryPackageAssembly_IsReadOnly()
         {
             Assert.IsTrue(AssemblyInfoProvider.IsReadOnlyAssembly("UnityEngine.TestRunner"));
         }
-
-#endif
     }
 }

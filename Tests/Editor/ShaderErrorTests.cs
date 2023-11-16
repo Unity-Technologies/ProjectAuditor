@@ -14,7 +14,6 @@ namespace Unity.ProjectAuditor.EditorTests
     class ShaderErrorTests : TestFixtureBase
     {
         // Shader compile failure messaging is inconsistent at best prior to 2020 versions.
-#if UNITY_2020_1_OR_NEWER
         [SetUp]
         public void Clear()
         {
@@ -78,12 +77,10 @@ namespace Unity.ProjectAuditor.EditorTests
                 }
             }");
 
-#if UNITY_2019_1_OR_NEWER
             while (ShaderUtil.anythingCompiling)
             {
                 yield return null;
             }
-#endif
 
             var shadersWithErrors = Analyze(IssueCategory.Shader, i => i.Severity == Severity.Error);
 
@@ -105,12 +102,10 @@ namespace Unity.ProjectAuditor.EditorTests
             {
             }");
 
-#if UNITY_2019_1_OR_NEWER
             while (ShaderUtil.anythingCompiling)
             {
                 yield return null;
             }
-#endif
 
             var shadersWithErrors = Analyze(IssueCategory.Shader, i => i.Severity == Severity.Error);
 
@@ -120,7 +115,5 @@ namespace Unity.ProjectAuditor.EditorTests
 
             local_shaderWithShaderLabError.CleanupLocal();
         }
-
-#endif
     }
 }

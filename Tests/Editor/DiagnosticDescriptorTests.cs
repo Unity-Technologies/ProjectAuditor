@@ -368,7 +368,6 @@ namespace Unity.ProjectAuditor.EditorTests
             }
         }
 
-#if UNITY_2019_1_OR_NEWER
         [Test]
         public void DiagnosticDescriptor_Areas_Exist()
         {
@@ -384,8 +383,6 @@ namespace Unity.ProjectAuditor.EditorTests
                 }
             }
         }
-
-#endif
 
         [UnityTest]
         public IEnumerator DiagnosticDescriptor_DocumentationUrl_Exist()
@@ -404,11 +401,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 yield return request.SendWebRequest();
 
                 Assert.True(request.isDone);
-#if UNITY_2020_1_OR_NEWER
                 Assert.AreEqual(UnityWebRequest.Result.Success, request.result, $"Page {documentationUrl} not found.");
-#else
-                Assert.IsFalse(request.isNetworkError || request.isHttpError, $"Page {documentationUrl} not found.");
-#endif
             }
         }
 
