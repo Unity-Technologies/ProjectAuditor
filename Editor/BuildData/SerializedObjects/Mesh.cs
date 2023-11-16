@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
-using usingUnity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders;
+using Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders;
 
-namespace Unity.ProjectAuditor.Editor.Analyzer.SerializedObjects
+namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
 {
-    public class Mesh
+    public class Mesh : SerializedObject
     {
         public enum ChannelUsage
         {
@@ -47,30 +46,15 @@ namespace Unity.ProjectAuditor.Editor.Analyzer.SerializedObjects
             public int Dimension;
         }
 
-        private string m_Name;
-        public string Name => m_Name;
-        private int m_StreamDataSize;
-        public int StreamDataSize => m_StreamDataSize;
-        private int m_SubMeshes;
-        public int SubMeshes => m_SubMeshes;
-        private int m_BlendShapes;
-        public int BlendShapes => m_BlendShapes;
-        private int m_Bones;
-        public int Bones => m_Bones;
-        private int m_Indices;
-        public int Indices => m_Indices;
-        private int m_Vertices;
-        public int Vertices => m_Vertices;
-        private int m_Compression;
-        public int Compression => m_Compression;
-        private bool m_RwEnabled;
-        public bool RwEnabled => m_RwEnabled;
-
-        private List<Channel> m_Channels;
-        public IReadOnlyList<Channel> Channels => m_Channels;
-
-        private int m_VertexSize;
-        public int VertexSize => m_VertexSize;
+        public int SubMeshes { get; }
+        public int BlendShapes { get; }
+        public int Bones { get; }
+        public int Indices { get; }
+        public int Vertices { get; }
+        public int Compression { get; }
+        public bool RwEnabled { get; }
+        public IReadOnlyList<Channel> Channels { get; }
+        public int VertexSize { get; }
 
         private static readonly int[] s_ChannelTypeSizes =
         {
@@ -88,23 +72,23 @@ namespace Unity.ProjectAuditor.Editor.Analyzer.SerializedObjects
             4,  // SInt32
         };
 
-        public Mesh(RandomAccessReader reader)
+        public Mesh(RandomAccessReader reader, long size, BuildFileInfo buildFile)
+            : base(reader, size, "Mesh", buildFile)
         {
-            m_Name = reader["m_Name"].GetValue<string>();
-            m_Compression = reader["m_MeshCompression"].GetValue<byte>();
-            m_Channels = new List<Channel>();
+            Compression = reader["m_MeshCompression"].GetValue<byte>();
+            var channels = new List<Channel>();
 
-            if (m_Compression == 0)
+            if (Compression == 0)
             {
                 var bytesPerIndex = reader["m_IndexFormat"].GetValue<int>() == 0 ? 2 : 4;
 
-                m_Indices = reader["m_IndexBuffer"].GetArraySize() / bytesPerIndex;
-                m_Vertices = reader["m_VertexData"]["m_VertexCount"].GetValue<int>();
+                Indices = reader["m_IndexBuffer"].GetArraySize() / bytesPerIndex;
+                Vertices = reader["m_VertexData"]["m_VertexCount"].GetValue<int>();
 
                 // If vertex data size is 0, data is stored in a stream file.
                 if (reader["m_VertexData"]["m_DataSize"].GetArraySize() == 0)
                 {
-                    m_StreamDataSize = reader["m_StreamData"]["size"].GetValue<int>();
+                    Size += reader["m_StreamData"]["size"].GetValue<int>();
                 }
 
                 int i = 0;
@@ -129,8 +113,8 @@ namespace Unity.ProjectAuditor.Editor.Analyzer.SerializedObjects
                             Usage = (ChannelUsage)i,
                         };
 
-                        m_Channels.Add(c);
-                        m_VertexSize += dimension * s_ChannelTypeSizes[(int)c.Type];
+                        channels.Add(c);
+                        VertexSize += dimension * s_ChannelTypeSizes[(int)c.Type];
                     }
 
                     ++i;
@@ -138,14 +122,15 @@ namespace Unity.ProjectAuditor.Editor.Analyzer.SerializedObjects
             }
             else
             {
-                m_Vertices = reader["m_CompressedMesh"]["m_Vertices"]["m_NumItems"].GetValue<int>() / 3;
-                m_Indices = reader["m_CompressedMesh"]["m_Triangles"]["m_NumItems"].GetValue<int>();
+                Vertices = reader["m_CompressedMesh"]["m_Vertices"]["m_NumItems"].GetValue<int>() / 3;
+                Indices = reader["m_CompressedMesh"]["m_Triangles"]["m_NumItems"].GetValue<int>();
             }
 
-            m_SubMeshes = reader["m_SubMeshes"].GetArraySize();
-            m_BlendShapes = reader["m_Shapes"]["shapes"].GetArraySize();
-            m_Bones = reader["m_BoneNameHashes"].GetArraySize();
-            m_RwEnabled = reader["m_IsReadable"].GetValue<int>() != 0;
+            SubMeshes = reader["m_SubMeshes"].GetArraySize();
+            BlendShapes = reader["m_Shapes"]["shapes"].GetArraySize();
+            Bones = reader["m_BoneNameHashes"].GetArraySize();
+            RwEnabled = reader["m_IsReadable"].GetValue<int>() != 0;
+            Channels = channels;
         }
     }
 }

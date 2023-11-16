@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace usingUnity.ProjectAuditor.Editor.UnityFileSystemApi
+namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
 {
     // An archive node is a file in an archive.
     public struct ArchiveNode

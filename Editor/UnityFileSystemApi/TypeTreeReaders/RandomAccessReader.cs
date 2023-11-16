@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace usingUnity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders
+namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders
 {
     // This class should only be used when accessing specific properties of a serialized object and when the object
     // structure is already known. If all the properties of an object must be accessed, the TypeTreeNode should be

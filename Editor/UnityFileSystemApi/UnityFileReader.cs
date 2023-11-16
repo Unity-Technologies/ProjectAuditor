@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 //using Force.Crc32;
 
-namespace usingUnity.ProjectAuditor.Editor.UnityFileSystemApi
+namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
 {
     // This class can be used to read typed data from a UnityFile. Is uses a buffer for better performance.
     public class UnityFileReader : IDisposable

@@ -1,6 +1,6 @@
 using System;
 
-namespace usingUnity.ProjectAuditor.Editor.UnityFileSystemApi
+namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
 {
     // Use this class to read data from a Unity file.
     public class UnityFile : IDisposable

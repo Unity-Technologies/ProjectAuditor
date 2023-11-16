@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Unity.ProjectAuditor.Editor.Analyzer.Util
+namespace Unity.ProjectAuditor.Editor.BuildData.Util
 {
     public class IdProvider<Key>
     {

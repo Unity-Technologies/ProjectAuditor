@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace usingUnity.ProjectAuditor.Editor.UnityFileSystemApi
+namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
 {
     // This is the main entry point. Provides methods to mount archives and open files.
     public static class UnityFileSystem
