@@ -1,9 +1,12 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.ProjectAuditor.Editor.Build;
+using Unity.ProjectAuditor.Editor.BuildData;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using UnityEditor;
-using usingUnity.ProjectAuditor.Editor.UnityFileSystemApi;
+using Unity.ProjectAuditor.Editor.UnityFileSystemApi;
+using Unity.ProjectAuditor.Editor.BuildData.SerializedObjects;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
@@ -50,11 +53,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (!string.IsNullOrEmpty(folder))
             {
                 UnityFileSystem.Init();
-                var analyzerTool = new Analyzer.AnalyzerTool();
-                var shaders = analyzerTool.Analyze(folder, "*");
+                
+                var buildDataAnalyzer = new Analyzer();
+                buildDataAnalyzer.Analyze(folder, "*");
+
+                var shaders = buildDataAnalyzer.GetSerializedObjects<Shader>();
+
                 UnityFileSystem.Cleanup();
 
-                progress?.Start("Parsing Shaders from Build Data", "Search in Progress...", shaders.Count);
+                progress?.Start("Parsing Shaders from Build Data", "Search in Progress...", shaders.Count());
 
                 foreach (var shader in shaders)
                 {

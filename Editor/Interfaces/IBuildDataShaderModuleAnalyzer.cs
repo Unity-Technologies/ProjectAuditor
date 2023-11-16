@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using Unity.ProjectAuditor.Editor.BuildData.SerializedObjects;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Analyzer.SerializedObjects;
 
 namespace Unity.ProjectAuditor.Editor.Interfaces
 {
