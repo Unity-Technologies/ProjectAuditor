@@ -6,7 +6,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    public class BuiltinRoslynAnalyzerTests : TestFixtureBase
+    class BuiltinRoslynAnalyzerTests : TestFixtureBase
     {
         bool m_SavedUseRoslynAnalyzers;
 
