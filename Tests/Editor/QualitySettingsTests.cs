@@ -170,7 +170,7 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void SettingsAnalysis_MipmapStreaming_Enabled_Is_Not_Reported()
+        public void SettingsAnalysis_MipmapStreaming_Enabled_IsNotReported()
         {
             var qualityLevelsValues = new List<bool>();
 

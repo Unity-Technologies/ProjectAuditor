@@ -614,7 +614,7 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void SettingsAnalysis_LightmapStreaming_Disabled_Is_Not_Reported()
+        public void SettingsAnalysis_LightmapStreaming_Disabled_IsNotReported()
         {
             var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform);
             var currentState = PlayerSettingsUtil.IsLightmapStreamingEnabled(buildTargetGroup);

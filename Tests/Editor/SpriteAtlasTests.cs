@@ -73,7 +73,7 @@ namespace Unity.ProjectAuditor.EditorTests
         //SpriteAtlasAsset does not exist before Unity 2020
         [Test]
         [Ignore("TODO: investigate reason for test failure")]
-        public void SpriteAtlas_Not_Empty_Is_Not_Reported()
+        public void SpriteAtlas_Full_IsNotReported()
         {
             var textureDiagnostic =
                 AnalyzeAndFindAssetIssues(m_TestSpriteAtlasFull, IssueCategory.AssetDiagnostic)
@@ -84,7 +84,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
         [Test]
         [Ignore("TODO: investigate reason for test failure")]
-        public void SpriteAtlas_Empty_Is_Reported()
+        public void SpriteAtlas_Empty_IsReported()
         {
             var textureDiagnostic =
                 AnalyzeAndFindAssetIssues(m_TestSpriteAtlasEmpty, IssueCategory.AssetDiagnostic)
