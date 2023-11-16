@@ -70,6 +70,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             Avatars,
             AvatarMasks,
 
+            // Bundles
+            BuildDataShaders,
+
             // Build report
             BuildFiles,
             BuildSteps,

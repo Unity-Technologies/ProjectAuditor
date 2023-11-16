@@ -154,6 +154,11 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Enum value indicating the first available custom category
         /// </summary>
-        FirstCustomCategory
+        FirstCustomCategory,
+
+        /// <summary>
+        /// Issues relating to mesh assets inside asset bundles
+        /// </summary>
+        BuildDataShader
     }
 }

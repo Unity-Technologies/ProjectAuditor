@@ -89,6 +89,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Shaders,
             Settings,
             Build,
+            BuildData,
         }
 
         [Serializable]
@@ -160,6 +161,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                 excludedModuleCategories = new[]
                 {
                     IssueCategory.BuildSummary
+                }
+            },
+            new Tab
+            {
+                id = TabId.BuildData, name = "Build Data",
+                categories = new[]
+                {
+                    IssueCategory.BuildDataShader
                 }
             },
         };
@@ -785,6 +794,18 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onOpenManual = EditorInterop.OpenCodeDescriptor,
                 type = typeof(CodeDomainReloadView),
                 analyticsEvent = (int)AnalyticsReporter.UIButton.DomainReload
+            });
+
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.BuildDataShader,
+                displayName = "Shaders in build data",
+                menuLabel = "BuildData/Shaders in build data",
+                menuOrder = 6,
+                descriptionWithIcon = true,
+                showFilters = true,
+                onOpenIssue = null,
+                analyticsEvent = (int)AnalyticsReporter.UIButton.BuildDataShaders
             });
         }
 
