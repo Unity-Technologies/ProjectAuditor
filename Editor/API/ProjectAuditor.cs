@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using Unity.ProjectAuditor.Editor.Build;
+using Unity.ProjectAuditor.Editor.BuildData;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.UnityFileSystemApi;
 using Unity.ProjectAuditor.Editor.Utils; // Required for TypeCache in Unity 2018
 using UnityEditor;
 using Debug = UnityEngine.Debug;
@@ -64,12 +67,23 @@ namespace Unity.ProjectAuditor.Editor
 
         readonly List<Module> m_Modules = new List<Module>();
 
+        string m_LastBuildDataPath;
+        Analyzer m_BuildDataAnalyzer;
+
         /// <summary>
         /// ProjectAuditor default constructor
         /// </summary>
         public ProjectAuditor()
         {
             InitModules();
+        }
+
+        ~ProjectAuditor()
+        {
+            if (m_BuildDataAnalyzer != null)
+            {
+                UnityFileSystem.Cleanup();
+            }
         }
 
         /// <summary>
@@ -152,6 +166,31 @@ namespace Unity.ProjectAuditor.Editor
                 // early out if, for any reason, there are no registered Modules
                 analysisParams.OnCompleted(report);
                 return;
+            }
+
+            var needsBuildData = supportedModules.Any(m => m.Categories.Any(
+                c => c == IssueCategory.BuildDataMesh || c == IssueCategory.BuildDataShader));
+
+            if (needsBuildData && m_BuildDataAnalyzer == null)
+            {
+                if (string.IsNullOrEmpty(m_LastBuildDataPath))
+                {
+                    var buildReport = BuildReportHelper.GetLast();
+                    var lastBuildFolder = buildReport != null ? buildReport.summary.outputPath : "";
+                    m_LastBuildDataPath =
+                        EditorUtility.OpenFolderPanel("Chose folder with built player data", lastBuildFolder, "");
+                }
+
+                progress?.Start("Scanning Build Data", "In Progress...", 1);
+
+                UnityFileSystem.Init();
+
+                m_BuildDataAnalyzer = new Analyzer();
+                m_BuildDataAnalyzer.Analyze(m_LastBuildDataPath, "*");
+
+                analysisParams.BuildAnalyzer = m_BuildDataAnalyzer;
+
+                progress?.Clear();
             }
 
             var logTimingsInfo = UserPreferences.LogTimingsInfo;

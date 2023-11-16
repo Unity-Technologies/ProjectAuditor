@@ -168,7 +168,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 id = TabId.BuildData, name = "Build Data",
                 categories = new[]
                 {
-                    IssueCategory.BuildDataShader
+                    IssueCategory.BuildDataMesh, IssueCategory.BuildDataShader
                 }
             },
         };
@@ -796,6 +796,17 @@ namespace Unity.ProjectAuditor.Editor.UI
                 analyticsEvent = (int)AnalyticsReporter.UIButton.DomainReload
             });
 
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.BuildDataMesh,
+                displayName = "Meshes in build data",
+                menuLabel = "BuildData/Meshes in build data",
+                menuOrder = 6,
+                descriptionWithIcon = true,
+                showFilters = true,
+                onOpenIssue = null,
+                analyticsEvent = (int)AnalyticsReporter.UIButton.BuildDataMeshes
+            });
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.BuildDataShader,

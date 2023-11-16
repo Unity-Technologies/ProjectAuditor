@@ -12,6 +12,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 {
     enum BuildDataShaderProperty
     {
+        AssetBundle,
         DecompressedSize,
         SubShaders,
         SubPrograms,
@@ -27,6 +28,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Shader Name" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.AssetBundle), format = PropertyFormat.String, name = "Asset Bundle", longName = "Asset Bundle Name" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.DecompressedSize), format = PropertyFormat.Bytes, name = "Decompressed Size", longName = "Decompressed Size" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.SubShaders), format = PropertyFormat.Integer, name = "Sub Shaders", longName = "Number Of Sub Shaders" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.SubPrograms), format = PropertyFormat.Integer, name = "Sub Programs", longName = "Number Of Sub Programs In Sub Shaders" },
@@ -46,20 +48,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override void Audit(AnalysisParams projectAuditorParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
-            var buildReport = BuildReportHelper.GetLast();
-            var lastBuildFolder = buildReport != null ? buildReport.summary.outputPath : "";
-            var folder = EditorUtility.OpenFolderPanel("Chose folder with built player data", lastBuildFolder, "");
 
-            if (!string.IsNullOrEmpty(folder))
+            if (projectAuditorParams.BuildAnalyzer != null)
             {
-                UnityFileSystem.Init();
-                
-                var buildDataAnalyzer = new Analyzer();
-                buildDataAnalyzer.Analyze(folder, "*");
-
-                var shaders = buildDataAnalyzer.GetSerializedObjects<Shader>();
-
-                UnityFileSystem.Cleanup();
+                var shaders = projectAuditorParams.BuildAnalyzer.GetSerializedObjects<Shader>();
 
                 progress?.Start("Parsing Shaders from Build Data", "Search in Progress...", shaders.Count());
 

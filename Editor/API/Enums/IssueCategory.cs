@@ -157,7 +157,12 @@ namespace Unity.ProjectAuditor.Editor
         FirstCustomCategory,
 
         /// <summary>
-        /// Issues relating to mesh assets inside asset bundles
+        /// Issues relating to mesh assets inside build data
+        /// </summary>
+        BuildDataMesh,
+
+        /// <summary>
+        /// Issues relating to mesh assets inside build data
         /// </summary>
         BuildDataShader
     }

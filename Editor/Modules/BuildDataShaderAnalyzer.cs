@@ -29,6 +29,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 .WithCustomProperties(
                     new object[((int)BuildDataShaderProperty.Num)]
                     {
+                        context.Shader.BuildFile.Path,
                         context.Shader.DecompressedSize,
                         context.Shader.SubShaders.Count,
                         subProgramCount,

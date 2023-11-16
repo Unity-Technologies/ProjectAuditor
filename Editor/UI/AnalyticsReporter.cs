@@ -70,7 +70,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             Avatars,
             AvatarMasks,
 
-            // Bundles
+            // Build data
+            BuildDataMeshes,
             BuildDataShaders,
 
             // Build report

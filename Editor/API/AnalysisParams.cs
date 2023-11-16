@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
+using Unity.ProjectAuditor.Editor.BuildData;
 using UnityEditor;
 using UnityEngine;
 
@@ -100,6 +101,8 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
+        public Analyzer BuildAnalyzer;
+
         /// <summary>
         /// AnalysisParams constructor.
         /// </summary>
@@ -141,6 +144,8 @@ namespace Unity.ProjectAuditor.Editor
             OnModuleCompleted = original.OnModuleCompleted;
 
             ExistingReport = original.ExistingReport;
+
+            BuildAnalyzer = original.BuildAnalyzer;
         }
 
         /// <summary>
