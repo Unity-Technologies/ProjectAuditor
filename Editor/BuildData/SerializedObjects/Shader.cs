@@ -1,20 +1,16 @@
 using System.Collections.Generic;
-using usingUnity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders;
+using Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders;
 
-namespace Unity.ProjectAuditor.Editor.Analyzer.SerializedObjects
+namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
 {
-    public class Shader
+    public class Shader : SerializedObject
     {
-        private string m_Name;
-        public string Name => m_Name;
-        private int m_DecompressedSize;
-        public int DecompressedSize => m_DecompressedSize;
-        private List<SubShader> m_SubShaders;
-        public IReadOnlyList<SubShader> SubShaders => m_SubShaders;
-        private IReadOnlyList<string> m_Keywords;
-        public IReadOnlyList<string> Keywords => m_Keywords;
+        public int DecompressedSize { get; }
+        public IReadOnlyList<SubShader> SubShaders { get; }
+        public IReadOnlyList<string> Keywords { get; }
 
-        public Shader(RandomAccessReader reader)
+        public Shader(RandomAccessReader reader, long size, BuildFileInfo buildFile)
+            : base(reader, size, "Shader", buildFile)
         {
             Dictionary<int, string> keywordNames = null;
             KeywordSet keywordSet = new KeywordSet();
@@ -33,14 +29,14 @@ namespace Unity.ProjectAuditor.Editor.Analyzer.SerializedObjects
             }
 
             var subShadersReader = parsedForm["m_SubShaders"];
-            m_SubShaders = new List<SubShader>(subShadersReader.GetArraySize());
+            var subShaders = new List<SubShader>(subShadersReader.GetArraySize());
 
             foreach (var subShader in subShadersReader)
             {
-                m_SubShaders.Add(new SubShader(keywordSet, subShader, keywordNames));
+                subShaders.Add(new SubShader(keywordSet, subShader, keywordNames));
             }
 
-            m_DecompressedSize = 0;
+            DecompressedSize = 0;
 
             if (reader["decompressedLengths"].IsArrayOfObjects)
             {
@@ -49,53 +45,52 @@ namespace Unity.ProjectAuditor.Editor.Analyzer.SerializedObjects
                 {
                     foreach (var blockSize in apiLengths.GetValue<int[]>())
                     {
-                        m_DecompressedSize += blockSize;
+                        DecompressedSize += blockSize;
                     }
                 }
 
                 // Take the average (not ideal, but better than nothing).
-                m_DecompressedSize /= reader["decompressedLengths"].GetArraySize();
+                DecompressedSize /= reader["decompressedLengths"].GetArraySize();
             }
             else
             {
                 foreach (var blockSize in reader["decompressedLengths"].GetValue<int[]>())
                 {
-                    m_DecompressedSize += blockSize;
+                    DecompressedSize += blockSize;
                 }
             }
 
-            m_Name = parsedForm["m_Name"].GetValue<string>();
-            m_Keywords = keywordSet.Keywords;
+            Name = parsedForm["m_Name"].GetValue<string>();
+            Keywords = keywordSet.Keywords;
+            SubShaders = subShaders;
         }
 
         public class SubShader
         {
-            private List<Pass> m_Passes;
-            public IReadOnlyList<Pass> Passes => m_Passes;
+            public IReadOnlyList<Pass> Passes { get; }
 
             public SubShader(KeywordSet keywordSet, RandomAccessReader reader, Dictionary<int, string> keywordNames)
             {
                 var passesReader = reader["m_Passes"];
-                m_Passes = new List<Pass>(passesReader.GetArraySize());
+                var passes = new List<Pass>(passesReader.GetArraySize());
 
                 foreach (var pass in passesReader)
                 {
-                    m_Passes.Add(new Pass(keywordSet, pass, keywordNames));
+                    passes.Add(new Pass(keywordSet, pass, keywordNames));
                 }
+
+                Passes = passes;
             }
 
             public class Pass
             {
-                private string m_Name;
-                public string Name => m_Name;
-
+                public string Name { get; }
                 // The key is the program type (vertex, fragment...)
-                public Dictionary<string, IReadOnlyList<SubProgram>> m_Programs;
-                public IReadOnlyDictionary<string, IReadOnlyList<SubProgram>> Programs => m_Programs;
+                public IReadOnlyDictionary<string, IReadOnlyList<SubProgram>> Programs { get; }
 
                 public Pass(KeywordSet keywordSet, RandomAccessReader reader, Dictionary<int, string> keywordNames)
                 {
-                    m_Programs = new Dictionary<string, IReadOnlyList<SubProgram>>();
+                    var programs = new Dictionary<string, IReadOnlyList<SubProgram>>();
 
                     if (keywordNames == null)
                     {
@@ -112,7 +107,7 @@ namespace Unity.ProjectAuditor.Editor.Analyzer.SerializedObjects
 
                     if (reader.HasChild("m_State"))
                     {
-                        m_Name = reader["m_State"]["m_Name"].GetValue<string>();
+                        Name = reader["m_State"]["m_Name"].GetValue<string>();
                     }
 
                     foreach (var progType in s_progTypes)
@@ -138,19 +133,19 @@ namespace Unity.ProjectAuditor.Editor.Analyzer.SerializedObjects
                             }
 
                             // Preallocate enough elements to avoid allocations.
-                            var programs = new List<SubProgram>(numSubPrograms);
+                            var programList = new List<SubProgram>(numSubPrograms);
 
                             for (int hwTier = 0; hwTier < subPrograms.GetArraySize(); ++hwTier)
                             {
                                 foreach (var subProgram in subPrograms[hwTier])
                                 {
-                                    programs.Add(new SubProgram(keywordSet, subProgram, keywordNames, hwTier));
+                                    programList.Add(new SubProgram(keywordSet, subProgram, keywordNames, hwTier));
                                 }
                             }
 
                             if (programs.Count > 0)
                             {
-                                m_Programs[progType.typeName] = programs;
+                                programs[progType.typeName] = programList;
                             }
                         }
                         else
@@ -159,38 +154,36 @@ namespace Unity.ProjectAuditor.Editor.Analyzer.SerializedObjects
 
                             if (subPrograms.Count > 0)
                             {
-                                var programs = new List<SubProgram>(subPrograms.GetArraySize());
+                                var programList = new List<SubProgram>(subPrograms.GetArraySize());
 
                                 foreach (var subProgram in subPrograms)
                                 {
-                                    programs.Add(new SubProgram(keywordSet, subProgram, keywordNames));
+                                    programList.Add(new SubProgram(keywordSet, subProgram, keywordNames));
                                 }
 
-                                m_Programs[progType.typeName] = programs;
+                                programs[progType.typeName] = programList;
                             }
                         }
                     }
+
+                    Programs = programs;
                 }
 
                 public class SubProgram
                 {
-                    private int m_HwTier;
-                    public int HwTier => m_HwTier;
-                    private int m_Api;
-                    public int Api => m_Api;
-                    private uint m_BlobIndex;
-                    public uint BlobIndex => m_BlobIndex;
+                    public int HwTier { get; }
+                    public int Api { get; }
+                    public uint BlobIndex { get; }
 
-                    // Keyword index in ShaderData.Keywords
-                    private List<int> m_Keywords;
-                    public IReadOnlyList<int> Keywords => m_Keywords;
+                    // Keyword index in Shader.Keywords
+                    public IReadOnlyList<int> Keywords { get; }
 
                     public SubProgram(KeywordSet keywordSet, RandomAccessReader reader, Dictionary<int, string> keywordNames, int hwTier = -1)
                     {
-                        m_Api = reader["m_GpuProgramType"].GetValue<sbyte>();
-                        m_BlobIndex = reader["m_BlobIndex"].GetValue<uint>();
-                        m_Keywords = new List<int>();
-                        m_HwTier = hwTier != -1 ? hwTier : reader["m_ShaderHardwareTier"].GetValue<sbyte>();
+                        Api = reader["m_GpuProgramType"].GetValue<sbyte>();
+                        BlobIndex = reader["m_BlobIndex"].GetValue<uint>();
+                        var keywords = new List<int>();
+                        HwTier = hwTier != -1 ? hwTier : reader["m_ShaderHardwareTier"].GetValue<sbyte>();
 
                         if (reader.HasChild("m_KeywordIndices"))
                         {
@@ -200,7 +193,7 @@ namespace Unity.ProjectAuditor.Editor.Analyzer.SerializedObjects
                             {
                                 if (keywordNames.TryGetValue(index, out var name))
                                 {
-                                    m_Keywords.Add(keywordSet.GetKeywordIndex(name));
+                                    keywords.Add(keywordSet.GetKeywordIndex(name));
                                 }
                             }
                         }
@@ -210,7 +203,7 @@ namespace Unity.ProjectAuditor.Editor.Analyzer.SerializedObjects
                             {
                                 if (keywordNames.TryGetValue(index, out var name))
                                 {
-                                    m_Keywords.Add(keywordSet.GetKeywordIndex(name));
+                                    keywords.Add(keywordSet.GetKeywordIndex(name));
                                 }
                             }
 
@@ -218,10 +211,12 @@ namespace Unity.ProjectAuditor.Editor.Analyzer.SerializedObjects
                             {
                                 if (keywordNames.TryGetValue(index, out var name))
                                 {
-                                    m_Keywords.Add(keywordSet.GetKeywordIndex(name));
+                                    keywords.Add(keywordSet.GetKeywordIndex(name));
                                 }
                             }
                         }
+
+                        Keywords = keywords;
                     }
                 }
             }

@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using usingUnity.ProjectAuditor.Editor.UnityFileSystemApi;
+using Unity.ProjectAuditor.Editor.UnityFileSystemApi;
 
-namespace Unity.ProjectAuditor.Editor.Analyzer
+namespace Unity.ProjectAuditor.Editor.BuildData
 {
     // This class is used to extract all the PPtrs in a serialized object. It executes a callback whenever a PPtr is found.
     // It provides a string representing the property path of the property (e.g. "m_MyObject.m_MyArray[2].m_PPtrProperty").

@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
-using UnityEngine;
-using usingUnity.ProjectAuditor.Editor.UnityFileSystemApi;
-using usingUnity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders;
+using Unity.ProjectAuditor.Editor.BuildData.SerializedObjects;
+using Unity.ProjectAuditor.Editor.UnityFileSystemApi;
+using Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders;
 
-namespace Unity.ProjectAuditor.Editor.Analyzer
+namespace Unity.ProjectAuditor.Editor.BuildData
 {
-    public class AnalyzerTool
+    public class Analyzer
     {
         private Util.IdProvider<string> m_SerializedFileIdProvider = new Util.IdProvider<string>();
         private Util.ObjectIdProvider m_ObjectIdProvider = new Util.ObjectIdProvider();
@@ -18,6 +17,42 @@ namespace Unity.ProjectAuditor.Editor.Analyzer
 
         // Used to map PPtr fileId to its corresponding serialized file id in the database.
         Dictionary<int, int> m_LocalToDbFileId = new Dictionary<int, int>();
+
+        private readonly Dictionary<string, Type> m_SerializedObjectTypes = new Dictionary<string, Type>()
+        {
+            { "AnimationClip", typeof(AnimationClip)},
+            { "AssetBundle", typeof(AssetBundle)},
+            { "AudioClip", typeof(AudioClip)},
+            { "Mesh", typeof(Mesh)},
+            { "PreloadData", typeof(PreloadData)},
+            { "Shader", typeof(Shader)},
+            { "Texture2D", typeof(Texture2D)},
+        };
+
+        private Dictionary<Type, List<SerializedObject>> m_SerializedObjects =
+            new Dictionary<Type, List<SerializedObject>>();
+
+        public Analyzer()
+        {
+            foreach (var serializedObjectType in m_SerializedObjectTypes)
+            {
+                m_SerializedObjects[serializedObjectType.Value] = new List<SerializedObject>();
+            }
+
+            m_SerializedObjects[typeof(SerializedObject)] = new List<SerializedObject>();
+        }
+
+        public IEnumerable<T> GetSerializedObjects<T>() where T : SerializedObject
+        {
+            foreach (var l in m_SerializedObjects)
+            {
+                if (typeof(T).IsAssignableFrom(l.Key))
+                {
+                    foreach (var o in m_SerializedObjects[l.Key])
+                        yield return (T)o;
+                }
+            }
+        }
 
         private string GetRelativePath(string folder, string path)
         {
@@ -28,9 +63,8 @@ namespace Unity.ProjectAuditor.Editor.Analyzer
             return newPath;
         }
 
-        public List<SerializedObjects.Shader> Analyze(string path, string searchPattern)
+        public void Analyze(string path, string searchPattern)
         {
-            var shaders = new List<SerializedObjects.Shader>();
             var files = Directory.GetFiles(path, searchPattern, SearchOption.AllDirectories);
             int i = 1;
             int lastLength = 0;
@@ -41,13 +75,14 @@ namespace Unity.ProjectAuditor.Editor.Analyzer
                 {
                     using (var archive = UnityFileSystem.MountArchive(file, "archive:" + Path.DirectorySeparatorChar))
                     {
-                        var assetBundleName = GetRelativePath(path, file);
+                        var buildFileInfo =
+                            new BuildFileInfo(GetRelativePath(path, file), new FileInfo(file).Length, true);
 
                         foreach (var node in archive.Nodes)
                         {
                             if (node.Flags.HasFlag(ArchiveNodeFlags.SerializedFile))
                             {
-                                AnalyzeSerializedFile(node.Path, "archive:" + Path.DirectorySeparatorChar, shaders);
+                                AnalyzeSerializedFile(node.Path, "archive:" + Path.DirectorySeparatorChar, buildFileInfo);
                             }
                         }
                     }
@@ -57,24 +92,30 @@ namespace Unity.ProjectAuditor.Editor.Analyzer
                     // It wasn't an AssetBundle, try to open the file as a SerializedFile.
 
                     var serializedFileName = GetRelativePath(path, file);
+                    var buildFileInfo = new BuildFileInfo(GetRelativePath(serializedFileName, file),
+                        new FileInfo(file).Length, false);
 
                     try
                     {
-                        AnalyzeSerializedFile(serializedFileName, path, shaders);
+                        AnalyzeSerializedFile(serializedFileName, path, buildFileInfo);
                     }
                     catch (Exception e)
-                    {}
+                    {
+                        // TODO: better error handling
+                        // This is tricky because Unity doesn't return coherent error codes when trying to open a file that is not a SerializedFile
+                    }
                 }
                 catch (Exception e)
-                {}
+                {
+                    // TODO: better error handling
+                    // We may want to report files that couldn't be analyzed.
+                }
 
                 ++i;
             }
-
-            return shaders;
         }
 
-        private void AnalyzeSerializedFile(string filename, string folder, List<SerializedObjects.Shader> shaders)
+        private void AnalyzeSerializedFile(string filename, string folder, BuildFileInfo fileInfo)
         {
             var fullPath = Path.Combine(folder, filename);
             using var sf = UnityFileSystem.OpenSerializedFile(fullPath);
@@ -119,10 +160,19 @@ namespace Unity.ProjectAuditor.Editor.Analyzer
                 var offset = obj.Offset;
                 uint crc32 = 0;
 
-                if (root.Type == "Shader")
+                SerializedObject serializedObject;
+
+                if (m_SerializedObjectTypes.TryGetValue(root.Type, out var serializedType))
                 {
-                    shaders.Add(new SerializedObjects.Shader(new RandomAccessReader(sf, root, reader, offset)));
+                    serializedObject = Activator.CreateInstance(serializedType, new object[] {new RandomAccessReader(sf, root, reader, offset), obj.Size, fileInfo}) as SerializedObject;
                 }
+                else
+                {
+                    serializedType = typeof(SerializedObject);
+                    serializedObject = new SerializedObject(new RandomAccessReader(sf, root, reader, offset), obj.Size, root.Type, fileInfo);
+                }
+
+                m_SerializedObjects[serializedType].Add(serializedObject);
             }
         }
     }
