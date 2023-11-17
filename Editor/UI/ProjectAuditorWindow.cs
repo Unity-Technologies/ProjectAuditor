@@ -168,7 +168,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 id = TabId.BuildData, name = "Build Data",
                 categories = new[]
                 {
-                    IssueCategory.BuildDataMesh, IssueCategory.BuildDataShader
+                    IssueCategory.BuildDataTexture2D, IssueCategory.BuildDataMesh, IssueCategory.BuildDataAnimationClip, IssueCategory.BuildDataShader
                 }
             },
         };
@@ -798,6 +798,17 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             ViewDescriptor.Register(new ViewDescriptor
             {
+                category = IssueCategory.BuildDataTexture2D,
+                displayName = "Texture2D in build data",
+                menuLabel = "BuildData/Texture2D in build data",
+                menuOrder = 6,
+                descriptionWithIcon = true,
+                showFilters = true,
+                onOpenIssue = null,
+                analyticsEvent = (int)AnalyticsReporter.UIButton.BuildDataTextures2D
+            });
+            ViewDescriptor.Register(new ViewDescriptor
+            {
                 category = IssueCategory.BuildDataMesh,
                 displayName = "Meshes in build data",
                 menuLabel = "BuildData/Meshes in build data",
@@ -817,6 +828,17 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showFilters = true,
                 onOpenIssue = null,
                 analyticsEvent = (int)AnalyticsReporter.UIButton.BuildDataShaders
+            });
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.BuildDataAnimationClip,
+                displayName = "AnimationClips in build data",
+                menuLabel = "BuildData/AnimationClips in build data",
+                menuOrder = 6,
+                descriptionWithIcon = true,
+                showFilters = true,
+                onOpenIssue = null,
+                analyticsEvent = (int)AnalyticsReporter.UIButton.BuildDataAnimationClips
             });
         }
 

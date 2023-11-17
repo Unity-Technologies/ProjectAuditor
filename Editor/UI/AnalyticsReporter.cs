@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Analytics;
@@ -73,6 +72,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             // Build data
             BuildDataMeshes,
             BuildDataShaders,
+            BuildDataAnimationClips,
+            BuildDataTextures2D,
 
             // Build report
             BuildFiles,
@@ -82,7 +83,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             Assemblies,
             PrecompiledAssemblies,
             Packages,
-            PackageDiagnostics
+            PackageDiagnostics,
         }
 
         // -------------------------------------------------------------------------------------------------------------

@@ -162,8 +162,18 @@ namespace Unity.ProjectAuditor.Editor
         BuildDataMesh,
 
         /// <summary>
-        /// Issues relating to mesh assets inside build data
+        /// Issues relating to animation clip assets inside build data
         /// </summary>
-        BuildDataShader
+        BuildDataAnimationClip,
+
+        /// <summary>
+        /// Issues relating to shader assets inside build data
+        /// </summary>
+        BuildDataShader,
+
+        /// <summary>
+        /// Issues relating to texture assets inside build data
+        /// </summary>
+        BuildDataTexture2D
     }
 }
