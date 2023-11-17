@@ -180,5 +180,10 @@ namespace Unity.ProjectAuditor.Editor
         /// Issues relating to audio clip assets inside build data
         /// </summary>
         BuildDataAudioClip,
+
+        /// <summary>
+        /// Issues summarizing serialized object types inside build data
+        /// </summary>
+        BuildDataSummary
     }
 }

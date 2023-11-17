@@ -70,6 +70,12 @@ namespace Unity.ProjectAuditor.Editor
         string m_LastBuildDataPath;
         Analyzer m_BuildDataAnalyzer;
 
+        internal static readonly IssueCategory[] k_BuildDataCategories = new IssueCategory[]
+        {
+            IssueCategory.BuildDataTexture2D, IssueCategory.BuildDataMesh, IssueCategory.BuildDataShader,
+            IssueCategory.BuildDataAnimationClip, IssueCategory.BuildDataAudioClip, IssueCategory.BuildDataSummary
+        };
+
         /// <summary>
         /// ProjectAuditor default constructor
         /// </summary>
@@ -169,7 +175,7 @@ namespace Unity.ProjectAuditor.Editor
             }
 
             var needsBuildData = supportedModules.Any(m => m.Categories.Any(
-                c => c == IssueCategory.BuildDataMesh || c == IssueCategory.BuildDataShader));
+                c => k_BuildDataCategories.Contains(c)));
 
             if (needsBuildData && m_BuildDataAnalyzer == null)
             {
