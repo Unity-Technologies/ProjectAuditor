@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.Bones), format = PropertyFormat.Integer, name = "Bones", longName = "Number Of Bones" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.Indices), format = PropertyFormat.Integer, name = "Indices", longName = "Number Of Indices" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.Vertices), format = PropertyFormat.Integer, name = "Vertices", longName = "Number Of Vertices" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.Compression), format = PropertyFormat.Integer, name = "Compression", longName = "Compression" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.Compression), format = PropertyFormat.String, name = "Compression", longName = "Compression" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.RwEnabled), format = PropertyFormat.Bool, name = "Rw Enabled", longName = "Read/Write Is Enabled" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.VertexSize), format = PropertyFormat.Integer, name = "Vertex Size", longName = "Vertex Size In Bytes" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.Channels), format = PropertyFormat.String, name = "Channels", longName = "Used Vertex Channels" },

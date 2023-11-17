@@ -171,8 +171,51 @@ namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
 
                 public class SubProgram
                 {
+                    public enum ShaderApi
+                    {
+                        Unknown = 0,
+
+                        GLLegacy_Removed = 1,
+                        GLES31AEP = 2,
+                        GLES31 = 3,
+                        GLES3 = 4,
+                        GLES_Removed = 5,
+                        GLCore32 = 6,
+                        GLCore41 = 7,
+                        GLCore43 = 8,
+                        DX9VertexSM20_Removed = 9,
+                        DX9VertexSM30_Removed = 10,
+                        DX9PixelSM20_Removed = 11,
+                        DX9PixelSM30_Removed = 12,
+                        DX10Level9Vertex_Removed = 13,
+                        DX10Level9Pixel_Removed = 14,
+                        DX11VertexSM40 = 15,
+                        DX11VertexSM50 = 16,
+                        DX11PixelSM40 = 17,
+                        DX11PixelSM50 = 18,
+                        DX11GeometrySM40 = 19,
+                        DX11GeometrySM50 = 20,
+                        DX11HullSM50 = 21,
+                        DX11DomainSM50 = 22,
+                        MetalVS = 23,
+                        MetalFS = 24,
+                        SPIRV = 25,
+
+                        ConsoleVS = 26,
+                        ConsoleFS = 27,
+                        ConsoleHS = 28,
+                        ConsoleDS = 29,
+                        ConsoleGS = 30,
+
+                        RayTracing = 31,
+
+                        PS5NGGC = 32,
+
+                        WebGPU = 33,
+                    };
+
                     public int HwTier { get; }
-                    public int Api { get; }
+                    public ShaderApi Api { get; }
                     public uint BlobIndex { get; }
 
                     // Keyword index in Shader.Keywords
@@ -180,7 +223,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
 
                     public SubProgram(KeywordSet keywordSet, RandomAccessReader reader, Dictionary<int, string> keywordNames, int hwTier = -1)
                     {
-                        Api = reader["m_GpuProgramType"].GetValue<sbyte>();
+                        Api = (ShaderApi)reader["m_GpuProgramType"].GetValue<sbyte>();
                         BlobIndex = reader["m_BlobIndex"].GetValue<uint>();
                         var keywords = new List<int>();
                         HwTier = hwTier != -1 ? hwTier : reader["m_ShaderHardwareTier"].GetValue<sbyte>();

@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         context.Mesh.Bones,
                         context.Mesh.Indices,
                         context.Mesh.Vertices,
-                        context.Mesh.Compression,
+                        context.Mesh.Compression.ToString(),
                         context.Mesh.RwEnabled,
                         context.Mesh.VertexSize,
                         channelsAsString,
