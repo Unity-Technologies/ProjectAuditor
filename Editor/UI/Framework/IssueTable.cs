@@ -26,6 +26,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         List<IssueTableItem> m_TreeViewItemGroups = new List<IssueTableItem>();
         Dictionary<int, IssueTableItem> m_TreeViewItemIssues;
         List<IssueTableItem> m_SelectedIssues = new List<IssueTableItem>();
+        bool m_SelectionChanged = true;
         int m_NextId;
         int m_NumMatchingIssues;
         bool m_FlatView;
@@ -474,6 +475,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public List<IssueTableItem> GetSelectedItems()
         {
+            if (!m_SelectionChanged)
+            {
+                return m_SelectedIssues;
+            }
+
+            m_SelectionChanged = false;
+
             var ids = GetSelection();
 
             m_SelectedIssues.Clear();
@@ -483,6 +491,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 for (int i = 0; i < count; ++i)
                 {
+                    // Skip group rows that are not in the dictionary
                     if (m_TreeViewItemIssues.TryGetValue(ids[i], out var item))
                         m_SelectedIssues.Add(item);
                 }
@@ -491,6 +500,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
 
             return m_SelectedIssues;
+        }
+
+        protected override void SelectionChanged(IList<int> selectedIds)
+        {
+            m_SelectionChanged = true;
         }
 
         void OnSortingChanged(MultiColumnHeader _multiColumnHeader)
@@ -561,9 +575,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        void ClearSelection()
+        public void ClearSelection()
         {
             state.selectedIDs.Clear();
+
+            m_SelectionChanged = true;
         }
 
         void SortIfNeeded(IList<TreeViewItem> rows)

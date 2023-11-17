@@ -464,7 +464,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public void ClearSelection()
         {
-            m_Table.SetSelection(new List<int>());
+            m_Table.ClearSelection();
         }
 
         void SetRowsExpanded(bool expanded)
