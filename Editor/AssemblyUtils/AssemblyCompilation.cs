@@ -118,15 +118,11 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 
         static Assembly[] GetAssemblies(bool editorAssemblies)
         {
-#if UNITY_2019_3_OR_NEWER
             var assemblies =
                 CompilationPipeline.GetAssemblies(editorAssemblies
                     ? AssembliesType.Editor
                     : AssembliesType.PlayerWithoutTestAssemblies);
-#else
-            var assemblies =
-                CompilationPipeline.GetAssemblies(editorAssemblies ? AssembliesType.Editor : AssembliesType.Player);
-#endif
+
             return assemblies;
         }
 
@@ -332,9 +328,8 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                 assemblyBuilder.excludeReferences =
                     assemblyBuilder.defaultReferences.Where(r => r.StartsWith("Library")).ToArray();
 
-#if UNITY_2019_1_OR_NEWER
                 assemblyBuilder.referencesOptions = ReferencesOptions.UseEngineModules;
-#endif
+
                 m_AssemblyCompilationTasks.Add(assemblyName, new AssemblyCompilationTask { builder = assemblyBuilder });
             }
 

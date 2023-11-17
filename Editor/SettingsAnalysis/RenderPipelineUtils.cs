@@ -29,13 +29,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         private static void GetComponents<T>(GameObject go, ref List<T> components)
         {
-#if UNITY_2019_3_OR_NEWER
             bool result = go.TryGetComponent(out T comp);
             if (result)
-#else
-            T comp = go.GetComponent<T>();
-            if (comp != null)
-#endif
             {
                 components.Add(comp);
             }
@@ -46,7 +41,6 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             }
         }
 
-#if UNITY_2019_3_OR_NEWER
         internal static IEnumerable<ProjectIssue> AnalyzeAssets(
             SettingsAnalysisContext context,
             Func<SettingsAnalysisContext, RenderPipelineAsset, int, IEnumerable<ProjectIssue>> analyze)
@@ -97,7 +91,5 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             setter(QualitySettings.renderPipeline);
             QualitySettings.SetQualityLevel(initialQualityLevel);
         }
-
-#endif
     }
 }

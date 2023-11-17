@@ -36,7 +36,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 yield break;
             }
 
-#if UNITY_2019_3_OR_NEWER
             var subShaderIndex = ShaderUtilProxy.GetShaderActiveSubshaderIndex(context.Shader);
             var isSrpBatchingCompatible = ShaderUtilProxy.GetSRPBatcherCompatibilityCode(context.Shader, subShaderIndex) == 0;
 
@@ -45,14 +44,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 yield return context.Create(IssueCategory.AssetDiagnostic, k_SrpBatcherDescriptor.Id, context.Shader.name)
                     .WithLocation(context.AssetPath);
             }
-#endif
         }
 
-#if UNITY_2019_3_OR_NEWER
         internal static bool IsSrpBatchingEnabled => GraphicsSettings.defaultRenderPipeline != null &&
         GraphicsSettings.useScriptableRenderPipelineBatching;
-#else
-        internal static bool IsSrpBatchingEnabled => false;
-#endif
     }
 }

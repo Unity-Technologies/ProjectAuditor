@@ -72,11 +72,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         static bool IsUsingBuiltinRenderPipeline()
         {
-#if UNITY_2019_3_OR_NEWER
             return GraphicsSettings.defaultRenderPipeline == null;
-#else
-            return true;
-#endif
         }
 
         internal static bool IsMixedStandardShaderQuality(BuildTarget platform)

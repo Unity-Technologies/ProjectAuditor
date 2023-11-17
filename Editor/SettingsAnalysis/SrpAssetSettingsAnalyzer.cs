@@ -36,21 +36,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
-#if UNITY_2019_3_OR_NEWER
             return RenderPipelineUtils.AnalyzeAssets(context, Analyze);
-#else
-            yield break;
-#endif
         }
 
         static void FixSrpBatcherSetting(ProjectIssue issue)
         {
-#if UNITY_2019_3_OR_NEWER
             RenderPipelineUtils.FixAssetSetting(issue, p => SetSrpBatcherSetting(p, true));
-#endif
         }
 
-#if UNITY_2019_3_OR_NEWER
         IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context, RenderPipelineAsset renderPipeline, int qualityLevel)
         {
             bool? srpBatcherSetting = GetSrpBatcherSetting(renderPipeline);
@@ -117,7 +110,6 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             return null;
         }
 
-#endif
 #endif
     }
 }
