@@ -5,6 +5,14 @@ namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
 {
     public class Mesh : SerializedObject
     {
+        public enum MeshCompression
+        {
+            Off = 0,
+            Low = 1,
+            Med = 2,
+            High = 3,
+        };
+
         public enum ChannelUsage
         {
             Vertex,
@@ -51,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
         public int Bones { get; }
         public int Indices { get; }
         public int Vertices { get; }
-        public int Compression { get; }
+        public MeshCompression Compression { get; }
         public bool RwEnabled { get; }
         public IReadOnlyList<Channel> Channels { get; }
         public int VertexSize { get; }
@@ -75,10 +83,10 @@ namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
         public Mesh(RandomAccessReader reader, long size, BuildFileInfo buildFile)
             : base(reader, size, "Mesh", buildFile)
         {
-            Compression = reader["m_MeshCompression"].GetValue<byte>();
+            Compression = (MeshCompression)reader["m_MeshCompression"].GetValue<byte>();
             var channels = new List<Channel>();
 
-            if (Compression == 0)
+            if (Compression == MeshCompression.Off)
             {
                 var bytesPerIndex = reader["m_IndexFormat"].GetValue<int>() == 0 ? 2 : 4;
 
