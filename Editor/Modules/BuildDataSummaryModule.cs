@@ -1,8 +1,5 @@
 using System.Collections.Generic;
-using System.Linq;
-using Unity.ProjectAuditor.Editor.BuildData;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Interfaces;
 using Unity.ProjectAuditor.Editor.BuildData.SerializedObjects;
 
 namespace Unity.ProjectAuditor.Editor.Modules
@@ -22,7 +19,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.BuildDataSummary,
             properties = new[]
             {
-                // new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Shader Name" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataSummaryProperty.Type), format = PropertyFormat.String, name = "Type", longName = "Asset Type" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataSummaryProperty.Count), format = PropertyFormat.Integer, name = "Count", longName = "Number Of Assets Of This Type" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataSummaryProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size In Bytes" },
@@ -38,25 +34,21 @@ namespace Unity.ProjectAuditor.Editor.Modules
             k_SummaryLayout
         };
 
-        ProjectIssue CreateIssueForSerializedObjects<T>(Analyzer buildAnalyzer) where T : SerializedObject
+        class SerializedObjectInfo
         {
-            int count = 0;
-            long size = 0;
+            public int count;
+            public long size;
+        }
 
-            var objects = buildAnalyzer.GetSerializedObjects<T>();
-            foreach (var obj in objects)
-            {
-                count++;
-                size += obj.Size;
-            }
+        Dictionary<string, SerializedObjectInfo> m_SerializedObjectInfos = new Dictionary<string, SerializedObjectInfo>();
 
-            var name = typeof(T).Name;
-
-            return new IssueBuilder(IssueCategory.BuildDataSummary, name)
+        ProjectIssue CreateIssueForObjectType(string type, int count, long size)
+        {
+            return new IssueBuilder(IssueCategory.BuildDataSummary, type)
                 .WithCustomProperties(
                 new object[((int)BuildDataSummaryProperty.Num)]
                 {
-                    name,
+                    type,
                     count,
                     size
                 });
@@ -70,14 +62,30 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 progress?.Start("Parsing all assets from Build Data", "Search in Progress...", 1);
 
+                // Count all SerializedObjects
+                var objects = buildAnalyzer.GetSerializedObjects<SerializedObject>();
+                foreach (var obj in objects)
+                {
+                    var size = obj.Size;
+                    if (m_SerializedObjectInfos.TryGetValue(obj.Type, out var info))
+                    {
+                        info.count++;
+                        info.size += size;
+                    }
+                    else
+                    {
+                        m_SerializedObjectInfos.Add(obj.Type, new SerializedObjectInfo { count = 1, size = size });
+                    }
+                }
+
+                // Create one issue per type of SerializedObjects
                 List<ProjectIssue> issues = new List<ProjectIssue>();
-
-                issues.Add(CreateIssueForSerializedObjects<Texture2D>(buildAnalyzer));
-                issues.Add(CreateIssueForSerializedObjects<Mesh>(buildAnalyzer));
-                issues.Add(CreateIssueForSerializedObjects<AnimationClip>(buildAnalyzer));
-                issues.Add(CreateIssueForSerializedObjects<AudioClip>(buildAnalyzer));
-                issues.Add(CreateIssueForSerializedObjects<Shader>(buildAnalyzer));
-
+                foreach (var key in m_SerializedObjectInfos.Keys)
+                {
+                    var issue = CreateIssueForObjectType(key, m_SerializedObjectInfos[key].count,
+                        m_SerializedObjectInfos[key].size);
+                    issues.Add(issue);
+                }
                 projectAuditorParams.OnIncomingIssues(issues);
             }
 

@@ -1,11 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using Unity.ProjectAuditor.Editor.Build;
-using Unity.ProjectAuditor.Editor.BuildData;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Interfaces;
-using UnityEditor;
-using Unity.ProjectAuditor.Editor.UnityFileSystemApi;
 using Unity.ProjectAuditor.Editor.BuildData.SerializedObjects;
 
 namespace Unity.ProjectAuditor.Editor.Modules

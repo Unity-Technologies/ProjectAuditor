@@ -11,5 +11,27 @@ namespace Unity.ProjectAuditor.Editor.UI
         public BuildDataView(ViewManager viewManager) : base(viewManager)
         {
         }
+
+        public override void Clear()
+        {
+            base.Clear();
+
+            if (m_Desc.category == IssueCategory.BuildDataSummary)
+            {
+                var header = m_Table.multiColumnHeader;
+
+                var layout = m_Layout;
+
+                for (int i = 0; i < layout.properties.Length; ++i)
+                {
+                    var layoutProperty = layout.properties[i];
+                    if (layoutProperty.name == "Size")
+                    {
+                        header.SetSorting(i, false);
+                        break;
+                    }
+                }
+            }
+        }
     }
 }
