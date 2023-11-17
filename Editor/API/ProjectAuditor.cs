@@ -181,16 +181,19 @@ namespace Unity.ProjectAuditor.Editor
                         EditorUtility.OpenFolderPanel("Chose folder with built player data", lastBuildFolder, "");
                 }
 
-                progress?.Start("Scanning Build Data", "In Progress...", 1);
+                if (!string.IsNullOrEmpty(m_LastBuildDataPath))
+                {
+                    progress?.Start("Scanning Build Data", "In Progress...", 1);
 
-                UnityFileSystem.Init();
+                    UnityFileSystem.Init();
 
-                m_BuildDataAnalyzer = new Analyzer();
-                m_BuildDataAnalyzer.Analyze(m_LastBuildDataPath, "*");
+                    m_BuildDataAnalyzer = new Analyzer();
+                    m_BuildDataAnalyzer.Analyze(m_LastBuildDataPath, "*");
 
-                analysisParams.BuildAnalyzer = m_BuildDataAnalyzer;
+                    analysisParams.BuildAnalyzer = m_BuildDataAnalyzer;
 
-                progress?.Clear();
+                    progress?.Clear();
+                }
             }
 
             var logTimingsInfo = UserPreferences.LogTimingsInfo;

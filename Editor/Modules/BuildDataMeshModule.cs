@@ -30,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Mesh Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.AssetBundle), format = PropertyFormat.String, name = "Asset Bundle", longName = "Asset Bundle Name" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.AssetBundle), format = PropertyFormat.String, name = "File", longName = "File Name" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.SubMeshes), format = PropertyFormat.Integer, name = "Sub Meshes", longName = "Number Of Sub Meshes" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.BlendShapes), format = PropertyFormat.Integer, name = "Blend Shapes", longName = "Number Of Blend Shapes" },
@@ -61,7 +61,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 var meshes = projectAuditorParams.BuildAnalyzer.GetSerializedObjects<Mesh>();
 
-                progress?.Start("Parsing Shaders from Build Data", "Search in Progress...", meshes.Count());
+                progress?.Start("Parsing Meshes from Build Data", "Search in Progress...", meshes.Count());
 
                 foreach (var mesh in meshes)
                 {

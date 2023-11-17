@@ -27,7 +27,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "AnimationClip Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataAnimationClipProperty.AssetBundle), format = PropertyFormat.String, name = "Asset Bundle", longName = "Asset Bundle Name" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataAnimationClipProperty.AssetBundle), format = PropertyFormat.String, name = "File", longName = "File Name" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataAnimationClipProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataAnimationClipProperty.Legacy), format = PropertyFormat.Bool, name = "Legacy", longName = "Legacy" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataAnimationClipProperty.Events), format = PropertyFormat.Integer, name = "Events", longName = "Events" },
@@ -49,17 +49,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (projectAuditorParams.BuildAnalyzer != null)
             {
-                var AnimationClipes = projectAuditorParams.BuildAnalyzer.GetSerializedObjects<AnimationClip>();
+                var animationClips = projectAuditorParams.BuildAnalyzer.GetSerializedObjects<AnimationClip>();
 
-                progress?.Start("Parsing Shaders from Build Data", "Search in Progress...", AnimationClipes.Count());
+                progress?.Start("Parsing AnimationClips from Build Data", "Search in Progress...", animationClips.Count());
 
-                foreach (var AnimationClip in AnimationClipes)
+                foreach (var animationClip in animationClips)
                 {
                     foreach (var analyzer in analyzers)
                     {
                         var context = new BuildDataAnimationClipAnalyzerContext
                         {
-                            AnimationClip = AnimationClip,
+                            AnimationClip = animationClip,
                             Params = projectAuditorParams
                         };
 

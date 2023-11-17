@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Shader Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.AssetBundle), format = PropertyFormat.String, name = "Asset Bundle", longName = "Asset Bundle Name" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.AssetBundle), format = PropertyFormat.String, name = "File", longName = "File Name" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.DecompressedSize), format = PropertyFormat.Bytes, name = "Decompressed Size", longName = "Decompressed Size" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.SubShaders), format = PropertyFormat.Integer, name = "Sub Shaders", longName = "Number Of Sub Shaders" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.SubPrograms), format = PropertyFormat.Integer, name = "Sub Programs", longName = "Number Of Sub Programs In Sub Shaders" },

@@ -174,6 +174,11 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Issues relating to texture assets inside build data
         /// </summary>
-        BuildDataTexture2D
+        BuildDataTexture2D,
+
+        /// <summary>
+        /// Issues relating to audio clip assets inside build data
+        /// </summary>
+        BuildDataAudioClip,
     }
 }

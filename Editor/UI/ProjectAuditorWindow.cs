@@ -168,7 +168,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 id = TabId.BuildData, name = "Build Data",
                 categories = new[]
                 {
-                    IssueCategory.BuildDataTexture2D, IssueCategory.BuildDataMesh, IssueCategory.BuildDataAnimationClip, IssueCategory.BuildDataShader
+                    IssueCategory.BuildDataTexture2D, IssueCategory.BuildDataMesh, IssueCategory.BuildDataAnimationClip,
+                    IssueCategory.BuildDataShader, IssueCategory.BuildDataAudioClip
                 }
             },
         };
@@ -839,6 +840,17 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showFilters = true,
                 onOpenIssue = null,
                 analyticsEvent = (int)AnalyticsReporter.UIButton.BuildDataAnimationClips
+            });
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.BuildDataAudioClip,
+                displayName = "AudioClips in build data",
+                menuLabel = "BuildData/AudioClips in build data",
+                menuOrder = 6,
+                descriptionWithIcon = true,
+                showFilters = true,
+                onOpenIssue = null,
+                analyticsEvent = (int)AnalyticsReporter.UIButton.BuildDataAudioClips
             });
         }
 
