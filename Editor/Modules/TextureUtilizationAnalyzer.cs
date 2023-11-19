@@ -18,7 +18,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_TextureSolidColorDescriptor = new Descriptor(
             PAA0005,
             "Texture: Solid color is not 1x1 size",
-            new[] {Area.Memory},
+            Areas.Memory,
             "The texture is a single, solid color and is bigger than 1x1 pixels in size. Redundant texture data occupies memory unnecessarily.",
             "Consider shrinking the texture to 1x1 size."
         )
@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_TextureSolidColorNoFixerDescriptor = new Descriptor(
             PAA0006,
             "Texture: Solid color is not 1x1 size",
-            new[] { Area.Memory },
+            Areas.Memory,
             "The texture is a single, solid color and is bigger than 1x1 pixels in size. Redundant texture data occupies memory unnecessarily.",
             "Consider shrinking the texture to 1x1 size."
         )
@@ -44,7 +44,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_TextureAtlasEmptyDescriptor = new Descriptor(
             PAA0007,
             "Texture Atlas: Too much empty space",
-            new[] {Area.Memory},
+            Areas.Memory,
             "The texture atlas contains a lot of empty space. Empty space contributes to texture memory usage.",
             "Consider reorganizing your texture atlas in order to reduce the amount of empty space."
         )

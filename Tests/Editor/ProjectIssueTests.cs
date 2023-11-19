@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.EditorTests
             (
             "TDD2001",
             "a title",
-            Area.CPU,
+            Areas.CPU,
             "this is not actually a problem",
             "do nothing"
             );
@@ -28,7 +28,7 @@ namespace Unity.ProjectAuditor.EditorTests
             (
             "TDD2002",
             "a title",
-            Area.CPU,
+            Areas.CPU,
             "this is not actually a problem",
             "do nothing"
             )
@@ -40,7 +40,7 @@ namespace Unity.ProjectAuditor.EditorTests
             (
             "TDD2003",
             "a title of a critical problem",
-            Area.CPU,
+            Areas.CPU,
             "this is not actually a problem",
             "do nothing"
             )
@@ -171,7 +171,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(description, issue.GetProperty(PropertyType.Description));
 
             Assert.AreEqual(Severity.Moderate.ToString(), issue.GetProperty(PropertyType.Severity));
-            Assert.AreEqual(Area.CPU.ToString(), issue.GetProperty(PropertyType.Area));
+            Assert.AreEqual(Areas.CPU.ToString(), issue.GetProperty(PropertyType.Areas));
             Assert.AreEqual("Assets/Dummy.cs:0", issue.GetProperty(PropertyType.Path));
             Assert.AreEqual("Dummy.cs:0", issue.GetProperty(PropertyType.Filename));
             Assert.AreEqual("cs", issue.GetProperty(PropertyType.FileType));

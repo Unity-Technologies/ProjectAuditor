@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
@@ -16,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_SpriteAtlasEmptyDescriptor = new Descriptor(
             PAA0008,
             "Sprite Atlas: Too much empty space",
-            new[] {Area.Memory},
+            Areas.Memory,
             "The Sprite Atlas texture contains a lot of empty space. Empty space contributes to texture memory usage.",
             "Consider reorganizing your Sprite Atlas Texture in order to reduce the amount of empty space."
         )

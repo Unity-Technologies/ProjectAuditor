@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_SrpBatcherDescriptor = new Descriptor(
             PAA2000,
             "Shader: Not compatible with SRP batcher",
-            Area.CPU,
+            Areas.CPU,
             "The shader is not compatible with SRP Batcher.",
             "Consider adding SRP Batcher compatibility to the shader. This will reduce the CPU time Unity requires to prepare and dispatch draw calls for materials that use the same shader variant."
         )

@@ -328,7 +328,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     }
                     break;
 
-                    case PropertyType.Area:
+                    case PropertyType.Areas:
                         var areaNames = issue.Id.GetDescriptor().GetAreasSummary();
                         EditorGUI.LabelField(cellRect, new GUIContent(areaNames, Tooltip.Area), labelStyle);
                         break;

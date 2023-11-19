@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using Unity.ProjectAuditor.Editor.UI.Framework;
-using UnityEditor;
 using UnityEditor.IMGUI.Controls;
-using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
@@ -16,7 +11,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             MultiSelectionTable.HeaderData[] headerData =
             {
-                new MultiSelectionTable.HeaderData("Area", "Area Name", 350, 100, true, false),
+                new MultiSelectionTable.HeaderData("Areas", "Area Names", 350, 100, true, false),
                 new MultiSelectionTable.HeaderData("Show",
                     "Check to show issues affecting this area in the analysis views", 40, 100, false, false),
                 new MultiSelectionTable.HeaderData("Group", "Group", 100, 100, true, false)

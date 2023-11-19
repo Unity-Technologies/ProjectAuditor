@@ -1,13 +1,9 @@
-using System;
 using System.Collections.Generic;
 using UnityEditor.PackageManager;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
-using UnityEditor;
-using UnityEngine;
-
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
@@ -51,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         static readonly Descriptor k_RecommendPackageUpgrade = new Descriptor(
             PAP0001,
             "Newer recommended package version",
-            new[] { Area.Quality },
+            Areas.Quality,
             "A newer recommended version of this package is available.",
             "Update the package via Package Manager."
         )
@@ -63,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         static readonly Descriptor k_RecommendPackagePreView = new Descriptor(
             PAP0002,
             "Experimental/Preview packages",
-            new[] { Area.Quality },
+            Areas.Quality,
             "Experimental or Preview packages are in the early stages of development and not yet ready for production.",
             "Experimental packages should only be used for testing purposes and to give feedback to Unity."
         )

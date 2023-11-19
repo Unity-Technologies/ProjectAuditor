@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_AudioLongClipDoesNotStreamDescriptor = new Descriptor(
             PAA4000,
             "Audio: Long AudioClip is not set to Streaming",
-            Area.Memory,
+            Areas.Memory,
             "The AudioClip has a runtime memory footprint larger than the streaming buffer size of 200KB, but its <b>Load Type</b> is not set to <b>Streaming</b>. Storing the whole clip in memory rather than streaming it may be an inefficient use of memory.",
             "Consider setting <b>Load Type</b> to <b>Streaming</b> in the AudioClip Import Settings."
         )
@@ -59,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_AudioShortClipStreamsDescriptor = new Descriptor(
             PAA4001,
             "Audio: Short AudioClip is set to streaming",
-            Area.Memory,
+            Areas.Memory,
             "The AudioClip has a runtime memory footprint smaller than the streaming buffer size of 200KB, but its <b>Load Type</b> is set to <b>Streaming</b>. Requiring a streaming buffer for this clip is an inefficient use of memory.",
             "Set <b>Load Type</b> to <b>Compressed in Memory</b> or <b>Decompress On Load</b> in the AudioClip Import Settings."
         )
@@ -70,7 +70,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_AudioStereoClipsOnMobileDescriptor = new Descriptor(
             PAA4002,
             "Audio: AudioClip is stereo",
-            Area.Memory,
+            Areas.Memory,
             "The audio source asset is in stereo, and <b>Force To Mono</b> is not enabled in the AudioClip Import Settings. Stereo clips are generally not needed on mobile platforms, and have double the memory footprint of mono clips.",
             "Tick the <b>Force To Mono</b> checkbox in the AudioClip Import Settings."
         )
@@ -91,7 +91,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_AudioStereoClipWhichIsNotStreamingDescriptor = new Descriptor(
             PAA4003,
             "Audio: AudioClip is stereo",
-            new[] { Area.Memory, Area.Quality },
+            Areas.Memory | Areas.Quality,
             "The audio source asset is in stereo, <b>Force To Mono</b> is not enabled in the AudioClip Import Settings, and the <b>Load Type</b> is not <b>Streaming</b>, which implies the AudioClip may be used as a diagetic positional sound effect. Positional effects should be mono; only non-diagetic music and effects should be stereo.",
             "Tick the <b>Force To Mono</b> checkbox in the AudioClip Import Settings."
         )
@@ -111,7 +111,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_AudioLongDecompressedClipDescriptor = new Descriptor(
             PAA4004,
             "Audio: AudioClip is set to Decompress On Load",
-            new[] {Area.Memory, Area.LoadTime},
+            Areas.Memory | Areas.LoadTime,
             "The AudioClip is long, and its <b>Load Type</b> is set to <b>Decompress On Load</b>. The clip's memory footprint may be excessive, and decompression may impact load times.",
             "Consider setting the <b>Load Type</b> to <b>Compressed In Memory</b> or <b>Streaming</b>. If you have concerns about the CPU cost of decompressing <b>Compressed In Memory</b> clips for playback, consider a format which is fast to decompress, such as <b>ADPCM</b>."
         )
@@ -122,7 +122,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_AudioCompressedInMemoryDescriptor = new Descriptor(
             PAA4005,
             "Audio: Compressed AudioClip is Compressed In Memory",
-            Area.CPU,
+            Areas.CPU,
             "The AudioClip's <b>Load Type</b> is set to <b>Compressed In Memory</b> but the clip is imported with a format that is not trivial to decompress. Decompression will be performed every time the clip is played, and may impact CPU performance.",
             "If runtime performance is impacted, either set the <b>Load Type</b> to <b>Decompress On Load</b> or set the <b>Compression Format</b> to <b>ADPCM</b>, which is fast to decompress."
         )
@@ -134,7 +134,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_AudioLargeCompressedMobileDescriptor = new Descriptor(
             PAA4006,
             "Audio: Compressed clip could be optimized for mobile",
-            new[] {Area.Memory, Area.BuildSize},
+            Areas.Memory | Areas.BuildSize,
             "The AudioClip has a large file size despite using compression. Mobile speakers and headphones are generally of mediocre quality and cannot discernibly reproduce very high-fidelity sounds, so there may be an opportunity to optimize the clip's file size and memory footprint.",
             "Reduce the <b>Quality</b> slider as far as possible without introducing audible artefacts. Alternatively, try setting the <b>Sample Rate Setting</b> to <b>Override</b> and the <b>Sample Rate</b> to a suitable value. <b>22050</b> Hz or is fine for most sounds, and <b>44100</b> Hz (CD Quality) can be useful for prominent sounds or music if they include high frequencies."
         )
@@ -146,7 +146,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_Audio48KHzDescriptor = new Descriptor(
             PAA4007,
             "Audio: Sample Rate is over 48 KHz",
-            new[] {Area.Memory, Area.BuildSize, Area.LoadTime},
+            Areas.Memory | Areas.BuildSize | Areas.LoadTime,
             "The AudioClip's source sample rate is higher than 48 KHz, and the <b>Sample Rate Setting</b> does not override it. Most Blu-Rays are at 48KHz, and higher sample rates are generally only used during the recording process or for scientific data. If compression is applied during the import process the sample rate gets capped at 48KHz. If compression isn't applied, the runtime memory footprint for this clip will be excessive. In both cases, the source file size is excessive.",
             "Set the <b>Sample Rate Setting</b> to <b>Override</b> and the <b>Sample Rate</b> to <b>48000</b> Hz or lower."
         )
@@ -169,7 +169,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_AudioPreloadDescriptor = new Descriptor(
             PAA4008,
             "Audio: Preload Audio Data is enabled",
-            Area.LoadTime,
+            Areas.LoadTime,
             "The <b>Preload Audio Data</b> checkbox is ticked for this AudioClip. This forces scene/prefab loading to wait synchronously until the AudioClip has completed loading before continuing running, and can impact scene load/initialization times.",
             "Consider un-ticking the <b>Preload Audio Data</b> checkbox. Audio preloading is only required when the AudioClip must play at the exact moment the scene begins simulating, or if the audio timing must be very precise the first time it is played."
         )
@@ -195,7 +195,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_AudioLoadInBackgroundDisabledDescriptor = new Descriptor(
             PAA4009,
             "Audio: Load In Background is not enabled",
-            new[] {Area.CPU, Area.LoadTime},
+            Areas.CPU | Areas.LoadTime,
             "This AudioClip is large, and the <b>Load In Background</b> checkbox is not ticked. Loading will be performed synchronously and will block the main thread. This may impact load times or create CPU spikes, depending on when the clip is loaded.",
             "Tick the <b>Load In Background</b> checkbox in the AudioClip Import Settings."
         )
@@ -215,7 +215,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_AudioMP3Descriptor = new Descriptor(
             PAA4010,
             "Audio: Compression Format is MP3",
-            Area.Quality,
+            Areas.Quality,
             "The AudioClip's <b>Compression Format</b> is set to <b>MP3</b>. MP3 is an old compression format which has been surpassed in efficiency and quality by newer formats such as Vorbis.",
             "Set the <b>Compression Format</b> to <b>Vorbis</b> in the AudioClip's Import Settings."
         )
@@ -238,7 +238,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_AudioCompressedSourceAssetDescriptor = new Descriptor(
             PAA4011,
             "Audio: Source asset is in a lossy compressed format",
-            Area.Quality,
+            Areas.Quality,
             "The file format used by the source asset for the AudioClip uses a lossy compression format. The Asset Import process decompresses the audio data and recompresses it in the chosen runtime format. This may result in a further loss of sound quality.",
             "Wherever possible, select a lossless file format such as .WAV or .AIFF for source assets."
         )

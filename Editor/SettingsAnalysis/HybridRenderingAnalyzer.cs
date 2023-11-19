@@ -16,7 +16,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         static readonly Descriptor k_Descriptor = new Descriptor(
             PAS1000,
             "Player Settings: Static batching is enabled",
-            Area.CPU,
+            Areas.CPU,
             "<b>Static Batching</b> is enabled in Player Settings and the package com.unity.rendering.hybrid is installed. Static batching is incompatible with the batching techniques used in the Hybrid Renderer and Scriptable Render Pipeline, and will result in poor rendering performance and excessive memory use.",
             "Disable static batching in Player Settings."
         );

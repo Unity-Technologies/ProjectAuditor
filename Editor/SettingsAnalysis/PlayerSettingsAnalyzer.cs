@@ -1,16 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
-using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
-using UnityEditor.Rendering;
 using UnityEngine;
-using UnityEngine.Rendering;
 using Module = Unity.ProjectAuditor.Editor.Core.Module;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
@@ -27,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         static readonly Descriptor k_AccelerometerDescriptor = new Descriptor(
             PAS0002,
             "Player (iOS): Accelerometer is enabled",
-            new[] { Area.CPU },
+            Areas.CPU,
             "<b>Accelerometer Frequency</b> in iOS Player Settings is not set to Disabled. Polling the device's accelerometer incurs a small amount of CPU processing time.",
             "Set <b>Accelerometer Frequency</b> to <b>Disabled</b> if your application doesn't make use of the device's accelerometer.")
         {
@@ -37,14 +32,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         static readonly Descriptor k_SplashScreenDescriptor = new Descriptor(
             PAS0029,
             "Player: Splash Screen is enabled",
-            new[] { Area.LoadTime },
+            Areas.LoadTime,
             "<b>Show Splash Screen</b> is enabled in the Player Settings. Displaying a splash screen will increase the time it takes to load into the first scene.",
             "Disable the Splash Screen option in <b>Project Settings > Player > Splash Image > Show Splash Screen</b>.");
 
         static readonly Descriptor k_SpeakerModeDescriptor = new Descriptor(
             PAS0033,
             "Audio: Speaker Mode is not set to Mono",
-            new[] { Area.BuildSize, Area.Memory },
+            Areas.BuildSize | Areas.Memory,
             "<b>Default Speaker Mode</b> in Audio Settings is not set to <b>Mono</b>. This may result in a build which is larger than necessary and which occupies more audio memory at runtime. Many mobile devices have limited or nonexistent stereo speaker options.",
             "Change <b>Project Settings > Audio > Default Speaker Mode</b> to <b>Mono</b>. You should also consider enabling the <b>Force To Mono</b> AudioClip import setting to reduce import times and build size.")
         {
@@ -58,7 +53,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         static readonly Descriptor k_IL2CPPCompilerConfigurationMasterDescriptor = new Descriptor(
             PAS1004,
             "Player: IL2CPP Compiler Configuration is set to Master",
-            new[] { Area.BuildTime },
+            Areas.BuildTime,
             "<b>C++ Compiler Configuration</b> in Player Settings is set to <b>Master</b>. This mode is intended for shipping builds and will significantly increase build times.",
             "Change <b>Project Settings > Player > Other Settings > Configuration > C++ Compiler Configuration</b> to <b>Release</b>.")
         {
@@ -74,7 +69,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         static readonly Descriptor k_IL2CPPCompilerConfigurationDebugDescriptor = new Descriptor(
             PAS1005,
             "Player: IL2CPP Compiler Configuration is set to Debug",
-            new[] { Area.CPU },
+            Areas.CPU,
             "<b>C++ Compiler Configuration</b> is set to <b>Debug</b>. This mode is intended for debugging and might have an impact on runtime CPU performance.",
             "Change <b>Project Settings > Player > Other Settings > Configuration > C++ Compiler Configuration</b> to <b>Release</b>.")
         {
@@ -90,7 +85,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         static readonly Descriptor k_LightmapStreamingEnabledDescriptor = new Descriptor(
             PAS1006,
             "Player: Lightmap Streaming is disabled",
-            new[] { Area.GPU, Area.CPU },
+            Areas.GPU | Areas.CPU,
             "<b>Lightmap Streaming</b> in Player Settings is not enabled. As a result, all lightmap detail levels are loaded into GPU memory, potentially resulting in excessive lightmap texture memory usage.",
             "Enable <b>Lightmap Streaming</b> in <b>PProject Settings > Player > Other Settings > Rendering</b>.")
         {

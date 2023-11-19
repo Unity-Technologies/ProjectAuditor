@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.SettingsAnalysis;
 using Unity.ProjectAuditor.Editor.Tests.Common;
@@ -239,9 +236,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual("Player: Prebake Collision Meshes is disabled", playerSettingIssue.Description);
             Assert.AreEqual("Project/Player", playerSettingIssue.Location.Path);
             Assert.AreEqual("Player", playerSettingIssue.Location.Filename);
-            Assert.AreEqual(2, descriptor.GetAreas().Length);
-            Assert.Contains(Area.BuildSize, descriptor.GetAreas());
-            Assert.Contains(Area.LoadTime, descriptor.GetAreas());
+            Assert.AreEqual((Areas.BuildSize | Areas.LoadTime), descriptor.Areas);
             Assert.AreEqual("Any", descriptor.GetPlatformsSummary());
 
             // restore bakeCollisionMeshes

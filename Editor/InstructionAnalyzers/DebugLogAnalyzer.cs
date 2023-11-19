@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             (
             PAC0192,
             "Debug.Log / Debug.LogFormat",
-            Area.CPU,
+            Areas.CPU,
             "<b>Debug.Log</b> methods take a lot of CPU time, especially if used frequently.",
             "Remove logging code, or strip it from release builds by using scripting symbols for conditional compilation (#if ... #endif) or the <b>ConditionalAttribute</b> on a custom logging method that calls Debug.Log. Where logging is required in release builds, CPU times can be reduced by disabling stack traces in log messages. You can do this by setting <b>Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None)</b>."
             )
@@ -38,7 +38,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             (
             PAC0193,
             "Debug.LogWarning / Debug.LogWarningFormat",
-            Area.CPU,
+            Areas.CPU,
             "<b>Debug.LogWarning</b> methods take a lot of CPU time, especially if used frequently.",
             "Remove logging code, or strip it from release builds by using scripting symbols for conditional compilation (#if ... #endif) or the <b>ConditionalAttribute</b> on a custom logging method that calls Debug.LogWarning. Where logging is required in release builds, CPU times can be reduced by disabling stack traces in log messages. You can do this by setting <b>Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None)</b>."
             )

@@ -6,11 +6,9 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Tests.Common;
 using UnityEditor;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.TestTools;
@@ -23,7 +21,7 @@ namespace Unity.ProjectAuditor.EditorTests
             (
             "TDD2001",
             "test",
-            Area.CPU,
+            Areas.CPU,
             "this is not actually a problem",
             "do nothing"
             );
@@ -41,7 +39,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 (
                 "TDD2001",
                 "test",
-                Area.CPU,
+                Areas.CPU,
                 "this is not actually a problem",
                 "do nothing"
                 );
@@ -49,7 +47,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 (
                 "TDD2001",
                 "test",
-                Area.CPU,
+                Areas.CPU,
                 "this is not actually a problem",
                 "do nothing"
                 );
@@ -70,7 +68,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 (
                 "TDD2001",
                 "test",
-                Area.CPU,
+                Areas.CPU,
                 "this is not actually a problem",
                 "do nothing"
                 );
@@ -85,7 +83,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 (
                 "TDD2001",
                 "test",
-                Area.CPU,
+                Areas.CPU,
                 "this is not actually a problem",
                 "do nothing"
                 );
@@ -139,13 +137,11 @@ namespace Unity.ProjectAuditor.EditorTests
                 (
                 "TDD2001",
                 "test",
-                new[] {Area.CPU, Area.Memory},
+                Areas.CPU | Areas.Memory,
                 "this is not actually a problem",
                 "do nothing"
                 );
-            Assert.AreEqual(2, desc.GetAreas().Length);
-            Assert.Contains(Area.CPU, desc.GetAreas());
-            Assert.Contains(Area.Memory, desc.GetAreas());
+            Assert.AreEqual(desc.Areas, (Areas.CPU | Areas.Memory));
         }
 
         [Test]
@@ -155,7 +151,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 (
                 "TDD2001",
                 "test",
-                new[] {Area.CPU},
+                Areas.CPU,
                 "this is not actually a problem",
                 "do nothing"
                 );
@@ -170,7 +166,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 (
                 "TDD2001",
                 "test",
-                new[] {Area.CPU},
+                Areas.CPU,
                 "this is not actually a problem",
                 "do nothing"
                 )
@@ -188,7 +184,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 (
                 "TDD2001",
                 "test",
-                new[] {Area.CPU},
+                Areas.CPU,
                 "this is not actually a problem",
                 "do nothing"
                 )
@@ -229,8 +225,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 Assert.IsFalse(string.IsNullOrEmpty(descriptor.Title), "Descriptor {0} has no Title", descriptor.Id);
                 Assert.IsFalse(string.IsNullOrEmpty(descriptor.Description), "Descriptor {0} has no Description", descriptor.Id);
                 Assert.IsFalse(string.IsNullOrEmpty(descriptor.Solution), "Descriptor {0} has no Solution", descriptor.Id);
-
-                Assert.NotNull(descriptor.Areas);
+                Assert.AreNotEqual(Areas.None, descriptor.Areas);
             }
         }
 
@@ -249,8 +244,6 @@ namespace Unity.ProjectAuditor.EditorTests
 
                 CheckHtmlTags(descriptor.Description);
                 CheckHtmlTags(descriptor.Solution);
-
-                Assert.NotNull(descriptor.Areas);
             }
         }
 
@@ -364,22 +357,6 @@ namespace Unity.ProjectAuditor.EditorTests
                 catch (AmbiguousMatchException)
                 {
                     // as long as there is a match, this is fine
-                }
-            }
-        }
-
-        [Test]
-        public void DiagnosticDescriptor_Areas_Exist()
-        {
-            var projectAuditor = new Editor.ProjectAuditor();
-            var IDs = projectAuditor.GetDescriptorIDs();
-            foreach (var id in IDs)
-            {
-                var descriptor = id.GetDescriptor();
-                for (int i = 0; i < descriptor.Areas.Length; i++)
-                {
-                    Area area;
-                    Assert.True(Enum.TryParse(descriptor.Areas[i], out area), "Invalid area {0} for descriptor {1}", descriptor.Areas[i], descriptor.Id);
                 }
             }
         }

@@ -44,7 +44,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         const string k_ProjectAuditorName = "Project Auditor";
 
-        static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
+        static readonly string[] AreaNames = Enum.GetNames(typeof(Areas)).Where(a => a != "None" && a != "All").ToArray();
         static ProjectAuditorWindow s_Instance;
 
         public static ProjectAuditorWindow Instance
@@ -68,6 +68,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         TreeViewSelection m_AreaSelection;
         TreeViewSelection m_AssemblySelection;
         Draw2D m_Draw2D;
+
+        Areas m_SelectedAreas;
 
         // Serialized fields
         [SerializeField] BuildTarget m_Platform = BuildTarget.NoTarget;
@@ -195,8 +197,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             // TODO: the rest of this logic is common to all diagnostic views. It should be moved to the AnalysisView
 
             Profiler.BeginSample("MatchArea");
-            var matchArea = m_AreaSelection.ContainsGroup("All") ||
-                (issue.Id.IsValid() && m_AreaSelection.ContainsAny(issue.Id.GetDescriptor().Areas));
+            var matchArea = issue.Id.IsValid() && issue.Id.GetDescriptor().MatchesAnyAreas(m_SelectedAreas);
 
             Profiler.EndSample();
             if (!matchArea)
@@ -944,7 +945,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         internal string GetSelectedAreasSummary()
         {
-            return Utility.GetTreeViewSelectedSummary(m_AreaSelection, AreaNames);
+            return m_SelectedAreas.ToString();
         }
 
         IssueCategory[] GetSelectedCategories()
@@ -1351,6 +1352,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         internal void SetAreaSelection(TreeViewSelection selection)
         {
+            var selectedStrings = selection.GetSelectedStrings(AreaNames, true);
+
+            m_SelectedAreas = Areas.None;
+            foreach (var areaString in selectedStrings)
+            {
+                m_SelectedAreas |= (Areas)Enum.Parse(typeof(Areas), areaString);
+            }
+
             m_AreaSelection = selection;
             RefreshWindow();
         }
@@ -1371,16 +1380,19 @@ namespace Unity.ProjectAuditor.Editor.UI
                     if (m_AreaSelectionSummary == "All")
                     {
                         m_AreaSelection.SetAll(AreaNames);
+                        m_SelectedAreas = Areas.All;
                     }
                     else if (m_AreaSelectionSummary != "None")
                     {
                         var areas = Formatting.SplitStrings(m_AreaSelectionSummary);
                         m_AreaSelection.selection.AddRange(areas);
+                        m_SelectedAreas = (Areas)Enum.Parse(typeof(Areas), m_AreaSelectionSummary);
                     }
                 }
                 else
                 {
                     m_AreaSelection.SetAll(AreaNames);
+                    m_SelectedAreas = Areas.All;
                 }
             }
         }
@@ -1688,7 +1700,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent AnalyzeButton =
                 new GUIContent("Analyze", "Analyze Project and list all issues found.");
             public static readonly GUIContent ProjectAreaSelection =
-                new GUIContent("Project Area", $"Select project area to analyze.");
+                new GUIContent("Project Areas", $"Select project areas to analyze.");
             public static readonly GUIContent PlatformSelection =
                 new GUIContent("Platform", "Select the target platform.");
             public static readonly GUIContent CompilationModeSelection =
@@ -1711,7 +1723,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 new GUIContent("Select", "Select assemblies to examine");
 
             public static readonly GUIContent AreaFilter =
-                new GUIContent("Area : ", "Select performance areas to display");
+                new GUIContent("Areas : ", "Select performance areas to display");
 
             public static readonly GUIContent AreaFilterSelect =
                 new GUIContent("Select", "Select performance areas to display");

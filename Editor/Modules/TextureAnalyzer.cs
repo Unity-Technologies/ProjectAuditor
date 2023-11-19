@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
@@ -21,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_TextureMipMapNotEnabledDescriptor = new Descriptor(
             PAA0000,
             "Texture: Mipmaps not enabled",
-            new[] {Area.GPU, Area.Quality},
+            Areas.GPU | Areas.Quality,
             "<b>Generate Mip Maps</b> in the Texture Import Settings is not enabled. Using textures that are not mipmapped in a 3D environment can impact rendering performance and introduce aliasing artifacts.",
             "Consider enabling mipmaps using the <b>Advanced > Generate Mip Maps</b> option in the Texture Import Settings."
         )
@@ -41,7 +40,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_TextureMipMapEnabledDescriptor = new Descriptor(
             PAA0001,
             "Texture: Mipmaps enabled on Sprite/UI texture",
-            new[] {Area.BuildSize, Area.Quality},
+            Areas.BuildSize | Areas.Quality,
             "<b>Generate Mip Maps</b> is enabled in the Texture Import Settings for a Sprite/UI texture. This might reduce rendering quality of sprites and UI.",
             "Consider disabling mipmaps using the <b>Advanced > Generate Mip Maps</b> option in the texture inspector. This will also reduce your build size."
         )
@@ -61,7 +60,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_TextureReadWriteEnabledDescriptor = new Descriptor(
             PAA0002,
             "Texture: Read/Write enabled",
-            Area.Memory,
+            Areas.Memory,
             "The <b>Read/Write Enabled</b> flag in the Texture Import Settings is enabled. This causes the texture data to be duplicated in memory.",
             "If not required, disable the <b>Read/Write Enabled</b> option in the Texture Import Settings."
         )
@@ -82,7 +81,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_TextureStreamingMipMapEnabledDescriptor = new Descriptor(
             PAA0003,
             "Texture: Mipmaps Streaming not enabled",
-            new[] {Area.Memory, Area.Quality},
+            Areas.Memory | Areas.Quality,
             "The <b>Streaming Mipmaps</b> option in the Texture Import Settings is not enabled. As a result, all mip levels for this texture are loaded into GPU memory for as long as the texture is loaded, potentially resulting in excessive texture memory usage.",
             "Consider enabling the <b>Streaming Mipmaps</b> option in the Texture Import Settings."
         )
@@ -102,7 +101,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_TextureAnisotropicLevelDescriptor = new Descriptor(
             PAA0004,
             "Texture: Anisotropic level is higher than 1",
-            new[] {Area.GPU, Area.Quality},
+            Areas.GPU | Areas.Quality,
             "The <b>Anisotropic Level</b> in the Texture Import Settings is higher than 1. Anisotropic filtering makes textures look better when viewed at a shallow angle, but it can be slower to process on the GPU.",
             "Consider setting the <b>Anisotropic Level</b> to 1."
         )

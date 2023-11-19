@@ -9,14 +9,14 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
     internal static class DescriptorExtensions
     {
-        public static Area[] GetAreas(this Descriptor descriptor)
-        {
-            return descriptor.Areas.Select(a => (Area)Enum.Parse(typeof(Area), a)).ToArray();
-        }
-
         public static string GetAreasSummary(this Descriptor descriptor)
         {
-            return Formatting.CombineStrings(descriptor.Areas);
+            return descriptor.Areas.ToString();
+        }
+
+        public static bool MatchesAnyAreas(this Descriptor descriptor, Areas areasToMatch)
+        {
+            return (descriptor.Areas & areasToMatch) != 0;
         }
 
         public static string GetPlatformsSummary(this Descriptor descriptor)

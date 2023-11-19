@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             (
             PAC1005,
             "System.Net",
-            Area.Support,
+            Areas.Support,
             "<b>System.Net</b> is not supported on this platform. This might lead to build/runtime errors.",
             "Do not use the System.Net API on this platform."
             )
@@ -30,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             (
             PAC1006,
             "System.Threading",
-            Area.Support,
+            Areas.Support,
             "Dot Net threads are not supported on this platform. Using System.Threading might lead to build/runtime errors.",
             "Do not use the <b>System.Threading</b> API on this platform."
             )
@@ -43,7 +43,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             (
             PAC0233,
             "UnityEngine.Microphone",
-            Area.Support,
+            Areas.Support,
             "The <b>UnityEngine.Microphone</b> API is not supported on this platform. Using Microphone might lead to build/runtime errors.",
             "Do not use the Microphone API on this platform."
             )

@@ -22,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             (
             PAC2002,
             "Object Allocation",
-            Area.Memory,
+            Areas.Memory,
             "An object is allocated in managed memory.",
             "Try to avoid allocating objects in frequently-updated code."
             )
@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             (
             PAC2003,
             "Closure Allocation",
-            Area.Memory,
+            Areas.Memory,
             "A closure is allocating managed memory. A closure occurs when a variable's state is captured by an in-line delegate, anonymous method or lambda which accesses that variable.",
             "Try to avoid allocating objects in frequently-updated code."
             )
@@ -48,7 +48,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             (
             PAC2004,
             "Array Allocation",
-            Area.Memory,
+            Areas.Memory,
             "An array is allocated in managed memory.",
             "Try to avoid allocating arrays in frequently-updated code."
             )
@@ -61,7 +61,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             (
             PAC2005,
             "Param Object Allocation",
-            Area.Memory,
+            Areas.Memory,
             "A parameters array is allocated in managed memory.",
             "Try to avoid calling this method in frequently-updated code."
             )
