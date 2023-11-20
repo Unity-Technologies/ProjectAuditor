@@ -15,9 +15,9 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         public static int CompareVersions(string lhs, string rhs)
         {
-            var REGEX = "[^0-9.]";
-            var leftStr = Regex.Replace(lhs, REGEX, "", RegexOptions.IgnoreCase);
-            var rightStr = Regex.Replace(rhs, REGEX, "", RegexOptions.IgnoreCase);
+            const string regex = "[^0-9.]";
+            var leftStr = Regex.Replace(lhs, regex, "", RegexOptions.IgnoreCase);
+            var rightStr = Regex.Replace(rhs, regex, "", RegexOptions.IgnoreCase);
             var leftVersion = new Version(leftStr);
             var rightVersion = new Version(rightStr);
             return leftVersion.CompareTo(rightVersion);
