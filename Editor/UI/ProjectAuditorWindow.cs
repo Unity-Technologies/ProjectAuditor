@@ -42,8 +42,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         const ProjectAreaFlags k_ProjectAreaDefaultFlags = ProjectAreaFlags.Code | ProjectAreaFlags.Settings | ProjectAreaFlags.Build;
 
-        const string k_ProjectAuditorName = "Project Auditor";
-
         static readonly string[] AreaNames = Enum.GetNames(typeof(Areas)).Where(a => a != "None" && a != "All").ToArray();
         static ProjectAuditorWindow s_Instance;
 
@@ -1286,7 +1284,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                             if (category != IssueCategory.Metadata && !m_ProjectReport.HasCategory(category))
                             {
                                 var displayName = m_ViewManager.GetView(category).Desc.displayName;
-                                if (!EditorUtility.DisplayDialog(k_ProjectAuditorName,
+                                if (!EditorUtility.DisplayDialog(ProjectAuditor.DisplayName,
                                     $"'{displayName}' analysis will now begin.", "Ok",
                                     "Cancel"))
                                     return; // do not analyze and change view
@@ -1544,7 +1542,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 var tab = m_Tabs[tabToAudit];
 
-                if (EditorUtility.DisplayDialog(k_ProjectAuditorName,
+                if (EditorUtility.DisplayDialog(ProjectAuditor.DisplayName,
                     $"'{tab.name}' analysis will now begin.", "Ok", "Cancel"))
                 {
                     AuditCategories(tab.allCategories, true);
@@ -1661,11 +1659,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             var preferencesWindow = SettingsService.OpenUserPreferences(UserPreferences.Path);
             if (preferencesWindow == null)
             {
-                Debug.LogError($"Could not find Preferences for 'Analysis/{k_ProjectAuditorName}'");
+                Debug.LogError($"Could not find Preferences for 'Analysis/{ProjectAuditor.DisplayName}'");
             }
         }
 
-        [MenuItem("Window/Analysis/" + k_ProjectAuditorName)]
+        [MenuItem("Window/Analysis/" + ProjectAuditor.DisplayName)]
         public static ProjectAuditorWindow ShowWindow()
         {
             var wnd = GetWindow(typeof(ProjectAuditorWindow)) as ProjectAuditorWindow;
@@ -1695,7 +1693,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         static class Contents
         {
-            public static readonly GUIContent WindowTitle = new GUIContent(k_ProjectAuditorName);
+            public static readonly GUIContent WindowTitle = new GUIContent(ProjectAuditor.DisplayName);
 
             public static readonly GUIContent AnalyzeButton =
                 new GUIContent("Analyze", "Analyze Project and list all issues found.");
@@ -1714,7 +1712,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent DiscardButton = Utility.GetIcon(Utility.IconType.Trash, "Discard the current report.");
 
             public static readonly GUIContent HelpButton = Utility.GetIcon(Utility.IconType.Help, "Open Manual (in a web browser)");
-            public static readonly GUIContent PreferencesMenuItem = EditorGUIUtility.TrTextContent("Preferences", $"Open User Preferences for {k_ProjectAuditorName}");
+            public static readonly GUIContent PreferencesMenuItem = EditorGUIUtility.TrTextContent("Preferences", $"Open User Preferences for {ProjectAuditor.DisplayName}");
 
             public static readonly GUIContent AssemblyFilter =
                 new GUIContent("Assembly : ", "Select assemblies to examine");
@@ -1730,11 +1728,11 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             public static readonly GUIContent FiltersFoldout = new GUIContent("Filters", "Filtering Criteria");
 
-            public static readonly GUIContent WelcomeTextTitle = new GUIContent("Welcome to Project Auditor");
+            public static readonly GUIContent WelcomeTextTitle = new GUIContent($"Welcome to {ProjectAuditor.DisplayName}");
 
             public static readonly GUIContent WelcomeText = new GUIContent(
-@"
-Project Auditor is a static analysis tool that analyzes assets, settings, and scripts of the Unity project and produces a report that contains the following:
+$@"
+{ProjectAuditor.DisplayName} is a static analysis tool that analyzes assets, settings, and scripts of the Unity project and produces a report that contains the following:
 
  •  <b>Diagnostics</b>: a list of possible problems that might affect performance, memory and other areas.
  •  <b>BuildReport</b>: timing and size information of the last build.
@@ -1742,7 +1740,7 @@ Project Auditor is a static analysis tool that analyzes assets, settings, and sc
 
 To Analyze the project, click on <b>Analyze</b>.
 
-Once the project is analyzed, Project Auditor displays a summary with high-level information. Then, it is possible to dive into a specific section of the report from the View menu.
+Once the project is analyzed, {ProjectAuditor.DisplayName} displays a summary with high-level information. Then, it is possible to dive into a specific section of the report from the View menu.
 
 A view allows the user to browse through the listed items and filter by string or other search criteria.
 "

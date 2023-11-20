@@ -29,6 +29,8 @@ namespace Unity.ProjectAuditor.Editor
 
         internal const string k_PackageName = "com.unity.project-auditor";
 
+        public const string DisplayName = "Project Auditor";
+
         internal static string PackagePath
         {
             get
@@ -138,7 +140,7 @@ namespace Unity.ProjectAuditor.Editor
             if (!BuildPipeline.IsBuildTargetSupported(BuildPipeline.GetBuildTargetGroup(platform), platform))
             {
                 // Error and early out if the user has request analysis of a platform which the Unity Editor doesn't have installed support for
-                Debug.LogError($"Build target {platform} is not supported in this Unity Editor");
+                Debug.LogError($"[{ProjectAuditor.DisplayName}] Build target {platform} is not supported in this Unity Editor");
                 analysisParams.OnCompleted(report);
                 return;
             }
@@ -171,7 +173,7 @@ namespace Unity.ProjectAuditor.Editor
                     {
                         var moduleEndTime = DateTime.Now;
                         if (logTimingsInfo)
-                            Debug.Log($"Project Auditor module {module.Name} took: " +
+                            Debug.Log($"[{ProjectAuditor.DisplayName}] Module {module.Name} analysis took: " +
                                 (moduleEndTime - moduleStartTime).TotalMilliseconds / 1000.0 + " seconds.");
 
                         report.RecordModuleInfo(module, moduleStartTime, moduleEndTime);
@@ -183,7 +185,7 @@ namespace Unity.ProjectAuditor.Editor
                         {
                             stopwatch.Stop();
                             if (logTimingsInfo)
-                                Debug.Log("Project Auditor took: " + stopwatch.ElapsedMilliseconds / 1000.0f +
+                                Debug.Log($"[{ProjectAuditor.DisplayName}] Analysis took: " + stopwatch.ElapsedMilliseconds / 1000.0f +
                                     " seconds.");
 
                             analysisParams.OnCompleted?.Invoke(report);
@@ -197,13 +199,13 @@ namespace Unity.ProjectAuditor.Editor
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"Project Auditor module {module.Name} failed: " + e.Message + " " + e.StackTrace);
+                    Debug.LogError($"[{ProjectAuditor.DisplayName}] Module {module.Name} failed: " + e.Message + " " + e.StackTrace);
                     moduleParams.OnModuleCompleted();
                 }
             }
 
             if (logTimingsInfo)
-                Debug.Log("Project Auditor time to interactive: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
+                Debug.Log($"[{ProjectAuditor.DisplayName}] Time to interactive: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
         }
 
         /// <summary>
@@ -220,9 +222,9 @@ namespace Unity.ProjectAuditor.Editor
                 if (numIssues > 0)
                 {
                     if (UserPreferences.FailBuildOnIssues)
-                        Debug.LogError("Project Auditor found " + numIssues + " issues");
+                        Debug.LogError($"[{ProjectAuditor.DisplayName}] Analysis found " + numIssues + " issues");
                     else
-                        Debug.Log("Project Auditor found " + numIssues + " issues");
+                        Debug.Log($"[{ProjectAuditor.DisplayName}] Analysis found " + numIssues + " issues");
                 }
             }
         }
@@ -303,7 +305,7 @@ namespace Unity.ProjectAuditor.Editor
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"Project Auditor [{instance.Name}]: {e.Message} {e.StackTrace}");
+                    Debug.LogError($"{DisplayName} [{instance.Name}]: {e.Message} {e.StackTrace}");
                     continue;
                 }
                 m_Modules.Add(instance);

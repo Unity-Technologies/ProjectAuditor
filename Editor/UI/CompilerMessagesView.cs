@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         const string k_Info = @"This view shows compiler error, warning and info messages.
 
 To view Roslyn Analyzer diagnostics, make sure Roslyn Analyzer DLLs use the <b>RoslynAnalyzer</b> label.";
-        const string k_RoslynDisabled = "The UseRoslynAnalyzers option is disabled. To enable Roslyn diagnostics reporting, make sure the corresponding option is enabled in Preferences > Analysis > Project Auditor.";
+        const string k_RoslynDisabled = "The UseRoslynAnalyzers option is disabled. To enable Roslyn diagnostics reporting, make sure the corresponding option is enabled in Preferences > Analysis > " + ProjectAuditor.DisplayName + ".";
         const string k_NotAvailable = "This view is not available when 'CompilationMode' is set to 'CompilationMode.Editor'.";
 
         bool m_ShowInfo;

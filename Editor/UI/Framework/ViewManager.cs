@@ -91,7 +91,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 var desc = ViewDescriptor.GetAll().FirstOrDefault(d => d.category == category);
                 if (desc == null)
                 {
-                    Debug.LogWarning("[Project Auditor] Descriptor for " + ProjectAuditor.GetCategoryName(category) + " was not registered.");
+                    Debug.LogWarning($"[{ProjectAuditor.DisplayName}] Descriptor for " + ProjectAuditor.GetCategoryName(category) + " was not registered.");
                     continue;
                 }
                 var layout = IssueLayout.GetLayout(category);
@@ -102,7 +102,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 if (!isSupported)
                 {
-                    Debug.LogWarning("[Project Auditor] Layout for category " + ProjectAuditor.GetCategoryName(category) + " was not found.");
+                    Debug.LogWarning($"[{ProjectAuditor.DisplayName}] Layout for category " + ProjectAuditor.GetCategoryName(category) + " was not found.");
                     continue;
                 }
 
