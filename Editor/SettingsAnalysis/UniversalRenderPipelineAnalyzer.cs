@@ -71,7 +71,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
-#if UNITY_2019_3_OR_NEWER && PACKAGE_URP
+#if PACKAGE_URP
             var renderPipeline = GraphicsSettings.currentRenderPipeline;
             if (renderPipeline == null || !(renderPipeline is UniversalRenderPipelineAsset))
             {
@@ -100,19 +100,18 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         private static void FixHdrSetting(ProjectIssue issue)
         {
-#if UNITY_2019_3_OR_NEWER && PACKAGE_URP
+#if PACKAGE_URP
             RenderPipelineUtils.FixAssetSetting(issue, p => SetHdrSetting(p, false));
 #endif
         }
 
         static void FixMsaaSampleCountSetting(ProjectIssue issue)
         {
-#if UNITY_2019_3_OR_NEWER && PACKAGE_URP
+#if PACKAGE_URP
             RenderPipelineUtils.FixAssetSetting(issue, p => SetMsaaSampleCountSetting(p, 2));
 #endif
         }
 
-#if UNITY_2019_3_OR_NEWER
         IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context, RenderPipelineAsset renderPipeline, int qualityLevel)
         {
 #if PACKAGE_URP
@@ -159,7 +158,6 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             }
         }
 
-#endif
 #endif
     }
 }

@@ -27,21 +27,11 @@ namespace Unity.ProjectAuditor.Editor.Utils
         {
 #if UNITY_2021_1_OR_NEWER
             return PackageInfo.GetAllRegisteredPackages();
-#elif UNITY_2019_1_OR_NEWER
+#else
             var getAllMethod = typeof(PackageInfo).GetMethod("GetAll", BindingFlags.Static | BindingFlags.NonPublic);
             if (getAllMethod != null)
             {
                 return getAllMethod.Invoke(null, new object[] {}) as PackageInfo[];
-            }
-#else
-            var type = Type.GetType("UnityEditor.PackageManager.Packages, UnityEditor");
-            if (type != null)
-            {
-                var getAllMethod = type.GetMethod("GetAll", BindingFlags.Static | BindingFlags.Public);
-                if (getAllMethod != null)
-                {
-                    return getAllMethod.Invoke(null, new object[] {}) as PackageInfo[];
-                }
             }
 #endif
             throw new NotSupportedException("PackageInfo.GetAll() is not available.");
@@ -68,10 +58,8 @@ namespace Unity.ProjectAuditor.Editor.Utils
         {
 #if UNITY_2022_2_OR_NEWER
             return package.versions.recommended;
-#elif UNITY_2019_1_OR_NEWER
-            return package.versions.verified;
 #else
-            return package.versions.recommended;
+            return package.versions.verified;
 #endif
         }
 
@@ -86,7 +74,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
                         return true;
                 }
             }
-
 
             Debug.LogWarning($"Can't find Package {packageName}.");
 
