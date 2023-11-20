@@ -42,14 +42,14 @@ namespace Unity.ProjectAuditor.Editor
         internal bool WasFixed = false;
 
         /// <summary>
-        /// An unique identifier for the issue diagnostic (read-only).
+        /// An unique identifier for the issue descriptor (read-only).
         /// </summary>
         /// <remarks>
         /// Project Reports can contain two different types of ProjectIssue:
         /// - Diagnostic issues, which indicate a potential problem which should be investigated and possibly fixed: for example, a texture with its Read/Write Enabled checkbox ticked.
         /// - Non-diagnostic issues, for informational purposes: for example, general information about a texture in the project.
         ///
-        /// Diagnostic issues can be identified by having a valid <seealso cref="DescriptorID"/>. See also: the <seealso cref="ProjectIssue.IsDiagnostic"/> method.
+        /// Diagnostic issues can be identified by having a valid <seealso cref="DescriptorId"/>. See also: the <seealso cref="ProjectIssue.IsDiagnostic"/> method.
         /// </remarks>
         [JsonIgnore]
         public DescriptorID Id
@@ -58,8 +58,8 @@ namespace Unity.ProjectAuditor.Editor
             internal set => m_DescriptorId = value;
         }
 
-        [JsonProperty("diagnosticID")]
-        internal string DiagnosticIDAsString
+        [JsonProperty("descriptorId")]
+        internal string DescriptorIdAsString
         {
             get { return m_DescriptorId.IsValid() ? m_DescriptorId.AsString() : null; }
             set

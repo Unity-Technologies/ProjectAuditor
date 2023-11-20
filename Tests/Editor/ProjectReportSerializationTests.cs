@@ -133,12 +133,12 @@ namespace Unity.ProjectAuditor.EditorTests
                             issueCategory.Equals(IssueCategory.ProjectSetting) ||
                             issueCategory.Equals(IssueCategory.AssetDiagnostic))
                         {
-                            AssertRequiredProperty(issue, "diagnosticID");
+                            AssertRequiredProperty(issue, "descriptorId");
                         }
                         AssertRequiredPropertyIsValid(issue, "description");
                         AssertOptionalArrayIsValid(issue, "properties");
 
-                        if (issue.ContainsKey("diagnosticID"))
+                        if (issue.ContainsKey("descriptorId"))
                         {
                             AssertRequiredProperty(issue, "location");
                             AssertRequiredPropertyIsValid(issue["location"] as JObject, "path");
