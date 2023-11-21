@@ -1731,7 +1731,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent WelcomeTextTitle = new GUIContent($"Welcome to {ProjectAuditor.DisplayName}");
 
             public static readonly GUIContent WelcomeText = new GUIContent(
-$@"
+                $@"
 {ProjectAuditor.DisplayName} is a static analysis tool that analyzes assets, settings, and scripts of the Unity project and produces a report that contains the following:
 
  •  <b>Diagnostics</b>: a list of possible problems that might affect performance, memory and other areas.

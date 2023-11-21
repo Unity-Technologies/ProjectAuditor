@@ -16,11 +16,11 @@ namespace Unity.ProjectAuditor.EditorTests
 {
     public class UrpSettingsAnalysisTests : TestFixtureBase
     {
-     	[OneTimeSetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
-			m_Platform = BuildTarget.Android;
-		}
+            m_Platform = BuildTarget.Android;
+        }
 
         [Test]
         public void SrpAssetSettingsAnalysis_SrpBatching_IsNotReportedOnceFixed()
