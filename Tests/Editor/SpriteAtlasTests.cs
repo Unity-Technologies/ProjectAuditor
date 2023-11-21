@@ -1,6 +1,4 @@
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Modules;
@@ -8,7 +6,6 @@ using Unity.ProjectAuditor.Editor.Tests.Common;
 using UnityEditor;
 using UnityEditor.U2D;
 using UnityEngine;
-using UnityEngine.U2D;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -29,9 +26,14 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_BlueSquareSprite;
         TestAsset m_EmptySquareSprite;
 
+        SpritePackerMode m_SpritePackerMode;
+
         [OneTimeSetUp]
         public void SetUp()
         {
+            m_SpritePackerMode = EditorSettings.spritePackerMode;
+            EditorSettings.spritePackerMode = SpritePackerMode.SpriteAtlasV2;
+
             //Full Sprite Atlas Generation
             var fullSpriteAtlasAsset = new SpriteAtlasAsset();
             fullSpriteAtlasAsset.name = k_SpriteAtlasNameFull;
@@ -42,13 +44,13 @@ namespace Unity.ProjectAuditor.EditorTests
             blueSquareTextureImporter.textureType = TextureImporterType.Sprite;
             blueSquareTextureImporter.SaveAndReimport();
 
-            Sprite blueSquareSprite = AssetDatabase.LoadAssetAtPath<Sprite>(m_BlueSquareSprite.relativePath);
+            var blueSquareSprite = AssetDatabase.LoadAssetAtPath<Sprite>(m_BlueSquareSprite.relativePath);
 
             var redSquareTextureImporter = AssetImporter.GetAtPath(m_RedSquareSprite.relativePath) as TextureImporter;
             redSquareTextureImporter.textureType = TextureImporterType.Sprite;
             redSquareTextureImporter.SaveAndReimport();
 
-            Sprite redSquareSprite = AssetDatabase.LoadAssetAtPath<Sprite>(m_RedSquareSprite.relativePath);
+            var redSquareSprite = AssetDatabase.LoadAssetAtPath<Sprite>(m_RedSquareSprite.relativePath);
 
             fullSpriteAtlasAsset.Add(new Object[] {blueSquareSprite, redSquareSprite});
             m_TestSpriteAtlasFull = TestAsset.SaveSpriteAtlasAsset(fullSpriteAtlasAsset, k_SpriteAtlasNameFull + ".spriteatlasv2");
@@ -63,67 +65,75 @@ namespace Unity.ProjectAuditor.EditorTests
             emptySquareTextureImporter.textureType = TextureImporterType.Sprite;
             emptySquareTextureImporter.SaveAndReimport();
 
-            Sprite emptySquareSprite = AssetDatabase.LoadAssetAtPath<Sprite>(m_EmptySquareSprite.relativePath);
-
+            var emptySquareSprite = AssetDatabase.LoadAssetAtPath<Sprite>(m_EmptySquareSprite.relativePath);
 
             emptySpriteAtlasAsset.Add(new Object[] {emptySquareSprite, emptySquareSprite});
             m_TestSpriteAtlasEmpty = TestAsset.SaveSpriteAtlasAsset(emptySpriteAtlasAsset, k_SpriteAtlasNameEmpty + ".spriteatlasv2");
         }
 
-        //SpriteAtlasAsset does not exist before Unity 2020
-        [Test]
-        [Ignore("TODO: investigate reason for test failure")]
-        public void SpriteAtlas_Full_IsNotReported()
+        [OneTimeTearDown]
+        public void TearDown()
         {
-            var textureDiagnostic =
-                AnalyzeAndFindAssetIssues(m_TestSpriteAtlasFull, IssueCategory.AssetDiagnostic)
-                    .FirstOrDefault(i => i.Id.Equals(SpriteAtlasAnalyzer.k_SpriteAtlasEmptyDescriptor.Id));
-
-            Assert.Null(textureDiagnostic);
+            EditorSettings.spritePackerMode = m_SpritePackerMode;
         }
 
         [Test]
+#if UNITY_2023_1_OR_NEWER
         [Ignore("TODO: investigate reason for test failure")]
-        public void SpriteAtlas_Empty_IsReported()
+#endif
+        public void SpriteAtlas_GoodUtilization_IsNotReported()
         {
-            var textureDiagnostic =
+            var diagnostic =
+                AnalyzeAndFindAssetIssues(m_TestSpriteAtlasFull, IssueCategory.AssetDiagnostic)
+                    .FirstOrDefault(i => i.Id.Equals(SpriteAtlasAnalyzer.k_SpriteAtlasEmptyDescriptor.Id));
+
+            Assert.Null(diagnostic);
+        }
+
+        [Test]
+#if UNITY_2023_1_OR_NEWER
+        [Ignore("TODO: investigate reason for test failure")]
+#endif
+        public void SpriteAtlas_PoorUtilization_IsReported()
+        {
+            var diagnostic =
                 AnalyzeAndFindAssetIssues(m_TestSpriteAtlasEmpty, IssueCategory.AssetDiagnostic)
                     .FirstOrDefault(i => i.Id.Equals(SpriteAtlasAnalyzer.k_SpriteAtlasEmptyDescriptor.Id));
 
-            Assert.IsNotNull(textureDiagnostic);
+            Assert.IsNotNull(diagnostic);
         }
 
         void GenerateTestSpritesForFullSpriteAtlasTest()
         {
-            var blueSquaretexture = new Texture2D(25, 25);
-            var redSquaretexture = new Texture2D(25, 25);
+            var blueSquareTexture = new Texture2D(25, 25);
+            var redSquareTexture = new Texture2D(25, 25);
 
-            int length = blueSquaretexture.GetPixels().Length;
+            var length = blueSquareTexture.GetPixels().Length;
 
-            for (int x = 0; x < length; x++)
+            for (var x = 0; x < length; x++)
             {
-                for (int y = 0; y < length; y++)
+                for (var y = 0; y < length; y++)
                 {
-                    blueSquaretexture.SetPixel(x, y, Color.blue);
-                    redSquaretexture.SetPixel(x, y, Color.red);
+                    blueSquareTexture.SetPixel(x, y, Color.blue);
+                    redSquareTexture.SetPixel(x, y, Color.red);
                 }
             }
 
-            blueSquaretexture.Apply();
-            redSquaretexture.Apply();
+            blueSquareTexture.Apply();
+            redSquareTexture.Apply();
 
-            m_BlueSquareSprite = new TestAsset(k_BlueSquareSprite + ".png", blueSquaretexture.EncodeToPNG());
-            m_RedSquareSprite = new TestAsset(k_RedSquareSprite + ".png", redSquaretexture.EncodeToPNG());
+            m_BlueSquareSprite = new TestAsset(k_BlueSquareSprite + ".png", blueSquareTexture.EncodeToPNG());
+            m_RedSquareSprite = new TestAsset(k_RedSquareSprite + ".png", redSquareTexture.EncodeToPNG());
         }
 
         void GenerateTestSpritesForEmptySpriteAtlasTest()
         {
             var emptySquareTexture = new Texture2D(25, 25);
-            int length = emptySquareTexture.GetPixels().Length;
+            var length = emptySquareTexture.GetPixels().Length;
 
-            for (int x = 0; x < length; x++)
+            for (var x = 0; x < length; x++)
             {
-                for (int y = 0; y < length; y++)
+                for (var y = 0; y < length; y++)
                 {
                     emptySquareTexture.SetPixel(x, y, new Color(0, 0, 0, 0));
                 }
