@@ -5,6 +5,7 @@ using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.BuildData;
 using UnityEditor;
 using UnityEngine;
+using SerializedObject = Unity.ProjectAuditor.Editor.BuildData.SerializedObjects.SerializedObject;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -101,7 +102,7 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        public Analyzer BuildAnalyzer;
+        public BuildObjects BuildObjects;
 
         /// <summary>
         /// AnalysisParams constructor.
@@ -145,7 +146,7 @@ namespace Unity.ProjectAuditor.Editor
 
             ExistingReport = original.ExistingReport;
 
-            BuildAnalyzer = original.BuildAnalyzer;
+            BuildObjects = original.BuildObjects;
         }
 
         /// <summary>

@@ -47,13 +47,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
 
-            if (projectAuditorParams.BuildAnalyzer != null)
+            if (projectAuditorParams.BuildObjects != null)
             {
-                var AnimationClipes = projectAuditorParams.BuildAnalyzer.GetSerializedObjects<AnimationClip>();
+                var animationClips = projectAuditorParams.BuildObjects.GetObjects<AnimationClip>();
 
-                progress?.Start("Parsing Shaders from Build Data", "Search in Progress...", AnimationClipes.Count());
+                progress?.Start("Parsing Shaders from Build Data", "Search in Progress...", animationClips.Count());
 
-                foreach (var AnimationClip in AnimationClipes)
+                foreach (var AnimationClip in animationClips)
                 {
                     foreach (var analyzer in analyzers)
                     {

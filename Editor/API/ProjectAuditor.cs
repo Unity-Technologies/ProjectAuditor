@@ -178,7 +178,7 @@ namespace Unity.ProjectAuditor.Editor
                     var buildReport = BuildReportHelper.GetLast();
                     var lastBuildFolder = buildReport != null ? buildReport.summary.outputPath : "";
                     m_LastBuildDataPath =
-                        EditorUtility.OpenFolderPanel("Chose folder with built player data", lastBuildFolder, "");
+                        EditorUtility.OpenFolderPanel("Choose folder with built player data", lastBuildFolder, "");
                 }
 
                 progress?.Start("Scanning Build Data", "In Progress...", 1);
@@ -186,9 +186,7 @@ namespace Unity.ProjectAuditor.Editor
                 UnityFileSystem.Init();
 
                 m_BuildDataAnalyzer = new Analyzer();
-                m_BuildDataAnalyzer.Analyze(m_LastBuildDataPath, "*");
-
-                analysisParams.BuildAnalyzer = m_BuildDataAnalyzer;
+                analysisParams.BuildObjects = m_BuildDataAnalyzer.Analyze(m_LastBuildDataPath, "*");
 
                 progress?.Clear();
             }

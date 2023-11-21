@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Unity.ProjectAuditor.Editor.UnityFileSystemApi;
+using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor.BuildData
 {
@@ -81,8 +82,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData
         {
             if (node.IsBasicType)
             {
-                // TODO
-                //m_Crc32 = m_Reader.ComputeCRC(m_Offset, node.Size, m_Crc32);
+                m_Crc32 = m_Reader.ComputeCRC(m_Offset, node.Size, m_Crc32);
                 m_Offset += node.Size;
             }
             else if (node.IsArray)
@@ -120,9 +120,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData
                 if (size > 0)
                 {
                     var resourceFile = GetResourceReader(filename);
-
-                    // TODO
-                    //m_Crc32 = resourceFile.ComputeCRC(offset, size, m_Crc32);
+                    m_Crc32 = resourceFile.ComputeCRC(offset, size, m_Crc32);
                 }
             }
             else if (node.Type == "StreamedResource")
@@ -144,18 +142,14 @@ namespace Unity.ProjectAuditor.Editor.BuildData
                 if (size > 0)
                 {
                     var resourceFile = GetResourceReader(filename);
-
-                    // TODO
-                    //m_Crc32 = resourceFile.ComputeCRC(offset, size, m_Crc32);
+                    m_Crc32 = resourceFile.ComputeCRC(offset, size, m_Crc32);
                 }
             }
             else if (node.CSharpType == typeof(string))
             {
                 var prevOffset = m_Offset;
                 m_Offset += m_Reader.ReadInt32(m_Offset) + 4;
-
-                // TODO
-                //m_Crc32 = m_Reader.ComputeCRC(prevOffset, (int)(m_Offset - prevOffset), m_Crc32);
+                m_Crc32 = m_Reader.ComputeCRC(prevOffset, (int)(m_Offset - prevOffset), m_Crc32);
             }
             else if (node.IsManagedReferenceRegistry)
             {
@@ -189,15 +183,12 @@ namespace Unity.ProjectAuditor.Editor.BuildData
             if (dataNode.IsBasicType)
             {
                 var arraySize = m_Reader.ReadInt32(m_Offset);
-
-                // TODO
-                //m_Crc32 = m_Reader.ComputeCRC(m_Offset, dataNode.Size * arraySize + 4, m_Crc32);
+                m_Crc32 = m_Reader.ComputeCRC(m_Offset, dataNode.Size * arraySize + 4, m_Crc32);
                 m_Offset += dataNode.Size * arraySize + 4;
             }
             else
             {
-                // TODO
-                //m_Crc32 = m_Reader.ComputeCRC(m_Offset, 4, m_Crc32);
+                m_Crc32 = m_Reader.ComputeCRC(m_Offset, 4, m_Crc32);
                 var arraySize = m_Reader.ReadInt32(m_Offset);
                 m_Offset += 4;
 
@@ -221,9 +212,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData
 
                         // First child is rid.
                         long rid = m_Reader.ReadInt64(m_Offset);
-
-                        // TODO
-                        //m_Crc32 = m_Reader.ComputeCRC(m_Offset, 8, m_Crc32);
+                        m_Crc32 = m_Reader.ComputeCRC(m_Offset, 8, m_Crc32);
                         m_Offset += 8;
 
                         ProcessManagedReferenceData(dataNode.Children[1], dataNode.Children[2], rid);
@@ -239,9 +228,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData
 
             // First child is version number.
             var version = m_Reader.ReadInt32(m_Offset);
-
-            // TODO
-            //m_Crc32 = m_Reader.ComputeCRC(m_Offset, node.Children[0].Size, m_Crc32);
+            m_Crc32 = m_Reader.ComputeCRC(m_Offset, node.Children[0].Size, m_Crc32);
             m_Offset += node.Children[0].Size;
 
             if (version == 1)
@@ -287,22 +274,19 @@ namespace Unity.ProjectAuditor.Editor.BuildData
                 throw new Exception("Invalid ReferencedManagedType");
 
             var stringSize = m_Reader.ReadInt32(m_Offset);
-            // TODO
-            //m_Crc32 = m_Reader.ComputeCRC(m_Offset, (int)(m_Offset + stringSize + 4), m_Crc32);
+            m_Crc32 = m_Reader.ComputeCRC(m_Offset, (int)(m_Offset + stringSize + 4), m_Crc32);
             var className = m_Reader.ReadString(m_Offset + 4, stringSize);
             m_Offset += stringSize + 4;
             m_Offset = (m_Offset + 3) & ~(3);
 
             stringSize = m_Reader.ReadInt32(m_Offset);
-            // TODO
-            //m_Crc32 = m_Reader.ComputeCRC(m_Offset, (int)(m_Offset + stringSize + 4), m_Crc32);
+            m_Crc32 = m_Reader.ComputeCRC(m_Offset, (int)(m_Offset + stringSize + 4), m_Crc32);
             var namespaceName = m_Reader.ReadString(m_Offset + 4, stringSize);
             m_Offset += stringSize + 4;
             m_Offset = (m_Offset + 3) & ~(3);
 
             stringSize = m_Reader.ReadInt32(m_Offset);
-            // TODO
-            //m_Crc32 = m_Reader.ComputeCRC(m_Offset, (int)(m_Offset + stringSize + 4), m_Crc32);
+            m_Crc32 = m_Reader.ComputeCRC(m_Offset, (int)(m_Offset + stringSize + 4), m_Crc32);
             var assemblyName = m_Reader.ReadString(m_Offset + 4, stringSize);
             m_Offset += stringSize + 4;
             m_Offset = (m_Offset + 3) & ~(3);
@@ -340,8 +324,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData
                 m_pptrBytes[1] = (byte)(refId >> 16);
                 m_pptrBytes[2] = (byte)(refId >> 8);
                 m_pptrBytes[3] = (byte)(refId);
-                // TODO
-                //m_Crc32 = Crc32Algorithm.Append(m_Crc32, m_pptrBytes);
+                m_Crc32 = Crc32.Append(m_Crc32, m_pptrBytes, 0, 4);
             }
         }
     }

@@ -57,9 +57,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
 
-            if (projectAuditorParams.BuildAnalyzer != null)
+            if (projectAuditorParams.BuildObjects != null)
             {
-                var meshes = projectAuditorParams.BuildAnalyzer.GetSerializedObjects<Mesh>();
+                var meshes = projectAuditorParams.BuildObjects.GetObjects<Mesh>();
 
                 progress?.Start("Parsing Shaders from Build Data", "Search in Progress...", meshes.Count());
 

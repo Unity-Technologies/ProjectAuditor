@@ -25,7 +25,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 .WithCustomProperties(
                     new object[((int)BuildDataMeshProperty.Num)]
                     {
-                        context.Mesh.BuildFile.Path,
+                        context.Mesh.BuildFile.DisplayName,
                         context.Mesh.Size,
                         context.Mesh.SubMeshes,
                         context.Mesh.BlendShapes,

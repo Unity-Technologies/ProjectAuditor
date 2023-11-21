@@ -1,16 +1,17 @@
-using Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders;
+using Unity.ProjectAuditor.Editor.UnityFileSystemApi;
 
 namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
 {
     public class PPtr
     {
-        public int FileId { get; }
-        public long PathId { get; }
+        public int ObjectId { get; }
 
-        public PPtr(RandomAccessReader reader)
+        public PPtr(PPtrResolver pPtrResolver, TypeTreeReader reader)
         {
-            FileId = reader["m_FileID"].GetValue<int>();
-            PathId = reader["m_PathID"].GetValue<long>();
+            var fileId = reader["m_FileID"].GetValue<int>();
+            var pathId = reader["m_PathID"].GetValue<long>();
+
+            ObjectId = pPtrResolver.GetObjectId(fileId, pathId);
         }
     }
 }

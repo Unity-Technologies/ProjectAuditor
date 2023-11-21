@@ -1,73 +1,25 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using Unity.ProjectAuditor.Editor.BuildData.SerializedObjects;
 using Unity.ProjectAuditor.Editor.UnityFileSystemApi;
-using Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders;
 
 namespace Unity.ProjectAuditor.Editor.BuildData
 {
     public class Analyzer
     {
-        private Util.IdProvider<string> m_SerializedFileIdProvider = new Util.IdProvider<string>();
-        private Util.ObjectIdProvider m_ObjectIdProvider = new Util.ObjectIdProvider();
+        PPtrResolver m_PPtrResolver = new PPtrResolver();
+        Regex m_RegexSceneFile = new Regex(@"BuildPlayer-([^\.]+)(?:\.sharedAssets)?");
 
-        private Regex m_RegexSceneFile = new Regex(@"BuildPlayer-([^\.]+)(?:\.sharedAssets)?");
-
-        // Used to map PPtr fileId to its corresponding serialized file id in the database.
-        Dictionary<int, int> m_LocalToDbFileId = new Dictionary<int, int>();
-
-        private readonly Dictionary<string, Type> m_SerializedObjectTypes = new Dictionary<string, Type>()
+        public BuildObjects Analyze(string path, string searchPattern)
         {
-            { "AnimationClip", typeof(AnimationClip)},
-            { "AssetBundle", typeof(AssetBundle)},
-            { "AudioClip", typeof(AudioClip)},
-            { "Mesh", typeof(Mesh)},
-            { "PreloadData", typeof(PreloadData)},
-            { "Shader", typeof(Shader)},
-            { "Texture2D", typeof(Texture2D)},
-        };
-
-        private Dictionary<Type, List<SerializedObject>> m_SerializedObjects =
-            new Dictionary<Type, List<SerializedObject>>();
-
-        public Analyzer()
-        {
-            foreach (var serializedObjectType in m_SerializedObjectTypes)
-            {
-                m_SerializedObjects[serializedObjectType.Value] = new List<SerializedObject>();
-            }
-
-            m_SerializedObjects[typeof(SerializedObject)] = new List<SerializedObject>();
-        }
-
-        public IEnumerable<T> GetSerializedObjects<T>() where T : SerializedObject
-        {
-            foreach (var l in m_SerializedObjects)
-            {
-                if (typeof(T).IsAssignableFrom(l.Key))
-                {
-                    foreach (var o in m_SerializedObjects[l.Key])
-                        yield return (T)o;
-                }
-            }
-        }
-
-        private string GetRelativePath(string folder, string path)
-        {
-            var stdFolder = folder.Replace("\\", "/");
-            if (!stdFolder.EndsWith("/"))
-                stdFolder += "/";
-            var newPath = path.Replace("\\", "/").Replace(stdFolder, "");
-            return newPath;
-        }
-
-        public void Analyze(string path, string searchPattern)
-        {
+            var buildObjects = new BuildObjects();
             var files = Directory.GetFiles(path, searchPattern, SearchOption.AllDirectories);
-            int i = 1;
             int lastLength = 0;
+
+            BuildFileInfo.BaseFolder = path;
+
+            m_PPtrResolver.Reset();
 
             foreach (var file in files)
             {
@@ -75,14 +27,14 @@ namespace Unity.ProjectAuditor.Editor.BuildData
                 {
                     using (var archive = UnityFileSystem.MountArchive(file, "archive:" + Path.DirectorySeparatorChar))
                     {
-                        var buildFileInfo =
-                            new BuildFileInfo(GetRelativePath(path, file), new FileInfo(file).Length, true);
+                        var archiveFileInfo = new BuildFileInfo(file, new FileInfo(file).Length, true);
 
                         foreach (var node in archive.Nodes)
                         {
                             if (node.Flags.HasFlag(ArchiveNodeFlags.SerializedFile))
                             {
-                                AnalyzeSerializedFile(node.Path, "archive:" + Path.DirectorySeparatorChar, buildFileInfo);
+                                var fileInfo = archiveFileInfo.AddArchivedFile(Path.Combine("archive:", node.Path), node.Size);
+                                AnalyzeSerializedFile(fileInfo, buildObjects);
                             }
                         }
                     }
@@ -91,13 +43,11 @@ namespace Unity.ProjectAuditor.Editor.BuildData
                 {
                     // It wasn't an AssetBundle, try to open the file as a SerializedFile.
 
-                    var serializedFileName = GetRelativePath(path, file);
-                    var buildFileInfo = new BuildFileInfo(GetRelativePath(serializedFileName, file),
-                        new FileInfo(file).Length, false);
+                    var fileInfo = new BuildFileInfo(file, new FileInfo(file).Length, false);
 
                     try
                     {
-                        AnalyzeSerializedFile(serializedFileName, path, buildFileInfo);
+                        AnalyzeSerializedFile(fileInfo, buildObjects);
                     }
                     catch (Exception e)
                     {
@@ -110,18 +60,16 @@ namespace Unity.ProjectAuditor.Editor.BuildData
                     // TODO: better error handling
                     // We may want to report files that couldn't be analyzed.
                 }
-
-                ++i;
             }
+
+            return buildObjects;
         }
 
-        private void AnalyzeSerializedFile(string filename, string folder, BuildFileInfo fileInfo)
+        void AnalyzeSerializedFile(BuildFileInfo fileInfo, BuildObjects buildObjects)
         {
-            var fullPath = Path.Combine(folder, filename);
-            using var sf = UnityFileSystem.OpenSerializedFile(fullPath);
-            using var reader = new UnityFileReader(fullPath, 64 * 1024 * 1024);
+            using var sf = UnityFileSystem.OpenSerializedFile(fileInfo.AbsolutePath);
+            using var reader = new UnityFileReader(fileInfo.AbsolutePath, 64 * 1024 * 1024);
             //using var pptrReader = new PPtrAndCrcProcessor(sf, reader, Path.GetDirectoryName(fullPath), AddReference);
-            int serializedFileId = m_SerializedFileIdProvider.GetId(filename.ToLower());
             int sceneId = -1;
 
             /*var match = m_RegexSceneFile.Match(filename);
@@ -143,36 +91,34 @@ namespace Unity.ProjectAuditor.Editor.BuildData
                 }
             }*/
 
-            m_LocalToDbFileId.Clear();
-
-            int localId = 0;
-            m_LocalToDbFileId.Add(localId++, serializedFileId);
-            foreach (var extRef in sf.ExternalReferences)
-            {
-                m_LocalToDbFileId.Add(localId++, m_SerializedFileIdProvider.GetId(extRef.Path.Substring(extRef.Path.LastIndexOf('/') + 1).ToLower()));
-            }
+            m_PPtrResolver.BeginSerializedFile(fileInfo.Filename, sf.ExternalReferences);
 
             foreach (var obj in sf.Objects)
             {
-                var currentObjectId = m_ObjectIdProvider.GetId((serializedFileId, obj.Id));
+                var currentObjectId = m_PPtrResolver.GetObjectId(0, obj.Id);
 
                 var root = sf.GetTypeTreeRoot(obj.Id);
                 var offset = obj.Offset;
                 uint crc32 = 0;
 
-                SerializedObject serializedObject;
+                buildObjects.AddObject(ReadSerializedObject(fileInfo, new TypeTreeReader(sf, root, reader, offset), currentObjectId, obj.Size, root.Type));
+            }
 
-                if (m_SerializedObjectTypes.TryGetValue(root.Type, out var serializedType))
-                {
-                    serializedObject = Activator.CreateInstance(serializedType, new object[] {new RandomAccessReader(sf, root, reader, offset), obj.Size, fileInfo}) as SerializedObject;
-                }
-                else
-                {
-                    serializedType = typeof(SerializedObject);
-                    serializedObject = new SerializedObject(new RandomAccessReader(sf, root, reader, offset), obj.Size, root.Type, fileInfo);
-                }
+            m_PPtrResolver.EndSerializedFile();
+        }
 
-                m_SerializedObjects[serializedType].Add(serializedObject);
+        SerializedObject ReadSerializedObject(BuildFileInfo fileInfo, TypeTreeReader reader, int id, long size, string type)
+        {
+            switch (type)
+            {
+                case "AnimationClip": return new AnimationClip(fileInfo, m_PPtrResolver, reader, id, size);
+                case "AssetBundle": return new AssetBundle(fileInfo, m_PPtrResolver, reader, id, size);
+                case "AudioClip": return new AudioClip(fileInfo, m_PPtrResolver, reader, id, size);
+                case "Mesh": return new Mesh(fileInfo, m_PPtrResolver, reader, id, size);
+                case "PreloadData": return new PreloadData(fileInfo, m_PPtrResolver, reader, id, size);
+                case "Shader": return new Shader(fileInfo, m_PPtrResolver, reader, id, size);
+                case "Texture2D": return new Texture2D(fileInfo, m_PPtrResolver, reader, id, size);
+                default: return new SerializedObject(fileInfo, m_PPtrResolver, reader, id, size, type);
             }
         }
     }

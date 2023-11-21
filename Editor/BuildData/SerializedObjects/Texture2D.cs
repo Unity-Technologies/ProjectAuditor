@@ -1,4 +1,4 @@
-using Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders;
+using Unity.ProjectAuditor.Editor.UnityFileSystemApi;
 
 namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
 {
@@ -122,8 +122,8 @@ namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
         public int MipCount { get; }
         public bool RwEnabled { get; }
 
-        public Texture2D(RandomAccessReader reader, long size, BuildFileInfo buildFile)
-            : base(reader, size, "Texture2D", buildFile)
+        public Texture2D(BuildFileInfo buildFile, PPtrResolver pPtrResolver, TypeTreeReader reader, int id, long size)
+            : base(buildFile, pPtrResolver, reader, id, size, "Texture2D")
         {
             Width = reader["m_Width"].GetValue<int>();
             Height = reader["m_Height"].GetValue<int>();

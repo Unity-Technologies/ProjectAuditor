@@ -16,7 +16,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 .WithCustomProperties(
                     new object[((int)BuildDataTextureProperty.Num)]
                     {
-                        context.Texture.BuildFile.Path,
+                        context.Texture.BuildFile.DisplayName,
                         context.Texture.Size,
                         context.Texture.Width,
                         context.Texture.Height,

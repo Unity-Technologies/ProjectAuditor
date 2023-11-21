@@ -1,4 +1,4 @@
-using Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders;
+using Unity.ProjectAuditor.Editor.UnityFileSystemApi;
 
 namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
 {
@@ -31,8 +31,8 @@ namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
         public AudioLoadType LoadType { get; }
         public CompressionFormat Format { get; }
 
-        public AudioClip(RandomAccessReader reader, long size, BuildFileInfo buildFile)
-            : base(reader, size, "AudioClip", buildFile)
+        public AudioClip(BuildFileInfo buildFile, PPtrResolver pPtrResolver, TypeTreeReader reader, int id, long size)
+            : base(buildFile, pPtrResolver, reader, id, size, "AudioClip")
         {
             Channels = reader["m_Channels"].GetValue<int>();
             Format = (CompressionFormat)reader["m_CompressionFormat"].GetValue<int>();

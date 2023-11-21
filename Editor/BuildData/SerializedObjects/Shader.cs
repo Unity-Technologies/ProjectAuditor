@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders;
+using Unity.ProjectAuditor.Editor.UnityFileSystemApi;
 
 namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
 {
@@ -9,8 +9,8 @@ namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
         public IReadOnlyList<SubShader> SubShaders { get; }
         public IReadOnlyList<string> Keywords { get; }
 
-        public Shader(RandomAccessReader reader, long size, BuildFileInfo buildFile)
-            : base(reader, size, "Shader", buildFile)
+        public Shader(BuildFileInfo buildFile, PPtrResolver pPtrResolver, TypeTreeReader reader, int id, long size)
+            : base(buildFile, pPtrResolver, reader, id, size, "Shader")
         {
             Dictionary<int, string> keywordNames = null;
             KeywordSet keywordSet = new KeywordSet();
@@ -69,7 +69,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
         {
             public IReadOnlyList<Pass> Passes { get; }
 
-            public SubShader(KeywordSet keywordSet, RandomAccessReader reader, Dictionary<int, string> keywordNames)
+            public SubShader(KeywordSet keywordSet, TypeTreeReader reader, Dictionary<int, string> keywordNames)
             {
                 var passesReader = reader["m_Passes"];
                 var passes = new List<Pass>(passesReader.GetArraySize());
@@ -88,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
                 // The key is the program type (vertex, fragment...)
                 public IReadOnlyDictionary<string, IReadOnlyList<SubProgram>> Programs { get; }
 
-                public Pass(KeywordSet keywordSet, RandomAccessReader reader, Dictionary<int, string> keywordNames)
+                public Pass(KeywordSet keywordSet, TypeTreeReader reader, Dictionary<int, string> keywordNames)
                 {
                     var programs = new Dictionary<string, IReadOnlyList<SubProgram>>();
 
@@ -221,7 +221,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
                     // Keyword index in Shader.Keywords
                     public IReadOnlyList<int> Keywords { get; }
 
-                    public SubProgram(KeywordSet keywordSet, RandomAccessReader reader, Dictionary<int, string> keywordNames, int hwTier = -1)
+                    public SubProgram(KeywordSet keywordSet, TypeTreeReader reader, Dictionary<int, string> keywordNames, int hwTier = -1)
                     {
                         Api = (ShaderApi)reader["m_GpuProgramType"].GetValue<sbyte>();
                         BlobIndex = reader["m_BlobIndex"].GetValue<uint>();

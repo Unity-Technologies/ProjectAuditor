@@ -3,28 +3,28 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders
+namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
 {
     // This class should only be used when accessing specific properties of a serialized object and when the object
     // structure is already known. If all the properties of an object must be accessed, the TypeTreeNode should be
-    // used instead (see the TextDumper library).
+    // used instead.
     //
-    // Typical usage: randomAccessReader["prop"]["subProp"].GetValue<int>()
+    // Typical usage: TypeTreeReader["prop"]["subProp"].GetValue<int>()
     // See the SerializedObjects in the Analyzer library for more examples.
     //
     // This class is optimized to read the least amount of data from the file when accessing properties of a serialized
     // object. It is required because the TypeTree doesn't provide the size of the serialized data when it is
     // variable (e.g. arrays). When accessing a property using this class, the offset of the property in the file is
     // determined by calculating the size of the data that was serialized before it.
-    public class RandomAccessReader : IEnumerable<RandomAccessReader>
+    public class TypeTreeReader : IEnumerable<TypeTreeReader>
     {
         SerializedFile m_SerializedFile;
         UnityFileReader m_Reader;
-        RandomAccessReader m_LastCachedChild = null;
+        TypeTreeReader m_LastCachedChild = null;
         Lazy<int> m_Size;
         object m_Value = null;
-        Dictionary<string, RandomAccessReader> m_ChildrenCacheObject;
-        List<RandomAccessReader> m_ChildrenCacheArray;
+        Dictionary<string, TypeTreeReader> m_ChildrenCacheObject;
+        List<TypeTreeReader> m_ChildrenCacheArray;
         private TypeTreeNode m_TypeTreeNode;
 
         public int Size => m_Size.Value;
@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders
         public bool IsArrayOfBasicTypes => m_TypeTreeNode.IsArray && m_TypeTreeNode.Children[1].IsBasicType;
         public bool IsArray => m_TypeTreeNode.IsArray;
 
-        public RandomAccessReader(SerializedFile serializedFile, TypeTreeNode node, UnityFileReader reader, long offset, bool isReferencedObject = false)
+        public TypeTreeReader(SerializedFile serializedFile, TypeTreeNode node, UnityFileReader reader, long offset, bool isReferencedObject = false)
         {
             m_SerializedFile = serializedFile;
 
@@ -55,14 +55,14 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders
 
             if (IsObject)
             {
-                m_ChildrenCacheObject = new Dictionary<string, RandomAccessReader>();
+                m_ChildrenCacheObject = new Dictionary<string, TypeTreeReader>();
 
                 // ManagedReferenceRegistry must be handled differently because they have 2
                 // different versions that are slightly different. The children are manually
                 // created and don't match the TypeTree.
                 if (m_TypeTreeNode.IsManagedReferenceRegistry)
                 {
-                    var versionReader = new RandomAccessReader(m_SerializedFile, node.Children[0], reader, offset);
+                    var versionReader = new TypeTreeReader(m_SerializedFile, node.Children[0], reader, offset);
                     m_ChildrenCacheObject["version"] = versionReader;
                     int version = versionReader.GetValue<int>();
                     long curOffset = versionReader.Offset + versionReader.Size;
@@ -77,7 +77,7 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders
                         do
                         {
                             // Create the referenced object reader.
-                            var refObjReader = new RandomAccessReader(m_SerializedFile, refObjNode, reader, curOffset, true);
+                            var refObjReader = new TypeTreeReader(m_SerializedFile, refObjNode, reader, curOffset, true);
 
                             // A referenced object with null data means that we reached the end of the referenced objects.
                             if (refObjReader["data"] == null)
@@ -109,7 +109,7 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders
                         for (int i = 0; i < arraySize; ++i)
                         {
                             // Create and cache the referenced object.
-                            var refObjReader = new RandomAccessReader(m_SerializedFile, refObjNode, reader, curOffset, true);
+                            var refObjReader = new TypeTreeReader(m_SerializedFile, refObjNode, reader, curOffset, true);
                             m_ChildrenCacheObject[$"rid({refObjReader["rid"].GetValue<long>()})"] = refObjReader;
                             curOffset += refObjReader.Size;
                         }
@@ -150,7 +150,7 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders
                         var refTypeRoot = m_SerializedFile.GetRefTypeTypeTreeRoot(className, namespaceName, assemblyName);
 
                         // Manually create and cache a reader for the referenced type data, using its own TypeTree.
-                        var refTypeDataReader = new RandomAccessReader(m_SerializedFile, refTypeRoot, reader,
+                        var refTypeDataReader = new TypeTreeReader(m_SerializedFile, refTypeRoot, reader,
                             referencedManagedType.Offset + referencedManagedType.Size);
                         m_ChildrenCacheObject["data"] = refTypeDataReader;
                     }
@@ -228,7 +228,7 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders
             return size;
         }
 
-        RandomAccessReader GetChild(string name)
+        TypeTreeReader GetChild(string name)
         {
             if (m_ChildrenCacheObject == null)
                 throw new InvalidOperationException("Node is not an object");
@@ -257,7 +257,7 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders
             {
                 var child = m_TypeTreeNode.Children[i];
 
-                nodeReader = new RandomAccessReader(m_SerializedFile, child, m_Reader, offset);
+                nodeReader = new TypeTreeReader(m_SerializedFile, child, m_Reader, offset);
                 m_ChildrenCacheObject.Add(child.Name, nodeReader);
                 m_LastCachedChild = nodeReader;
 
@@ -285,15 +285,15 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders
                 }
 
                 var arraySize = m_Reader.ReadInt32(Offset);
-                m_ChildrenCacheArray = new List<RandomAccessReader>(arraySize);
+                m_ChildrenCacheArray = new List<TypeTreeReader>(arraySize);
             }
 
             return m_ChildrenCacheArray.Capacity;
         }
 
-        RandomAccessReader GetArrayElement(int index)
+        TypeTreeReader GetArrayElement(int index)
         {
-            RandomAccessReader nodeReader = null;
+            TypeTreeReader nodeReader = null;
             var arraySize = GetArraySize();
 
             if (index < m_ChildrenCacheArray.Count)
@@ -313,7 +313,7 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders
 
             for (int i = m_ChildrenCacheArray.Count; i < arraySize; ++i)
             {
-                nodeReader = new RandomAccessReader(m_SerializedFile, dataNode, m_Reader, offset);
+                nodeReader = new TypeTreeReader(m_SerializedFile, dataNode, m_Reader, offset);
                 m_ChildrenCacheArray.Add(nodeReader);
                 m_LastCachedChild = nodeReader;
 
@@ -328,9 +328,9 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders
 
         public int Count => IsArrayOfObjects ? GetArraySize() : (IsObject ? m_TypeTreeNode.Children.Count : 0);
 
-        public RandomAccessReader this[string name] => GetChild(name);
+        public TypeTreeReader this[string name] => GetChild(name);
 
-        public RandomAccessReader this[int index] => GetArrayElement(index);
+        public TypeTreeReader this[int index] => GetArrayElement(index);
 
         public T GetValue<T>()
         {
@@ -432,17 +432,17 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders
             }
         }
 
-        class Enumerator : IEnumerator<RandomAccessReader>
+        class Enumerator : IEnumerator<TypeTreeReader>
         {
             int m_Index = -1;
-            RandomAccessReader m_NodeReader;
+            TypeTreeReader m_NodeReader;
 
-            public Enumerator(RandomAccessReader nodeReader)
+            public Enumerator(TypeTreeReader nodeReader)
             {
                 m_NodeReader = nodeReader;
             }
 
-            public RandomAccessReader Current
+            public TypeTreeReader Current
             {
                 get
                 {
@@ -477,7 +477,7 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders
             }
         }
 
-        public IEnumerator<RandomAccessReader> GetEnumerator()
+        public IEnumerator<TypeTreeReader> GetEnumerator()
         {
             return new Enumerator(this);
         }

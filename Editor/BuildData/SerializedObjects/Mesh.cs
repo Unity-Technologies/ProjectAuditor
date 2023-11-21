@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders;
+using Unity.ProjectAuditor.Editor.UnityFileSystemApi;
 
 namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
 {
@@ -80,8 +80,8 @@ namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
             4,  // SInt32
         };
 
-        public Mesh(RandomAccessReader reader, long size, BuildFileInfo buildFile)
-            : base(reader, size, "Mesh", buildFile)
+        public Mesh(BuildFileInfo buildFile, PPtrResolver pPtrResolver, TypeTreeReader reader, int id, long size)
+            : base(buildFile, pPtrResolver, reader, id, size, "Mesh")
         {
             Compression = (MeshCompression)reader["m_MeshCompression"].GetValue<byte>();
             var channels = new List<Channel>();

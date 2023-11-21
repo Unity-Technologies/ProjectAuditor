@@ -49,9 +49,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
 
-            if (projectAuditorParams.BuildAnalyzer != null)
+            if (projectAuditorParams.BuildObjects != null)
             {
-                var Texturees = projectAuditorParams.BuildAnalyzer.GetSerializedObjects<Texture2D>();
+                var Texturees = projectAuditorParams.BuildObjects.GetObjects<Texture2D>();
 
                 progress?.Start("Parsing Shaders from Build Data", "Search in Progress...", Texturees.Count());
 

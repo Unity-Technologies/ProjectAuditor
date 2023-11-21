@@ -1,4 +1,4 @@
-using Unity.ProjectAuditor.Editor.UnityFileSystemApi.TypeTreeReaders;
+using Unity.ProjectAuditor.Editor.UnityFileSystemApi;
 
 namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
 {
@@ -7,8 +7,8 @@ namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
         public bool Legacy { get; }
         public int Events { get; }
 
-        public AnimationClip(RandomAccessReader reader, long size, BuildFileInfo buildFile)
-            : base(reader, size, "AnimationClip", buildFile)
+        public AnimationClip(BuildFileInfo buildFile, PPtrResolver pPtrResolver, TypeTreeReader reader, int id, long size)
+            : base(buildFile, pPtrResolver, reader, id, size, "AnimationClip")
         {
             Legacy = reader["m_Legacy"].GetValue<bool>();
             Events = reader["m_Events"].GetArraySize();
