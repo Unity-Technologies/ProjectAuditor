@@ -1,11 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using Unity.ProjectAuditor.Editor.Build;
-using Unity.ProjectAuditor.Editor.BuildData;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Interfaces;
-using UnityEditor;
-using Unity.ProjectAuditor.Editor.UnityFileSystemApi;
 using Unity.ProjectAuditor.Editor.BuildData.SerializedObjects;
 
 namespace Unity.ProjectAuditor.Editor.Modules
@@ -27,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "AnimationClip Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataAnimationClipProperty.AssetBundle), format = PropertyFormat.String, name = "Asset Bundle", longName = "Asset Bundle Name" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataAnimationClipProperty.AssetBundle), format = PropertyFormat.String, name = "File", longName = "File Name" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataAnimationClipProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataAnimationClipProperty.Legacy), format = PropertyFormat.Bool, name = "Legacy", longName = "Legacy" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataAnimationClipProperty.Events), format = PropertyFormat.Integer, name = "Events", longName = "Events" },
@@ -51,15 +47,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 var animationClips = projectAuditorParams.BuildObjects.GetObjects<AnimationClip>();
 
-                progress?.Start("Parsing Shaders from Build Data", "Search in Progress...", animationClips.Count());
+                progress?.Start("Parsing AnimationClips from Build Data", "Search in Progress...", animationClips.Count());
 
-                foreach (var AnimationClip in animationClips)
+                foreach (var animationClip in animationClips)
                 {
                     foreach (var analyzer in analyzers)
                     {
                         var context = new BuildDataAnimationClipAnalyzerContext
                         {
-                            AnimationClip = AnimationClip,
+                            AnimationClip = animationClip,
                             Params = projectAuditorParams
                         };
 

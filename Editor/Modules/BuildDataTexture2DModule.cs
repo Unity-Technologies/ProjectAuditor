@@ -26,7 +26,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Texture Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.AssetBundle), format = PropertyFormat.String, name = "Asset Bundle", longName = "Asset Bundle Name" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.AssetBundle), format = PropertyFormat.String, name = "File", longName = "File Name" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.Width), format = PropertyFormat.Integer, name = "Width", longName = "Width" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.Height), format = PropertyFormat.Integer, name = "Height", longName = "Height" },
@@ -51,17 +51,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (projectAuditorParams.BuildObjects != null)
             {
-                var Texturees = projectAuditorParams.BuildObjects.GetObjects<Texture2D>();
+                var textures = projectAuditorParams.BuildObjects.GetObjects<Texture2D>();
 
-                progress?.Start("Parsing Shaders from Build Data", "Search in Progress...", Texturees.Count());
+                progress?.Start("Parsing Texture2D from Build Data", "Search in Progress...", textures.Count());
 
-                foreach (var Texture in Texturees)
+                foreach (var texture in textures)
                 {
                     foreach (var analyzer in analyzers)
                     {
                         var context = new BuildDataTexture2DAnalyzerContext
                         {
-                            Texture = Texture,
+                            Texture = texture,
                             Params = projectAuditorParams
                         };
 

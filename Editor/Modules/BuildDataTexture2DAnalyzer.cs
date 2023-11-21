@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         context.Texture.Size,
                         context.Texture.Width,
                         context.Texture.Height,
-                        context.Texture.Format.ToString(),
+                        context.Texture.Format,
                         context.Texture.MipCount,
                         context.Texture.RwEnabled
                     });

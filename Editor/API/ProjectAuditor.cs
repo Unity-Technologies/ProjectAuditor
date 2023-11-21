@@ -70,6 +70,12 @@ namespace Unity.ProjectAuditor.Editor
         string m_LastBuildDataPath;
         Analyzer m_BuildDataAnalyzer;
 
+        internal static readonly IssueCategory[] k_BuildDataCategories = new IssueCategory[]
+        {
+            IssueCategory.BuildDataTexture2D, IssueCategory.BuildDataMesh, IssueCategory.BuildDataShader,
+            IssueCategory.BuildDataAnimationClip, IssueCategory.BuildDataAudioClip, IssueCategory.BuildDataSummary
+        };
+
         /// <summary>
         /// ProjectAuditor default constructor
         /// </summary>
@@ -169,7 +175,7 @@ namespace Unity.ProjectAuditor.Editor
             }
 
             var needsBuildData = supportedModules.Any(m => m.Categories.Any(
-                c => c == IssueCategory.BuildDataMesh || c == IssueCategory.BuildDataShader));
+                c => k_BuildDataCategories.Contains(c)));
 
             if (needsBuildData && m_BuildDataAnalyzer == null)
             {
@@ -181,14 +187,17 @@ namespace Unity.ProjectAuditor.Editor
                         EditorUtility.OpenFolderPanel("Choose folder with built player data", lastBuildFolder, "");
                 }
 
-                progress?.Start("Scanning Build Data", "In Progress...", 1);
+                if (!string.IsNullOrEmpty(m_LastBuildDataPath))
+                {
+                    progress?.Start("Scanning Build Data", "In Progress...", 1);
 
-                UnityFileSystem.Init();
+                    UnityFileSystem.Init();
 
-                m_BuildDataAnalyzer = new Analyzer();
-                analysisParams.BuildObjects = m_BuildDataAnalyzer.Analyze(m_LastBuildDataPath, "*");
+                    m_BuildDataAnalyzer = new Analyzer();
+                    analysisParams.BuildObjects = m_BuildDataAnalyzer.Analyze(m_LastBuildDataPath, "*");
 
-                progress?.Clear();
+                    progress?.Clear();
+                }
             }
 
             var logTimingsInfo = UserPreferences.LogTimingsInfo;

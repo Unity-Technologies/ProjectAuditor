@@ -168,7 +168,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 id = TabId.BuildData, name = "Build Data",
                 categories = new[]
                 {
-                    IssueCategory.BuildDataTexture2D, IssueCategory.BuildDataMesh, IssueCategory.BuildDataAnimationClip, IssueCategory.BuildDataShader
+                    IssueCategory.BuildDataTexture2D, IssueCategory.BuildDataMesh, IssueCategory.BuildDataAnimationClip,
+                    IssueCategory.BuildDataShader, IssueCategory.BuildDataAudioClip, IssueCategory.BuildDataSummary
                 }
             },
         };
@@ -799,46 +800,74 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.BuildDataTexture2D,
-                displayName = "Texture2D in build data",
+                displayName = "Texture2D",
                 menuLabel = "BuildData/Texture2D in build data",
                 menuOrder = 6,
                 descriptionWithIcon = true,
                 showFilters = true,
                 onOpenIssue = null,
+                type = typeof(BuildDataView),
                 analyticsEvent = (int)AnalyticsReporter.UIButton.BuildDataTextures2D
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.BuildDataMesh,
-                displayName = "Meshes in build data",
+                displayName = "Meshes",
                 menuLabel = "BuildData/Meshes in build data",
                 menuOrder = 6,
                 descriptionWithIcon = true,
                 showFilters = true,
                 onOpenIssue = null,
+                type = typeof(BuildDataView),
                 analyticsEvent = (int)AnalyticsReporter.UIButton.BuildDataMeshes
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.BuildDataShader,
-                displayName = "Shaders in build data",
+                displayName = "Shaders",
                 menuLabel = "BuildData/Shaders in build data",
                 menuOrder = 6,
                 descriptionWithIcon = true,
                 showFilters = true,
                 onOpenIssue = null,
+                type = typeof(BuildDataView),
                 analyticsEvent = (int)AnalyticsReporter.UIButton.BuildDataShaders
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
                 category = IssueCategory.BuildDataAnimationClip,
-                displayName = "AnimationClips in build data",
+                displayName = "AnimationClips",
                 menuLabel = "BuildData/AnimationClips in build data",
                 menuOrder = 6,
                 descriptionWithIcon = true,
                 showFilters = true,
                 onOpenIssue = null,
+                type = typeof(BuildDataView),
                 analyticsEvent = (int)AnalyticsReporter.UIButton.BuildDataAnimationClips
+            });
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.BuildDataAudioClip,
+                displayName = "AudioClips",
+                menuLabel = "BuildData/AudioClips in build data",
+                menuOrder = 6,
+                descriptionWithIcon = true,
+                showFilters = true,
+                onOpenIssue = null,
+                type = typeof(BuildDataView),
+                analyticsEvent = (int)AnalyticsReporter.UIButton.BuildDataAudioClips
+            });
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.BuildDataSummary,
+                displayName = "Summary",
+                menuLabel = "BuildData/Summary of build data",
+                menuOrder = 6,
+                descriptionWithIcon = true,
+                showFilters = true,
+                onOpenIssue = null,
+                type = typeof(BuildDataView),
+                analyticsEvent = (int)AnalyticsReporter.UIButton.BuildDataSummary
             });
         }
 
