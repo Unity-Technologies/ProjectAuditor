@@ -37,6 +37,16 @@
             "name": "com.unity.render-pipelines.universal",
             "expression": "7.0",
             "define": "PACKAGE_URP"
+        },
+        {
+            "name": "com.unity.rendering.hybrid",
+            "expression": "",
+            "define": "PACKAGE_HYBRID_RENDERER"
+        },
+        {
+            "name": "com.unity.entities.graphics",
+            "expression": "",
+            "define": "PACKAGE_ENTITIES_GRAPHICS"
         }
     ]
 }

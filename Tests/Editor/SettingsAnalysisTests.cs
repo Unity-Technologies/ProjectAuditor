@@ -132,16 +132,13 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.True(issues.Length == 0);
         }
 
-#if !PACKAGE_HYBRID_RENDERER
-        [Ignore("This requires the Hybrid Renderer package")]
-#endif
-        [Test]
-        public void HybridRendererSettingsAnalysis_Default_StaticBatching_Enabled_IsReported()
+        void SetupStaticBatchingGetterAndSetter(out MethodInfo getterMethod, out MethodInfo setterMethod,
+            out object[] getterArgs, out object[] setterArgs, int staticBatchingForTest)
         {
-            var getterMethod = typeof(PlayerSettings).GetMethod("GetBatchingForPlatform",
+            getterMethod = typeof(PlayerSettings).GetMethod("GetBatchingForPlatform",
                 BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
 
-            var setterMethod = typeof(PlayerSettings).GetMethod("SetBatchingForPlatform",
+            setterMethod = typeof(PlayerSettings).GetMethod("SetBatchingForPlatform",
                 BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
 
             Assert.True(getterMethod != null, "GetBatchingForPlatform method does not exist");
@@ -149,7 +146,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             const int initialStaticBatching = 0;
             const int initialDynamicBatching = 0;
-            var getterArgs = new object[]
+            getterArgs = new object[]
             {
                 m_Platform,
                 initialStaticBatching,
@@ -158,62 +155,68 @@ namespace Unity.ProjectAuditor.EditorTests
 
             getterMethod.Invoke(null, getterArgs);
 
-            const int staticBatching = 1;
+            int staticBatching = staticBatchingForTest;
             const int dynamicBatching = 0;
-            var setterArgs = new object[]
+            setterArgs = new object[]
             {
                 m_Platform,
                 staticBatching,
                 dynamicBatching
             };
+        }
+
+#if !PACKAGE_HYBRID_RENDERER && !PACKAGE_ENTITIES_GRAPHICS
+        [Ignore("This requires the Hybrid Renderer or Entities Graphics package")]
+#endif
+        [Test]
+        public void SettingsAnalysis_Default_StaticBatching_Enabled_IsReported()
+        {
+            SetupStaticBatchingGetterAndSetter(
+                out var getterMethod, out var setterMethod,
+                out var getterArgs, out var setterArgs,
+                1);
 
             setterMethod.Invoke(null, setterArgs);
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id == HybridRenderingAnalyzer.PAS1000);
+            var id = new DescriptorID();
+#if PACKAGE_ENTITIES_GRAPHICS
+            id = EntitiesGraphicsAnalyzer.PAS1013;
+#elif PACKAGE_HYBRID_RENDERER
+            id = EntitiesGraphicsAnalyzer.PAS1000;
+#endif
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(id));
+            Assert.True(issues.Length == 1);
+
+            // Test fixer
+            issues[0].Id.GetDescriptor().Fix(issues[0]);
+            var issuesAfterFix = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(id));
 
             setterMethod.Invoke(null, getterArgs);
 
-            Assert.True(issues.Length == 1);
+            Assert.True(issuesAfterFix.Length == 0);
         }
 
-#if !PACKAGE_HYBRID_RENDERER
-        [Ignore("This requires the Hybrid Renderer package")]
+#if !PACKAGE_HYBRID_RENDERER && !PACKAGE_ENTITIES_GRAPHICS
+        [Ignore("This requires the Hybrid Renderer or Entities Graphics package")]
 #endif
         [Test]
-        public void HybridRendererSettingsAnalysis_StaticBatching_Disabled_IsNotReported()
+        public void SettingsAnalysis_StaticBatching_Disabled_IsNotReported()
         {
-            var getterMethod = typeof(PlayerSettings).GetMethod("GetBatchingForPlatform",
-                BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
-
-            var setterMethod = typeof(PlayerSettings).GetMethod("SetBatchingForPlatform",
-                BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
-
-            Assert.True(getterMethod != null, "GetBatchingForPlatform method does not exist");
-            Assert.True(setterMethod != null, "SetBatchingForPlatform method does not exist");
-
-            const int initialStaticBatching = 0;
-            const int initialDynamicBatching = 0;
-            var getterArgs = new object[]
-            {
-                m_Platform,
-                initialStaticBatching,
-                initialDynamicBatching
-            };
-
-            getterMethod.Invoke(null, getterArgs);
-
-            const int staticBatching = 0;
-            const int dynamicBatching = 0;
-            var setterArgs = new object[]
-            {
-                m_Platform,
-                staticBatching,
-                dynamicBatching
-            };
-
+            SetupStaticBatchingGetterAndSetter(
+                out var getterMethod, out var setterMethod,
+                out var getterArgs, out var setterArgs,
+                0);
             setterMethod.Invoke(null, setterArgs);
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id == HybridRenderingAnalyzer.PAS1000);
+            var id = new DescriptorID();
+#if PACKAGE_ENTITIES_GRAPHICS
+            id = EntitiesGraphicsAnalyzer.PAS1013;
+#elif PACKAGE_HYBRID_RENDERER
+            id = EntitiesGraphicsAnalyzer.PAS1000;
+#endif
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(id));
 
             setterMethod.Invoke(null, getterArgs);
 

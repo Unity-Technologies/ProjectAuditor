@@ -118,6 +118,24 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return (int)args[1] > 0;
         }
 
+        public static void SetStaticBatchingEnabled(BuildTarget platform, bool enabled)
+        {
+            var setterMethod = typeof(PlayerSettings).GetMethod("SetBatchingForPlatform",
+                BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
+
+            if (setterMethod != null)
+            {
+                var setterArgs = new object[]
+                {
+                    platform,
+                    enabled ? 1 : 0,
+                    0
+                };
+
+                setterMethod.Invoke(null, setterArgs);
+            }
+        }
+
         public static bool IsLightmapStreamingEnabled(BuildTargetGroup platform)
         {
             var method = typeof(PlayerSettings).GetMethod("GetLightmapStreamingEnabledForPlatformGroup",
