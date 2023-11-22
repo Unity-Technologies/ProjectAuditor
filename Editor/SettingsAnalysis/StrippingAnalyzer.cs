@@ -4,7 +4,9 @@ using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using Unity.ProjectAuditor.Editor.Modules;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
+using UnityEditor.Build;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
@@ -65,7 +67,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
             if (k_AndroidManagedStrippingDescriptor.IsApplicable(context.Params))
             {
-                var value = PlayerSettings.GetManagedStrippingLevel(BuildTargetGroup.Android);
+                var value = PlayerSettingsUtil.GetManagedStrippingLevel(BuildTargetGroup.Android);
                 if (value == ManagedStrippingLevel.Disabled || value == ManagedStrippingLevel.Low
 #if UNITY_2021_2_OR_NEWER
                     || value == ManagedStrippingLevel.Minimal
@@ -77,7 +79,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
             if (k_iOSManagedStrippingDescriptor.IsApplicable(context.Params))
             {
-                var value = PlayerSettings.GetManagedStrippingLevel(BuildTargetGroup.iOS);
+                var value = PlayerSettingsUtil.GetManagedStrippingLevel(BuildTargetGroup.iOS);
                 if (value == ManagedStrippingLevel.Disabled || value == ManagedStrippingLevel.Low)
                     yield return context.Create(IssueCategory.ProjectSetting, k_iOSManagedStrippingDescriptor.Id)
                         .WithLocation("Project/Player");

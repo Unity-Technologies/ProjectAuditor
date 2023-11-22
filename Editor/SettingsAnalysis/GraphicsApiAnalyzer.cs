@@ -24,7 +24,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "To reduce build size, remove OpenGLES graphics API if the minimum spec target device supports Metal.")
         {
             DocumentationUrl = documentationUrl,
-            Platforms = new[] { BuildTarget.iOS.ToString() }
+            Platforms = new[] { BuildTarget.iOS.ToString() },
+            MaximumVersion = "2022.3"
         };
 
         static readonly Descriptor k_MetalDescriptor = new Descriptor(
@@ -58,23 +59,17 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
-            if (context.Params.Platform == BuildTarget.iOS)
-            {
-                if (IsUsingOpenGLESAndMetal())
-                    yield return context.Create(IssueCategory.ProjectSetting, k_OpenGLESAndMetalDescriptor.Id)
-                        .WithLocation("Project/Player");
+            if (k_OpenGLESAndMetalDescriptor.IsApplicable(context.Params) && IsUsingOpenGLESAndMetal())
+                yield return context.Create(IssueCategory.ProjectSetting, k_OpenGLESAndMetalDescriptor.Id)
+                    .WithLocation("Project/Player");
 
-                if (IsNotUsingMetal())
-                    yield return context.Create(IssueCategory.ProjectSetting, k_MetalDescriptor.Id)
-                        .WithLocation("Project/Player");
-            }
+            if (k_MetalDescriptor.IsApplicable(context.Params) && IsNotUsingMetal())
+                yield return context.Create(IssueCategory.ProjectSetting, k_MetalDescriptor.Id)
+                    .WithLocation("Project/Player");
 
-            if (context.Params.Platform == BuildTarget.Android)
-            {
-                if (IsNotUsingVulkan())
-                    yield return context.Create(IssueCategory.ProjectSetting, k_VulkanDescriptor.Id)
-                        .WithLocation("Project/Player");
-            }
+            if (k_VulkanDescriptor.IsApplicable(context.Params) && IsNotUsingVulkan())
+                yield return context.Create(IssueCategory.ProjectSetting, k_VulkanDescriptor.Id)
+                    .WithLocation("Project/Player");
         }
 
         static bool IsNotUsingMetal()
@@ -88,12 +83,16 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         static bool IsUsingOpenGLESAndMetal()
         {
+#if UNITY_2023_1_OR_NEWER
+            return false;
+#else
             var graphicsAPIs = PlayerSettings.GetGraphicsAPIs(BuildTarget.iOS);
 
             var hasOpenGLES = graphicsAPIs.Contains(GraphicsDeviceType.OpenGLES2) ||
                 graphicsAPIs.Contains(GraphicsDeviceType.OpenGLES3);
 
             return graphicsAPIs.Contains(GraphicsDeviceType.Metal) && hasOpenGLES;
+#endif
         }
 
         static bool IsNotUsingVulkan()

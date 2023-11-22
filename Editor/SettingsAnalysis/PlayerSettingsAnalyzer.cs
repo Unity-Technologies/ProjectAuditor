@@ -5,6 +5,7 @@ using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
+using UnityEditor.Build;
 using UnityEngine;
 using Module = Unity.ProjectAuditor.Editor.Core.Module;
 
@@ -171,7 +172,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         internal static void FixSpeakerMode()
         {
-            AudioConfiguration audioConfiguration = new AudioConfiguration
+            var audioConfiguration = new AudioConfiguration
             {
                 speakerMode = AudioSpeakerMode.Mono
             };
@@ -182,19 +183,17 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         internal static bool CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration compilerConfiguration, AnalysisParams analysisParams)
         {
             var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(analysisParams.Platform);
-            if (PlayerSettings.GetScriptingBackend(buildTargetGroup) !=
-                ScriptingImplementation.IL2CPP)
+            if (PlayerSettingsUtil.GetScriptingBackend(buildTargetGroup) != ScriptingImplementation.IL2CPP)
             {
                 return false;
             }
 
-            return PlayerSettings.GetIl2CppCompilerConfiguration(buildTargetGroup) ==
-                compilerConfiguration;
+            return PlayerSettingsUtil.GetIl2CppCompilerConfiguration(buildTargetGroup) == compilerConfiguration;
         }
 
         internal static void SetIL2CPPConfigurationToRelease(BuildTargetGroup buildTargetGroup)
         {
-            PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, Il2CppCompilerConfiguration.Release);
+            PlayerSettingsUtil.SetIl2CppCompilerConfiguration(buildTargetGroup, Il2CppCompilerConfiguration.Release);
         }
     }
 }

@@ -4,6 +4,7 @@ using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using Unity.ProjectAuditor.Editor.Modules;
 using UnityEditor;
+using UnityEditor.Build;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
@@ -41,11 +42,11 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
             // PlayerSettings.GetArchitecture returns an integer value associated with the architecture of a BuildTargetPlatformGroup. 0 - None, 1 - ARM64, 2 - Universal.
-            if (context.Params.Platform == BuildTarget.iOS && PlayerSettings.GetArchitecture(BuildTargetGroup.iOS) == 2)
+            if (k_DescriptorIOS.IsApplicable(context.Params) && PlayerSettings.GetArchitecture(BuildTargetGroup.iOS) == 2)
                 yield return context.Create(IssueCategory.ProjectSetting, k_DescriptorIOS.Id)
                     .WithLocation("Project/Player");
 
-            if (context.Params.Platform == BuildTarget.Android && (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARMv7) != 0 &&
+            if (k_DescriptorAndroid.IsApplicable(context.Params) && (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARMv7) != 0 &&
                 (PlayerSettings.Android.targetArchitectures & AndroidArchitecture.ARM64) != 0)
                 yield return context.Create(IssueCategory.ProjectSetting, k_DescriptorAndroid.Id)
                     .WithLocation("Project/Player");
