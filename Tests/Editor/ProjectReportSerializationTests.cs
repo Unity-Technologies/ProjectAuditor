@@ -174,7 +174,11 @@ namespace Unity.ProjectAuditor.EditorTests
                         AssertForbiddenProperty(descriptor, "type");
                         AssertForbiddenProperty(descriptor, "method");
                         AssertForbiddenProperty(descriptor, "value");
-                        AssertOptionalArrayIsValid(descriptor, "platforms");
+                        if (descriptor.ContainsKey("platforms"))
+                        {
+                            // if present, check sanity
+                            AssertRequiredArrayIsValid(descriptor, "platforms");
+                        }
                         AssertOptionalPropertyIsValid(descriptor, "documentationUrl");
                         AssertForbiddenProperty(descriptor, "minimumVersion");
                         AssertForbiddenProperty(descriptor, "maximumVersion");

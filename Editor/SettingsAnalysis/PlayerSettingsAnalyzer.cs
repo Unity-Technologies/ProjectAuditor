@@ -27,7 +27,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "<b>Accelerometer Frequency</b> in iOS Player Settings is not set to Disabled. Polling the device's accelerometer incurs a small amount of CPU processing time.",
             "Set <b>Accelerometer Frequency</b> to <b>Disabled</b> if your application doesn't make use of the device's accelerometer.")
         {
-            Platforms = new[] { BuildTarget.iOS.ToString() }
+            Platforms = new[] { BuildTarget.iOS }
         };
 
         static readonly Descriptor k_SplashScreenDescriptor = new Descriptor(
@@ -44,7 +44,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "<b>Default Speaker Mode</b> in Audio Settings is not set to <b>Mono</b>. This may result in a build which is larger than necessary and which occupies more audio memory at runtime. Many mobile devices have limited or nonexistent stereo speaker options.",
             "Change <b>Project Settings > Audio > Default Speaker Mode</b> to <b>Mono</b>. You should also consider enabling the <b>Force To Mono</b> AudioClip import setting to reduce import times and build size.")
         {
-            Platforms = new[] { "Android", "iOS"},
+            Platforms = new[] { BuildTarget.Android, BuildTarget.iOS },
             fixer = (issue =>
             {
                 FixSpeakerMode();

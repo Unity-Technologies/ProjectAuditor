@@ -171,7 +171,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 "do nothing"
                 )
             {
-                Platforms = new[] { TestFixtureBase.GetStandaloneBuildTarget().ToString() }
+                Platforms = new[] { TestFixtureBase.GetStandaloneBuildTarget() }
             };
 
             Assert.True(desc.IsPlatformSupported());
@@ -189,7 +189,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 "do nothing"
                 )
             {
-                Platforms = new[] { BuildTarget.WSAPlayer.ToString() }  // assuming WSAPlayer is not installed by default
+                Platforms = new[] { BuildTarget.WSAPlayer }  // assuming WSAPlayer is not installed by default
             };
 
             Assert.False(desc.IsPlatformSupported());

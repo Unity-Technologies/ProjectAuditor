@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "To reduce build size, remove OpenGLES graphics API if the minimum spec target device supports Metal.")
         {
             DocumentationUrl = documentationUrl,
-            Platforms = new[] { BuildTarget.iOS.ToString() },
+            Platforms = new[] { BuildTarget.iOS },
             MaximumVersion = "2022.3"
         };
 
@@ -36,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "Enable Metal graphics API for better CPU Performance.")
         {
             DocumentationUrl = documentationUrl,
-            Platforms = new[] { BuildTarget.iOS.ToString() }
+            Platforms = new[] { BuildTarget.iOS }
         };
 
         static readonly Descriptor k_VulkanDescriptor = new Descriptor(
@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "Enable Vulkan graphics API for better CPU Performance.")
         {
             DocumentationUrl = documentationUrl,
-            Platforms = new[] { BuildTarget.Android.ToString() }
+            Platforms = new[] { BuildTarget.Android }
         };
 
         public void Initialize(Module module)

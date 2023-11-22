@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "In the iOS Player Settings, <b>Architecture</b> is set to <b>Universal</b>. This means that the application will be compiled for both 32-bit ARMv7 iOS devices (i.e. up to the iPhone 5 or 5c) and 64-bit ARM64 devices (iPhone 5s onwards), resulting in increased build times and binary size.",
             "If your application isn't intended to support 32-bit iOS devices, change <b>Architecture</b> to <b>ARM64</b>.")
         {
-            Platforms = new string[] { BuildTarget.iOS.ToString() }
+            Platforms = new[] { BuildTarget.iOS }
         };
 
         static readonly Descriptor k_DescriptorAndroid = new Descriptor(
@@ -30,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "In the Android Player Settings, in the <b>Target Architecture</b> section, both the <b>ARMv7</b> and <b>ARM64</b> options are selected. This means that the application will be compiled for both 32-bit ARMv7 Android devices and 64-bit ARM64 devices, resulting in increased build times and binary size.",
             "If your application isn't intended to support 32-bit Android devices, disable the <b>ARMv7</b> option.")
         {
-            Platforms = new string[] { BuildTarget.Android.ToString() }
+            Platforms = new[] { BuildTarget.Android }
         };
 
         public void Initialize(Module module)

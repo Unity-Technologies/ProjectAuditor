@@ -1,5 +1,6 @@
 using System;
 using Newtonsoft.Json;
+using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
@@ -42,7 +43,8 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// <summary>
         /// Affected platforms. If null, the diagnostic applies to all platforms.
         /// </summary>
-        public string[] Platforms;
+        [JsonConverter(typeof(BuildTargetJsonConverter))]
+        public BuildTarget[] Platforms;
 
         /// <summary>
         /// Description of the diagnostic.

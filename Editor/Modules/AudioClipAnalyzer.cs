@@ -48,6 +48,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
                 {
+                    // TODO: replace s_PlatformString with context.Params.PlatformString
                     var sampleSettings = audioImporter.GetOverrideSampleSettings(s_PlatformString);
                     sampleSettings.loadType = AudioClipLoadType.Streaming;
                     audioImporter.SetOverrideSampleSettings(s_PlatformString, sampleSettings);
@@ -85,7 +86,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     audioImporter.SaveAndReimport();
                 }
             },
-            Platforms = new[] {"Android", "iOS"}
+            Platforms = new[] { BuildTarget.Android, BuildTarget.iOS}
         };
 
         internal static readonly Descriptor k_AudioStereoClipWhichIsNotStreamingDescriptor = new Descriptor(
@@ -140,7 +141,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         )
         {
             MessageFormat = "AudioClip '{0}' Compressed clip could be optimized for mobile",
-            Platforms = new[] {"Android", "iOS"}
+            Platforms = new[] {BuildTarget.Android, BuildTarget.iOS}
         };
 
         internal static readonly Descriptor k_Audio48KHzDescriptor = new Descriptor(
@@ -157,6 +158,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
                 {
+                    // TODO: replace s_PlatformString with context.Params.PlatformString
                     var sampleSettings = audioImporter.GetOverrideSampleSettings(s_PlatformString);
                     sampleSettings.sampleRateSetting = AudioSampleRateSetting.OverrideSampleRate;
                     sampleSettings.sampleRateOverride = 48000;
@@ -181,6 +183,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 if (audioImporter != null)
                 {
 #if UNITY_2022_2_OR_NEWER
+                    // TODO: replace s_PlatformString with context.Params.PlatformString
                     var sampleSettings = audioImporter.GetOverrideSampleSettings(s_PlatformString);
                     sampleSettings.preloadAudioData = false;
                     audioImporter.SetOverrideSampleSettings(s_PlatformString, sampleSettings);
@@ -226,6 +229,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
                 {
+                    // TODO: replace s_PlatformString with context.Params.PlatformString
                     var sampleSettings = audioImporter.GetOverrideSampleSettings(s_PlatformString);
                     sampleSettings.compressionFormat = AudioCompressionFormat.Vorbis;
                     audioImporter.SetOverrideSampleSettings(s_PlatformString, sampleSettings);

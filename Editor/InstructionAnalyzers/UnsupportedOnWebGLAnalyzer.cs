@@ -4,6 +4,7 @@ using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
+using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
@@ -23,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             )
         {
             MessageFormat = "'{0}' usage",
-            Platforms = new[] { "WebGL" }
+            Platforms = new[] { BuildTarget.WebGL }
         };
 
         internal static readonly Descriptor k_DescriptorSystemThreading = new Descriptor
@@ -36,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             )
         {
             MessageFormat = "'{0}' usage",
-            Platforms = new[] { "WebGL" }
+            Platforms = new[] { BuildTarget.WebGL }
         };
 
         internal static readonly Descriptor k_DescriptorMicrophone = new Descriptor
@@ -49,7 +50,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             )
         {
             MessageFormat = "'{0}' usage",
-            Platforms = new[] { "WebGL" }
+            Platforms = new[] { BuildTarget.WebGL }
         };
 
         readonly OpCode[] m_OpCodes =

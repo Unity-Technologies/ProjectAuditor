@@ -47,7 +47,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             $"Try to move files outside this folder and use Asset Bundles or Addressables when possible."
         )
         {
-            Platforms = new[] {"Android", "iOS"},
+            Platforms = new[] { BuildTarget.Android, BuildTarget.iOS},
             MessageFormat = "StreamingAssets folder contains {0} of data",
         };
 
