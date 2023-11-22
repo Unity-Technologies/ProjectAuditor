@@ -3,6 +3,7 @@ using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using Unity.ProjectAuditor.Editor.Modules;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Build;
 
@@ -42,7 +43,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
             // PlayerSettings.GetArchitecture returns an integer value associated with the architecture of a BuildTargetPlatformGroup. 0 - None, 1 - ARM64, 2 - Universal.
-            if (k_DescriptorIOS.IsApplicable(context.Params) && PlayerSettings.GetArchitecture(BuildTargetGroup.iOS) == 2)
+            if (k_DescriptorIOS.IsApplicable(context.Params) && PlayerSettingsUtil.GetArchitecture(BuildTargetGroup.iOS) == 2)
                 yield return context.Create(IssueCategory.ProjectSetting, k_DescriptorIOS.Id)
                     .WithLocation("Project/Player");
 

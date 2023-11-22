@@ -22,6 +22,16 @@ namespace Unity.ProjectAuditor.Editor.Utils
             return new SerializedObject(playerSettings as UnityEngine.Object);
         }
 
+        public static int GetArchitecture(BuildTargetGroup buildTargetGroup)
+        {
+#if UNITY_2021_2_OR_NEWER
+            var namedBuildTarget = NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup);
+            return PlayerSettings.GetArchitecture(namedBuildTarget);
+#else
+            return PlayerSettings.GetArchitecture(buildTargetGroup);
+#endif
+        }
+
         public static Il2CppCompilerConfiguration GetIl2CppCompilerConfiguration(BuildTargetGroup buildTargetGroup)
         {
 #if UNITY_2021_2_OR_NEWER
