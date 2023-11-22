@@ -11,28 +11,26 @@ namespace Unity.ProjectAuditor.Editor.BuildData
     // It provides a string representing the property path of the property (e.g. "m_MyObject.m_MyArray[2].m_PPtrProperty").
     public class PPtrAndCrcProcessor : IDisposable
     {
-        public delegate int CallbackDelegate(long objectId, int fileId, long pathId, string propertyPath, string propertyType);
+        SerializedFile m_SerializedFile;
+        UnityFileReader m_Reader;
+        PPtrResolver m_PPtrResolver;
+        BuildObjects m_BuildObjects;
+        long m_Offset;
+        int m_ObjectId;
+        uint m_Crc32;
+        string m_Folder;
+        StringBuilder m_StringBuilder = new StringBuilder();
+        byte[] m_PPtrBytes = new byte[4];
 
-        private SerializedFile m_SerializedFile;
-        private UnityFileReader m_Reader;
-        private long m_Offset;
-        private long m_ObjectId;
-        private uint m_Crc32;
-        private string m_Folder;
-        private StringBuilder m_StringBuilder = new StringBuilder();
-        private byte[] m_pptrBytes = new byte[4];
+        Dictionary<string, UnityFileReader> m_resourceReaders = new Dictionary<string, UnityFileReader>();
 
-        private CallbackDelegate m_Callback;
-
-        private Dictionary<string, UnityFileReader> m_resourceReaders = new Dictionary<string, UnityFileReader>();
-
-        public PPtrAndCrcProcessor(SerializedFile serializedFile, UnityFileReader reader, string folder,
-                                   CallbackDelegate callback)
+        public PPtrAndCrcProcessor(SerializedFile serializedFile, UnityFileReader reader, string folder, PPtrResolver pPtrResolver, BuildObjects buildObjects)
         {
             m_SerializedFile = serializedFile;
             m_Reader = reader;
             m_Folder = folder;
-            m_Callback = callback;
+            m_PPtrResolver = pPtrResolver;
+            m_BuildObjects = buildObjects;
         }
 
         public void Dispose()
@@ -45,7 +43,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData
             m_resourceReaders.Clear();
         }
 
-        private UnityFileReader GetResourceReader(string filename)
+        UnityFileReader GetResourceReader(string filename)
         {
             var slashPos = filename.LastIndexOf('/');
             if (slashPos > 0)
@@ -62,7 +60,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData
             return reader;
         }
 
-        public uint Process(long objectId, long offset, TypeTreeNode node)
+        public uint Process(int objectId, long offset, TypeTreeNode node)
         {
             m_Offset = offset;
             m_ObjectId = objectId;
@@ -78,7 +76,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData
             return m_Crc32;
         }
 
-        private void ProcessNode(TypeTreeNode node)
+        void ProcessNode(TypeTreeNode node)
         {
             if (node.IsBasicType)
             {
@@ -176,7 +174,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData
             }
         }
 
-        private void ProcessArray(TypeTreeNode node, bool isManagedReferenceRegistry = false)
+        void ProcessArray(TypeTreeNode node, bool isManagedReferenceRegistry = false)
         {
             var dataNode = node.Children[1];
 
@@ -221,7 +219,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData
             }
         }
 
-        private void ProcessManagedReferenceRegistry(TypeTreeNode node)
+        void ProcessManagedReferenceRegistry(TypeTreeNode node)
         {
             if (node.Children.Count < 2)
                 throw new Exception("Invalid ManagedReferenceRegistry");
@@ -319,12 +317,13 @@ namespace Unity.ProjectAuditor.Editor.BuildData
 
             if (fileId != 0 || pathId != 0)
             {
-                var refId = m_Callback(m_ObjectId, fileId, pathId, m_StringBuilder.ToString(), referencedType);
-                m_pptrBytes[0] = (byte)(refId >> 24);
-                m_pptrBytes[1] = (byte)(refId >> 16);
-                m_pptrBytes[2] = (byte)(refId >> 8);
-                m_pptrBytes[3] = (byte)(refId);
-                m_Crc32 = Crc32.Append(m_Crc32, m_pptrBytes, 0, 4);
+                var referencedObjectId = m_PPtrResolver.GetObjectId(fileId, pathId);
+                m_BuildObjects.AddReference(m_ObjectId, referencedObjectId, m_StringBuilder.ToString() );
+                m_PPtrBytes[0] = (byte)(referencedObjectId >> 24);
+                m_PPtrBytes[1] = (byte)(referencedObjectId >> 16);
+                m_PPtrBytes[2] = (byte)(referencedObjectId >> 8);
+                m_PPtrBytes[3] = (byte)(referencedObjectId);
+                m_Crc32 = Crc32.Append(m_Crc32, m_PPtrBytes, 0, 4);
             }
         }
     }

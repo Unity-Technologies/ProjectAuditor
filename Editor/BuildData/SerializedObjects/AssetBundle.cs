@@ -25,8 +25,8 @@ namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
             }
         }
 
-        public AssetBundle(BuildFileInfo buildFile, PPtrResolver pPtrResolver, TypeTreeReader reader, int id, long size)
-            : base(buildFile, pPtrResolver, reader, id, size, "AssetBundle")
+        public AssetBundle(BuildFileInfo buildFile, PPtrResolver pPtrResolver, TypeTreeReader reader, int id, long size, uint crc32)
+            : base(buildFile, pPtrResolver, reader, id, size, crc32, "AssetBundle")
         {
             var assets = new List<Asset>(reader["m_Container"].GetArraySize());
             var preloadTable = new List<PPtr>(reader["m_PreloadTable"].GetArraySize());
