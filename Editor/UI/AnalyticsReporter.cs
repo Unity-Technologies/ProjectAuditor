@@ -76,6 +76,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             BuildDataTextures2D,
             BuildDataAudioClips,
             BuildDataSummary,
+            BuildDataDiagnostics,
 
             // Build report
             BuildFiles,
