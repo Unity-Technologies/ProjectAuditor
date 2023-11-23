@@ -17,8 +17,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         Name,
         Type,
-        Size,
         Duplicates,
+        Size,
+        TotalSize,
         Num,
     }
 
@@ -43,8 +44,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataDiagnosticsProperty.Name), format = PropertyFormat.String, name = "Name", longName = "Name" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataDiagnosticsProperty.Type), format = PropertyFormat.String, name = "Type", longName = "Type" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataDiagnosticsProperty.Duplicates), format = PropertyFormat.Integer, name = "Instances", longName = "Count Of Instances Of Object" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataDiagnosticsProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataDiagnosticsProperty.Duplicates), format = PropertyFormat.Integer, name = "Duplicates", longName = "Duplicate Bundles Containing Same Data" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataDiagnosticsProperty.TotalSize), format = PropertyFormat.Bytes, name = "Total Size", longName = "Total Size" },
                 new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true, hidden = true},
             }
         };
@@ -56,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Duplicate Data",
             new[] {Area.GPU, Area.Quality},
             "This data is potentially duplicated.",
-            "Investigate how the data was built into the listed data files and try to avoid duplication by moving the data into a shared data file."
+            "Investigate how the data was authored and/or built into the listed data files. If multiple files contain this data build size and loading times may be improved by moving the data into a shared data file."
         )
         {
             MessageFormat = "File '{0}' is a potential duplicate"
@@ -191,24 +193,21 @@ namespace Unity.ProjectAuditor.Editor.Modules
                             }
                         }
 
-                        if (files.Count > 1)
-                        {
-                            var name = firstObj.Name != null ? firstObj.Name : string.Empty;
+                        var name = firstObj.Name != null ? firstObj.Name : string.Empty;
 
-                            var issue = context.Create(IssueCategory.BuildDataDiagnostic,
-                                k_DuplicateDiagnosticDescriptor.Id, name)
-                                .WithCustomProperties(new object[]
-                                {
-                                    name,
-                                    firstObj.Type,
-                                    firstObj.Size,
-                                    files.Count,
-                                    duplicate.Value.Count
-                                }
-                                ).WithDependencies(dependencyNode);
+                        var issue = context.Create(IssueCategory.BuildDataDiagnostic,
+                            k_DuplicateDiagnosticDescriptor.Id, name)
+                            .WithCustomProperties(new object[]
+                            {
+                                name,
+                                firstObj.Type,
+                                duplicate.Value.Count,
+                                firstObj.Size,
+                                duplicate.Value.Count * firstObj.Size
+                            }
+                            ).WithDependencies(dependencyNode);
 
-                            issues.Add(issue);
-                        }
+                        issues.Add(issue);
                     }
                 }
 
