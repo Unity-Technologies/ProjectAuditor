@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.BuildData.SerializedObjects;
-using UnityEditor.Experimental.GraphView;
 
 namespace Unity.ProjectAuditor.Editor.BuildData
 {
@@ -13,7 +11,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData
             public string Property { get; }
 
             // Shared strings for property names to avoid creating a lot of duplicate strings in memory.
-            static HashSet<string> s_SharedStrings = new HashSet<string>();
+            static Dictionary<string, string> s_SharedStrings = new Dictionary<string, string>();
 
             public Reference(int objectId, string property)
             {
@@ -23,9 +21,11 @@ namespace Unity.ProjectAuditor.Editor.BuildData
                 {
                     Property = sharedString;
                 }
-
-                s_SharedStrings.Add(property);
-                Property = property;
+                else
+                {
+                    s_SharedStrings.Add(property, property);
+                    Property = property;
+                }
             }
         }
 
@@ -39,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData
 
             public override int GetHashCode(Reference obj)
             {
-                return HashCode.Combine(obj.ObjectId, obj.Property);
+                return obj.ObjectId ^ obj.Property.GetHashCode();
             }
         }
 
