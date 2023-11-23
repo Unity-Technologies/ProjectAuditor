@@ -80,8 +80,8 @@ namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
             4,  // SInt32
         };
 
-        public Mesh(BuildFileInfo buildFile, PPtrResolver pPtrResolver, TypeTreeReader reader, int id, long size, uint crc32)
-            : base(buildFile, pPtrResolver, reader, id, size, crc32, "Mesh")
+        public Mesh(ObjectInfo obj, BuildFileInfo buildFile, PPtrResolver pPtrResolver, TypeTreeReader reader, uint crc32)
+            : base(obj, buildFile, pPtrResolver, reader, crc32)
         {
             Compression = (MeshCompression)reader["m_MeshCompression"].GetValue<byte>();
             var channels = new List<Channel>();

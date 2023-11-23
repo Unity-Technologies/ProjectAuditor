@@ -31,8 +31,8 @@ namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
         public AudioLoadType LoadType { get; }
         public CompressionFormat Format { get; }
 
-        public AudioClip(BuildFileInfo buildFile, PPtrResolver pPtrResolver, TypeTreeReader reader, int id, long size, uint crc32)
-            : base(buildFile, pPtrResolver, reader, id, size, crc32, "AudioClip")
+        public AudioClip(ObjectInfo obj, BuildFileInfo buildFile, PPtrResolver pPtrResolver, TypeTreeReader reader, uint crc32)
+            : base(obj, buildFile, pPtrResolver, reader, crc32)
         {
             Channels = reader["m_Channels"].GetValue<int>();
             Format = (CompressionFormat)reader["m_CompressionFormat"].GetValue<int>();

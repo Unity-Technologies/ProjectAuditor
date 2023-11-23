@@ -9,8 +9,8 @@ namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
         public IReadOnlyList<SubShader> SubShaders { get; }
         public IReadOnlyList<string> Keywords { get; }
 
-        public Shader(BuildFileInfo buildFile, PPtrResolver pPtrResolver, TypeTreeReader reader, int id, long size, uint crc32)
-            : base(buildFile, pPtrResolver, reader, id, size, crc32, "Shader")
+        public Shader(ObjectInfo obj, BuildFileInfo buildFile, PPtrResolver pPtrResolver, TypeTreeReader reader, uint crc32)
+            : base(obj, buildFile, pPtrResolver, reader, crc32)
         {
             Dictionary<int, string> keywordNames = null;
             KeywordSet keywordSet = new KeywordSet();

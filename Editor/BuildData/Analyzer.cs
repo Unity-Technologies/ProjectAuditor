@@ -95,12 +95,10 @@ namespace Unity.ProjectAuditor.Editor.BuildData
 
             foreach (var obj in sf.Objects)
             {
-                var currentObjectId = m_PPtrResolver.GetObjectId(0, obj.Id);
-
                 var root = sf.GetTypeTreeRoot(obj.Id);
                 var offset = obj.Offset;
                 uint crc32 = 0;//processor.Process(currentObjectId, offset, root);
-                var serializedObject = ReadSerializedObject(fileInfo, new TypeTreeReader(sf, root, reader, offset), currentObjectId, obj.Size, crc32, root.Type);
+                var serializedObject = ReadSerializedObject(obj, fileInfo, new TypeTreeReader(sf, root, reader, offset), crc32);
 
                 buildObjects.AddObject(serializedObject);
             }
@@ -108,18 +106,18 @@ namespace Unity.ProjectAuditor.Editor.BuildData
             m_PPtrResolver.EndSerializedFile();
         }
 
-        SerializedObject ReadSerializedObject(BuildFileInfo fileInfo, TypeTreeReader reader, int id, long size, uint crc32, string type)
+        SerializedObject ReadSerializedObject(ObjectInfo obj, BuildFileInfo fileInfo, TypeTreeReader reader, uint crc32)
         {
-            switch (type)
+            switch (reader.Node.Type)
             {
-                case "AnimationClip": return new AnimationClip(fileInfo, m_PPtrResolver, reader, id, size, crc32);
-                case "AssetBundle": return new AssetBundle(fileInfo, m_PPtrResolver, reader, id, size, crc32);
-                case "AudioClip": return new AudioClip(fileInfo, m_PPtrResolver, reader, id, size, crc32);
-                case "Mesh": return new Mesh(fileInfo, m_PPtrResolver, reader, id, size, crc32);
-                case "PreloadData": return new PreloadData(fileInfo, m_PPtrResolver, reader, id, size, crc32);
-                case "Shader": return new Shader(fileInfo, m_PPtrResolver, reader, id, size, crc32);
-                case "Texture2D": return new Texture2D(fileInfo, m_PPtrResolver, reader, id, size, crc32);
-                default: return new SerializedObject(fileInfo, m_PPtrResolver, reader, id, size, crc32, type);
+                case "AnimationClip": return new AnimationClip(obj, fileInfo, m_PPtrResolver, reader, crc32);
+                case "AssetBundle": return new AssetBundle(obj, fileInfo, m_PPtrResolver, reader, crc32);
+                case "AudioClip": return new AudioClip(obj, fileInfo, m_PPtrResolver, reader, crc32);
+                case "Mesh": return new Mesh(obj, fileInfo, m_PPtrResolver, reader, crc32);
+                case "PreloadData": return new PreloadData(obj, fileInfo, m_PPtrResolver, reader, crc32);
+                case "Shader": return new Shader(obj, fileInfo, m_PPtrResolver, reader, crc32);
+                case "Texture2D": return new Texture2D(obj, fileInfo, m_PPtrResolver, reader, crc32);
+                default: return new SerializedObject(obj, fileInfo, m_PPtrResolver, reader, crc32);
             }
         }
     }

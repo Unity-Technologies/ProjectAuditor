@@ -30,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        public override string Name => "AnimationClipes";
+        public override string Name => "AnimationClips";
 
         public override bool IsEnabledByDefault => false;
 

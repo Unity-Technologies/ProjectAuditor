@@ -20,20 +20,21 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
     {
         SerializedFile m_SerializedFile;
         UnityFileReader m_Reader;
-        TypeTreeReader m_LastCachedChild = null;
+        TypeTreeReader m_LastCachedChild;
         Lazy<int> m_Size;
-        object m_Value = null;
+        object m_Value;
         Dictionary<string, TypeTreeReader> m_ChildrenCacheObject;
         List<TypeTreeReader> m_ChildrenCacheArray;
-        private TypeTreeNode m_TypeTreeNode;
+
+        public TypeTreeNode Node { get; }
 
         public int Size => m_Size.Value;
         public long Offset { get; }
 
-        public bool IsObject => !m_TypeTreeNode.IsLeaf && !m_TypeTreeNode.IsBasicType && !m_TypeTreeNode.IsArray;
-        public bool IsArrayOfObjects => m_TypeTreeNode.IsArray && !m_TypeTreeNode.Children[1].IsBasicType;
-        public bool IsArrayOfBasicTypes => m_TypeTreeNode.IsArray && m_TypeTreeNode.Children[1].IsBasicType;
-        public bool IsArray => m_TypeTreeNode.IsArray;
+        public bool IsObject => !Node.IsLeaf && !Node.IsBasicType && !Node.IsArray;
+        public bool IsArrayOfObjects => Node.IsArray && !Node.Children[1].IsBasicType;
+        public bool IsArrayOfBasicTypes => Node.IsArray && Node.Children[1].IsBasicType;
+        public bool IsArray => Node.IsArray;
 
         public TypeTreeReader(SerializedFile serializedFile, TypeTreeNode node, UnityFileReader reader, long offset, bool isReferencedObject = false)
         {
@@ -42,11 +43,11 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
             // Special case for vector and map objects, they always have a single Array child so we skip it.
             if (node.Type == "vector" || node.Type == "map" || node.Type == "staticvector")
             {
-                m_TypeTreeNode = node.Children[0];
+                Node = node.Children[0];
             }
             else
             {
-                m_TypeTreeNode = node;
+                Node = node;
             }
 
             m_Reader = reader;
@@ -60,7 +61,7 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
                 // ManagedReferenceRegistry must be handled differently because they have 2
                 // different versions that are slightly different. The children are manually
                 // created and don't match the TypeTree.
-                if (m_TypeTreeNode.IsManagedReferenceRegistry)
+                if (Node.IsManagedReferenceRegistry)
                 {
                     var versionReader = new TypeTreeReader(m_SerializedFile, node.Children[0], reader, offset);
                     m_ChildrenCacheObject["version"] = versionReader;
@@ -161,21 +162,21 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
         public bool HasChild(string name)
         {
             // Special case for ManagedReferenceRegistry. The children are in cache and do not match the TypeTreeNode.
-            return m_TypeTreeNode.IsManagedReferenceRegistry ? m_ChildrenCacheObject.ContainsKey(name) :
-                m_TypeTreeNode.Children.Find(n => n.Name == name) != null;
+            return Node.IsManagedReferenceRegistry ? m_ChildrenCacheObject.ContainsKey(name) :
+                Node.Children.Find(n => n.Name == name) != null;
         }
 
         int GetSize()
         {
             int size;
 
-            if (m_TypeTreeNode.IsBasicType)
+            if (Node.IsBasicType)
             {
-                size = m_TypeTreeNode.Size;
+                size = Node.Size;
             }
-            else if (m_TypeTreeNode.IsArray)
+            else if (Node.IsArray)
             {
-                var dataNode = m_TypeTreeNode.Children[1];
+                var dataNode = Node.Children[1];
 
                 if (dataNode.IsBasicType)
                 {
@@ -205,19 +206,19 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
                     }
                 }
             }
-            else if (m_TypeTreeNode.CSharpType == typeof(string))
+            else if (Node.CSharpType == typeof(string))
             {
                 size = m_Reader.ReadInt32(Offset) + 4;
             }
             else
             {
-                var lastChild = GetChild(m_TypeTreeNode.Children.Last().Name);
+                var lastChild = GetChild(Node.Children.Last().Name);
                 size = (int)(lastChild.Offset + lastChild.Size - Offset);
             }
 
             if (
-                ((int)m_TypeTreeNode.MetaFlags & (int)TypeTreeMetaFlags.AlignBytes) != 0 ||
-                ((int)m_TypeTreeNode.MetaFlags & (int)TypeTreeMetaFlags.AnyChildUsesAlignBytes) != 0
+                ((int)Node.MetaFlags & (int)TypeTreeMetaFlags.AlignBytes) != 0 ||
+                ((int)Node.MetaFlags & (int)TypeTreeMetaFlags.AnyChildUsesAlignBytes) != 0
             )
             {
                 var endOffset = (Offset + size + 3) & ~(3);
@@ -236,7 +237,7 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
             if (m_ChildrenCacheObject.TryGetValue(name, out var nodeReader))
                 return nodeReader;
 
-            if (m_TypeTreeNode.IsManagedReferenceRegistry)
+            if (Node.IsManagedReferenceRegistry)
             {
                 // ManagedReferenceRegistry are handled differently. The children
                 // are all cached at construction time.
@@ -253,9 +254,9 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
                 offset = m_LastCachedChild.Offset + m_LastCachedChild.Size;
             }
 
-            for (int i = m_ChildrenCacheObject.Count; i < m_TypeTreeNode.Children.Count; ++i)
+            for (int i = m_ChildrenCacheObject.Count; i < Node.Children.Count; ++i)
             {
-                var child = m_TypeTreeNode.Children[i];
+                var child = Node.Children[i];
 
                 nodeReader = new TypeTreeReader(m_SerializedFile, child, m_Reader, offset);
                 m_ChildrenCacheObject.Add(child.Name, nodeReader);
@@ -276,7 +277,7 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
             {
                 if (!IsArrayOfObjects)
                 {
-                    if (m_TypeTreeNode.IsArray)
+                    if (Node.IsArray)
                     {
                         return m_Reader.ReadInt32(Offset);
                     }
@@ -309,7 +310,7 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
                 offset = m_LastCachedChild.Offset + m_LastCachedChild.Size;
             }
 
-            var dataNode = m_TypeTreeNode.Children[1];
+            var dataNode = Node.Children[1];
 
             for (int i = m_ChildrenCacheArray.Count; i < arraySize; ++i)
             {
@@ -326,7 +327,7 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
             throw new IndexOutOfRangeException();
         }
 
-        public int Count => IsArrayOfObjects ? GetArraySize() : (IsObject ? m_TypeTreeNode.Children.Count : 0);
+        public int Count => IsArrayOfObjects ? GetArraySize() : (IsObject ? Node.Children.Count : 0);
 
         public TypeTreeReader this[string name] => GetChild(name);
 
@@ -336,7 +337,7 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
         {
             if (m_Value == null)
             {
-                switch (Type.GetTypeCode(m_TypeTreeNode.CSharpType))
+                switch (Type.GetTypeCode(Node.CSharpType))
                 {
                     case TypeCode.Int32:
                         m_Value = m_Reader.ReadInt32(Offset);
@@ -395,7 +396,7 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
                             return (T)m_Value;
                         }
 
-                        throw new Exception($"Can't get value of {m_TypeTreeNode.Type} type");
+                        throw new Exception($"Can't get value of {Node.Type} type");
                 }
             }
 
@@ -405,7 +406,7 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
         Array ReadBasicTypeArray()
         {
             var arraySize = m_Reader.ReadInt32(Offset);
-            var elementNode = m_TypeTreeNode.Children[1];
+            var elementNode = Node.Children[1];
 
             // Special case for boolean arrays.
             if (elementNode.CSharpType == typeof(bool))
@@ -448,7 +449,7 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
                 {
                     if (m_NodeReader.IsObject)
                     {
-                        return m_NodeReader.GetChild(m_NodeReader.m_TypeTreeNode.Children[m_Index].Name);
+                        return m_NodeReader.GetChild(m_NodeReader.Node.Children[m_Index].Name);
                     }
                     else if (m_NodeReader.IsArrayOfObjects)
                     {
