@@ -51,7 +51,7 @@ namespace Unity.ProjectAuditor.Editor
             m_Rules.Add(ruleToAdd);
         }
 
-        internal Rule GetRule(DescriptorID id, string filter = "")
+        internal Rule GetRule(DescriptorId id, string filter = "")
         {
             // do not use Linq to avoid managed allocations
             foreach (var r in m_Rules)
@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.Editor
             return null;
         }
 
-        internal void ClearRules(DescriptorID id, string filter = "")
+        internal void ClearRules(DescriptorId id, string filter = "")
         {
             var rules = m_Rules.Where(r => r.Id.Equals(id) && r.Filter.Equals(filter)).ToArray();
 
@@ -76,7 +76,7 @@ namespace Unity.ProjectAuditor.Editor
             ClearRules(id, issue.GetContext());
         }
 
-        internal Severity GetAction(DescriptorID id, string filter = "")
+        internal Severity GetAction(DescriptorId id, string filter = "")
         {
             // is there a rule that matches the Filter?
             var projectRule = GetRule(id, filter);

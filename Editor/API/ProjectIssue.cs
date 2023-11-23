@@ -14,7 +14,7 @@ namespace Unity.ProjectAuditor.Editor
     public class ProjectIssue
     {
         [SerializeField][JsonIgnore]
-        DescriptorID m_DescriptorId;
+        DescriptorId m_DescriptorId;
 
         [SerializeField]
         IssueCategory m_Category;
@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor
         /// Diagnostic issues can be identified by having a valid <seealso cref="DescriptorId"/>. See also: the <seealso cref="ProjectIssue.IsDiagnostic"/> method.
         /// </remarks>
         [JsonIgnore]
-        public DescriptorID Id
+        public DescriptorId Id
         {
             get => m_DescriptorId;
             internal set => m_DescriptorId = value;
@@ -65,7 +65,7 @@ namespace Unity.ProjectAuditor.Editor
             set
             {
                 // TODO: check if ID is registered
-                m_DescriptorId = new DescriptorID(value);
+                m_DescriptorId = new DescriptorId(value);
             }
         }
 
@@ -189,7 +189,7 @@ namespace Unity.ProjectAuditor.Editor
         internal ProjectIssue()
         {
             // only for json serialization purposes
-            m_DescriptorId = new DescriptorID(string.Empty);
+            m_DescriptorId = new DescriptorId(string.Empty);
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="args">Arguments to be used in the message formatting</param>
         internal ProjectIssue(IssueCategory category, string id, params object[] args)
         {
-            m_DescriptorId = new DescriptorID(id);
+            m_DescriptorId = new DescriptorId(id);
             var descriptor = DescriptorLibrary.GetDescriptor(m_DescriptorId.AsInt());
 
             m_Category = category;
@@ -224,7 +224,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="description">Issue description</param>
         internal ProjectIssue(IssueCategory category, string description)
         {
-            m_DescriptorId = new DescriptorID(null);  // Empty, invalid descriptor
+            m_DescriptorId = new DescriptorId(null);  // Empty, invalid descriptor
             m_Category = category;
             m_Description = description;
             m_Severity = Severity.Default;

@@ -178,7 +178,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             setterMethod.Invoke(null, setterArgs);
 
-            var id = new DescriptorID();
+            var id = new DescriptorId();
 #if PACKAGE_ENTITIES_GRAPHICS
             id = EntitiesGraphicsAnalyzer.PAS1013;
 #elif PACKAGE_HYBRID_RENDERER
@@ -209,7 +209,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 0);
             setterMethod.Invoke(null, setterArgs);
 
-            var id = new DescriptorID();
+            var id = new DescriptorId();
 #if PACKAGE_ENTITIES_GRAPHICS
             id = EntitiesGraphicsAnalyzer.PAS1013;
 #elif PACKAGE_HYBRID_RENDERER

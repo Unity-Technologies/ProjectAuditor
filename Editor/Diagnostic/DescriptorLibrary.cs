@@ -16,10 +16,10 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 
         public static bool RegisterDescriptor(string id, Descriptor descriptor)
         {
-            return RegisterDescriptor(new DescriptorID(id), descriptor);
+            return RegisterDescriptor(new DescriptorId(id), descriptor);
         }
 
-        public static bool RegisterDescriptor(DescriptorID id, Descriptor descriptor)
+        public static bool RegisterDescriptor(DescriptorId id, Descriptor descriptor)
         {
             if (s_Descriptors == null)
                 s_Descriptors = new Dictionary<int, Descriptor>();
@@ -54,7 +54,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             // edge case that it doesn't really seem worth spending time on.
             if (m_SerializedDescriptors != null)
             {
-                s_Descriptors = m_SerializedDescriptors.ToDictionary(m => new DescriptorID(m.Id).AsInt(), m => m);
+                s_Descriptors = m_SerializedDescriptors.ToDictionary(m => new DescriptorId(m.Id).AsInt(), m => m);
                 m_SerializedDescriptors = null;
             }
         }

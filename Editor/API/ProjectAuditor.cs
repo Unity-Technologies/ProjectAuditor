@@ -313,7 +313,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         // Only used for testing
-        internal DescriptorID[] GetDescriptorIDs()
+        internal DescriptorId[] GetDescriptorIDs()
         {
             return m_Modules.SelectMany(m => m.SupportedDescriptorIds).ToArray();
         }

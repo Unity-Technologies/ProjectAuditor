@@ -246,7 +246,7 @@ class GenericInstantiation
             var descriptor = myIssue.Id.GetDescriptor();
 
             Assert.AreEqual(Severity.Moderate, descriptor.DefaultSeverity);
-            Assert.AreEqual(typeof(DescriptorID), myIssue.Id.GetType());
+            Assert.AreEqual(typeof(DescriptorId), myIssue.Id.GetType());
             Assert.AreEqual("PAC0066", myIssue.Id.ToString());
             Assert.AreEqual("UnityEngine.Camera", descriptor.Type);
             Assert.AreEqual("allCameras", descriptor.Method);

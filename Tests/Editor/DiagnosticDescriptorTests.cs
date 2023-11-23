@@ -207,7 +207,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotZero(IDs.Count(id => id.AsString() == m_Descriptor.Id), "Descriptor {0} is not registered", m_Descriptor.Id);
 
             // This will throw an exception if the Descriptor is somehow registered in the module but not in the DescriptorLibrary
-            var descriptor = new DescriptorID(m_Descriptor.Id).GetDescriptor();
+            var descriptor = new DescriptorId(m_Descriptor.Id).GetDescriptor();
         }
 
         [Test]
@@ -389,7 +389,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var IDs = projectAuditor.GetDescriptorIDs();
 
             // PAS0005 should only be available if iOS Editor component is installed
-            var foundID = IDs.Contains(new DescriptorID("PAS0005"));
+            var foundID = IDs.Contains(new DescriptorId("PAS0005"));
 
             // Yamato tests don't have iOS as a supported build target, but we want to pass tests locally as well,
             // where iOS support might be installed.

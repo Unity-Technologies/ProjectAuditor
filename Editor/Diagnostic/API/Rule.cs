@@ -28,7 +28,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// The Descriptor ID
         /// </summary>
         [JsonIgnore]
-        public DescriptorID Id;
+        public DescriptorId Id;
 
         [JsonProperty("id")]
         private string idString
