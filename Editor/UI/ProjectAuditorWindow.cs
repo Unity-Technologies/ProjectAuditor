@@ -169,7 +169,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 categories = new[]
                 {
                     IssueCategory.BuildDataTexture2D, IssueCategory.BuildDataMesh, IssueCategory.BuildDataAnimationClip,
-                    IssueCategory.BuildDataShader, IssueCategory.BuildDataAudioClip, IssueCategory.BuildDataSummary
+                    IssueCategory.BuildDataShader, IssueCategory.BuildDataAudioClip, IssueCategory.BuildDataSummary,
+                    IssueCategory.BuildDataDiagnostic
                 }
             },
         };
@@ -868,6 +869,19 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onOpenIssue = null,
                 type = typeof(BuildDataView),
                 analyticsEvent = (int)AnalyticsReporter.UIButton.BuildDataSummary
+            });
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.BuildDataDiagnostic,
+                displayName = "Build Data Diagnostics",
+                menuLabel = "BuildData/Build Data Diagnostics",
+                menuOrder = 1,
+                descriptionWithIcon = true,
+                showDependencyView = true,
+                showFilters = true,
+                dependencyViewGuiContent = new GUIContent("Build Data Diagnostics"),
+                analyticsEvent = (int)AnalyticsReporter.UIButton.BuildDataDiagnostics,
+                type = typeof(BuildDataView),
             });
         }
 

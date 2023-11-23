@@ -184,6 +184,11 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Issues summarizing serialized object types inside build data
         /// </summary>
-        BuildDataSummary
+        BuildDataSummary,
+
+        /// <summary>
+        /// Issues relating to build data
+        /// </summary>
+        BuildDataDiagnostic
     }
 }
