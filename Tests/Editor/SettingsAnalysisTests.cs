@@ -517,12 +517,12 @@ namespace Unity.ProjectAuditor.EditorTests
             Il2CppCompilerConfiguration il2CppCompilerConfiguration)
         {
             var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform);
-            var scriptingBackend = PlayerSettings.GetScriptingBackend(buildTargetGroup);
+            var scriptingBackend = PlayerSettingsUtil.GetScriptingBackend(buildTargetGroup);
 
-            PlayerSettings.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.IL2CPP);
+            PlayerSettingsUtil.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.IL2CPP);
 
-            var compilerConfiguration = PlayerSettings.GetIl2CppCompilerConfiguration(buildTargetGroup);
-            PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, il2CppCompilerConfiguration);
+            var compilerConfiguration = PlayerSettingsUtil.GetIl2CppCompilerConfiguration(buildTargetGroup);
+            PlayerSettingsUtil.SetIl2CppCompilerConfiguration(buildTargetGroup, il2CppCompilerConfiguration);
 
             var id = il2CppCompilerConfiguration == Il2CppCompilerConfiguration.Master
                 ? PlayerSettingsAnalyzer.PAS1004
@@ -532,8 +532,8 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.AreEqual(1, issues.Length);
 
-            PlayerSettings.SetScriptingBackend(buildTargetGroup, scriptingBackend);
-            PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, compilerConfiguration);
+            PlayerSettingsUtil.SetScriptingBackend(buildTargetGroup, scriptingBackend);
+            PlayerSettingsUtil.SetIl2CppCompilerConfiguration(buildTargetGroup, compilerConfiguration);
         }
 
         [Test]
@@ -542,19 +542,19 @@ namespace Unity.ProjectAuditor.EditorTests
         public void SettingsAnalysis_Il2CppCompilerConfigurationRelease_IsNotReported(string id)
         {
             var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform);
-            var scriptingBackend = PlayerSettings.GetScriptingBackend(buildTargetGroup);
+            var scriptingBackend = PlayerSettingsUtil.GetScriptingBackend(buildTargetGroup);
 
-            PlayerSettings.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.IL2CPP);
+            PlayerSettingsUtil.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.IL2CPP);
 
-            var compilerConfiguration = PlayerSettings.GetIl2CppCompilerConfiguration(buildTargetGroup);
-            PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, Il2CppCompilerConfiguration.Release);
+            var compilerConfiguration = PlayerSettingsUtil.GetIl2CppCompilerConfiguration(buildTargetGroup);
+            PlayerSettingsUtil.SetIl2CppCompilerConfiguration(buildTargetGroup, Il2CppCompilerConfiguration.Release);
 
             var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(id));
 
             Assert.AreEqual(0, issues.Length);
 
-            PlayerSettings.SetScriptingBackend(buildTargetGroup, scriptingBackend);
-            PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, compilerConfiguration);
+            PlayerSettingsUtil.SetScriptingBackend(buildTargetGroup, scriptingBackend);
+            PlayerSettingsUtil.SetIl2CppCompilerConfiguration(buildTargetGroup, compilerConfiguration);
         }
 
         [Test]
@@ -563,33 +563,33 @@ namespace Unity.ProjectAuditor.EditorTests
         public void SettingsAnalysis_Il2CppCompilerConfigurationMaster_ScriptingBackendMono_IsNotReported(string id)
         {
             var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform);
-            var scriptingBackend = PlayerSettings.GetScriptingBackend(buildTargetGroup);
+            var scriptingBackend = PlayerSettingsUtil.GetScriptingBackend(buildTargetGroup);
 
-            PlayerSettings.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.Mono2x);
+            PlayerSettingsUtil.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.Mono2x);
 
             var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(id));
 
             Assert.AreEqual(0, issues.Length);
 
-            PlayerSettings.SetScriptingBackend(buildTargetGroup, scriptingBackend);
+            PlayerSettingsUtil.SetScriptingBackend(buildTargetGroup, scriptingBackend);
         }
 
         [Test]
         public void SettingsAnalysis_SwitchIL2CPP_Compiler_Configuration_To_Release()
         {
             var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform);
-            var scriptingBackend = PlayerSettings.GetScriptingBackend(buildTargetGroup);
+            var scriptingBackend = PlayerSettingsUtil.GetScriptingBackend(buildTargetGroup);
 
-            PlayerSettings.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.IL2CPP);
-            var compilerConfiguration = PlayerSettings.GetIl2CppCompilerConfiguration(buildTargetGroup);
+            PlayerSettingsUtil.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.IL2CPP);
+            var compilerConfiguration = PlayerSettingsUtil.GetIl2CppCompilerConfiguration(buildTargetGroup);
 
-            PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, Il2CppCompilerConfiguration.Debug);
+            PlayerSettingsUtil.SetIl2CppCompilerConfiguration(buildTargetGroup, Il2CppCompilerConfiguration.Debug);
 
             PlayerSettingsAnalyzer.SetIL2CPPConfigurationToRelease(buildTargetGroup);
-            Assert.AreEqual(Il2CppCompilerConfiguration.Release, PlayerSettings.GetIl2CppCompilerConfiguration(buildTargetGroup));
+            Assert.AreEqual(Il2CppCompilerConfiguration.Release, PlayerSettingsUtil.GetIl2CppCompilerConfiguration(buildTargetGroup));
 
-            PlayerSettings.SetScriptingBackend(buildTargetGroup, scriptingBackend);
-            PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, compilerConfiguration);
+            PlayerSettingsUtil.SetScriptingBackend(buildTargetGroup, scriptingBackend);
+            PlayerSettingsUtil.SetIl2CppCompilerConfiguration(buildTargetGroup, compilerConfiguration);
         }
 
         [Test]

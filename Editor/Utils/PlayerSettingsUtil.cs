@@ -62,6 +62,18 @@ namespace Unity.ProjectAuditor.Editor.Utils
 #endif
         }
 
+        public static void SetScriptingBackend(
+            BuildTargetGroup buildTargetGroup,
+            ScriptingImplementation backend)
+        {
+#if UNITY_2021_2_OR_NEWER
+            var namedBuildTarget = NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup);
+            PlayerSettings.SetScriptingBackend(namedBuildTarget, backend);
+#else
+            PlayerSettings.SetScriptingBackend(buildTargetGroup, backend);
+#endif
+        }
+
         public static ManagedStrippingLevel GetManagedStrippingLevel(BuildTargetGroup buildTargetGroup)
         {
 #if UNITY_2021_2_OR_NEWER
