@@ -179,14 +179,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         var files = new List<string>(duplicate.Value.Count);
                         foreach (var obj in duplicate.Value)
                         {
-                            var archiveFile = obj.BuildFile.ArchiveFile.Filename;
-                            if (!files.Contains(archiveFile))
+                            var filename = obj.BuildFile.DisplayName;
+                            if (!files.Contains(filename))
                             {
-                                files.Add(archiveFile);
+                                files.Add(filename);
 
                                 var childDependencyNode = new AssetDependencyNode()
                                 {
-                                    location = new Location(archiveFile)
+                                    location = new Location(filename)
                                 };
 
                                 dependencyNode.AddChild(childDependencyNode);
