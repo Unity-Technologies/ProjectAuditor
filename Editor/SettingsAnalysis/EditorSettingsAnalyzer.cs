@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         )
         {
             MaximumVersion = "2023.4",
-            fixer = (issue) =>
+            fixer = (issue, analysisParams) =>
             {
                 EditorSettings.enterPlayModeOptionsEnabled = true;
             }
@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         )
         {
             MaximumVersion = "2023.4",
-            fixer = (issue) =>
+            fixer = (issue, analysisParams) =>
             {
                 EditorSettings.enterPlayModeOptions |= EnterPlayModeOptions.DisableDomainReload;
             }

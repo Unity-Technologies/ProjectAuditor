@@ -29,8 +29,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string PAA4010 = nameof(PAA4010);    // If MP3 is used. Vorbis is better
         internal const string PAA4011 = nameof(PAA4011);    // Source assets that aren’t .WAV or .AIFF. Other formats (.MP3, .OGG, etc.) are lossy
 
-        private static string s_PlatformString = "";
-
         private const int k_StreamingBuffer = 64000;        // The per-instance streaming buffer, which Unity's FMOD implementation defaults to 64000.
         private const int k_AudioClipManagedSize = 694;     // The managed AudioClip object size, as reported by Profiler.GetRuntimeMemorySizeLong().
 
@@ -43,15 +41,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
         )
         {
             MessageFormat = "AudioClip '{0}' Load Type is not set to Streaming",
-            fixer = (issue) =>
+            fixer = (issue, analysisParams) =>
             {
                 var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
                 {
-                    // TODO: replace s_PlatformString with context.Params.PlatformString
-                    var sampleSettings = audioImporter.GetOverrideSampleSettings(s_PlatformString);
+                    var sampleSettings = audioImporter.GetOverrideSampleSettings(analysisParams.PlatformString);
                     sampleSettings.loadType = AudioClipLoadType.Streaming;
-                    audioImporter.SetOverrideSampleSettings(s_PlatformString, sampleSettings);
+                    audioImporter.SetOverrideSampleSettings(analysisParams.PlatformString, sampleSettings);
                     audioImporter.SaveAndReimport();
                 }
             }
@@ -77,7 +74,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         )
         {
             MessageFormat = "AudioClip '{0}' is stereo",
-            fixer = (issue) =>
+            fixer = (issue, analysisParams) =>
             {
                 var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
@@ -98,7 +95,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         )
         {
             MessageFormat = "AudioClip '{0}' is stereo",
-            fixer = (issue) =>
+            fixer = (issue, analysisParams) =>
             {
                 var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
@@ -153,16 +150,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
         )
         {
             MessageFormat = "AudioClip '{0}' Sample Rate is over 48KHz",
-            fixer = (issue) =>
+            fixer = (issue, analysisParams) =>
             {
                 var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
                 {
-                    // TODO: replace s_PlatformString with context.Params.PlatformString
-                    var sampleSettings = audioImporter.GetOverrideSampleSettings(s_PlatformString);
+                    var sampleSettings = audioImporter.GetOverrideSampleSettings(analysisParams.PlatformString);
                     sampleSettings.sampleRateSetting = AudioSampleRateSetting.OverrideSampleRate;
                     sampleSettings.sampleRateOverride = 48000;
-                    audioImporter.SetOverrideSampleSettings(s_PlatformString, sampleSettings);
+                    audioImporter.SetOverrideSampleSettings(analysisParams.PlatformString, sampleSettings);
                     audioImporter.SaveAndReimport();
                 }
             }
@@ -177,16 +173,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
         )
         {
             MessageFormat = "AudioClip '{0}' is set to Preload Audio Data",
-            fixer = (issue) =>
+            fixer = (issue, analysisParams) =>
             {
                 var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
                 {
 #if UNITY_2022_2_OR_NEWER
-                    // TODO: replace s_PlatformString with context.Params.PlatformString
-                    var sampleSettings = audioImporter.GetOverrideSampleSettings(s_PlatformString);
+                    var sampleSettings = audioImporter.GetOverrideSampleSettings(analysisParams.PlatformString);
                     sampleSettings.preloadAudioData = false;
-                    audioImporter.SetOverrideSampleSettings(s_PlatformString, sampleSettings);
+                    audioImporter.SetOverrideSampleSettings(analysisParams.PlatformString, sampleSettings);
 #else
                     audioImporter.preloadAudioData = false;
 #endif
@@ -204,7 +199,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         )
         {
             MessageFormat = "AudioClip '{0}' Load In Background is not enabled",
-            fixer = (issue) =>
+            fixer = (issue, analysisParams) =>
             {
                 var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
@@ -224,15 +219,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
         )
         {
             MessageFormat = "AudioClip '{0}' Compression Format is MP3",
-            fixer = (issue) =>
+            fixer = (issue, analysisParams) =>
             {
                 var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
                 {
-                    // TODO: replace s_PlatformString with context.Params.PlatformString
-                    var sampleSettings = audioImporter.GetOverrideSampleSettings(s_PlatformString);
+                    var sampleSettings = audioImporter.GetOverrideSampleSettings(analysisParams.PlatformString);
                     sampleSettings.compressionFormat = AudioCompressionFormat.Vorbis;
-                    audioImporter.SetOverrideSampleSettings(s_PlatformString, sampleSettings);
+                    audioImporter.SetOverrideSampleSettings(analysisParams.PlatformString, sampleSettings);
                     audioImporter.SaveAndReimport();
                 }
             }
@@ -269,9 +263,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public IEnumerable<ProjectIssue> Analyze(AudioClipAnalysisContext context)
         {
             var assetPath = context.Importer.assetPath;
-            s_PlatformString = context.Params.PlatformString;
 
-            var sampleSettings = context.Importer.GetOverrideSampleSettings(s_PlatformString);
+            var sampleSettings = context.Importer.GetOverrideSampleSettings(context.Params.PlatformString);
             var audioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(assetPath);
 
             // GET CLIP STATS

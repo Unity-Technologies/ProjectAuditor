@@ -75,7 +75,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// Optional Auto-fixer
         /// </summary>
         [JsonIgnore]
-        public Action<ProjectIssue> fixer;
+        public Action<ProjectIssue, AnalysisParams> fixer;
 
         /// <summary>
         /// Name of the type (namespace and class/struct) of a known code API issue.
@@ -140,13 +140,13 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             return obj.GetType() == GetType() && Equals((Descriptor)obj);
         }
 
-        internal void Fix(ProjectIssue issue)
+        internal void Fix(ProjectIssue issue, AnalysisParams analysisParams)
         {
             // Temp workaround for lost 'fixer' after domain reload
             if (fixer == null)
                 return;
 
-            fixer(issue);
+            fixer(issue, analysisParams);
             issue.WasFixed = true;
         }
 

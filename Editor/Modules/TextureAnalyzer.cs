@@ -26,7 +26,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         )
         {
             MessageFormat = "Texture '{0}' mipmaps generation is not enabled",
-            fixer = (issue) =>
+            fixer = (issue, analysisParams) =>
             {
                 var textureImporter = AssetImporter.GetAtPath(issue.RelativePath) as TextureImporter;
                 if (textureImporter != null)
@@ -46,7 +46,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         )
         {
             MessageFormat = "Texture '{0}' mipmaps generation is enabled",
-            fixer = (issue) =>
+            fixer = (issue, analysisParams) =>
             {
                 var textureImporter = AssetImporter.GetAtPath(issue.RelativePath) as TextureImporter;
                 if (textureImporter != null)
@@ -67,7 +67,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             MessageFormat = "Texture '{0}' Read/Write is enabled",
             DocumentationUrl = "https://docs.unity3d.com/Manual/class-TextureImporter.html",
-            fixer = (issue) =>
+            fixer = (issue, analysisParams) =>
             {
                 var textureImporter = AssetImporter.GetAtPath(issue.RelativePath) as TextureImporter;
                 if (textureImporter != null)
@@ -87,7 +87,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         )
         {
             MessageFormat = "Texture '{0}' mipmaps streaming is not enabled",
-            fixer = (issue) =>
+            fixer = (issue, analysisParams) =>
             {
                 var textureImporter = AssetImporter.GetAtPath(issue.RelativePath) as TextureImporter;
                 if (textureImporter != null)
@@ -108,7 +108,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             Platforms = new[] { BuildTarget.Android, BuildTarget.iOS, BuildTarget.Switch},
             MessageFormat = "Texture '{0}' anisotropic level is set to '{1}'",
-            fixer = (issue) =>
+            fixer = (issue, analysisParams) =>
             {
                 var textureImporter = AssetImporter.GetAtPath(issue.RelativePath) as TextureImporter;
                 if (textureImporter != null)

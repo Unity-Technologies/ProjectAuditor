@@ -99,14 +99,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 #endif
         }
 
-        private static void FixHdrSetting(ProjectIssue issue)
+        private static void FixHdrSetting(ProjectIssue issue, AnalysisParams analysisParams)
         {
 #if PACKAGE_URP
             RenderPipelineUtils.FixAssetSetting(issue, p => SetHdrSetting(p, false));
 #endif
         }
 
-        static void FixMsaaSampleCountSetting(ProjectIssue issue)
+        static void FixMsaaSampleCountSetting(ProjectIssue issue, AnalysisParams analysisParams)
         {
 #if PACKAGE_URP
             RenderPipelineUtils.FixAssetSetting(issue, p => SetMsaaSampleCountSetting(p, 2));

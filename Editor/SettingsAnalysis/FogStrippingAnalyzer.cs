@@ -31,10 +31,10 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "<b>Fog Modes</b> in Graphics Settings are set to build all fog shader variants for this fog mode. Forcing Fog shader variants to be built can increase the build size.",
             "Change <b>Project Settings > Graphics > Fog Modes</b> to <b>Automatic</b> or disable <b>Linear/Exponential/Exponential Squared</b>. This should reduce the number of shader variants generated for fog effects.")
         {
-            fixer = (issue =>
+            fixer = (issue, analysisParams) =>
             {
                 RemoveFogStripping();
-            }),
+            },
 
             MessageFormat = "Graphics: Fog Mode '{0}' shader variants are always included in the build"
         };

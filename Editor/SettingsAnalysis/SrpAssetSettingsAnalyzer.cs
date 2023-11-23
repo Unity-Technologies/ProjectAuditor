@@ -39,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             return RenderPipelineUtils.AnalyzeAssets(context, Analyze);
         }
 
-        static void FixSrpBatcherSetting(ProjectIssue issue)
+        static void FixSrpBatcherSetting(ProjectIssue issue, AnalysisParams analysisParams)
         {
             RenderPipelineUtils.FixAssetSetting(issue, p => SetSrpBatcherSetting(p, true));
         }

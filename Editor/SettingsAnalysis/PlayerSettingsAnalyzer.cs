@@ -45,10 +45,10 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "Change <b>Project Settings > Audio > Default Speaker Mode</b> to <b>Mono</b>. You should also consider enabling the <b>Force To Mono</b> AudioClip import setting to reduce import times and build size.")
         {
             Platforms = new[] { BuildTarget.Android, BuildTarget.iOS },
-            fixer = (issue =>
+            fixer = (issue, analysisParams) =>
             {
                 FixSpeakerMode();
-            })
+            }
         };
 
         static readonly Descriptor k_IL2CPPCompilerConfigurationMasterDescriptor = new Descriptor(
@@ -58,11 +58,11 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "<b>C++ Compiler Configuration</b> in Player Settings is set to <b>Master</b>. This mode is intended for shipping builds and will significantly increase build times.",
             "Change <b>Project Settings > Player > Other Settings > Configuration > C++ Compiler Configuration</b> to <b>Release</b>.")
         {
-            fixer = (issue =>
+            fixer = (issue, analysisParams) =>
             {
-                var buildTargetGroup = (BuildTargetGroup)issue.GetCustomPropertyInt32(0);
+                var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(analysisParams.Platform);
                 SetIL2CPPConfigurationToRelease(buildTargetGroup);
-            }),
+            },
 
             MessageFormat = "Player: C++ Compiler Configuration is set to 'Master'"
         };
@@ -74,11 +74,11 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "<b>C++ Compiler Configuration</b> is set to <b>Debug</b>. This mode is intended for debugging and might have an impact on runtime CPU performance.",
             "Change <b>Project Settings > Player > Other Settings > Configuration > C++ Compiler Configuration</b> to <b>Release</b>.")
         {
-            fixer = (issue =>
+            fixer = (issue, analysisParams) =>
             {
-                var buildTargetGroup = (BuildTargetGroup)issue.GetCustomPropertyInt32(0);
+                var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(analysisParams.Platform);
                 SetIL2CPPConfigurationToRelease(buildTargetGroup);
-            }),
+            },
 
             MessageFormat = "Player: C++ Compiler Configuration is set to 'Debug'"
         };
@@ -90,11 +90,11 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "<b>Lightmap Streaming</b> in Player Settings is not enabled. As a result, all lightmap detail levels are loaded into GPU memory, potentially resulting in excessive lightmap texture memory usage.",
             "Enable <b>Lightmap Streaming</b> in <b>PProject Settings > Player > Other Settings > Rendering</b>.")
         {
-            fixer = (issue =>
+            fixer = (issue, analysisParams) =>
             {
-                var buildTargetGroup = (BuildTargetGroup)issue.GetCustomPropertyInt32(0);
+                var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(analysisParams.Platform);
                 PlayerSettingsUtil.SetLightmapStreaming(buildTargetGroup, true);
-            }),
+            },
         };
 
         public void Initialize(Module module)
@@ -129,19 +129,16 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             if (CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration.Master, context.Params))
             {
                 yield return context.Create(IssueCategory.ProjectSetting, k_IL2CPPCompilerConfigurationMasterDescriptor.Id)
-                    .WithCustomProperties(new object[] {buildTargetGroup})
                     .WithLocation("Project/Player");
             }
             if (CheckIL2CPPCompilerConfiguration(Il2CppCompilerConfiguration.Debug, context.Params))
             {
                 yield return context.Create(IssueCategory.ProjectSetting, k_IL2CPPCompilerConfigurationDebugDescriptor.Id)
-                    .WithCustomProperties(new object[] {buildTargetGroup})
                     .WithLocation("Project/Player");
             }
             if (!PlayerSettingsUtil.IsLightmapStreamingEnabled(buildTargetGroup))
             {
                 yield return context.Create(IssueCategory.ProjectSetting, k_LightmapStreamingEnabledDescriptor.Id)
-                    .WithCustomProperties(new object[] {buildTargetGroup})
                     .WithLocation("Project/Player");
             }
         }

@@ -122,7 +122,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     {
                         foreach (var issue in selectedIssues)
                         {
-                            descriptor.Fix(issue);
+                            descriptor.Fix(issue, m_ViewManager.Report.SessionInfo);
                         }
 
                         m_ViewManager.OnSelectedIssuesQuickFixRequested?.Invoke(selectedIssues);
