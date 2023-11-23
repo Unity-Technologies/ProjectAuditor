@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using SerializedObject = Unity.ProjectAuditor.Editor.BuildData.SerializedObjects.SerializedObject;
@@ -46,7 +44,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataDiagnosticsProperty.Name), format = PropertyFormat.String, name = "Name", longName = "Name" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataDiagnosticsProperty.Type), format = PropertyFormat.String, name = "Type", longName = "Type" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataDiagnosticsProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataDiagnosticsProperty.Duplicates), format = PropertyFormat.Integer, name = "Duplicates", longName = "Duplicates" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataDiagnosticsProperty.Duplicates), format = PropertyFormat.Integer, name = "Duplicates", longName = "Duplicate Bundles Containing Same Data" },
                 new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true, hidden = true},
             }
         };
@@ -139,22 +137,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         m_SerializedObjectInfos.Add(obj.Type, new SerializedObjectInfo { Count = 1, Size = size });
                     }
 
-                    SerliazedObjectKey key;
-
-                    try
-                    {
-                        key = new SerliazedObjectKey(obj.Name, obj.Type, obj.Size);
-                    }
-                    catch (Exception)
-                    {
-                        continue;
-                    }
+                    SerliazedObjectKey key = new SerliazedObjectKey(obj.Name, obj.Type, obj.Size);
 
                     if (m_PotentialDuplicates.TryGetValue(key, out var objList))
                     {
-                        if (objList.Contains(obj))
-                            continue;
-
                         objList.Add(obj);
                     }
                     else
@@ -205,19 +191,24 @@ namespace Unity.ProjectAuditor.Editor.Modules
                             }
                         }
 
-                        var name = firstObj.Name != null ? firstObj.Name : string.Empty;
+                        if (files.Count > 1)
+                        {
+                            var name = firstObj.Name != null ? firstObj.Name : string.Empty;
 
-                        var issue = context.Create(IssueCategory.BuildDataDiagnostic, k_DuplicateDiagnosticDescriptor.Id, name)
-                            .WithCustomProperties(new object[]
-                            {
-                                name,
-                                firstObj.Type,
-                                firstObj.Size,
-                                files.Count
-                            }
-                            ).WithDependencies(dependencyNode);
+                            var issue = context.Create(IssueCategory.BuildDataDiagnostic,
+                                k_DuplicateDiagnosticDescriptor.Id, name)
+                                .WithCustomProperties(new object[]
+                                {
+                                    name,
+                                    firstObj.Type,
+                                    firstObj.Size,
+                                    files.Count,
+                                    duplicate.Value.Count
+                                }
+                                ).WithDependencies(dependencyNode);
 
-                        issues.Add(issue);
+                            issues.Add(issue);
+                        }
                     }
                 }
 
