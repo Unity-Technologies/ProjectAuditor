@@ -62,6 +62,8 @@ namespace Unity.ProjectAuditor.Editor.BuildData
                 }
             }
 
+            UnityFileReader.ClearBufferPool();
+
             return buildObjects;
         }
 

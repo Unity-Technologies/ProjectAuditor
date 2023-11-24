@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -15,14 +16,26 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
 
         public long Length { get; }
 
+        static Dictionary<int, byte[]> s_BufferPool = new Dictionary<int, byte[]>();
+
         public UnityFileReader(string path, int bufferSize)
         {
-            m_Buffer = new byte[bufferSize];
+            if (!s_BufferPool.Remove(bufferSize, out var buffer))
+            {
+                buffer = new byte[bufferSize];
+            }
+
+            m_Buffer = buffer;
             m_BufferStartInFile = 0;
             m_BufferEndInFile = 0;
 
             m_File = UnityFileSystem.OpenFile(path);
             Length = m_File.GetSize();
+        }
+
+        public static void ClearBufferPool()
+        {
+            s_BufferPool.Clear();
         }
 
         int GetBufferOffset(long fileOffset, int count)
@@ -135,6 +148,7 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
         public void Dispose()
         {
             m_File.Dispose();
+            s_BufferPool.Add(m_Buffer.Length, m_Buffer);
         }
     }
 }

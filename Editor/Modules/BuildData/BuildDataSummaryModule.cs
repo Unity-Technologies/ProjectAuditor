@@ -179,7 +179,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         var files = new List<string>(duplicate.Value.Count);
                         foreach (var obj in duplicate.Value)
                         {
-                            var archiveFile = obj.BuildFile.ArchiveFile.Filename;
+                            var archiveFile = obj.BuildFile.DisplayName;
                             if (!files.Contains(archiveFile))
                             {
                                 files.Add(archiveFile);

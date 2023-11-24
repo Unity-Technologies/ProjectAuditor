@@ -7,23 +7,12 @@ namespace Unity.ProjectAuditor.Editor.BuildData
     {
         public static string BaseFolder { get; set; }
         public string AbsolutePath { get; }
-        public string Filename => Path.GetFileName(AbsolutePath);
-        public string RelativePath => GetRelativePath(BaseFolder, AbsolutePath);
+        public string Filename { get; }
+        public string RelativePath { get; }
 
-        public string DisplayName
-        {
-            get
-            {
-                if (ArchiveFile != null)
-                {
-                    return $"{ArchiveFile.RelativePath} ({Filename})";
-                }
+        public string DisplayName { get; private set; }
 
-                return RelativePath;
-            }
-        }
-
-        public BuildFileInfo ArchiveFile { private set; get; }
+        public BuildFileInfo ArchiveFile { get; private set; }
         public long Size { get; }
         public bool IsArchive => m_ArchivedFiles != null;
 
@@ -34,6 +23,9 @@ namespace Unity.ProjectAuditor.Editor.BuildData
         {
             AbsolutePath = absolutePath;
             Size = size;
+            Filename = Path.GetFileName(absolutePath);
+            RelativePath = GetRelativePath(BaseFolder, AbsolutePath);
+            DisplayName = RelativePath;
 
             if (isArchive)
             {
@@ -45,6 +37,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData
         {
             var fileInfo = new BuildFileInfo(path, size, false);
             fileInfo.ArchiveFile = this;
+            fileInfo.DisplayName = $"{RelativePath} ({fileInfo.Filename})";
 
             m_ArchivedFiles.Add(fileInfo);
 
