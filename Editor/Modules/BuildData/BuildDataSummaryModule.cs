@@ -5,6 +5,13 @@ using SerializedObject = Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
+    enum BuildDataListProperty
+    {
+        Type,
+        Size,
+        Num,
+    }
+
     enum BuildDataSummaryProperty
     {
         Type,
@@ -33,6 +40,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataSummaryProperty.Type), format = PropertyFormat.String, name = "Type", longName = "Asset Type" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataSummaryProperty.Count), format = PropertyFormat.Integer, name = "Count", longName = "Number Of Assets Of This Type" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataSummaryProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size In Bytes" },
+            }
+        };
+
+        static readonly IssueLayout k_ListLayout = new IssueLayout
+        {
+            category = IssueCategory.BuildDataList,
+            properties = new[]
+            {
+                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Name" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataListProperty.Type), format = PropertyFormat.String, name = "Type", longName = "Asset Type" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataListProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size In Bytes" },
             }
         };
 
@@ -71,6 +89,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_SummaryLayout,
+            k_ListLayout,
             k_DiagnosticIssueLayout
         };
 
@@ -88,7 +107,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             public SerliazedObjectKey(string name, string type, long size)
             {
-                NameHash = name?.GetHashCode() ?? -1; // string.Empty.GetHashCode();
+                NameHash = name?.GetHashCode() ?? -1;
                 TypeHash = type.GetHashCode();
                 Size = size;
             }
@@ -124,11 +143,23 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 progress?.Start("Parsing all assets from Build Data", "Search in Progress...", 1);
 
+                List<ProjectIssue> issues = new List<ProjectIssue>();
+
                 // Count all SerializedObjects
                 var objects = buildObjects.GetObjects<SerializedObject>();
                 foreach (var obj in objects)
                 {
                     var size = obj.Size;
+
+                    var name = obj.Name != null ? obj.Name : string.Empty;
+                    var issue = new IssueBuilder(IssueCategory.BuildDataList, name)
+                        .WithCustomProperties(new object[((int)BuildDataListProperty.Num)]
+                    {
+                        obj.Type,
+                        obj.Size
+                    });
+                    issues.Add(issue);
+
                     if (m_SerializedObjectInfos.TryGetValue(obj.Type, out var info))
                     {
                         info.Count++;
@@ -154,7 +185,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
 
                 // Create one issue per type of SerializedObjects
-                List<ProjectIssue> issues = new List<ProjectIssue>();
                 foreach (var key in m_SerializedObjectInfos.Keys)
                 {
                     var issue = CreateIssueForObjectType(key, m_SerializedObjectInfos[key].Count,

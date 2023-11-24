@@ -187,8 +187,13 @@ namespace Unity.ProjectAuditor.Editor
         BuildDataSummary,
 
         /// <summary>
+        /// Issues listing all serialized object types inside build data
+        /// </summary>
+        BuildDataList,
+
+        /// <summary>
         /// Issues relating to build data
         /// </summary>
-        BuildDataDiagnostic
+        BuildDataDiagnostic,
     }
 }
