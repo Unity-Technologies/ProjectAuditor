@@ -112,7 +112,11 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                     return assemblyInfo;
                 }
             }
-            else if (!assemblyInfo.name.StartsWith(AssemblyInfo.DefaultAssemblyName))
+            else if (assemblyInfo.name.Equals(AssemblyInfo.DefaultAssemblyName))
+            {
+                assemblyInfo.asmDefPath = "Built-in";
+            }
+            else
             {
                 // this might happen when loading a report from a different project
                 Debug.LogWarningFormat("Assembly Definition cannot be found for " + assemblyInfo.name);

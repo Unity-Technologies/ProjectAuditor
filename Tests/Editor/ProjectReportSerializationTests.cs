@@ -120,6 +120,33 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.IsTrue(reportDict.ContainsKey("issues"));
             Assert.IsTrue(reportDict.ContainsKey("descriptors"));
 
+            if (reportDict["insights"] is JArray insights)
+            {
+                foreach (var property in insights)
+                {
+                    if (property is JObject insight)
+                    {
+                        AssertRequiredPropertyIsValid(insight, "category");
+
+                        AssertRequiredPropertyIsValid(insight, "description");
+                        AssertOptionalArrayIsValid(insight, "properties");
+
+                        AssertForbiddenProperty(insight, "descriptorId");
+                        AssertForbiddenProperty(insight, "severity");
+                        AssertRequiredProperty(insight, "location");
+                        AssertRequiredPropertyIsValid(insight["location"] as JObject, "path");
+                    }
+                    else
+                    {
+                        Assert.Fail($"{property} is null or not a JObject");
+                    }
+                }
+            }
+            else
+            {
+                Assert.Fail("'insights' is null or not a JArray");
+            }
+
             if (reportDict["issues"] is JArray issues)
             {
                 foreach (var property in issues)
@@ -127,27 +154,13 @@ namespace Unity.ProjectAuditor.EditorTests
                     if (property is JObject issue)
                     {
                         AssertRequiredPropertyIsValid(issue, "category");
-
-                        var issueCategory = (IssueCategory)Enum.Parse(typeof(IssueCategory), issue["category"].Value<string>());
-                        if (issueCategory.Equals(IssueCategory.Code) ||
-                            issueCategory.Equals(IssueCategory.ProjectSetting) ||
-                            issueCategory.Equals(IssueCategory.AssetDiagnostic))
-                        {
-                            AssertRequiredProperty(issue, "descriptorId");
-                        }
                         AssertRequiredPropertyIsValid(issue, "description");
+                        AssertRequiredProperty(issue, "descriptorId");
                         AssertOptionalArrayIsValid(issue, "properties");
 
-                        if (issue.ContainsKey("descriptorId"))
-                        {
-                            AssertRequiredProperty(issue, "location");
-                            AssertRequiredPropertyIsValid(issue["location"] as JObject, "path");
-                            AssertRequiredPropertyIsValid(issue, "severity");
-                        }
-                        else
-                        {
-                            AssertForbiddenProperty(issue, "severity");
-                        }
+                        AssertRequiredProperty(issue, "location");
+                        AssertRequiredPropertyIsValid(issue["location"] as JObject, "path");
+                        AssertRequiredPropertyIsValid(issue, "severity");
                     }
                     else
                     {
