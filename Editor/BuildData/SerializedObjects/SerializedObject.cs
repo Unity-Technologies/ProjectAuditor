@@ -18,7 +18,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
             // 0 is the current SerializedFile.
             Id = pPtrResolver.GetObjectId(0, obj.Id);
             IdInSerializedFile = obj.Id;
-            Size = reader.Node.Size;
+            Size = obj.Size;
             Type = reader.Node.Type;
             Crc32 = crc32;
             BuildFile = buildFile;
