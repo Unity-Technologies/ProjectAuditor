@@ -47,8 +47,8 @@ namespace Unity.ProjectAuditor.Editor.BuildData
         Dictionary<int, SerializedObject> m_SerializedObjects = new Dictionary<int, SerializedObject>();
         public IReadOnlyCollection<SerializedObject> SerializedObjects => m_SerializedObjects.Values;
 
-        Dictionary<int, HashSet<Reference>> m_ReferencesTo = new Dictionary<int, HashSet<Reference>>();
-        Dictionary<int, HashSet<Reference>> m_ReferencesFrom = new Dictionary<int, HashSet<Reference>>();
+        public Dictionary<int, HashSet<Reference>> ReferencesTo = new Dictionary<int, HashSet<Reference>>();
+        public Dictionary<int, HashSet<Reference>> ReferencesFrom = new Dictionary<int, HashSet<Reference>>();
 
         public void AddObject(SerializedObject obj)
         {
@@ -57,18 +57,18 @@ namespace Unity.ProjectAuditor.Editor.BuildData
 
         public void AddReference(int fromObjectId, int toObjectId, string property)
         {
-            if (!m_ReferencesFrom.TryGetValue(fromObjectId, out var references))
+            if (!ReferencesFrom.TryGetValue(fromObjectId, out var references))
             {
                 references = new HashSet<Reference>(new ReferenceComparer());
-                m_ReferencesFrom[fromObjectId] = references;
+                ReferencesFrom[fromObjectId] = references;
             }
 
             references.Add(new Reference(toObjectId, property));
 
-            if (!m_ReferencesTo.TryGetValue(toObjectId, out references))
+            if (!ReferencesTo.TryGetValue(toObjectId, out references))
             {
                 references = new HashSet<Reference>(new ReferenceComparer());
-                m_ReferencesTo[toObjectId] = references;
+                ReferencesTo[toObjectId] = references;
             }
 
             references.Add(new Reference(fromObjectId, property));
