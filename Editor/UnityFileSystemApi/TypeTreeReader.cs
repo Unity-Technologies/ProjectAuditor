@@ -45,12 +45,6 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
         {
             if (!s_Pool.TryPop(out var typeTreeReader))
             {
-                count++;
-                if (count > 100000)
-                {
-                    int x = 0;
-                }
-
                 return new TypeTreeReader(serializedFile, node, reader, offset, isReferencedObject);
             }
 

@@ -100,7 +100,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData
             {
                 var root = sf.GetTypeTreeRoot(obj.Id);
                 var offset = obj.Offset;
-                uint crc32 = 0;//processor.Process(currentObjectId, offset, root);
+                uint crc32 = processor.Process(obj, root);
 
                 using var typeTreeReader = TypeTreeReader.Get(sf, root, reader, offset);
 
@@ -117,10 +117,10 @@ namespace Unity.ProjectAuditor.Editor.BuildData
             switch (reader.Node.Type)
             {
                 case "AnimationClip": return new AnimationClip(obj, fileInfo, m_PPtrResolver, reader, crc32);
-                case "AssetBundle": return new AssetBundle(obj, fileInfo, m_PPtrResolver, reader, crc32);
+                //case "AssetBundle": return new AssetBundle(obj, fileInfo, m_PPtrResolver, reader, crc32);
                 case "AudioClip": return new AudioClip(obj, fileInfo, m_PPtrResolver, reader, crc32);
                 case "Mesh": return new Mesh(obj, fileInfo, m_PPtrResolver, reader, crc32);
-                case "PreloadData": return new PreloadData(obj, fileInfo, m_PPtrResolver, reader, crc32);
+                //case "PreloadData": return new PreloadData(obj, fileInfo, m_PPtrResolver, reader, crc32);
                 case "Shader": return new Shader(obj, fileInfo, m_PPtrResolver, reader, crc32);
                 case "Texture2D": return new Texture2D(obj, fileInfo, m_PPtrResolver, reader, crc32);
                 default: return new SerializedObject(obj, fileInfo, m_PPtrResolver, reader, crc32);

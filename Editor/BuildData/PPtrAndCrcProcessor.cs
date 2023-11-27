@@ -60,10 +60,10 @@ namespace Unity.ProjectAuditor.Editor.BuildData
             return reader;
         }
 
-        public uint Process(int objectId, long offset, TypeTreeNode node)
+        public uint Process(ObjectInfo obj, TypeTreeNode node)
         {
-            m_Offset = offset;
-            m_ObjectId = objectId;
+            m_Offset = obj.Offset;
+            m_ObjectId = m_PPtrResolver.GetObjectId(0, obj.Id);
             m_Crc32 = 0;
 
             foreach (var child in node.Children)
