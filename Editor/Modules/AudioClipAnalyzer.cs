@@ -306,7 +306,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             var ts = new TimeSpan(0, 0, 0, 0, (int)(audioClip.length * 1000.0f));
 
-            yield return context.CreateWithoutDiagnostic(IssueCategory.AudioClip, clipName)
+            yield return context.CreateInsight(IssueCategory.AudioClip, clipName)
                 .WithCustomProperties(
                     new object[(int)AudioClipProperty.Num]
                     {
@@ -351,14 +351,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (runtimeSize > context.StreamingClipThresholdBytes && !isStreaming)
             {
-                yield return context.Create(
+                yield return context.CreateIssue(
                     IssueCategory.AssetDiagnostic, k_AudioLongClipDoesNotStreamDescriptor.Id, clipName)
                     .WithLocation(assetPath);
             }
 
             if (decompressedClipSize < context.StreamingClipThresholdBytes && isStreaming)
             {
-                yield return context.Create(
+                yield return context.CreateIssue(
                     IssueCategory.AssetDiagnostic, k_AudioShortClipStreamsDescriptor.Id, clipName)
                     .WithLocation(assetPath);
             }
@@ -367,13 +367,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 if (isMobileTarget)
                 {
-                    yield return context.Create(
+                    yield return context.CreateIssue(
                         IssueCategory.AssetDiagnostic, k_AudioStereoClipsOnMobileDescriptor.Id, clipName)
                         .WithLocation(assetPath);
                 }
                 else if (!isStreaming)
                 {
-                    yield return context.Create(
+                    yield return context.CreateIssue(
                         IssueCategory.AssetDiagnostic, k_AudioStereoClipWhichIsNotStreamingDescriptor.Id, clipName)
                         .WithLocation(assetPath);
                 }
@@ -382,7 +382,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (runtimeSize > context.LongDecompressedClipThresholdBytes &&
                 sampleSettings.loadType == AudioClipLoadType.DecompressOnLoad)
             {
-                yield return context.Create(
+                yield return context.CreateIssue(
                     IssueCategory.AssetDiagnostic, k_AudioLongDecompressedClipDescriptor.Id, clipName)
                     .WithLocation(assetPath);
             }
@@ -391,7 +391,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 sampleSettings.compressionFormat != AudioCompressionFormat.PCM &&
                 sampleSettings.compressionFormat != AudioCompressionFormat.ADPCM)
             {
-                yield return context.Create(
+                yield return context.CreateIssue(
                     IssueCategory.AssetDiagnostic, k_AudioCompressedInMemoryDescriptor.Id, clipName)
                     .WithLocation(assetPath);
             }
@@ -403,7 +403,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 audioClip.frequency >= 48000 &&
                 sampleSettings.quality == 1.0f)
             {
-                yield return context.Create(
+                yield return context.CreateIssue(
                     IssueCategory.AssetDiagnostic, k_AudioLargeCompressedMobileDescriptor.Id, clipName)
                     .WithLocation(assetPath);
             }
@@ -413,28 +413,28 @@ namespace Unity.ProjectAuditor.Editor.Modules
             // a workaround for that, we should change this. In the meantime, it's useful for uncompressed samples at least.
             if (audioClip.frequency > 48000)
             {
-                yield return context.Create(
+                yield return context.CreateIssue(
                     IssueCategory.AssetDiagnostic, k_Audio48KHzDescriptor.Id, clipName)
                     .WithLocation(assetPath);
             }
 
             if (preloadAudioData)
             {
-                yield return context.Create(
+                yield return context.CreateIssue(
                     IssueCategory.AssetDiagnostic, k_AudioPreloadDescriptor.Id, clipName)
                     .WithLocation(assetPath);
             }
 
             if (!context.Importer.loadInBackground && compSize > context.LoadInBackGroundClipSizeThresholdBytes)
             {
-                yield return context.Create(
+                yield return context.CreateIssue(
                     IssueCategory.AssetDiagnostic, k_AudioLoadInBackgroundDisabledDescriptor.Id, clipName)
                     .WithLocation(assetPath);
             }
 
             if (sampleSettings.compressionFormat == AudioCompressionFormat.MP3)
             {
-                yield return context.Create(
+                yield return context.CreateIssue(
                     IssueCategory.AssetDiagnostic, k_AudioMP3Descriptor.Id, clipName)
                     .WithLocation(assetPath);
             }
@@ -443,7 +443,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 sourceFileExtension != "AIFF" &&
                 sourceFileExtension != "AIF")
             {
-                yield return context.Create(
+                yield return context.CreateIssue(
                     IssueCategory.AssetDiagnostic, k_AudioCompressedSourceAssetDescriptor.Id, clipName)
                     .WithLocation(assetPath);
             }

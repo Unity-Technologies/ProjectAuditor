@@ -81,15 +81,15 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             var methodReference = (MethodReference)context.Instruction.Operand;
             if (descriptorSystemNetSupported && methodReference.DeclaringType.FullName.StartsWith("System.Net."))
             {
-                return context.Create(IssueCategory.Code, k_DescriptorSystemNet.Id, methodReference.FullName);
+                return context.CreateIssue(IssueCategory.Code, k_DescriptorSystemNet.Id, methodReference.FullName);
             }
             if (descriptorSystemThreadingSupported && methodReference.DeclaringType.FullName.StartsWith("System.Threading."))
             {
-                return context.Create(IssueCategory.Code, k_DescriptorSystemThreading.Id, methodReference.FullName);
+                return context.CreateIssue(IssueCategory.Code, k_DescriptorSystemThreading.Id, methodReference.FullName);
             }
             if (descriptorMicrophoneSupported && methodReference.DeclaringType.FullName.Equals("UnityEngine.Microphone"))
             {
-                return context.Create(IssueCategory.Code, k_DescriptorMicrophone.Id, methodReference.FullName);
+                return context.CreateIssue(IssueCategory.Code, k_DescriptorMicrophone.Id, methodReference.FullName);
             }
 
             return null;

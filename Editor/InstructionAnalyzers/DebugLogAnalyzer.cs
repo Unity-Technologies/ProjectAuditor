@@ -100,10 +100,10 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             {
                 case "Log":
                 case "LogFormat":
-                    return context.Create(IssueCategory.Code, k_DebugLogIssueDescriptor.Id, methodName, context.MethodDefinition.Name);
+                    return context.CreateIssue(IssueCategory.Code, k_DebugLogIssueDescriptor.Id, methodName, context.MethodDefinition.Name);
                 case "LogWarning":
                 case "LogWarningFormat":
-                    return context.Create(IssueCategory.Code, k_DebugLogWarningIssueDescriptor.Id, methodName, context.MethodDefinition.Name);
+                    return context.CreateIssue(IssueCategory.Code, k_DebugLogWarningIssueDescriptor.Id, methodName, context.MethodDefinition.Name);
                 default:
                     return null;
             }

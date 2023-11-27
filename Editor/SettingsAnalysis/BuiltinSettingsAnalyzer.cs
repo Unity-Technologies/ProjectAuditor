@@ -99,7 +99,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             var mappings = m_ProjectSettingsMapping.Where(p => descriptor.Type.StartsWith(p.Key)).ToArray();
             if (mappings.Any())
                 projectWindowPath = mappings.First().Value;
-            return context.Create
+            return context.CreateIssue
                 (
                     IssueCategory.ProjectSetting,
                     descriptor.Id,

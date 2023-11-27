@@ -112,7 +112,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var dependencies = package.dependencies.Select(d => d.name + " [" + d.version + "]").ToArray();
             var displayName = string.IsNullOrEmpty(package.displayName) ? package.name : package.displayName;
             var node = new PackageDependencyNode(displayName, dependencies);
-            yield return context.CreateWithoutDiagnostic(IssueCategory.Package, displayName)
+            yield return context.CreateInsight(IssueCategory.Package, displayName)
                 .WithCustomProperties(new object[(int)PackageProperty.Num]
                 {
                     package.name,
@@ -130,13 +130,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 if (!recommendedVersionString.Equals(package.version))
                 {
-                    yield return context.Create(IssueCategory.PackageDiagnostic, k_RecommendPackageUpgrade.Id, package.name, package.version, recommendedVersionString)
+                    yield return context.CreateIssue(IssueCategory.PackageDiagnostic, k_RecommendPackageUpgrade.Id, package.name, package.version, recommendedVersionString)
                         .WithLocation(package.assetPath);
                 }
             }
             else if (package.version.Contains("pre") || package.version.Contains("exp"))
             {
-                yield return context.Create(IssueCategory.PackageDiagnostic, k_RecommendPackagePreView.Id, package.name, package.version)
+                yield return context.CreateIssue(IssueCategory.PackageDiagnostic, k_RecommendPackagePreView.Id, package.name, package.version)
                     .WithLocation(package.assetPath);
             }
         }

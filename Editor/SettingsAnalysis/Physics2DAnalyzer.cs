@@ -39,12 +39,12 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
             if (IsDefaultLayerCollisionMatrix())
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_DefaultLayerCollisionMatrixDescriptor.Id)
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_DefaultLayerCollisionMatrixDescriptor.Id)
                     .WithLocation("Project/Physics 2D");
             }
             if (k_SimulationModeDescriptor.IsApplicable(context.Params) && IsNotUsingSimulationModeScript())
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_SimulationModeDescriptor.Id)
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_SimulationModeDescriptor.Id)
                     .WithLocation("Project/Physics 2D");
             }
         }

@@ -71,25 +71,25 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
             if (IsUsingDefaultSettings())
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_DefaultSettingsDescriptor.Id)
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_DefaultSettingsDescriptor.Id)
                     .WithLocation("Project/Quality");
             }
 
             if (IsUsingLowQualityTextures())
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_UsingLowQualityTexturesDescriptor.Id)
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_UsingLowQualityTexturesDescriptor.Id)
                     .WithLocation("Project/Quality");
             }
 
             if (IsDefaultAsyncUploadTimeSlice())
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_DefaultAsyncUploadTimeSliceDescriptor.Id)
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_DefaultAsyncUploadTimeSliceDescriptor.Id)
                     .WithLocation("Project/Quality");
             }
 
             if (IsDefaultAsyncUploadBufferSize())
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_DefaultAsyncUploadBufferSizeSliceDescriptor.Id)
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_DefaultAsyncUploadBufferSizeSliceDescriptor.Id)
                     .WithLocation("Project/Quality");
             }
 
@@ -99,7 +99,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 foreach (var levelIndex in qualityLevels)
                 {
                     var levelName = QualitySettings.names[levelIndex];
-                    yield return context.Create(IssueCategory.ProjectSetting, k_TextureStreamingDisabledDescriptor.Id, levelName)
+                    yield return context.CreateIssue(IssueCategory.ProjectSetting, k_TextureStreamingDisabledDescriptor.Id, levelName)
                         .WithCustomProperties(new object[] {levelIndex})
                         .WithLocation("Project/Quality/" + levelName);
                 }

@@ -162,7 +162,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             };
 
             var precompiledAssemblies = AssemblyInfoProvider.GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.All)
-                .Select(assemblyPath => (ProjectIssue)context.CreateWithoutDiagnostic(IssueCategory.PrecompiledAssembly, Path.GetFileNameWithoutExtension(assemblyPath))
+                .Select(assemblyPath => (ProjectIssue)context.CreateInsight(IssueCategory.PrecompiledAssembly, Path.GetFileNameWithoutExtension(assemblyPath))
                     .WithCustomProperties(new object[(int)PrecompiledAssemblyProperty.Num]
                     {
                         false
@@ -188,7 +188,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             // report all roslyn analyzers as PrecompiledAssembly issues
             var roslynAnalyzerIssues = roslynAnalyzerAssets
-                .Select(roslynAnalyzerDllPath => (ProjectIssue)context.CreateWithoutDiagnostic(
+                .Select(roslynAnalyzerDllPath => (ProjectIssue)context.CreateInsight(
                 IssueCategory.PrecompiledAssembly,
                 Path.GetFileNameWithoutExtension(roslynAnalyzerDllPath))
                 .WithCustomProperties(new object[(int)PrecompiledAssemblyProperty.Num]
@@ -226,7 +226,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (analysisParams.CompilationMode == CompilationMode.Editor ||
                 analysisParams.CompilationMode == CompilationMode.EditorPlayMode)
             {
-                var issues = assemblyInfos.Select(assemblyInfo => (ProjectIssue)context.CreateWithoutDiagnostic(IssueCategory.Assembly, assemblyInfo.name)
+                var issues = assemblyInfos.Select(assemblyInfo => (ProjectIssue)context.CreateInsight(IssueCategory.Assembly, assemblyInfo.name)
                     .WithCustomProperties(new object[(int)AssemblyProperty.Num]
                     {
                         assemblyInfo.packageReadOnly,
@@ -461,7 +461,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 severity = Severity.Error;
 
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(compilationTask.assemblyPath);
-            yield return context.CreateWithoutDiagnostic(IssueCategory.Assembly, assemblyInfo.name)
+            yield return context.CreateInsight(IssueCategory.Assembly, assemblyInfo.name)
                 .WithCustomProperties(new object[(int)AssemblyProperty.Num]
                 {
                     assemblyInfo.packageReadOnly,
@@ -490,7 +490,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                     DescriptorLibrary.RegisterDescriptor(descriptor.Id, descriptor);
 
-                    yield return context.Create(IssueCategory.DomainReload, descriptor.Id)
+                    yield return context.CreateIssue(IssueCategory.DomainReload, descriptor.Id)
                         .WithLocation(relativePath, message.line)
                         .WithLogLevel(CompilerMessageTypeToLogLevel(message.type))
                         .WithCustomProperties(new object[(int)CompilerMessageProperty.Num]
@@ -501,7 +501,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
                 else
                 {
-                    yield return context.CreateWithoutDiagnostic(IssueCategory.CodeCompilerMessage, message.message)
+                    yield return context.CreateInsight(IssueCategory.CodeCompilerMessage, message.message)
                         .WithCustomProperties(new object[(int)CompilerMessageProperty.Num]
                         {
                             message.code,

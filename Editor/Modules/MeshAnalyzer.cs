@@ -64,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler is not the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(mesh);
 
-                yield return context.CreateWithoutDiagnostic(IssueCategory.Mesh, meshName)
+                yield return context.CreateInsight(IssueCategory.Mesh, meshName)
                     .WithCustomProperties(
                         new object[((int)MeshProperty.Num)]
                         {
@@ -79,14 +79,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 if (mesh.isReadable)
                 {
-                    yield return context.Create(IssueCategory.AssetDiagnostic, k_MeshReadWriteEnabledDescriptor.Id, meshName)
+                    yield return context.CreateIssue(IssueCategory.AssetDiagnostic, k_MeshReadWriteEnabledDescriptor.Id, meshName)
                         .WithLocation(assetPath);
                 }
 
                 if (mesh.indexFormat == IndexFormat.UInt32 &&
                     mesh.vertexCount <= 65535)
                 {
-                    yield return context.Create(IssueCategory.AssetDiagnostic,
+                    yield return context.CreateIssue(IssueCategory.AssetDiagnostic,
                         k_Mesh32BitIndexFormatUsedDescriptor.Id, meshName)
                         .WithLocation(assetPath);
                 }

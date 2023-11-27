@@ -76,7 +76,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             var renderPipeline = GraphicsSettings.currentRenderPipeline;
             if (renderPipeline == null || !(renderPipeline is UniversalRenderPipelineAsset))
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_URPAssetDescriptor.Id)
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_URPAssetDescriptor.Id)
                     .WithLocation("Project/Graphics");
             }
 
@@ -91,7 +91,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             foreach (var cameraData in allCameraData)
             {
                 if (cameraData.stopNaN)
-                    yield return context.Create(IssueCategory.ProjectSetting,
+                    yield return context.CreateIssue(IssueCategory.ProjectSetting,
                         k_CameraStopNanDescriptor.Id);
             }
 #else

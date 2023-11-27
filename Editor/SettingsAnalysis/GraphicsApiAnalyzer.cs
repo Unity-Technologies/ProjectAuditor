@@ -60,15 +60,15 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
             if (k_OpenGLESAndMetalDescriptor.IsApplicable(context.Params) && IsUsingOpenGLESAndMetal())
-                yield return context.Create(IssueCategory.ProjectSetting, k_OpenGLESAndMetalDescriptor.Id)
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_OpenGLESAndMetalDescriptor.Id)
                     .WithLocation("Project/Player");
 
             if (k_MetalDescriptor.IsApplicable(context.Params) && IsNotUsingMetal())
-                yield return context.Create(IssueCategory.ProjectSetting, k_MetalDescriptor.Id)
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_MetalDescriptor.Id)
                     .WithLocation("Project/Player");
 
             if (k_VulkanDescriptor.IsApplicable(context.Params) && IsNotUsingVulkan())
-                yield return context.Create(IssueCategory.ProjectSetting, k_VulkanDescriptor.Id)
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_VulkanDescriptor.Id)
                     .WithLocation("Project/Player");
         }
 

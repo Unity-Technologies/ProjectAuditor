@@ -440,7 +440,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     if (shaderVariantData.buildTarget != BuildTarget.NoTarget && shaderVariantData.buildTarget != analysisParams.Platform)
                         continue;
 
-                    issues.Add(context.CreateWithoutDiagnostic(k_ComputeShaderVariantLayout.category, computeShaderName)
+                    issues.Add(context.CreateInsight(k_ComputeShaderVariantLayout.category, computeShaderName)
                         .WithCustomProperties(new object[(int)ComputeShaderVariantProperty.Num]
                         {
                             shaderVariantData.compilerPlatform,
@@ -467,7 +467,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var materialPathMap = CollectMaterials();
             foreach (var material in materialPathMap)
             {
-                issues.Add(context.CreateWithoutDiagnostic(k_MaterialLayout.category, material.Key.name)
+                issues.Add(context.CreateInsight(k_MaterialLayout.category, material.Key.name)
                     .WithCustomProperties(new object[(int)MaterialProperty.Num]
                     {
                         material.Key.shader.name
@@ -503,7 +503,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var message = shaderMessage.message;
                 if (message.EndsWith("\n"))
                     message = message.Substring(0, message.Length - 2);
-                yield return context.CreateWithoutDiagnostic(IssueCategory.ShaderCompilerMessage, message)
+                yield return context.CreateInsight(IssueCategory.ShaderCompilerMessage, message)
                     .WithCustomProperties(new object[(int)ShaderMessageProperty.Num]
                     {
                         shaderName,
@@ -524,7 +524,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (shaderHasError)
             {
-                yield return context.CreateWithoutDiagnostic(IssueCategory.Shader, Path.GetFileNameWithoutExtension(context.AssetPath))
+                yield return context.CreateInsight(IssueCategory.Shader, Path.GetFileNameWithoutExtension(context.AssetPath))
                     .WithCustomProperties((int)ShaderProperty.Num, k_NotAvailable)
                     .WithLocation(context.AssetPath)
                     .WithSeverity(severity);
@@ -548,7 +548,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var propertyCount = ShaderUtilProxy.GetPropertyCount(context.Shader);
                 var texturePropertyCount = ShaderUtilProxy.GetTexturePropertyCount(context.Shader);
 
-                yield return context.CreateWithoutDiagnostic(IssueCategory.Shader, shaderName)
+                yield return context.CreateInsight(IssueCategory.Shader, shaderName)
                     .WithCustomProperties(new object[(int)ShaderProperty.Num]
                     {
                         assetSize,
@@ -579,7 +579,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     if (shaderVariantData.buildTarget != BuildTarget.NoTarget && shaderVariantData.buildTarget != context.Params.Platform)
                         continue;
 
-                    yield return context.CreateWithoutDiagnostic(IssueCategory.ShaderVariant, context.Shader.name)
+                    yield return context.CreateInsight(IssueCategory.ShaderVariant, context.Shader.name)
                         .WithLocation(context.AssetPath)
                         .WithCustomProperties(new object[(int)ShaderVariantProperty.Num]
                         {

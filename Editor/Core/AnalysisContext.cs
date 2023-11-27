@@ -14,7 +14,7 @@ namespace Unity.ProjectAuditor.Editor.Core
         /// <param name="id">Diagnostic descriptor ID</param>
         /// <param name="messageArgs">Arguments to be used in the message formatting</param>
         /// <returns>The IssueBuilder, constructed with the specified category, descriptor ID and message arguments</returns>
-        internal IssueBuilder Create(IssueCategory category, string id, params object[] messageArgs)
+        internal IssueBuilder CreateIssue(IssueCategory category, string id, params object[] messageArgs)
         {
             return new IssueBuilder(category, id, messageArgs);
         }
@@ -25,7 +25,7 @@ namespace Unity.ProjectAuditor.Editor.Core
         /// <param name="category">Issue category</param>
         /// <param name="description">User-friendly description</param>
         /// <returns>The IssueBuilder, constructed with the specified category and description string</returns>
-        internal IssueBuilder CreateWithoutDiagnostic(IssueCategory category, string description)
+        internal IssueBuilder CreateInsight(IssueCategory category, string description)
         {
             return new IssueBuilder(category, description);
         }

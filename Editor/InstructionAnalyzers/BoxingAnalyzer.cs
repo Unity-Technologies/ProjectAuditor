@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             else if (type.FullName.Equals("System.Double"))
                 typeName = "double";
 
-            return context.Create(IssueCategory.Code, k_Descriptor.Id, typeName);
+            return context.CreateIssue(IssueCategory.Code, k_Descriptor.Id, typeName);
         }
     }
 }

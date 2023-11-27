@@ -183,7 +183,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler may not be the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(controller);
 
-                issues.Add(context.CreateWithoutDiagnostic(k_AnimatorControllerLayout.category, controller.name)
+                issues.Add(context.CreateInsight(k_AnimatorControllerLayout.category, controller.name)
                     .WithCustomProperties(new object[(int)AnimatorControllerProperty.Num]
                     {
                         controller.layers.Length,
@@ -223,7 +223,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler may not be the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(clip);
 
-                issues.Add(context.CreateWithoutDiagnostic(k_AnimationClipLayout.category, clip.name)
+                issues.Add(context.CreateInsight(k_AnimationClipLayout.category, clip.name)
                     .WithCustomProperties(new object[(int)AnimationClipProperty.Num]
                     {
                         clip.empty,
@@ -272,7 +272,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler may not be the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(avatar);
 
-                issues.Add(context.CreateWithoutDiagnostic(k_AvatarLayout.category, avatar.name)
+                issues.Add(context.CreateInsight(k_AvatarLayout.category, avatar.name)
                     .WithCustomProperties(new object[(int)AvatarProperty.Num]
                     {
                         avatar.isValid,
@@ -321,7 +321,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler may not be the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(mask);
 
-                issues.Add(context.CreateWithoutDiagnostic(k_AvatarMaskLayout.category, mask.name)
+                issues.Add(context.CreateInsight(k_AvatarMaskLayout.category, mask.name)
                     .WithCustomProperties(new object[(int)AvatarMaskProperty.Num]
                     {
                         mask.transformCount,

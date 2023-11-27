@@ -71,7 +71,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             string assetLocation = qualityLevel == -1
                 ? "Default Rendering Pipeline Asset"
                 : $"Rendering Pipeline Asset on Quality Level: '{QualitySettings.names[qualityLevel]}'";
-            return context.Create(IssueCategory.ProjectSetting, id,
+            return context.CreateIssue(IssueCategory.ProjectSetting, id,
                 name, assetLocation)
                 .WithCustomProperties(new object[] { qualityLevel })
                 .WithLocation(qualityLevel == -1 ? "Project/Graphics" : "Project/Quality");
