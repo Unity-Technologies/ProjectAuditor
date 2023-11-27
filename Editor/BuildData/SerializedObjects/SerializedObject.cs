@@ -10,12 +10,16 @@ namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
         public string Type { get; }
         public uint Crc32 { get; }
         public BuildFileInfo BuildFile { get; }
+        // This id is required if we want to read the object again.
+        public long IdInSerializedFile { get; }
 
-        public SerializedObject(BuildFileInfo buildFile, PPtrResolver pPtrResolver, TypeTreeReader reader, int id, long size, uint crc32, string type)
+        public SerializedObject(ObjectInfo obj, BuildFileInfo buildFile, PPtrResolver pPtrResolver, TypeTreeReader reader, uint crc32)
         {
-            Id = id;
-            Size = size;
-            Type = type;
+            // 0 is the current SerializedFile.
+            Id = pPtrResolver.GetObjectId(0, obj.Id);
+            IdInSerializedFile = obj.Id;
+            Size = obj.Size;
+            Type = reader.Node.Type;
             Crc32 = crc32;
             BuildFile = buildFile;
 

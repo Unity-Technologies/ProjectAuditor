@@ -122,8 +122,8 @@ namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
         public int MipCount { get; }
         public bool RwEnabled { get; }
 
-        public Texture2D(BuildFileInfo buildFile, PPtrResolver pPtrResolver, TypeTreeReader reader, int id, long size, uint crc32)
-            : base(buildFile, pPtrResolver, reader, id, size, crc32, "Texture2D")
+        public Texture2D(ObjectInfo obj, BuildFileInfo buildFile, PPtrResolver pPtrResolver, TypeTreeReader reader, uint crc32)
+            : base(obj, buildFile, pPtrResolver, reader, crc32)
         {
             Width = reader["m_Width"].GetValue<int>();
             Height = reader["m_Height"].GetValue<int>();
