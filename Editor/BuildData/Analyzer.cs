@@ -63,6 +63,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData
             }
 
             UnityFileReader.ClearBufferPool();
+            TypeTreeReader.ClearPool();
 
             return buildObjects;
         }
@@ -100,7 +101,10 @@ namespace Unity.ProjectAuditor.Editor.BuildData
                 var root = sf.GetTypeTreeRoot(obj.Id);
                 var offset = obj.Offset;
                 uint crc32 = 0;//processor.Process(currentObjectId, offset, root);
-                var serializedObject = ReadSerializedObject(obj, fileInfo, new TypeTreeReader(sf, root, reader, offset), crc32);
+
+                using var typeTreeReader = TypeTreeReader.Get(sf, root, reader, offset);
+
+                var serializedObject = ReadSerializedObject(obj, fileInfo, typeTreeReader, crc32);
 
                 buildObjects.AddObject(serializedObject);
             }
