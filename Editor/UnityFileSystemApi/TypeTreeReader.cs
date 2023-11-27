@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,10 +43,12 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
 
         public static TypeTreeReader Get(SerializedFile serializedFile, TypeTreeNode node, UnityFileReader reader, long offset, bool isReferencedObject = false)
         {
-            if (!s_Pool.TryPop(out var typeTreeReader))
+            if (s_Pool.Count == 0)
             {
                 return new TypeTreeReader(serializedFile, node, reader, offset, isReferencedObject);
             }
+
+            var typeTreeReader = s_Pool.Pop();
 
             typeTreeReader.Initialize(serializedFile, node, reader, offset, isReferencedObject);
 
@@ -113,7 +115,8 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
                             // Add the reader to cache.
                             m_ChildrenCacheObject[$"rid({i++})"] = refObjReader;
                             curOffset += refObjReader.Size;
-                        } while (true);
+                        }
+                        while (true);
                     }
                     else if (version == 2)
                     {
@@ -350,7 +353,7 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
             throw new IndexOutOfRangeException();
         }
 
-        public int Count => IsArrayOfObjects ? GetArraySize() : (IsObject ? Node.Children.Count : 0);
+        public int Count => IsArrayOfObjects? GetArraySize() : (IsObject ? Node.Children.Count : 0);
 
         public TypeTreeReader this[string name] => GetChild(name);
 

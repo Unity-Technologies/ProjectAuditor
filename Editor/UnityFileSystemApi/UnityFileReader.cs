@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -20,9 +20,13 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
 
         public UnityFileReader(string path, int bufferSize)
         {
-            if (!s_BufferPool.Remove(bufferSize, out var buffer))
+            if (!s_BufferPool.TryGetValue(bufferSize, out var buffer))
             {
                 buffer = new byte[bufferSize];
+            }
+            else
+            {
+                s_BufferPool.Remove(bufferSize);
             }
 
             m_Buffer = buffer;
