@@ -117,7 +117,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
                 Categories = categories,
                 OnIncomingIssues = issues =>
                 {
-                    var categoryIssues = issues.Where(issue => categories.Contains(issue.category));
+                    var categoryIssues = issues.Where(issue => categories.Contains(issue.Category));
                     foundIssues.AddRange(categoryIssues);
                 },
                 Platform = m_Platform,

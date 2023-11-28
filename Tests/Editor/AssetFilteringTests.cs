@@ -97,7 +97,7 @@ namespace Unity.ProjectAuditor.EditorTests
             bool foundIssueForAsset = false;
             for (var i = 0; i < issuesAll.Length; i++)
             {
-                if (issuesAll[i].relativePath == testAsset.relativePath)
+                if (issuesAll[i].RelativePath == testAsset.relativePath)
                 {
                     foundIssueForAsset = true;
                     break;
@@ -118,7 +118,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotZero(issuesTestAssetOnly.Length);
             foreach (var issue in issuesTestAssetOnly)
             {
-                if (issue.relativePath != testAsset.relativePath)
+                if (issue.RelativePath != testAsset.relativePath)
                 {
                     Assert.Fail("Issue created for asset not included in filter");
                 }
@@ -129,7 +129,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.True(issuesNotTestAsset.Length + issuesTestAssetOnly.Length == issuesAll.Length, "Filtering for opposites generating inconsistent results");
             foreach (var issue in issuesNotTestAsset)
             {
-                if (issue.relativePath == testAsset.relativePath)
+                if (issue.RelativePath == testAsset.relativePath)
                 {
                     Assert.Fail("Issue created for asset excluded by filter");
                 }
