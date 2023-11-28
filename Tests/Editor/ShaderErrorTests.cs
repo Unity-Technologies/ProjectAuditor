@@ -14,7 +14,6 @@ namespace Unity.ProjectAuditor.EditorTests
     class ShaderErrorTests : TestFixtureBase
     {
         // Shader compile failure messaging is inconsistent at best prior to 2020 versions.
-#if UNITY_2020_1_OR_NEWER
         [SetUp]
         public void Clear()
         {
@@ -28,7 +27,7 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [UnityTest]
-#if UNITY_2023_1_OR_NEWER && UNITY_EDITOR_WIN
+#if UNITY_2022_3_OR_NEWER && UNITY_EDITOR_WIN
         [Ignore("This fails with error: unexpected token '}' at line 38 (on d3d11)")]
 #endif
         public IEnumerator ShadersAnalysis_ShaderWithFunctionError_IsReported()
@@ -78,17 +77,15 @@ namespace Unity.ProjectAuditor.EditorTests
                 }
             }");
 
-#if UNITY_2019_1_OR_NEWER
             while (ShaderUtil.anythingCompiling)
             {
                 yield return null;
             }
-#endif
 
-            var shadersWithErrors = Analyze(IssueCategory.Shader, i => i.severity == Severity.Error);
+            var shadersWithErrors = Analyze(IssueCategory.Shader, i => i.Severity == Severity.Error);
 
             Assert.Positive(shadersWithErrors.Count());
-            var shaderIssue = shadersWithErrors.FirstOrDefault(i => i.relativePath.Equals(local_shaderWithFunctionError.relativePath));
+            var shaderIssue = shadersWithErrors.FirstOrDefault(i => i.RelativePath.Equals(local_shaderWithFunctionError.relativePath));
             Assert.NotNull(shaderIssue);
 
             local_shaderWithFunctionError.CleanupLocal();
@@ -105,22 +102,18 @@ namespace Unity.ProjectAuditor.EditorTests
             {
             }");
 
-#if UNITY_2019_1_OR_NEWER
             while (ShaderUtil.anythingCompiling)
             {
                 yield return null;
             }
-#endif
 
-            var shadersWithErrors = Analyze(IssueCategory.Shader, i => i.severity == Severity.Error);
+            var shadersWithErrors = Analyze(IssueCategory.Shader, i => i.Severity == Severity.Error);
 
             Assert.Positive(shadersWithErrors.Count());
-            var shaderIssue = shadersWithErrors.FirstOrDefault(i => i.relativePath.Equals(local_shaderWithShaderLabError.relativePath));
+            var shaderIssue = shadersWithErrors.FirstOrDefault(i => i.RelativePath.Equals(local_shaderWithShaderLabError.relativePath));
             Assert.NotNull(shaderIssue);
 
             local_shaderWithShaderLabError.CleanupLocal();
         }
-
-#endif
     }
 }

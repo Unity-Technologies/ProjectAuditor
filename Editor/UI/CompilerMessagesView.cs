@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         const string k_Info = @"This view shows compiler error, warning and info messages.
 
 To view Roslyn Analyzer diagnostics, make sure Roslyn Analyzer DLLs use the <b>RoslynAnalyzer</b> label.";
-        const string k_RoslynDisabled = "The UseRoslynAnalyzers option is disabled. To enable Roslyn diagnostics reporting, make sure the corresponding option is enabled in Preferences > Analysis > Project Auditor.";
+        const string k_RoslynDisabled = "The UseRoslynAnalyzers option is disabled. To enable Roslyn diagnostics reporting, make sure the corresponding option is enabled in Preferences > Analysis > " + ProjectAuditor.DisplayName + ".";
         const string k_NotAvailable = "This view is not available when 'CompilationMode' is set to 'CompilationMode.Editor'.";
 
         bool m_ShowInfo;
@@ -39,14 +39,14 @@ To view Roslyn Analyzer diagnostics, make sure Roslyn Analyzer DLLs use the <b>R
                     return;
                 }
 
-                var selectedDescriptors = selectedIssues.Select(i => i.id.IsValid()).Distinct().ToArray();
+                var selectedDescriptors = selectedIssues.Select(i => i.GetCustomProperty(0)).Distinct().ToArray();
                 if (selectedDescriptors.Length > 1)
                 {
                     GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                     return;
                 }
 
-                GUILayout.TextArea(selectedIssues[0].description, SharedStyles.TextAreaWithDynamicSize,
+                GUILayout.TextArea(selectedIssues[0].Description, SharedStyles.TextAreaWithDynamicSize,
                     GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
         }
@@ -85,7 +85,7 @@ To view Roslyn Analyzer diagnostics, make sure Roslyn Analyzer DLLs use the <b>R
 
         public override bool Match(ProjectIssue issue)
         {
-            switch (issue.severity)
+            switch (issue.Severity)
             {
                 case Severity.Info:
                     if (!m_ShowInfo)

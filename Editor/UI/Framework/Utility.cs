@@ -147,24 +147,18 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public static void DrawSelectedText(string text)
         {
-#if UNITY_2019_1_OR_NEWER
             var treeViewSelectionStyle = (GUIStyle)"TV Selection";
             var backgroundStyle = new GUIStyle(treeViewSelectionStyle);
 
             var treeViewLineStyle = (GUIStyle)"TV Line";
             var textStyle = new GUIStyle(treeViewLineStyle);
-#else
-            var textStyle = GUI.skin.label;
-#endif
 
             var content = new GUIContent(text, text);
             var size = textStyle.CalcSize(content);
             var rect = EditorGUILayout.GetControlRect(GUILayout.MaxWidth(size.x), GUILayout.Height(size.y));
             if (Event.current.type == EventType.Repaint)
             {
-#if UNITY_2019_1_OR_NEWER
                 backgroundStyle.Draw(rect, false, false, true, true);
-#endif
                 GUI.Label(rect, content, textStyle);
             }
         }
@@ -227,7 +221,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         tooltip = "Error";
                     return EditorGUIUtility.TrIconContent(k_ErrorIconName, tooltip);
 
-                // severity icons
+                // Severity icons
                 case IconType.Critical:
                     if (string.IsNullOrEmpty(tooltip))
                         tooltip = "Critical";
@@ -292,15 +286,15 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return null;
         }
 
-        public static GUIContent GetLogLevelIcon(Core.LogLevel logLevel, string tooltip = null)
+        public static GUIContent GetLogLevelIcon(LogLevel logLevel, string tooltip = null)
         {
             switch (logLevel)
             {
-                case Core.LogLevel.Info:
+                case LogLevel.Info:
                     return GetIcon(IconType.Info, tooltip);
-                case Core.LogLevel.Warning:
+                case LogLevel.Warning:
                     return GetIcon(IconType.Warning, tooltip);
-                case Core.LogLevel.Error:
+                case LogLevel.Error:
                     return GetIcon(IconType.Error, tooltip);
                 default:
                     return GetIcon(IconType.Help, tooltip);

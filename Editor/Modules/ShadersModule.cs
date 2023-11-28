@@ -248,10 +248,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         static Dictionary<Shader, List<ShaderVariantData>> s_ShaderVariantData =
             new Dictionary<Shader, List<ShaderVariantData>>();
-#if PA_CAN_USE_IPREPROCESSCOMPUTESHADERS
         static Dictionary<ComputeShader, List<ComputeShaderVariantData>> s_ComputeShaderVariantData =
             new Dictionary<ComputeShader, List<ComputeShaderVariantData>>();
-#endif
 
         public override string Name => "Shaders";
 
@@ -259,14 +257,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             k_ShaderLayout,
             k_ShaderVariantLayout,
-
-#if PA_CAN_USE_IPREPROCESSCOMPUTESHADERS
             k_ComputeShaderVariantLayout,
-#endif
-
-#if UNITY_2019_1_OR_NEWER
             k_ShaderCompilerMessageLayout,
-#endif
             k_MaterialLayout,
             AssetsModule.k_IssueLayout
         };
@@ -388,7 +380,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var platform = analysisParams.Platform;
             var alwaysIncludedShaders = GetAlwaysIncludedShaders();
             var buildReportInfoAvailable = false;
-#if BUILD_REPORT_API_SUPPORT
+
             var packetAssetInfos = new PackedAssetInfo[0];
             var buildReport = BuildReportModule.BuildReportProvider.GetBuildReport(platform);
             if (buildReport != null)
@@ -398,14 +390,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
 
             buildReportInfoAvailable = packetAssetInfos.Length > 0;
-#endif
+
             var sortedShaders = shaderPathMap.Keys.ToList().OrderBy(shader => shader.name);
             var analyzers = GetPlatformAnalyzers(platform);
             foreach (var shader in sortedShaders)
             {
                 var assetPath = shaderPathMap[shader];
                 var assetSize = buildReportInfoAvailable ? k_Unknown : k_NotAvailable;
-#if BUILD_REPORT_API_SUPPORT
+
                 if (!assetPath.Equals("Resources/unity_builtin_extra"))
                 {
                     var builtAssets = packetAssetInfos.Where(p => p.sourceAssetPath.Equals(assetPath)).ToArray();
@@ -419,7 +411,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         assetSize = "0";
                     }
                 }
-#endif
 
                 var shaderAnalysisContext = new ShaderAnalysisContext()
                 {
@@ -440,7 +431,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         void ProcessComputeShaders(AnalysisParams analysisParams)
         {
-#if PA_CAN_USE_IPREPROCESSCOMPUTESHADERS
             var context = new AnalysisContext()
             {
                 Params = analysisParams
@@ -455,7 +445,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     if (shaderVariantData.buildTarget != BuildTarget.NoTarget && shaderVariantData.buildTarget != analysisParams.Platform)
                         continue;
 
-                    issues.Add(context.CreateWithoutDiagnostic(k_ComputeShaderVariantLayout.category, computeShaderName)
+                    issues.Add(context.CreateInsight(k_ComputeShaderVariantLayout.category, computeShaderName)
                         .WithCustomProperties(new object[(int)ComputeShaderVariantProperty.Num]
                         {
                             shaderVariantData.compilerPlatform,
@@ -469,7 +459,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
             if (issues.Any())
                 analysisParams.OnIncomingIssues(issues);
-#endif
         }
 
         void ProcessMaterials(AnalysisContext context)
@@ -479,7 +468,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var materialPathMap = CollectMaterials(context);
             foreach (var material in materialPathMap)
             {
-                issues.Add(context.CreateWithoutDiagnostic(k_MaterialLayout.category, material.Key.name)
+                issues.Add(context.CreateInsight(k_MaterialLayout.category, material.Key.name)
                     .WithCustomProperties(new object[(int)MaterialProperty.Num]
                     {
                         material.Key.shader.name
@@ -508,14 +497,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var shaderName = context.Shader.name;
             var shaderHasError = false;
             var severity = Severity.None;
-#if UNITY_2019_1_OR_NEWER
+
             var shaderMessages = ShaderUtil.GetShaderMessages(context.Shader);
             foreach (var shaderMessage in shaderMessages)
             {
                 var message = shaderMessage.message;
                 if (message.EndsWith("\n"))
                     message = message.Substring(0, message.Length - 2);
-                yield return context.CreateWithoutDiagnostic(IssueCategory.ShaderCompilerMessage, message)
+                yield return context.CreateInsight(IssueCategory.ShaderCompilerMessage, message)
                     .WithCustomProperties(new object[(int)ShaderMessageProperty.Num]
                     {
                         shaderName,
@@ -533,11 +522,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 severity = Severity.Error;
             else if (shaderMessages.Length > 0)
                 severity = Severity.Warning;
-#endif
 
             if (shaderHasError)
             {
-                yield return context.CreateWithoutDiagnostic(IssueCategory.Shader, Path.GetFileNameWithoutExtension(context.AssetPath))
+                yield return context.CreateInsight(IssueCategory.Shader, Path.GetFileNameWithoutExtension(context.AssetPath))
                     .WithCustomProperties((int)ShaderProperty.Num, k_NotAvailable)
                     .WithLocation(context.AssetPath)
                     .WithSeverity(severity);
@@ -552,7 +540,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     variantCount = value.ToString();
                 }
 */
-                var passCount = -1;
+                var passCount = context.Shader.passCount;
                 var globalKeywords = ShaderUtilProxy.GetShaderGlobalKeywords(context.Shader);
                 var localKeywords = ShaderUtilProxy.GetShaderLocalKeywords(context.Shader);
                 var hasInstancing = ShaderUtilProxy.HasInstancing(context.Shader);
@@ -561,10 +549,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var propertyCount = ShaderUtilProxy.GetPropertyCount(context.Shader);
                 var texturePropertyCount = ShaderUtilProxy.GetTexturePropertyCount(context.Shader);
 
-#if UNITY_2019_1_OR_NEWER
-                passCount = context.Shader.passCount;
-#endif
-                yield return context.CreateWithoutDiagnostic(IssueCategory.Shader, shaderName)
+                yield return context.CreateInsight(IssueCategory.Shader, shaderName)
                     .WithCustomProperties(new object[(int)ShaderProperty.Num]
                     {
                         assetSize,
@@ -595,7 +580,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     if (shaderVariantData.buildTarget != BuildTarget.NoTarget && shaderVariantData.buildTarget != context.Params.Platform)
                         continue;
 
-                    yield return context.CreateWithoutDiagnostic(IssueCategory.ShaderVariant, context.Shader.name)
+                    yield return context.CreateInsight(IssueCategory.ShaderVariant, context.Shader.name)
                         .WithLocation(context.AssetPath)
                         .WithCustomProperties(new object[(int)ShaderVariantProperty.Num]
                         {
@@ -616,9 +601,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static void ClearBuildData()
         {
             s_ShaderVariantData.Clear();
-#if PA_CAN_USE_IPREPROCESSCOMPUTESHADERS
             s_ComputeShaderVariantData.Clear();
-#endif
 
 #if UNITY_2021_1_OR_NEWER
             var playerDataCachePath = Path.Combine("Library", "PlayerDataCache");
@@ -636,7 +619,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public int callbackOrder => Int32.MaxValue;
 
-#if PA_CAN_USE_IPREPROCESSCOMPUTESHADERS
         public void OnProcessComputeShader(ComputeShader shader, string kernelName, IList<ShaderCompilerData> data)
         {
             if (data.Count == 0)
@@ -689,8 +671,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 });
             }
         }
-
-#endif
 
         public void OnProcessShader(Shader shader, ShaderSnippetData snippet, IList<ShaderCompilerData> data)
         {
@@ -794,13 +774,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (!compiledVariants.Any())
                 return ParseLogResult.NoCompiledVariants;
 
-            builtVariants = builtVariants.OrderBy(v => v.description).ToArray();
+            builtVariants = builtVariants.OrderBy(v => v.Description).ToArray();
             var shader = (Shader)null;
             foreach (var builtVariant in builtVariants)
             {
-                if (shader == null || !shader.name.Equals(builtVariant.description))
+                if (shader == null || !shader.name.Equals(builtVariant.Description))
                 {
-                    shader = Shader.Find(builtVariant.description);
+                    shader = Shader.Find(builtVariant.Description);
                 }
 
                 if (shader == null)
@@ -865,11 +845,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var isUnnamed = k_NoPassNames.Contains(cv.pass) || cv.pass.StartsWith("<Unnamed Pass ");
 #if UNITY_2021_3_OR_NEWER || UNITY_2021_2_14 || UNITY_2021_2_15 || UNITY_2021_2_16 || UNITY_2021_2_17 || UNITY_2021_2_18 || UNITY_2021_2_19
                 passMatch = isUnnamed && string.IsNullOrEmpty(passName);
-#elif UNITY_2019_1_OR_NEWER
+#else
                 var pass = 0;
                 passMatch = isUnnamed && passName.StartsWith(k_UnnamedPassPrefix) && int.TryParse(passName.Substring(k_UnnamedPassPrefix.Length), out pass);
-#else
-                passMatch = isUnnamed && string.IsNullOrEmpty(passName);
 #endif
             }
 
@@ -882,28 +860,22 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
 #if UNITY_2021_2_OR_NEWER
             var keywords = shaderKeywords.Select(keyword => keyword.name);
-#elif UNITY_2019_3_OR_NEWER
-            var keywords = shaderKeywords.Select(keyword => ShaderKeyword.IsKeywordLocal(keyword) ? ShaderKeyword.GetKeywordName(shader, keyword) : ShaderKeyword.GetGlobalKeywordName(keyword));
 #else
-            var keywords = shaderKeywords.Select(keyword => keyword.GetKeywordName());
+            var keywords = shaderKeywords.Select(keyword => ShaderKeyword.IsKeywordLocal(keyword) ? ShaderKeyword.GetKeywordName(shader, keyword) : ShaderKeyword.GetGlobalKeywordName(keyword));
 #endif
             return keywords.ToArray();
         }
 
-#if PA_CAN_USE_IPREPROCESSCOMPUTESHADERS
         static string[] GetShaderKeywords(ComputeShader shader, ShaderKeyword[] shaderKeywords)
         {
 #if UNITY_2021_2_OR_NEWER
             var keywords = shaderKeywords.Select(keyword => keyword.name);
-#elif UNITY_2019_3_OR_NEWER
-            var keywords = shaderKeywords.Select(keyword => ShaderKeyword.IsKeywordLocal(keyword) ? ShaderKeyword.GetKeywordName(shader, keyword) : ShaderKeyword.GetGlobalKeywordName(keyword));
 #else
-            var keywords = shaderKeywords.Select(keyword => keyword.GetKeywordName());
+            var keywords = shaderKeywords.Select(keyword => ShaderKeyword.IsKeywordLocal(keyword) ? ShaderKeyword.GetKeywordName(shader, keyword) : ShaderKeyword.GetGlobalKeywordName(keyword));
 #endif
             return keywords.ToArray();
         }
 
-#endif
         static string[] SplitKeywords(string keywordsString, string separator = null)
         {
             if (keywordsString.Equals(k_NoKeywords))
@@ -934,7 +906,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             switch (shaderCompilerPlatform)
             {
                 // On OpenGL and Vulkan, all stages supported by the shader are combined into a single ShaderType (Vertex).
+#if !UNITY_2023_1_OR_NEWER
                 case ShaderCompilerPlatform.GLES20:
+#endif
                 case ShaderCompilerPlatform.GLES3x:
                 case ShaderCompilerPlatform.OpenGLCore:
                 case ShaderCompilerPlatform.Vulkan:

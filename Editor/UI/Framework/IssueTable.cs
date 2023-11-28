@@ -24,7 +24,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         readonly List<TreeViewItem> m_Rows = new List<TreeViewItem>(100);
 
         List<IssueTableItem> m_TreeViewItemGroups = new List<IssueTableItem>();
-        IssueTableItem[] m_TreeViewItemIssues;
+        Dictionary<int, IssueTableItem> m_TreeViewItemIssues;
+        List<IssueTableItem> m_SelectedIssues = new List<IssueTableItem>();
+        bool m_SelectionChanged = true;
         int m_NextId;
         int m_NumMatchingIssues;
         bool m_FlatView;
@@ -90,9 +92,15 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     m_TreeViewItemGroups.Add((new IssueTableItem(m_NextId++, 0, name)));
             }
 
-            var itemsList = new List<IssueTableItem>(issues.Count);
+            var items = new Dictionary<int, IssueTableItem>(issues.Count);
             if (m_TreeViewItemIssues != null)
-                itemsList.AddRange(m_TreeViewItemIssues);
+            {
+                foreach (var issuesPair in m_TreeViewItemIssues)
+                {
+                    items.Add(issuesPair.Value.id, issuesPair.Value);
+                }
+            }
+
             foreach (var issue in issues)
             {
                 var depth = 1;
@@ -105,18 +113,19 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     else
                         depth = 0;
                 }
-                var item = new IssueTableItem(m_NextId++, depth, issue.description, issue, issue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
-                itemsList.Add(item);
+
+                var item = new IssueTableItem(m_NextId++, depth, issue.Description, issue, issue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
+                items.Add(item.id, item);
             }
 
-            m_TreeViewItemIssues = itemsList.ToArray();
+            m_TreeViewItemIssues = items;
         }
 
         public void Clear()
         {
             m_NextId = k_FirstId;
             m_TreeViewItemGroups.Clear();
-            m_TreeViewItemIssues = new IssueTableItem[] {};
+            m_TreeViewItemIssues = new Dictionary<int, IssueTableItem>();
             ClearSelection();
         }
 
@@ -140,7 +149,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             // find all issues matching the filters and make an array out of them
             Profiler.BeginSample("IssueTable.Match");
-            var filteredItems = m_TreeViewItemIssues.Where(item => m_View.Match(item.ProjectIssue)).ToArray();
+            var filteredItems = m_TreeViewItemIssues.Where(item => m_View.Match(item.Value.ProjectIssue)).ToArray();
             Profiler.EndSample();
 
             m_NumMatchingIssues = filteredItems.Length;
@@ -159,7 +168,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Profiler.BeginSample("IssueTable.BuildRows");
             if (!hasSearch && !m_FlatView)
             {
-                var groupedItemQuery = filteredItems.GroupBy(i => i.ProjectIssue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
+                var groupedItemQuery = filteredItems.GroupBy(i => i.Value.ProjectIssue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
                 foreach (var groupedItems in groupedItemQuery)
                 {
                     var groupName = groupedItems.Key;
@@ -167,15 +176,15 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     m_Rows.Add(group);
 
                     var groupIsExpanded = state.expandedIDs.Contains(group.id);
-                    var children = filteredItems.Where(item => item.GroupName.Equals(groupName));
+                    var children = filteredItems.Where(item => item.Value.GroupName.Equals(groupName));
 
                     group.displayName = string.Format("{0} ({1})", groupName, children.Count());
 
                     foreach (var child in children)
                     {
                         if (groupIsExpanded)
-                            m_Rows.Add(child);
-                        group.AddChild(child);
+                            m_Rows.Add(child.Value);
+                        group.AddChild(child.Value);
                     }
                 }
             }
@@ -183,10 +192,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 foreach (var item in filteredItems)
                 {
-                    var group = m_TreeViewItemGroups.Find(g => g.GroupName.Equals(item.GroupName));
-                    group.AddChild(item);
+                    var group = m_TreeViewItemGroups.Find(g => g.GroupName.Equals(item.Value.GroupName));
+                    group.AddChild(item.Value);
 
-                    m_Rows.Add(item);
+                    m_Rows.Add(item.Value);
                 }
             }
             SortIfNeeded(m_Rows);
@@ -198,14 +207,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         protected override IList<int> GetAncestors(int id)
         {
-            if (m_TreeViewItemIssues == null || m_TreeViewItemIssues.Length == 0)
+            if (m_TreeViewItemIssues == null || m_TreeViewItemIssues.Count == 0)
                 return new List<int>();
             return base.GetAncestors(id);
         }
 
         protected override IList<int> GetDescendantsThatHaveChildren(int id)
         {
-            if (m_TreeViewItemIssues == null || m_TreeViewItemIssues.Length == 0)
+            if (m_TreeViewItemIssues == null || m_TreeViewItemIssues.Count == 0)
                 return new List<int>();
             return base.GetDescendantsThatHaveChildren(id);
         }
@@ -298,15 +307,15 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 Rule rule = null;
                 var issue = item.ProjectIssue;
-                if (issue.wasFixed)
+                if (issue.WasFixed)
                     GUI.enabled = false;
-                else if (issue.id.IsValid())
+                else if (issue.Id.IsValid())
                 {
-                    var id = issue.id;
+                    var id = issue.Id;
                     rule = m_Rules.GetRule(id, issue.GetContext());
                     if (rule == null)
                         rule = m_Rules.GetRule(id); // try to find non-specific rule
-                    if (rule != null && rule.severity == Severity.None)
+                    if (rule != null && rule.Severity == Severity.None)
                         GUI.enabled = false;
                 }
 
@@ -314,7 +323,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 {
                     case PropertyType.LogLevel:
                     {
-                        var icon = Utility.GetLogLevelIcon(issue.logLevel);
+                        var icon = Utility.GetLogLevelIcon(issue.LogLevel);
                         if (icon != null)
                         {
                             EditorGUI.LabelField(cellRect, icon, labelStyle);
@@ -324,20 +333,20 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                     case PropertyType.Severity:
                     {
-                        EditorGUI.LabelField(cellRect, Utility.GetSeverityIconWithText(issue.severity), labelStyle);
+                        EditorGUI.LabelField(cellRect, Utility.GetSeverityIconWithText(issue.Severity), labelStyle);
                     }
                     break;
 
-                    case PropertyType.Area:
-                        var areaNames = issue.id.GetDescriptor().GetAreasSummary();
+                    case PropertyType.Areas:
+                        var areaNames = issue.Id.GetDescriptor().GetAreasSummary();
                         EditorGUI.LabelField(cellRect, new GUIContent(areaNames, Tooltip.Area), labelStyle);
                         break;
                     case PropertyType.Description:
                         GUIContent guiContent = null;
-                        if (issue.location != null && m_Desc.descriptionWithIcon)
+                        if (issue.Location != null && m_Desc.descriptionWithIcon)
                         {
                             guiContent =
-                                Utility.GetTextContentWithAssetIcon(item.GetDisplayName(), issue.location.Path);
+                                Utility.GetTextContentWithAssetIcon(item.GetDisplayName(), issue.Location.Path);
                         }
                         else
                         {
@@ -404,9 +413,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                         break;
                 }
-                if (issue.wasFixed)
+                if (issue.WasFixed)
                     GUI.enabled = true;
-                else if (rule != null && rule.severity == Severity.None)
+                else if (rule != null && rule.Severity == Severity.None)
                     GUI.enabled = true;
             }
 
@@ -440,9 +449,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 return;
 
             var issue = tableItem.ProjectIssue;
-            if (issue != null && issue.location != null && issue.location.IsValid())
+            if (issue != null && issue.Location != null && issue.Location.IsValid())
             {
-                m_Desc.onOpenIssue(issue.location);
+                m_Desc.onOpenIssue(issue.Location);
             }
         }
 
@@ -451,10 +460,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             // auto-expand groups containing selected items
             foreach (var id in state.selectedIDs)
             {
-                var item = m_TreeViewItemIssues.FirstOrDefault(issue => issue.id == id && issue.parent != null);
-                if (item != null && !state.expandedIDs.Contains(item.parent.id))
+                var item = m_TreeViewItemIssues.FirstOrDefault(issue => issue.Value.id == id && issue.Value.parent != null);
+                if (item.Value != null && !state.expandedIDs.Contains(item.Value.parent.id))
                 {
-                    state.expandedIDs.Add(item.parent.id);
+                    state.expandedIDs.Add(item.Value.parent.id);
                 }
             }
         }
@@ -464,13 +473,38 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return m_NumMatchingIssues;
         }
 
-        public IssueTableItem[] GetSelectedItems()
+        public List<IssueTableItem> GetSelectedItems()
         {
-            var ids = GetSelection();
-            if (ids.Count() > 0)
-                return FindRows(ids).OfType<IssueTableItem>().ToArray();
+            if (!m_SelectionChanged)
+            {
+                return m_SelectedIssues;
+            }
 
-            return new IssueTableItem[0];
+            m_SelectionChanged = false;
+
+            var ids = GetSelection();
+
+            m_SelectedIssues.Clear();
+
+            var count = ids.Count();
+            if (count > 0)
+            {
+                for (int i = 0; i < count; ++i)
+                {
+                    // Skip group rows that are not in the dictionary
+                    if (m_TreeViewItemIssues.TryGetValue(ids[i], out var item))
+                        m_SelectedIssues.Add(item);
+                }
+
+                return m_SelectedIssues;
+            }
+
+            return m_SelectedIssues;
+        }
+
+        protected override void SelectionChanged(IList<int> selectedIds)
+        {
+            m_SelectionChanged = true;
         }
 
         void OnSortingChanged(MultiColumnHeader _multiColumnHeader)
@@ -492,29 +526,29 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 if (item.ProjectIssue != null)
                 {
-                    if (m_Desc.onOpenIssue != null && item.ProjectIssue.location != null)
+                    if (m_Desc.onOpenIssue != null && item.ProjectIssue.Location != null)
                     {
                         menu.AddItem(Utility.OpenIssue, false, () =>
                         {
-                            m_Desc.onOpenIssue(item.ProjectIssue.location);
+                            m_Desc.onOpenIssue(item.ProjectIssue.Location);
                         });
                     }
-                    menu.AddItem(new GUIContent($"Filter by '{item.ProjectIssue.description.Replace("/", "\u2215")}'") , false, () =>
+                    menu.AddItem(new GUIContent($"Filter by '{item.ProjectIssue.Description.Replace("/", "\u2215")}'") , false, () =>
                     {
-                        m_View.SetSearch(item.ProjectIssue.description);
+                        m_View.SetSearch(item.ProjectIssue.Description);
                     });
                 }
 
-                if (m_Desc.onOpenIssue != null && item.ProjectIssue != null && item.ProjectIssue.location != null)
+                if (m_Desc.onOpenIssue != null && item.ProjectIssue != null && item.ProjectIssue.Location != null)
                 {
                     menu.AddItem(Utility.OpenIssue, false, () =>
                     {
-                        m_Desc.onOpenIssue(item.ProjectIssue.location);
+                        m_Desc.onOpenIssue(item.ProjectIssue.Location);
                     });
                 }
 
-                var desc = item.ProjectIssue != null && item.ProjectIssue.id.IsValid() ? item.ProjectIssue.id.GetDescriptor() : null;
-                if (m_Desc.onOpenManual != null && desc != null && desc.type.StartsWith("UnityEngine."))
+                var desc = item.ProjectIssue != null && item.ProjectIssue.Id.IsValid() ? item.ProjectIssue.Id.GetDescriptor() : null;
+                if (m_Desc.onOpenManual != null && desc != null && desc.Type.StartsWith("UnityEngine."))
                 {
                     menu.AddItem(Utility.OpenScriptReference, false, () =>
                     {
@@ -541,9 +575,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        void ClearSelection()
+        public void ClearSelection()
         {
             state.selectedIDs.Clear();
+
+            m_SelectionChanged = true;
         }
 
         void SortIfNeeded(IList<TreeViewItem> rows)

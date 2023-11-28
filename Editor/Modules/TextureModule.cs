@@ -71,6 +71,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var textureStreamingMipmapsSizeLimit = diagnosticParams.GetParameter(k_TextureStreamingMipmapsSizeLimit);
             var textureSizeLimit = diagnosticParams.GetParameter(k_TextureSizeLimit);
             var spriteAtlasEmptySpaceLimit = diagnosticParams.GetParameter(k_SpriteAtlasEmptySpaceLimit);
+            var platformString = analysisParams.PlatformString;
 
             var context = new TextureAnalysisContext
             {
@@ -96,8 +97,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
 
                 context.Importer = textureImporter;
-                context.ImporterPlatformSettings = textureImporter.GetPlatformTextureSettings(analysisParams.PlatformString);
+                context.ImporterPlatformSettings = textureImporter.GetPlatformTextureSettings(platformString);
                 context.Texture = AssetDatabase.LoadAssetAtPath<Texture>(assetPath);
+
 
                 if (string.IsNullOrEmpty(context.Texture.name))
                     context.Name = Path.GetFileNameWithoutExtension(assetPath);

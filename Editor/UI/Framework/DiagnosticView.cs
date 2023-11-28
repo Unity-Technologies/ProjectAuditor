@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public override void DrawDetails(ProjectIssue[] selectedIssues)
         {
             Descriptor descriptor = null;
-            var selectedIDs = selectedIssues.Select(i => i.id).Distinct().ToArray();
+            var selectedIDs = selectedIssues.Select(i => i.Id).Distinct().ToArray();
             var numSelectedIDs = selectedIDs.Length;
             if (numSelectedIDs > 0)
             {
@@ -42,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             GUILayout.Width(LayoutSize.CopyToClipboardButtonSize),
                             GUILayout.Height(LayoutSize.CopyToClipboardButtonSize)))
                         {
-                            EditorInterop.CopyToClipboard(Formatting.StripRichTextTags(descriptor.description));
+                            EditorInterop.CopyToClipboard(Formatting.StripRichTextTags(descriptor.Description));
                         }
                     }
                 }
@@ -59,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             else
             {
-                GUILayout.TextArea(descriptor.description, SharedStyles.TextAreaWithDynamicSize,
+                GUILayout.TextArea(descriptor.Description, SharedStyles.TextAreaWithDynamicSize,
                     GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
 
@@ -78,7 +78,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             GUILayout.Width(LayoutSize.CopyToClipboardButtonSize),
                             GUILayout.Height(LayoutSize.CopyToClipboardButtonSize)))
                         {
-                            EditorInterop.CopyToClipboard(Formatting.StripRichTextTags(descriptor.solution));
+                            EditorInterop.CopyToClipboard(Formatting.StripRichTextTags(descriptor.Solution));
                         }
                     }
                 }
@@ -95,7 +95,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             else
             {
-                GUILayout.TextArea(descriptor.solution, SharedStyles.TextAreaWithDynamicSize,
+                GUILayout.TextArea(descriptor.Solution, SharedStyles.TextAreaWithDynamicSize,
                     GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
 
@@ -104,11 +104,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var issuesAreIgnored = AreIssuesIgnored(selectedIssues);
             if (numSelectedIDs == 1)
             {
-                if (!string.IsNullOrEmpty(descriptor.documentationUrl))
+                if (!string.IsNullOrEmpty(descriptor.DocumentationUrl))
                 {
                     DrawActionButton(Contents.Documentation, () =>
                     {
-                        Application.OpenURL(descriptor.documentationUrl);
+                        Application.OpenURL(descriptor.DocumentationUrl);
 
                         m_ViewManager.OnSelectedIssuesDocumentationRequested?.Invoke(selectedIssues);
                     });
@@ -116,13 +116,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 if (descriptor.fixer != null)
                 {
-                    GUI.enabled = selectedIssues.Any(i => !i.wasFixed);
+                    GUI.enabled = selectedIssues.Any(i => !i.WasFixed);
 
                     DrawActionButton(Contents.QuickFix, () =>
                     {
                         foreach (var issue in selectedIssues)
                         {
-                            descriptor.Fix(issue);
+                            descriptor.Fix(issue, m_ViewManager.Report.SessionInfo);
                         }
 
                         m_ViewManager.OnSelectedIssuesQuickFixRequested?.Invoke(selectedIssues);
@@ -219,7 +219,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             foreach (var issue in selectedIssues)
             {
                 var context = issue.GetContext();
-                var rule = m_Rules.GetRule(issue.id, context);
+                var rule = m_Rules.GetRule(issue.Id, context);
 
                 //If at least one issue in the selection is not ignored, consider the whole selection as not ignored
                 if (rule == null)
@@ -240,7 +240,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     exporter.WriteHeader();
 
                     var matchingIssues = m_Issues.Where(issue => predicate == null || predicate(issue));
-                    matchingIssues = matchingIssues.Where(issue => issue.id.IsValid() || m_Rules.GetAction(issue.id, issue.GetContext()) != Severity.None);
+                    matchingIssues = matchingIssues.Where(issue => issue.Id.IsValid() || m_Rules.GetAction(issue.Id, issue.GetContext()) != Severity.None);
                     exporter.WriteIssues(matchingIssues.ToArray());
                 }
 
@@ -260,7 +260,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             if (m_Table.showIgnoredIssues)
                 return true;
 
-            var id = issue.id;
+            var id = issue.Id;
             if (!id.IsValid())
                 return true;
 

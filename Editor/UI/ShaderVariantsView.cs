@@ -93,7 +93,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (string.IsNullOrEmpty(logFilename))
                 return;
 
-            var variants = m_Issues.Where(i => i.category == IssueCategory.ShaderVariant).ToArray();
+            var variants = m_Issues.Where(i => i.Category == IssueCategory.ShaderVariant).ToArray();
             var result = ShadersModule.ParsePlayerLog(logFilename, variants, new ProgressBar());
             switch (result)
             {

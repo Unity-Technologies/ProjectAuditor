@@ -66,13 +66,13 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         ProjectIssue Evaluate(AnalysisContext context, Descriptor descriptor)
         {
             // evaluate a Unity API static method or property
-            var assembly = m_Assemblies.First(a => a.GetType(descriptor.type) != null);
-            var type = assembly.GetType(descriptor.type);
+            var assembly = m_Assemblies.First(a => a.GetType(descriptor.Type) != null);
+            var type = assembly.GetType(descriptor.Type);
 
-            var methodName = descriptor.method;
-            var property = type.GetProperty(descriptor.method);
+            var methodName = descriptor.Method;
+            var property = type.GetProperty(descriptor.Method);
             if (property != null)
-                methodName = "get_" + descriptor.method;
+                methodName = "get_" + descriptor.Method;
 
             var paramTypes = new Type[] {};
             var args = new object[] {};
@@ -80,14 +80,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             try
             {
                 var value = MethodEvaluator.Eval(assembly.Location,
-                    descriptor.type, methodName, paramTypes, args);
+                    descriptor.Type, methodName, paramTypes, args);
 
-                if (value.ToString() == descriptor.value)
-                    return NewIssue(context, descriptor, descriptor.title);
+                if (value.ToString() == descriptor.Value)
+                    return NewIssue(context, descriptor, descriptor.Title);
             }
             catch (ArgumentException e)
             {
-                Debug.LogWarning($"Could not evaluate {descriptor.type}.{methodName}. Exception: {e.Message}");
+                Debug.LogWarning($"Could not evaluate {descriptor.Type}.{methodName}. Exception: {e.Message}");
             }
 
             return null;
@@ -96,13 +96,13 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         ProjectIssue NewIssue(AnalysisContext context, Descriptor descriptor, string description)
         {
             var projectWindowPath = string.Empty;
-            var mappings = m_ProjectSettingsMapping.Where(p => descriptor.type.StartsWith(p.Key)).ToArray();
+            var mappings = m_ProjectSettingsMapping.Where(p => descriptor.Type.StartsWith(p.Key)).ToArray();
             if (mappings.Any())
                 projectWindowPath = mappings.First().Value;
-            return context.Create
+            return context.CreateIssue
                 (
                     IssueCategory.ProjectSetting,
-                    descriptor.id,
+                    descriptor.Id,
                     description
                 ).WithLocation(projectWindowPath);
         }

@@ -6,12 +6,13 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
+    // stephenm TODO: Make this public (and move it to API) for extensibility. Phase 2.
     /// <summary>
     /// Project Auditor module base class. Any class derived from Module will be instantiated by ProjectAuditor and used to audit the project
     /// </summary>
     internal abstract class Module
     {
-        protected HashSet<DescriptorID> m_Ids;
+        protected HashSet<DescriptorId> m_Ids;
 
         public abstract string Name
         {
@@ -27,7 +28,7 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         public virtual bool IsSupported => true;
 
-        public IReadOnlyCollection<DescriptorID> SupportedDescriptorIds => m_Ids != null ? m_Ids.ToArray() : Array.Empty<DescriptorID>();
+        public IReadOnlyCollection<DescriptorId> SupportedDescriptorIds => m_Ids != null ? m_Ids.ToArray() : Array.Empty<DescriptorId>();
 
         public abstract IReadOnlyCollection<IssueLayout> SupportedLayouts
         {
@@ -81,7 +82,7 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         public virtual void Initialize()
         {
-            m_Ids = new HashSet<DescriptorID>();
+            m_Ids = new HashSet<DescriptorId>();
         }
 
         public virtual void RegisterParameters(DiagnosticParams diagnosticParams)
@@ -97,13 +98,13 @@ namespace Unity.ProjectAuditor.Editor.Core
             if (!descriptor.IsVersionCompatible())
                 return;
 
-            DescriptorLibrary.RegisterDescriptor(descriptor.id, descriptor);
+            DescriptorLibrary.RegisterDescriptor(descriptor.Id, descriptor);
 
-            if (!m_Ids.Add(descriptor.id))
-                throw new Exception("Duplicate descriptor with id: " + descriptor.id);
+            if (!m_Ids.Add(descriptor.Id))
+                throw new Exception("Duplicate descriptor with Id: " + descriptor.Id);
         }
 
-        public bool SupportsDescriptor(DescriptorID id)
+        public bool SupportsDescriptor(DescriptorId id)
         {
             return m_Ids.Contains(id);
         }

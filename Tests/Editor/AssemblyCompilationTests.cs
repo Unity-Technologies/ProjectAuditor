@@ -100,10 +100,10 @@ class MyClass
             });
 
             var issues = projectReport.FindByCategory(IssueCategory.Code);
-            var codeIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_TestAsset.relativePath));
+            var codeIssue = issues.FirstOrDefault(i => i.RelativePath.Equals(m_TestAsset.relativePath));
 
             Assert.NotNull(codeIssue);
-            Assert.AreEqual("MyClass." + methodName, codeIssue.dependencies.prettyName);
+            Assert.AreEqual("MyClass." + methodName, codeIssue.Dependencies.prettyName);
         }
     }
 }

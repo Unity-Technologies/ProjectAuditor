@@ -27,16 +27,16 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         static readonly Descriptor k_FogModeDescriptor = new Descriptor(
             PAS1003,
             "Graphics: Fog Mode is enabled",
-            new[] {Area.BuildSize},
+            Areas.BuildSize,
             "<b>Fog Modes</b> in Graphics Settings are set to build all fog shader variants for this fog mode. Forcing Fog shader variants to be built can increase the build size.",
             "Change <b>Project Settings > Graphics > Fog Modes</b> to <b>Automatic</b> or disable <b>Linear/Exponential/Exponential Squared</b>. This should reduce the number of shader variants generated for fog effects.")
         {
-            fixer = (issue =>
+            fixer = (issue, analysisParams) =>
             {
                 RemoveFogStripping();
-            }),
+            },
 
-            messageFormat = "Graphics: Fog Mode '{0}' shader variants are always included in the build"
+            MessageFormat = "Graphics: Fog Mode '{0}' shader variants are always included in the build"
         };
 
         public void Initialize(Module module)
@@ -48,19 +48,19 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
             if (IsFogModeEnabled(FogMode.Linear))
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor.id, FogMode.Linear)
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_FogModeDescriptor.Id, FogMode.Linear)
                     .WithLocation("Project/Graphics");
             }
 
             if (IsFogModeEnabled(FogMode.Exponential))
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor.id, FogMode.Exponential)
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_FogModeDescriptor.Id, FogMode.Exponential)
                     .WithLocation("Project/Graphics");
             }
 
             if (IsFogModeEnabled(FogMode.ExponentialSquared))
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor.id, FogMode.ExponentialSquared)
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_FogModeDescriptor.Id, FogMode.ExponentialSquared)
                     .WithLocation("Project/Graphics");
             }
         }

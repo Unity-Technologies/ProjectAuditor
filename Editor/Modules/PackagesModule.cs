@@ -1,13 +1,9 @@
-using System;
 using System.Collections.Generic;
 using UnityEditor.PackageManager;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
-using UnityEditor;
-using UnityEngine;
-
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
@@ -51,24 +47,24 @@ namespace Unity.ProjectAuditor.Editor.Modules
         static readonly Descriptor k_RecommendPackageUpgrade = new Descriptor(
             PAP0001,
             "Newer recommended package version",
-            new[] { Area.Quality },
+            Areas.Quality,
             "A newer recommended version of this package is available.",
             "Update the package via Package Manager."
         )
         {
-            messageFormat = "'{0}' could be updated from version '{1}' to '{2}'",
-            defaultSeverity = Severity.Minor
+            MessageFormat = "'{0}' could be updated from version '{1}' to '{2}'",
+            DefaultSeverity = Severity.Minor
         };
 
         static readonly Descriptor k_RecommendPackagePreView = new Descriptor(
             PAP0002,
             "Experimental/Preview packages",
-            new[] { Area.Quality },
+            Areas.Quality,
             "Experimental or Preview packages are in the early stages of development and not yet ready for production.",
             "Experimental packages should only be used for testing purposes and to give feedback to Unity."
         )
         {
-            messageFormat = "'{0}' version '{1}' is a preview/experimental version"
+            MessageFormat = "'{0}' version '{1}' is a preview/experimental version"
         };
 
         public override string Name => "Packages";
@@ -116,7 +112,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var dependencies = package.dependencies.Select(d => d.name + " [" + d.version + "]").ToArray();
             var displayName = string.IsNullOrEmpty(package.displayName) ? package.name : package.displayName;
             var node = new PackageDependencyNode(displayName, dependencies);
-            yield return context.CreateWithoutDiagnostic(IssueCategory.Package, displayName)
+            yield return context.CreateInsight(IssueCategory.Package, displayName)
                 .WithCustomProperties(new object[(int)PackageProperty.Num]
                 {
                     package.name,
@@ -134,13 +130,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 if (!recommendedVersionString.Equals(package.version))
                 {
-                    yield return context.Create(IssueCategory.PackageDiagnostic, k_RecommendPackageUpgrade.id, package.name, package.version, recommendedVersionString)
+                    yield return context.CreateIssue(IssueCategory.PackageDiagnostic, k_RecommendPackageUpgrade.Id, package.name, package.version, recommendedVersionString)
                         .WithLocation(package.assetPath);
                 }
             }
             else if (package.version.Contains("pre") || package.version.Contains("exp"))
             {
-                yield return context.Create(IssueCategory.PackageDiagnostic, k_RecommendPackagePreView.id, package.name, package.version)
+                yield return context.CreateIssue(IssueCategory.PackageDiagnostic, k_RecommendPackagePreView.Id, package.name, package.version)
                     .WithLocation(package.assetPath);
             }
         }

@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Code/Domain Reload view, showing any issues raised by the Domain Reload Roslyn analyzer
 * Domain Reload diagnostic issues in the Settings view if Domain Reload is enabled
 * Diagnostics for unsupported APIs on WebGL target
+* Diagnostic for Static Batching being enabled whilst Entities Graphics is installed
 
 ### Changed
 * Improved issue description and suggestion strings, to make them clearer and more consistent
@@ -35,11 +36,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Clear table selection on unmuting issues
 * Move some data that should be user-configurable to UserPreferences
 * ProjectReport serialization files changed so that saved JSON is <= half the size it was before
-* Reworked ProjectAuditor configuration: ProjectAuditorConfig and ProjectAuditorDiagnosticParams have been replaced with ProjectAuditorRules.
+* Reworked ProjectAuditor configuration: ProjectAuditorConfig and ProjectAuditorDiagnosticParams have been replaced with SeverityRules and DiagnosticParams.
+* Configuration is now handled via a ProjectAuditorSettings class/asset
+* Refactored and documented public API to allow CI/CD integration
 
 ### Removed
 * Actions section and Mute/Unmute buttons
 * Settings from ProjectAuditorConfig
+* Support for Unity 2018 and 2019.
 
 ### Fixed
 * Analysis never completes if an exception is thrown

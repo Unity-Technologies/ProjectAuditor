@@ -224,10 +224,10 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_Paths_CanBeResolved()
         {
-            var issues = Analyze(i => i.category == IssueCategory.Code);
+            var issues = Analyze(i => i.Category == IssueCategory.Code);
             foreach (var issue in issues)
             {
-                var relativePath = issue.relativePath;
+                var relativePath = issue.RelativePath;
 
                 Assert.False(string.IsNullOrEmpty(relativePath));
             }
@@ -243,19 +243,19 @@ class GenericInstantiation
             var myIssue = issues.FirstOrDefault();
 
             Assert.NotNull(myIssue);
-            var descriptor = myIssue.id.GetDescriptor();
+            var descriptor = myIssue.Id.GetDescriptor();
 
-            Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
-            Assert.AreEqual(typeof(DescriptorID), myIssue.id.GetType());
-            Assert.AreEqual("PAC0066", myIssue.id.ToString());
-            Assert.AreEqual("UnityEngine.Camera", descriptor.type);
-            Assert.AreEqual("allCameras", descriptor.method);
+            Assert.AreEqual(Severity.Moderate, descriptor.DefaultSeverity);
+            Assert.AreEqual(typeof(DescriptorId), myIssue.Id.GetType());
+            Assert.AreEqual("PAC0066", myIssue.Id.ToString());
+            Assert.AreEqual("UnityEngine.Camera", descriptor.Type);
+            Assert.AreEqual("allCameras", descriptor.Method);
 
-            Assert.AreEqual(m_TestAsset.fileName, myIssue.filename);
-            Assert.AreEqual("'UnityEngine.Camera.allCameras' usage", myIssue.description);
+            Assert.AreEqual(m_TestAsset.fileName, myIssue.Filename);
+            Assert.AreEqual("'UnityEngine.Camera.allCameras' usage", myIssue.Description);
             Assert.AreEqual("System.Void MyClass::Dummy()", myIssue.GetContext());
-            Assert.AreEqual(7, myIssue.line);
-            Assert.AreEqual(IssueCategory.Code, myIssue.category);
+            Assert.AreEqual(7, myIssue.Line);
+            Assert.AreEqual(IssueCategory.Code, myIssue.Category);
 
             // check custom property
             Assert.AreEqual((int)CodeProperty.Num, myIssue.GetNumCustomProperties());
@@ -268,10 +268,10 @@ class GenericInstantiation
             var issues = AnalyzeAndFindAssetIssues(m_TestAssetClassWithConditionalAttribute);
             Assert.Positive(issues.Length);
             Assert.NotNull(issues[0]);
-            Assert.NotNull(issues[0].dependencies);
+            Assert.NotNull(issues[0].Dependencies);
 
             // all call sites should be removed by the compiler
-            Assert.False(issues[0].dependencies.HasChildren());
+            Assert.False(issues[0].Dependencies.HasChildren());
         }
 
         [Test]
@@ -284,8 +284,8 @@ class GenericInstantiation
             var myIssue = filteredIssues.FirstOrDefault();
 
             Assert.NotNull(myIssue);
-            Assert.IsTrue(myIssue.id.IsValid());
-            Assert.AreEqual("'UnityEngine.Component.tag' usage", myIssue.description);
+            Assert.IsTrue(myIssue.Id.IsValid());
+            Assert.AreEqual("'UnityEngine.Component.tag' usage", myIssue.Description);
         }
 
         [Test]
@@ -355,7 +355,7 @@ class GenericInstantiation
         public void CodeAnalysis_IssueInDelegate_IsReported()
         {
             var allScriptIssues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInDelegate);
-            var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("'UnityEngine.Camera.allCameras' usage"));
+            var issue = allScriptIssues.FirstOrDefault(i => i.Description.Equals("'UnityEngine.Camera.allCameras' usage"));
             Assert.NotNull(issue);
             Assert.AreEqual("System.Int32 ClassWithDelegate/<>c::<Dummy>b__1_0()", issue.GetContext());
         }
@@ -366,19 +366,19 @@ class GenericInstantiation
             var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInProperty, IssueCategory.Code);
 
             Assert.AreEqual(1, issues.Length);
-            Assert.AreEqual("Conversion from value type 'Int32' to ref type", issues[0].description);
-            Assert.AreEqual("IssueInProperty.get_property", issues[0].dependencies.prettyName);
+            Assert.AreEqual("Conversion from value type 'Int32' to ref type", issues[0].Description);
+            Assert.AreEqual("IssueInProperty.get_property", issues[0].Dependencies.prettyName);
         }
 
         [Test]
         public void CodeAnalysis_IssueInNamespace_IsReported()
         {
             var allScriptIssues = AnalyzeAndFindAssetIssues(m_TestAssetAnyApiInNamespace);
-            var issue = allScriptIssues.FirstOrDefault(i => i.description.Equals("'System.Linq.Enumerable.Sum' usage"));
+            var issue = allScriptIssues.FirstOrDefault(i => i.Description.Equals("'System.Linq.Enumerable.Sum' usage"));
 
             Assert.NotNull(issue);
-            var descriptor = issue.id.GetDescriptor();
-            Assert.AreEqual("System.Linq.*", descriptor.title);
+            var descriptor = issue.Id.GetDescriptor();
+            Assert.AreEqual("System.Linq.*", descriptor.Title);
         }
 
         [Test]
@@ -387,7 +387,7 @@ class GenericInstantiation
             var issues = AnalyzeAndFindAssetIssues(m_TestAssetGenericInstantiation, IssueCategory.GenericInstance);
 
             Assert.AreEqual(1, issues.Length);
-            Assert.AreEqual("'System.Collections.Generic.HashSet`1<System.String>' generic instance", issues[0].description);
+            Assert.AreEqual("'System.Collections.Generic.HashSet`1<System.String>' generic instance", issues[0].Description);
         }
 
         [Test]

@@ -90,7 +90,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         public static int GetSRPBatcherCompatibilityCode(Shader shader, int subShaderIdx)
         {
-#if UNITY_2019_1_OR_NEWER
             if (s_TypeShaderUtil == null)
                 Init();
 
@@ -99,9 +98,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
             if (RenderPipelineManager.currentPipeline == null)
                 return -1;
             return (int)s_MethodGetSRPBatcherCompatibilityCode.Invoke(null, new object[] { shader, subShaderIdx});
-#else
-            return -1;
-#endif
         }
 
         public static ulong GetVariantCount(Shader shader)
@@ -139,11 +135,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         public static int GetPropertyCount(Shader shader)
         {
-#if PA_CAN_USE_SHADER_GETPROPERTY_METHODS
             return shader.GetPropertyCount();
-#else
-            return ShaderUtil.GetPropertyCount(shader);
-#endif
         }
 
         public static int GetTexturePropertyCount(Shader shader)
@@ -152,11 +144,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
             var propertyCount = GetPropertyCount(shader);
             for (int i = 0; i < propertyCount; ++i)
             {
-#if PA_CAN_USE_SHADER_GETPROPERTY_METHODS
                 if (shader.GetPropertyType(i) == ShaderPropertyType.Texture)
-#else
-                if (ShaderUtil.GetPropertyType(shader, i) == ShaderUtil.ShaderPropertyType.TexEnv)
-#endif
                 {
                     ++texturePropertyCount;
                 }

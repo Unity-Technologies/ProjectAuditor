@@ -42,7 +42,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         IsValid,
         IsHuman,
-#if PA_CAN_USE_AVATAR_HUMAN_DESCRIPTION
         NumHumanBones,
         NumSkeletonBones,
         UpperArmTwist,
@@ -53,7 +52,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         LegStretch,
         FeetSpacing,
         HasTranslationDoF,
-#endif
         SizeOnDisk,
         Num
     }
@@ -112,7 +110,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Avatar Name" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.IsValid), format = PropertyFormat.Bool, name = "Valid?" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.IsHuman), format = PropertyFormat.Bool, name = "Human?" },
-#if PA_CAN_USE_AVATAR_HUMAN_DESCRIPTION
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.NumHumanBones), format = PropertyFormat.Integer, name = "Human Bones", longName = "Number of bones mappings" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.NumSkeletonBones), format = PropertyFormat.Integer, name = "Skeleton Bones", longName = "Number of bone transforms to include" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.UpperArmTwist), format = PropertyFormat.String, name = "Upper Arm Twist" },
@@ -123,7 +120,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.LegStretch), format = PropertyFormat.String, name = "Leg Stretch" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.FeetSpacing), format = PropertyFormat.String, name = "Feet Spacing" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.HasTranslationDoF), format = PropertyFormat.Bool, name = "Translation DoF?" },
-#endif
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.SizeOnDisk), format = PropertyFormat.Bytes, name = "Size", longName = "Avatar Size" },
                 new PropertyDefinition { type = PropertyType.Path, name = "Path" }
             }
@@ -187,7 +183,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler may not be the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(controller);
 
-                issues.Add(context.CreateWithoutDiagnostic(k_AnimatorControllerLayout.category, controller.name)
+                issues.Add(context.CreateInsight(k_AnimatorControllerLayout.category, controller.name)
                     .WithCustomProperties(new object[(int)AnimatorControllerProperty.Num]
                     {
                         controller.layers.Length,
@@ -227,7 +223,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler may not be the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(clip);
 
-                issues.Add(context.CreateWithoutDiagnostic(k_AnimationClipLayout.category, clip.name)
+                issues.Add(context.CreateInsight(k_AnimationClipLayout.category, clip.name)
                     .WithCustomProperties(new object[(int)AnimationClipProperty.Num]
                     {
                         clip.empty,
@@ -276,12 +272,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler may not be the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(avatar);
 
-                issues.Add(context.CreateWithoutDiagnostic(k_AvatarLayout.category, avatar.name)
+                issues.Add(context.CreateInsight(k_AvatarLayout.category, avatar.name)
                     .WithCustomProperties(new object[(int)AvatarProperty.Num]
                     {
                         avatar.isValid,
                         avatar.isHuman,
-#if PA_CAN_USE_AVATAR_HUMAN_DESCRIPTION
                         avatar.humanDescription.human.Length,
                         avatar.humanDescription.skeleton.Length,
                         avatar.humanDescription.upperArmTwist,
@@ -292,7 +287,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         avatar.humanDescription.legStretch,
                         avatar.humanDescription.feetSpacing,
                         avatar.humanDescription.hasTranslationDoF,
-#endif
                         size
                     })
                     .WithLocation(assetPath)
@@ -327,7 +321,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler may not be the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(mask);
 
-                issues.Add(context.CreateWithoutDiagnostic(k_AvatarMaskLayout.category, mask.name)
+                issues.Add(context.CreateInsight(k_AvatarMaskLayout.category, mask.name)
                     .WithCustomProperties(new object[(int)AvatarMaskProperty.Num]
                     {
                         mask.transformCount,

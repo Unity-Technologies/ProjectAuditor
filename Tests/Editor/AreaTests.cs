@@ -1,11 +1,8 @@
-using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Tests.Common;
-using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 
 namespace Unity.ProjectAuditor.EditorTests
@@ -20,17 +17,13 @@ namespace Unity.ProjectAuditor.EditorTests
             PlayerSettings.stripUnusedMeshComponents = false;
 
             var issues = Analyze(IssueCategory.ProjectSetting, i =>
-                i.id.GetDescriptor().method.Equals("stripUnusedMeshComponents"));
+                i.Id.GetDescriptor().Method.Equals("stripUnusedMeshComponents"));
 
             var issue = issues.FirstOrDefault();
             Assert.NotNull(issue);
 
-            var descriptor = issue.id.GetDescriptor();
-            var areas = descriptor.GetAreas();
-            Assert.AreEqual(3, areas.Length);
-            Assert.Contains(Area.BuildSize, areas);
-            Assert.Contains(Area.GPU, areas);
-            Assert.Contains(Area.LoadTime, areas);
+            var descriptor = issue.Id.GetDescriptor();
+            Assert.AreEqual((Areas.BuildSize | Areas.GPU | Areas.LoadTime), descriptor.Areas);
 
             // restore stripUnusedMeshComponents
             PlayerSettings.stripUnusedMeshComponents = stripUnusedMeshComponents;

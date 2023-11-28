@@ -19,11 +19,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProjectAuditor_Module_IsSupported()
         {
-#if BUILD_REPORT_API_SUPPORT
             Assert.True(m_ProjectAuditor.IsModuleSupported(IssueCategory.BuildFile));
-#else
-            Assert.False(m_ProjectAuditor.IsModuleSupported(IssueCategory.BuildFile));
-#endif
         }
 
         [Test]

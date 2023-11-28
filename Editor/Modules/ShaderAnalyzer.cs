@@ -15,13 +15,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_SrpBatcherDescriptor = new Descriptor(
             PAA2000,
             "Shader: Not compatible with SRP batcher",
-            Area.CPU,
+            Areas.CPU,
             "The shader is not compatible with SRP Batcher.",
             "Consider adding SRP Batcher compatibility to the shader. This will reduce the CPU time Unity requires to prepare and dispatch draw calls for materials that use the same shader variant."
         )
         {
-            messageFormat = "Shader '{0}' is not compatible with SRP Batcher",
-            documentationUrl = "https://docs.unity3d.com/Manual/SRPBatcher.html"
+            MessageFormat = "Shader '{0}' is not compatible with SRP Batcher",
+            DocumentationUrl = "https://docs.unity3d.com/Manual/SRPBatcher.html"
         };
 
         public void Initialize(Module module)
@@ -36,23 +36,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 yield break;
             }
 
-#if UNITY_2019_3_OR_NEWER
             var subShaderIndex = ShaderUtilProxy.GetShaderActiveSubshaderIndex(context.Shader);
             var isSrpBatchingCompatible = ShaderUtilProxy.GetSRPBatcherCompatibilityCode(context.Shader, subShaderIndex) == 0;
 
             if (!isSrpBatchingCompatible && IsSrpBatchingEnabled)
             {
-                yield return context.Create(IssueCategory.AssetDiagnostic, k_SrpBatcherDescriptor.id, context.Shader.name)
+                yield return context.CreateIssue(IssueCategory.AssetDiagnostic, k_SrpBatcherDescriptor.Id, context.Shader.name)
                     .WithLocation(context.AssetPath);
             }
-#endif
         }
 
-#if UNITY_2019_3_OR_NEWER
         internal static bool IsSrpBatchingEnabled => GraphicsSettings.defaultRenderPipeline != null &&
         GraphicsSettings.useScriptableRenderPipelineBatching;
-#else
-        internal static bool IsSrpBatchingEnabled => false;
-#endif
     }
 }

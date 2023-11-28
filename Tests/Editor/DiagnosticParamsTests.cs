@@ -56,11 +56,11 @@ namespace Unity.ProjectAuditor.EditorTests
             var paramVal = m_DiagnosticParams.GetParameter(k_TextureStreamingMipmapsSizeLimit);
             Assert.AreEqual(paramVal, k_MipmapSizeLimitDefault);
 
-            m_DiagnosticParams.SetParameter(BuildTarget.NoTarget, k_TextureStreamingMipmapsSizeLimit, 32);
+            m_DiagnosticParams.SetParameter(k_TextureStreamingMipmapsSizeLimit, 32);
             paramVal = m_DiagnosticParams.GetParameter(k_TextureStreamingMipmapsSizeLimit);
             Assert.AreEqual(paramVal, 32);
 
-            m_DiagnosticParams.SetParameter(m_Platform, k_TextureStreamingMipmapsSizeLimit, 64);
+            m_DiagnosticParams.SetParameter(k_TextureStreamingMipmapsSizeLimit, 64, m_Platform);
             paramVal = m_DiagnosticParams.GetParameter(k_TextureStreamingMipmapsSizeLimit);
             Assert.AreEqual(paramVal, 64);
         }
@@ -82,18 +82,18 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var projectAuditor = new Editor.ProjectAuditor();
             var report = projectAuditor.Audit(analysisParams);
-            var foundIssues = report.GetAllIssues().Where(i => i.relativePath.Equals(m_TestTextureAsset.relativePath));
+            var foundIssues = report.GetAllIssues().Where(i => i.RelativePath.Equals(m_TestTextureAsset.relativePath));
 
             Assert.NotNull(foundIssues);
-            Assert.Null(foundIssues.FirstOrDefault(i => i.id.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor.id)));
+            Assert.Null(foundIssues.FirstOrDefault(i => i.Id.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor.Id)));
 
             // Texture would normally be too small to trigger this diagnostic, unless we specify a custom smaller limit
-            analysisParams.DiagnosticParams.SetParameter(BuildTarget.NoTarget, k_TextureStreamingMipmapsSizeLimit, 32);
+            analysisParams.DiagnosticParams.SetParameter(k_TextureStreamingMipmapsSizeLimit, 32);
             report = projectAuditor.Audit(analysisParams);
-            foundIssues = report.GetAllIssues().Where(i => i.relativePath.Equals(m_TestTextureAsset.relativePath));
+            foundIssues = report.GetAllIssues().Where(i => i.RelativePath.Equals(m_TestTextureAsset.relativePath));
 
             Assert.NotNull(foundIssues);
-            Assert.NotNull(foundIssues.FirstOrDefault(i => i.id.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor.id)));
+            Assert.NotNull(foundIssues.FirstOrDefault(i => i.Id.Equals(TextureAnalyzer.k_TextureStreamingMipMapEnabledDescriptor.Id)));
         }
 
         [Test]

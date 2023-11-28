@@ -20,12 +20,7 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_TestAsmdef;
 #pragma warning restore 0414
 
-#if UNITY_2020_1_OR_NEWER
         static readonly string k_ExpectedDescription = "Invalid token '}' in class, record, struct, or interface member declaration";
-#else
-        static readonly string k_ExpectedDescription = "Invalid token '}' in class, struct, or interface member declaration";
-#endif
-
         static readonly string k_ExpectedMessage = $"{PathUtils.Combine(TestAsset.TempAssetsFolder,"ScriptWithError.cs")}(6,1): error CS1519: {k_ExpectedDescription}";
 
         const string k_ExpectedCode = "CS1519";
@@ -113,13 +108,13 @@ class ScriptWithError {
             var issue = issues.First();
 
             // check ID
-            Assert.IsFalse(issue.id.IsValid());
+            Assert.IsFalse(issue.Id.IsValid());
 
             // check issue
-            Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessage));
-            Assert.AreEqual(k_ExpectedDescription, issue.description, "Description: " + issue.description);
-            Assert.That(issue.line, Is.EqualTo(6));
-            Assert.That(issue.severity, Is.EqualTo(Severity.Error));
+            Assert.That(issue.Category, Is.EqualTo(IssueCategory.CodeCompilerMessage));
+            Assert.AreEqual(k_ExpectedDescription, issue.Description, "Description: " + issue.Description);
+            Assert.That(issue.Line, Is.EqualTo(6));
+            Assert.That(issue.Severity, Is.EqualTo(Severity.Error));
 
             // check properties
             Assert.AreEqual((int)CompilerMessageProperty.Num, issue.GetNumCustomProperties());
@@ -133,7 +128,7 @@ class ScriptWithError {
         {
             LogAssert.ignoreFailingMessages = true;
 
-            var issues = Analyze(IssueCategory.Assembly, i => i.severity == Severity.Error && i.relativePath.Equals(m_TestAsmdef.relativePath));
+            var issues = Analyze(IssueCategory.Assembly, i => i.Severity == Severity.Error && i.RelativePath.Equals(m_TestAsmdef.relativePath));
 
             LogAssert.ignoreFailingMessages = false;
 
@@ -142,12 +137,12 @@ class ScriptWithError {
             var issue = issues.First();
 
             // check ID
-            Assert.IsFalse(issue.id.IsValid());
+            Assert.IsFalse(issue.Id.IsValid());
 
             // check issue
-            Assert.That(issue.category, Is.EqualTo(IssueCategory.Assembly));
-            Assert.That(issue.severity, Is.EqualTo(Severity.Error));
-            Assert.That(issue.filename, Is.EqualTo(m_TestAsmdef.fileName));
+            Assert.That(issue.Category, Is.EqualTo(IssueCategory.Assembly));
+            Assert.That(issue.Severity, Is.EqualTo(Severity.Error));
+            Assert.That(issue.Filename, Is.EqualTo(m_TestAsmdef.fileName));
         }
 
         [Test]
@@ -156,7 +151,7 @@ class ScriptWithError {
         {
             LogAssert.ignoreFailingMessages = true;
 
-            var issues = Analyze(IssueCategory.Assembly, i => i.severity == Severity.Error && i.description.Equals(k_TempAssemblyName));
+            var issues = Analyze(IssueCategory.Assembly, i => i.Severity == Severity.Error && i.Description.Equals(k_TempAssemblyName));
 
             LogAssert.ignoreFailingMessages = false;
 
@@ -165,12 +160,12 @@ class ScriptWithError {
             var issue = issues.First();
 
             // check ID
-            Assert.IsFalse(issue.id.IsValid());
+            Assert.IsFalse(issue.Id.IsValid());
 
             // check issue
-            Assert.That(issue.category, Is.EqualTo(IssueCategory.Assembly));
-            Assert.That(issue.severity, Is.EqualTo(Severity.Error));
-            Assert.AreEqual(k_TempAssemblyFileName, issue.filename);
+            Assert.That(issue.Category, Is.EqualTo(IssueCategory.Assembly));
+            Assert.That(issue.Severity, Is.EqualTo(Severity.Error));
+            Assert.AreEqual(k_TempAssemblyFileName, issue.Filename);
         }
     }
 }

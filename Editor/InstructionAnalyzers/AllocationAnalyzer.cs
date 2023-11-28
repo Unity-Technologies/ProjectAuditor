@@ -22,51 +22,51 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             (
             PAC2002,
             "Object Allocation",
-            Area.Memory,
+            Areas.Memory,
             "An object is allocated in managed memory.",
             "Try to avoid allocating objects in frequently-updated code."
             )
         {
-            messageFormat = "'{0}' allocation",
-            defaultSeverity = Severity.Minor
+            MessageFormat = "'{0}' allocation",
+            DefaultSeverity = Severity.Minor
         };
 
         static readonly Descriptor k_ClosureAllocationDescriptor = new Descriptor
             (
             PAC2003,
             "Closure Allocation",
-            Area.Memory,
+            Areas.Memory,
             "A closure is allocating managed memory. A closure occurs when a variable's state is captured by an in-line delegate, anonymous method or lambda which accesses that variable.",
             "Try to avoid allocating objects in frequently-updated code."
             )
         {
-            messageFormat = "Closure allocation in '{0}.{1}'",
-            defaultSeverity = Severity.Minor
+            MessageFormat = "Closure allocation in '{0}.{1}'",
+            DefaultSeverity = Severity.Minor
         };
 
         static readonly Descriptor k_ArrayAllocationDescriptor = new Descriptor
             (
             PAC2004,
             "Array Allocation",
-            Area.Memory,
+            Areas.Memory,
             "An array is allocated in managed memory.",
             "Try to avoid allocating arrays in frequently-updated code."
             )
         {
-            messageFormat = "'{0}' array allocation",
-            defaultSeverity = Severity.Minor
+            MessageFormat = "'{0}' array allocation",
+            DefaultSeverity = Severity.Minor
         };
 
         static readonly Descriptor k_ParamArrayAllocationDescriptor = new Descriptor
             (
             PAC2005,
             "Param Object Allocation",
-            Area.Memory,
+            Areas.Memory,
             "A parameters array is allocated in managed memory.",
             "Try to avoid calling this method in frequently-updated code."
             )
         {
-            messageFormat = "Parameters array '{0} {1}' allocation"
+            MessageFormat = "Parameters array '{0} {1}' allocation"
         };
 
         static readonly int k_ParamArrayAtributeHashCode = "System.ParamArrayAttribute".GetHashCode();
@@ -99,7 +99,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                     var lastParam = callee.Parameters.Last();
                     if (lastParam.HasCustomAttributes && lastParam.CustomAttributes.Any(a => a.AttributeType.FullName.GetHashCode() == k_ParamArrayAtributeHashCode))
                     {
-                        return context.Create(IssueCategory.Code, k_ParamArrayAllocationDescriptor.id, lastParam.ParameterType.Name, lastParam.Name);
+                        return context.CreateIssue(IssueCategory.Code, k_ParamArrayAllocationDescriptor.Id, lastParam.ParameterType.Name, lastParam.Name);
                     }
                 }
                 return null;
@@ -115,18 +115,18 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 var isClosure = typeReference.Name.StartsWith("<>c__DisplayClass");
                 if (isClosure)
                 {
-                    return context.Create(IssueCategory.Code, k_ClosureAllocationDescriptor.id, context.MethodDefinition.DeclaringType.Name, context.MethodDefinition.Name);
+                    return context.CreateIssue(IssueCategory.Code, k_ClosureAllocationDescriptor.Id, context.MethodDefinition.DeclaringType.Name, context.MethodDefinition.Name);
                 }
                 else
                 {
-                    return context.Create(IssueCategory.Code, k_ObjectAllocationDescriptor.id, typeReference.FullName);
+                    return context.CreateIssue(IssueCategory.Code, k_ObjectAllocationDescriptor.Id, typeReference.FullName);
                 }
             }
             else // OpCodes.Newarr
             {
                 var typeReference = (TypeReference)context.Instruction.Operand;
 
-                return context.Create(IssueCategory.Code, k_ArrayAllocationDescriptor.id, typeReference.Name);
+                return context.CreateIssue(IssueCategory.Code, k_ArrayAllocationDescriptor.Id, typeReference.Name);
             }
         }
     }

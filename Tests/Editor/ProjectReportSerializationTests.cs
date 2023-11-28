@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -119,6 +120,33 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.IsTrue(reportDict.ContainsKey("issues"));
             Assert.IsTrue(reportDict.ContainsKey("descriptors"));
 
+            if (reportDict["insights"] is JArray insights)
+            {
+                foreach (var property in insights)
+                {
+                    if (property is JObject insight)
+                    {
+                        AssertRequiredPropertyIsValid(insight, "category");
+
+                        AssertRequiredPropertyIsValid(insight, "description");
+                        AssertOptionalArrayIsValid(insight, "properties");
+
+                        AssertForbiddenProperty(insight, "descriptorId");
+                        AssertForbiddenProperty(insight, "severity");
+                        AssertRequiredProperty(insight, "location");
+                        AssertRequiredPropertyIsValid(insight["location"] as JObject, "path");
+                    }
+                    else
+                    {
+                        Assert.Fail($"{property} is null or not a JObject");
+                    }
+                }
+            }
+            else
+            {
+                Assert.Fail("'insights' is null or not a JArray");
+            }
+
             if (reportDict["issues"] is JArray issues)
             {
                 foreach (var property in issues)
@@ -127,18 +155,12 @@ namespace Unity.ProjectAuditor.EditorTests
                     {
                         AssertRequiredPropertyIsValid(issue, "category");
                         AssertRequiredPropertyIsValid(issue, "description");
+                        AssertRequiredProperty(issue, "descriptorId");
                         AssertOptionalArrayIsValid(issue, "properties");
 
-                        if (issue.ContainsKey("diagnosticID"))
-                        {
-                            AssertRequiredProperty(issue, "location");
-                            AssertRequiredPropertyIsValid(issue["location"] as JObject, "path");
-                            AssertRequiredPropertyIsValid(issue, "severity");
-                        }
-                        else
-                        {
-                            AssertForbiddenProperty(issue, "severity");
-                        }
+                        AssertRequiredProperty(issue, "location");
+                        AssertRequiredPropertyIsValid(issue["location"] as JObject, "path");
+                        AssertRequiredPropertyIsValid(issue, "severity");
                     }
                     else
                     {
@@ -165,7 +187,11 @@ namespace Unity.ProjectAuditor.EditorTests
                         AssertForbiddenProperty(descriptor, "type");
                         AssertForbiddenProperty(descriptor, "method");
                         AssertForbiddenProperty(descriptor, "value");
-                        AssertOptionalArrayIsValid(descriptor, "platforms");
+                        if (descriptor.ContainsKey("platforms"))
+                        {
+                            // if present, check sanity
+                            AssertRequiredArrayIsValid(descriptor, "platforms");
+                        }
                         AssertOptionalPropertyIsValid(descriptor, "documentationUrl");
                         AssertForbiddenProperty(descriptor, "minimumVersion");
                         AssertForbiddenProperty(descriptor, "maximumVersion");

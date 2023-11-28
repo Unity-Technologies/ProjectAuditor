@@ -6,10 +6,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEngine;
-
-#if UNITY_2019_3_OR_NEWER
 using UnityEditor.PackageManager;
-#endif
 
 namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 {
@@ -53,42 +50,9 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
         internal static IEnumerable<string> GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes flags)
         {
             var assemblyPaths = new List<string>();
-#if UNITY_2019_1_OR_NEWER
             var precompiledAssemblySources = (CompilationPipeline.PrecompiledAssemblySources)flags;
             assemblyPaths.AddRange(CompilationPipeline.GetPrecompiledAssemblyPaths(precompiledAssemblySources));
-#else
-            if ((flags & PrecompiledAssemblyTypes.UnityEngine) != 0)
-                assemblyPaths.AddRange(Directory.GetFiles(Path.Combine(EditorApplication.applicationContentsPath,
-                    Path.Combine("Managed", "UnityEngine"))).Where(path => Path.GetExtension(path).Equals(".dll")));
-            if ((flags & PrecompiledAssemblyTypes.UnityEditor) != 0)
-                assemblyPaths.AddRange(Directory.GetFiles(Path.Combine(EditorApplication.applicationContentsPath,
-                    "Managed")).Where(path => Path.GetExtension(path).Equals(".dll")));
-            if ((flags & PrecompiledAssemblyTypes.UserAssembly) != 0)
-                assemblyPaths.AddRange(CompilationPipeline.GetPrecompiledAssemblyNames().Select(name => CompilationPipeline.GetPrecompiledAssemblyPathFromAssemblyName(name)));
-#endif
 
-#if !UNITY_2019_2_OR_NEWER
-            var extensions = new List<string>();
-            if ((flags & PrecompiledAssemblyTypes.UnityEngine) != 0)
-            {
-                extensions.AddRange(new[]
-                {
-                    "UnityExtensions/Unity/Networking/UnityEngine.Networking.dll",
-                    "UnityExtensions/Unity/Timeline/Runtime/UnityEngine.Timeline.dll",
-                    "UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll",
-                });
-            }
-            if ((flags & PrecompiledAssemblyTypes.UnityEditor) != 0)
-            {
-                extensions.AddRange(new[]
-                {
-                    "UnityExtensions/Unity/Networking/Editor/UnityEditor.Networking.dll",
-                    "UnityExtensions/Unity/Timeline/Editor/UnityEditor.Timeline.dll",
-                    "UnityExtensions/Unity/GUISystem/Editor/UnityEditor.UI.dll",
-                });
-            }
-            assemblyPaths.AddRange(extensions.Select(ext => Path.Combine(EditorApplication.applicationContentsPath, ext)));
-#endif
             return assemblyPaths.Select(PathUtils.ReplaceSeparators);
         }
 
@@ -134,16 +98,13 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                 if (folders.Length > 2 && folders[0].Equals(k_VirtualPackagesRoot))
                 {
                     assemblyInfo.relativePath = PathUtils.Combine(folders[0], folders[1]);
-#if UNITY_2019_3_OR_NEWER
+
                     var info =  UnityEditor.PackageManager.PackageInfo.FindForAssetPath(asmDefPath);
                     if (info != null)
                     {
                         assemblyInfo.packageReadOnly = info.source != PackageSource.Embedded && info.source != PackageSource.Local;
                         assemblyInfo.packageResolvedPath = PathUtils.ReplaceSeparators(info.resolvedPath);
                     }
-#else
-                    assemblyInfo.packageReadOnly = true;
-#endif
                 }
                 else
                 {
@@ -151,7 +112,11 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                     return assemblyInfo;
                 }
             }
-            else if (!assemblyInfo.name.StartsWith(AssemblyInfo.DefaultAssemblyName))
+            else if (assemblyInfo.name.Equals(AssemblyInfo.DefaultAssemblyName))
+            {
+                assemblyInfo.asmDefPath = "Built-in";
+            }
+            else
             {
                 // this might happen when loading a report from a different project
                 Debug.LogWarningFormat("Assembly Definition cannot be found for " + assemblyInfo.name);

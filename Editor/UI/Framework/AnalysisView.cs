@@ -122,7 +122,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             var multiColumnHeader = new MultiColumnHeader(new MultiColumnHeaderState(columns));
 
-            // set default sorting column (priority: severity/logLevel, description or first column)
+            // set default sorting column (priority: Severity/logLevel, description or first column)
             multiColumnHeader.SetSorting(m_SortPropertyIndex != -1 ? m_SortPropertyIndex : 0, m_SortAscending);
 
             m_Table = new IssueTable(state,
@@ -144,7 +144,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public virtual void AddIssues(IEnumerable<ProjectIssue> allIssues)
         {
-            var issues = allIssues.Where(i => i.category == m_Desc.category).ToArray();
+            var issues = allIssues.Where(i => i.Category == m_Desc.category).ToArray();
             if (issues.Length == 0)
                 return;
 
@@ -408,7 +408,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 else// if (issues.Length == 1)
                 {
                     var selection = issues[0];
-                    var dependencies = selection.dependencies;
+                    var dependencies = selection.Dependencies;
 
                     m_DependencyView.SetRoot(dependencies);
 
@@ -455,7 +455,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public void FrameSelection()
         {
             var selectedItems = m_Table.GetSelectedItems();
-            if (selectedItems.Length > 0)
+            if (selectedItems.Count > 0)
             {
                 var firstItem = selectedItems[0];
                 m_Table.FrameItem(firstItem.id);
@@ -464,7 +464,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public void ClearSelection()
         {
-            m_Table.SetSelection(new List<int>());
+            m_Table.ClearSelection();
         }
 
         void SetRowsExpanded(bool expanded)

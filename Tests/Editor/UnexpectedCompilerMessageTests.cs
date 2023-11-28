@@ -89,14 +89,14 @@ class MyClass
             var issue = issues.First();
 
             // check ID
-            Assert.IsFalse(issue.id.IsValid());
+            Assert.IsFalse(issue.Id.IsValid());
 
             // check issue
-            Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessage));
-            Assert.AreEqual("The variable 'i' is assigned but its value is never used", issue.description);
-            Assert.True(issue.relativePath.StartsWith("Assets/"), "Relative path: " + issue.relativePath);
-            Assert.That(issue.line, Is.EqualTo(5));
-            Assert.That(issue.severity, Is.EqualTo(Severity.Warning));
+            Assert.That(issue.Category, Is.EqualTo(IssueCategory.CodeCompilerMessage));
+            Assert.AreEqual("The variable 'i' is assigned but its value is never used", issue.Description);
+            Assert.True(issue.RelativePath.StartsWith("Assets/"), "Relative path: " + issue.RelativePath);
+            Assert.That(issue.Line, Is.EqualTo(5));
+            Assert.That(issue.Severity, Is.EqualTo(Severity.Warning));
 
             // check properties
             Assert.AreEqual((int)CompilerMessageProperty.Num, issue.GetNumCustomProperties());
@@ -114,20 +114,20 @@ class MyClass
             var myIssue = issues.FirstOrDefault();
 
             Assert.NotNull(myIssue);
-            var descriptor = myIssue.id.GetDescriptor();
+            var descriptor = myIssue.Id.GetDescriptor();
             Assert.NotNull(descriptor);
 
-            Assert.AreEqual(Severity.Moderate, descriptor.defaultSeverity);
-            Assert.AreEqual(typeof(DescriptorID), myIssue.id.GetType());
-            Assert.AreEqual("PAC0066", myIssue.id.ToString());
-            Assert.AreEqual("UnityEngine.Camera", descriptor.type);
-            Assert.AreEqual("allCameras", descriptor.method);
+            Assert.AreEqual(Severity.Moderate, descriptor.DefaultSeverity);
+            Assert.AreEqual(typeof(DescriptorId), myIssue.Id.GetType());
+            Assert.AreEqual("PAC0066", myIssue.Id.ToString());
+            Assert.AreEqual("UnityEngine.Camera", descriptor.Type);
+            Assert.AreEqual("allCameras", descriptor.Method);
 
-            Assert.AreEqual(m_ScriptWithDiagnostic.fileName, myIssue.filename);
-            Assert.AreEqual("'UnityEngine.Camera.allCameras' usage", myIssue.description);
+            Assert.AreEqual(m_ScriptWithDiagnostic.fileName, myIssue.Filename);
+            Assert.AreEqual("'UnityEngine.Camera.allCameras' usage", myIssue.Description);
             Assert.AreEqual("System.Void MyClass::Dummy()", myIssue.GetContext());
-            Assert.AreEqual(7, myIssue.line);
-            Assert.AreEqual(IssueCategory.Code, myIssue.category);
+            Assert.AreEqual(7, myIssue.Line);
+            Assert.AreEqual(IssueCategory.Code, myIssue.Category);
 
             // check custom property
             Assert.AreEqual((int)CodeProperty.Num, myIssue.GetNumCustomProperties());
