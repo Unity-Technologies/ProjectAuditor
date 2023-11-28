@@ -53,23 +53,25 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
 
-            var assetPaths = GetAssetPathsByFilter("t:mesh, a:assets");
-
-            progress?.Start("Finding Meshes", "Search in Progress...", assetPaths.Length);
-
             var diagnosticParams = analysisParams.DiagnosticParams;
             var meshVertexCountLimit = diagnosticParams.GetParameter(k_MeshVertexCountLimit);
             var meshTriangleCountLimit = diagnosticParams.GetParameter(k_MeshTriangleCountLimit);
 
+            var context = new MeshAnalysisContext()
+            {
+                // Importer is set in the loop
+                Params = analysisParams,
+                MeshVertexCountLimit = meshVertexCountLimit,
+                MeshTriangleCountLimit = meshTriangleCountLimit
+            };
+
+            var assetPaths = GetAssetPathsByFilter("t:mesh, a:assets", context);
+
+            progress?.Start("Finding Meshes", "Search in Progress...", assetPaths.Length);
+
             foreach (var assetPath in assetPaths)
             {
-                var context = new MeshAnalysisContext()
-                {
-                    Importer = AssetImporter.GetAtPath(assetPath),
-                    Params = analysisParams,
-                    MeshVertexCountLimit = meshVertexCountLimit,
-                    MeshTriangleCountLimit = meshTriangleCountLimit
-                };
+                context.Importer = AssetImporter.GetAtPath(assetPath);
 
                 foreach (var analyzer in analyzers)
                 {

@@ -89,6 +89,10 @@ namespace Unity.ProjectAuditor.Editor
         [NonSerialized]
         internal ProjectReport ExistingReport;
 
+        [JsonIgnore]
+        [NonSerialized]
+        internal Predicate<string> AssetPathFilter;
+
         internal string PlatformString => m_PlatformString;
 
         /// <summary>
@@ -132,6 +136,8 @@ namespace Unity.ProjectAuditor.Editor
             OnModuleCompleted = original.OnModuleCompleted;
 
             ExistingReport = original.ExistingReport;
+
+            AssetPathFilter = original.AssetPathFilter;
         }
 
         /// <summary>

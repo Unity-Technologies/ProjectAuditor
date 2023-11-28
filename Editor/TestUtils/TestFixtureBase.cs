@@ -85,6 +85,50 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             UserPreferences.AnalyzeInBackground = m_SavedAnalyzeInBackground;
         }
 
+        protected ProjectIssue[] AnalyzeFiltered(Predicate<string> filterPredicate)
+        {
+            var foundIssues = new List<ProjectIssue>();
+
+            var projectAuditorParams = new AnalysisParams()
+            {
+                CodeOptimization = m_CodeOptimization,
+                OnIncomingIssues = foundIssues.AddRange,
+                Platform = m_Platform,
+                AssetPathFilter = filterPredicate
+            };
+            m_ProjectAuditor.Audit(projectAuditorParams);
+
+            return foundIssues.ToArray();
+        }
+
+
+        protected ProjectIssue[] AnalyzeFiltered(Predicate<string> filterPredicate, IssueCategory category)
+        {
+            return AnalyzeFiltered(filterPredicate, new [] { category });
+        }
+
+        protected ProjectIssue[] AnalyzeFiltered(Predicate<string> filterPredicate, IssueCategory[] categories)
+        {
+            var foundIssues = new List<ProjectIssue>();
+            var projectAuditor = new ProjectAuditor();
+            var projectAuditorParams = new AnalysisParams()
+            {
+                AssemblyNames = new[] { "Assembly-CSharp" },
+                Categories = categories,
+                OnIncomingIssues = issues =>
+                {
+                    var categoryIssues = issues.Where(issue => categories.Contains(issue.Category));
+                    foundIssues.AddRange(categoryIssues);
+                },
+                Platform = m_Platform,
+                AssetPathFilter = filterPredicate
+            };
+
+            projectAuditor.Audit(projectAuditorParams);
+
+            return foundIssues.ToArray();
+        }
+
         protected ProjectIssue[] Analyze(Func<ProjectIssue, bool> predicate = null)
         {
             ValidateTargetPlatform();
