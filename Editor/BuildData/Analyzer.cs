@@ -72,7 +72,8 @@ namespace Unity.ProjectAuditor.Editor.BuildData
         {
             using var sf = UnityFileSystem.OpenSerializedFile(fileInfo.AbsolutePath);
             using var reader = new UnityFileReader(fileInfo.AbsolutePath, 64 * 1024 * 1024);
-            using var processor = new PPtrAndCrcProcessor(sf, reader, Path.GetDirectoryName(fileInfo.AbsolutePath), m_PPtrResolver, buildObjects);
+            var folder = fileInfo.IsInArchive ? "archive:" : Path.GetDirectoryName(fileInfo.AbsolutePath);
+            using var processor = new PPtrAndCrcProcessor(sf, reader, folder, m_PPtrResolver, buildObjects);
             int sceneId = -1;
 
             /*var match = m_RegexSceneFile.Match(filename);
