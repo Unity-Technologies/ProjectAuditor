@@ -5,7 +5,8 @@
         "Unity.ProjectAuditor.Editor.UI.Framework",
         "Unity.ProjectAuditor.Editor.Utils",
         "Unity.ProjectAuditor.Editor.Tests.Common",
-        "Unity.RenderPipelines.Universal.Runtime"
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.ProjectAuditor.Editor.UI"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
