@@ -15,6 +15,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData
         public BuildFileInfo ArchiveFile { get; private set; }
         public long Size { get; }
         public bool IsArchive => m_ArchivedFiles != null;
+        public bool IsInArchive => ArchiveFile != null;
 
         List<BuildFileInfo> m_ArchivedFiles;
         public IReadOnlyList<BuildFileInfo> ArchivedFiles => m_ArchivedFiles;

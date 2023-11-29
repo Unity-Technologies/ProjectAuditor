@@ -84,14 +84,6 @@ namespace Unity.ProjectAuditor.Editor
             InitModules();
         }
 
-        ~ProjectAuditor()
-        {
-            if (m_BuildDataAnalyzer != null)
-            {
-                UnityFileSystem.Cleanup();
-            }
-        }
-
         /// <summary>
         /// Performs static analysis of the project, using default parameters.
         /// </summary>
