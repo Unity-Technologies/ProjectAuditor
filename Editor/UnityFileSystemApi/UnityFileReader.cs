@@ -16,11 +16,20 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
 
         public long Length { get; }
 
-        static Dictionary<int, byte[]> s_BufferPool = new Dictionary<int, byte[]>();
+        static Dictionary<int, Stack<byte[]>> s_BufferPool = new Dictionary<int, Stack<byte[]>>();
 
         public UnityFileReader(string path, int bufferSize)
         {
-            if (!s_BufferPool.Remove(bufferSize, out var buffer))
+            byte[] buffer = null;
+            if (s_BufferPool.TryGetValue(bufferSize, out var buffers))
+            {
+                if (buffers.Count > 0)
+                {
+                    buffer = buffers.Pop();
+                }
+            }
+
+            if (buffer == null)
             {
                 buffer = new byte[bufferSize];
             }
@@ -148,7 +157,13 @@ namespace Unity.ProjectAuditor.Editor.UnityFileSystemApi
         public void Dispose()
         {
             m_File.Dispose();
-            s_BufferPool.Add(m_Buffer.Length, m_Buffer);
+
+            if (!s_BufferPool.TryGetValue(m_Buffer.Length, out var buffers))
+            {
+                buffers = new Stack<byte[]>();
+                s_BufferPool.Add(m_Buffer.Length, buffers);
+            }
+            buffers.Push(m_Buffer);
         }
     }
 }

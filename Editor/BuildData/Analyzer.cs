@@ -49,21 +49,13 @@ namespace Unity.ProjectAuditor.Editor.BuildData
                     {
                         AnalyzeSerializedFile(fileInfo, buildObjects);
                     }
-                    catch (Exception e)
+                    catch (NotSupportedException e)
                     {
-                        // TODO: better error handling
-                        // This is tricky because Unity doesn't return coherent error codes when trying to open a file that is not a SerializedFile
                     }
-                }
-                catch (Exception e)
-                {
-                    // TODO: better error handling
-                    // We may want to report files that couldn't be analyzed.
                 }
             }
 
             UnityFileReader.ClearBufferPool();
-            TypeTreeReader.ClearPool();
 
             return buildObjects;
         }
@@ -102,7 +94,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData
                 var offset = obj.Offset;
                 uint crc32 = processor.Process(obj, root);
 
-                using var typeTreeReader = TypeTreeReader.Get(sf, root, reader, offset);
+                var typeTreeReader = new TypeTreeReader(sf, root, reader, offset);
 
                 var serializedObject = ReadSerializedObject(obj, fileInfo, typeTreeReader, crc32);
 
