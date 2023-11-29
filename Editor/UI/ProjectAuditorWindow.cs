@@ -831,6 +831,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 6,
                 descriptionWithIcon = true,
                 showFilters = true,
+                showDependencyView = true,
+                dependencyViewGuiContent = new GUIContent("Shader Keywords"),
                 onOpenIssue = null,
                 type = typeof(BuildDataView),
                 analyticsEvent = (int)AnalyticsReporter.UIButton.BuildDataShaders

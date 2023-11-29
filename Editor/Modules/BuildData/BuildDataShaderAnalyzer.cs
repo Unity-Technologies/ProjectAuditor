@@ -25,6 +25,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
             }
 
+            var dependencyNode = new SimpleDependencyNode($"Keywords ({context.Shader.Keywords.Count})");
+
+            foreach (var keyword in context.Shader.Keywords)
+            {
+                var childDependencyNode = new SimpleDependencyNode(keyword);
+                dependencyNode.AddChild(childDependencyNode);
+            }
+
             yield return context.CreateWithoutDiagnostic(IssueCategory.BuildDataShader, context.Shader.Name)
                 .WithCustomProperties(
                     new object[((int)BuildDataShaderProperty.Num)]
@@ -33,8 +41,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         context.Shader.DecompressedSize,
                         context.Shader.SubShaders.Count,
                         subProgramCount,
-                        string.Join(",", context.Shader.Keywords)
-                    });
+                        string.Join(", ", context.Shader.Keywords)
+                    })
+                .WithDependencies(dependencyNode);
         }
     }
 }

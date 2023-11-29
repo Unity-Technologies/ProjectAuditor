@@ -201,12 +201,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     {
                         var firstObj = duplicate.Value[0];
 
-                        var dependencyNode = new AssetDependencyNode()
-                        {
-                            location = new Location("Files containing this asset")
-                        };
+                        var dependencyNode = new SimpleDependencyNode("Files containing this asset");
 
-                        var files = new List<string>(duplicate.Value.Count);
+                        var files = new HashSet<string>();
                         foreach (var obj in duplicate.Value)
                         {
                             var filename = obj.BuildFile.DisplayName;
@@ -214,11 +211,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                             {
                                 files.Add(filename);
 
-                                var childDependencyNode = new AssetDependencyNode()
-                                {
-                                    location = new Location(filename)
-                                };
-
+                                var childDependencyNode = new SimpleDependencyNode(filename);
                                 dependencyNode.AddChild(childDependencyNode);
                             }
                         }
