@@ -41,6 +41,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public ViewDescriptor Desc => m_Desc;
 
+        public DependencyView DependencyView => m_DependencyView;
+        
         public virtual string Description => $"A list of {m_Desc.displayName} found in the project.";
 
         public string DocumentationUrl => Documentation.GetPageUrl(new string(m_Desc.displayName.Where(char.IsLetterOrDigit).ToArray()));
