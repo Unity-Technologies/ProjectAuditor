@@ -52,6 +52,11 @@ namespace Unity.ProjectAuditor.Editor.BuildData
                     catch (NotSupportedException e)
                     {
                     }
+                    catch (Exception e)
+                    {
+                        if (e.Message != "Unknown error.")
+                            throw;
+                    }
                 }
             }
 
