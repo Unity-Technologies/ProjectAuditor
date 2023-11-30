@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
@@ -18,7 +18,7 @@ namespace Unity.ProjectAuditor.EditorTests
         const string k_SmallMeshName = "SmallTestMesh";
         const string k_LargeMeshName = "LargeTestMesh";
 
-        readonly IssueCategory[] m_AllCategoriesTested = new []
+        readonly IssueCategory[] m_AllCategoriesTested = new[]
         {
             IssueCategory.AssetDiagnostic,
             IssueCategory.Code,
@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.EditorTests
             try
             {
                 // ensure nothing else is going to cause a NullReferenceException
-                AnalyzeFiltered( _ => true, m_AllCategoriesTested);
+                AnalyzeFiltered(_ => true, m_AllCategoriesTested);
             }
             catch (NullReferenceException)
             {

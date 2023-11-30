@@ -106,10 +106,9 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             return foundIssues.ToArray();
         }
 
-
         protected ProjectIssue[] AnalyzeFiltered(Predicate<string> filterPredicate, IssueCategory category)
         {
-            return AnalyzeFiltered(filterPredicate, new [] { category });
+            return AnalyzeFiltered(filterPredicate, new[] { category });
         }
 
         protected ProjectIssue[] AnalyzeFiltered(Predicate<string> filterPredicate, IssueCategory[] categories)
