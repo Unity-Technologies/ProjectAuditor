@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         internal const string PAA0008 = nameof(PAA0008);
 
-        internal static readonly Descriptor k_SpriteAtlasEmptyDescriptor = new Descriptor(
+        internal static readonly Descriptor k_PoorUtilizationDescriptor = new Descriptor(
             PAA0008,
             "Sprite Atlas: Too much empty space",
             Areas.Memory,
@@ -20,12 +20,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Consider reorganizing your Sprite Atlas Texture in order to reduce the amount of empty space."
         )
         {
+            IsEnabledByDefault = false,
             MessageFormat = "Sprite Atlas '{0}' has too much empty space ({1})"
         };
 
         public void Initialize(Module module)
         {
-            module.RegisterDescriptor(k_SpriteAtlasEmptyDescriptor);
+            module.RegisterDescriptor(k_PoorUtilizationDescriptor);
         }
 
         public IEnumerable<ProjectIssue> Analyze(SpriteAtlasAnalysisContext context)
@@ -35,12 +36,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
             yield return context.CreateInsight(IssueCategory.SpriteAtlas, spriteAtlas.name)
                 .WithLocation(new Location(context.AssetPath));
 
-            var emptyPercent = TextureUtils.GetEmptySpacePercentage(spriteAtlas);
-            if (emptyPercent > context.SpriteAtlasEmptySpaceLimit)
+            if (context.IsDescriptorEnabled(k_PoorUtilizationDescriptor))
             {
-                yield return context.CreateIssue(IssueCategory.AssetDiagnostic,
-                    k_SpriteAtlasEmptyDescriptor.Id, spriteAtlas.name, Formatting.FormatPercentage(emptyPercent / 100.0f, 0))
-                    .WithLocation(context.AssetPath);
+                var emptySpace = TextureUtils.GetEmptySpacePercentage(spriteAtlas);
+                if (emptySpace > context.SpriteAtlasEmptySpaceLimit)
+                {
+                    yield return context.CreateIssue(IssueCategory.AssetDiagnostic,
+                        k_PoorUtilizationDescriptor.Id, spriteAtlas.name, Formatting.FormatPercentage(emptySpace / 100.0f))
+                        .WithLocation(context.AssetPath);
+                }
             }
         }
     }

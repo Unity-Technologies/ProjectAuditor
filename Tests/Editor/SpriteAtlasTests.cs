@@ -1,6 +1,7 @@
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Tests.Common;
 using UnityEditor;
@@ -78,14 +79,33 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
+        public void SpriteAtlas_PoorUtilization_IsDisabledByDefault()
+        {
+            m_AdditionalRules.Clear();
+
+            var diagnostic =
+                AnalyzeAndFindAssetIssues(m_TestSpriteAtlasEmpty, IssueCategory.AssetDiagnostic)
+                    .FirstOrDefault(i => i.Id.Equals(SpriteAtlasAnalyzer.k_PoorUtilizationDescriptor.Id));
+
+            Assert.IsNull(diagnostic);
+        }
+
+        [Test]
 #if UNITY_2023_1_OR_NEWER
         [Ignore("TODO: investigate reason for test failure")]
 #endif
-        public void SpriteAtlas_GoodUtilization_IsNotReported()
+        public void SpriteAtlas_PoorUtilization_IsNotReported()
         {
+            // enable diagnostic rule since it is disabled by default
+            m_AdditionalRules.Add(new Rule
+            {
+                Id = SpriteAtlasAnalyzer.k_PoorUtilizationDescriptor.Id,
+                Severity = Severity.Moderate
+            });
+
             var diagnostic =
                 AnalyzeAndFindAssetIssues(m_TestSpriteAtlasFull, IssueCategory.AssetDiagnostic)
-                    .FirstOrDefault(i => i.Id.Equals(SpriteAtlasAnalyzer.k_SpriteAtlasEmptyDescriptor.Id));
+                    .FirstOrDefault(i => i.Id.Equals(SpriteAtlasAnalyzer.k_PoorUtilizationDescriptor.Id));
 
             Assert.Null(diagnostic);
         }
@@ -96,9 +116,16 @@ namespace Unity.ProjectAuditor.EditorTests
 #endif
         public void SpriteAtlas_PoorUtilization_IsReported()
         {
+            // enable diagnostic rule since it is disabled by default
+            m_AdditionalRules.Add(new Rule
+            {
+                Id = SpriteAtlasAnalyzer.k_PoorUtilizationDescriptor.Id,
+                Severity = Severity.Moderate
+            });
+
             var diagnostic =
                 AnalyzeAndFindAssetIssues(m_TestSpriteAtlasEmpty, IssueCategory.AssetDiagnostic)
-                    .FirstOrDefault(i => i.Id.Equals(SpriteAtlasAnalyzer.k_SpriteAtlasEmptyDescriptor.Id));
+                    .FirstOrDefault(i => i.Id.Equals(SpriteAtlasAnalyzer.k_PoorUtilizationDescriptor.Id));
 
             Assert.IsNotNull(diagnostic);
         }
