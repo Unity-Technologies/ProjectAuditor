@@ -56,12 +56,12 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 #if PACKAGE_ENTITIES_GRAPHICS
             if (PlayerSettingsUtil.IsStaticBatchingEnabled(context.Params.Platform))
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_EntitiesGraphicsDescriptor.Id);
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_EntitiesGraphicsDescriptor.Id);
             }
 #elif PACKAGE_HYBRID_RENDERER
             if (PlayerSettingsUtil.IsStaticBatchingEnabled(context.Params.Platform))
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_HybridDescriptor.Id);
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_HybridDescriptor.Id);
             }
 #else
             yield break;

@@ -8,7 +8,7 @@ namespace Unity.ProjectAuditor.Editor.Core
         public AnalysisParams Params;
 
         /// <summary>
-        /// Create Diagnostics-specific IssueBuilder
+        /// Create an IssueBuilder for a diagnostic issue
         /// </summary>
         /// <param name="category">Issue category</param>
         /// <param name="id">Diagnostic descriptor ID</param>
@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.Core
         }
 
         /// <summary>
-        /// Create General-purpose IssueBuilder
+        /// Create an IssueBuilder for a non-diagnostic insight
         /// </summary>
         /// <param name="category">Issue category</param>
         /// <param name="description">User-friendly description</param>
