@@ -44,11 +44,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             public BuildReport Report;
         }
 
-        internal interface IBuildReportProvider
-        {
-            BuildReport GetBuildReport(BuildTarget platform);
-        }
-
         const string k_KeyBuildPath = "Path";
         const string k_KeyPlatform = "Platform";
         const string k_KeyResult = "Result";
@@ -96,16 +91,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             hierarchy = true
         };
 
-        static IBuildReportProvider s_BuildReportProvider;
-        static IBuildReportProvider s_DefaultBuildReportProvider = new LastBuildReportProvider();
-
-        internal static IBuildReportProvider BuildReportProvider
-        {
-            get => s_BuildReportProvider != null ? s_BuildReportProvider : s_DefaultBuildReportProvider;
-            set => s_BuildReportProvider = value;
-        }
-
-        internal static IBuildReportProvider DefaultBuildReportProvider => s_BuildReportProvider;
+        internal static LastBuildReportProvider BuildReportProvider = new LastBuildReportProvider();
 
         public override string Name => "Build Report";
 

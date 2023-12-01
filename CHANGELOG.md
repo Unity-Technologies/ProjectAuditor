@@ -44,6 +44,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Actions section and Mute/Unmute buttons
 * Settings from ProjectAuditorConfig
 * Support for Unity 2018 and 2019.
+* BuildReports are no longer saved into the project's Assets folder, and are instead cached in callbacks or read directly from the Library folder.
 
 ### Fixed
 * Analysis never completes if an exception is thrown

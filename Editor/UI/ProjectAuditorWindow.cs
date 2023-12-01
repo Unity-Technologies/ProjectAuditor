@@ -754,7 +754,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 100,
                 showFilters = true,
                 showInfoPanel = true,
-                type = typeof(BuildReportView),
+                type = typeof(BuildStepsView),
                 analyticsEvent = (int)AnalyticsReporter.UIButton.BuildSteps
             });
             ViewDescriptor.Register(new ViewDescriptor
@@ -767,7 +767,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showFilters = true,
                 showInfoPanel = true,
                 onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                type = typeof(BuildReportView),
+                type = typeof(BuildSizeView),
                 analyticsEvent = (int)AnalyticsReporter.UIButton.BuildFiles
             });
             ViewDescriptor.Register(new ViewDescriptor

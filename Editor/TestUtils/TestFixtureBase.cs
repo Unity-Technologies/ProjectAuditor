@@ -28,6 +28,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         protected string m_OriginalProductName;
 
         bool m_SavedAnalyzeInBackground;
+        bool m_SavedAnalyzeAfterBuild;
 
         public static BuildTarget GetStandaloneBuildTarget()
         {
@@ -48,6 +49,9 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         {
             m_SavedAnalyzeInBackground = UserPreferences.AnalyzeInBackground;
             UserPreferences.AnalyzeInBackground = false;
+
+            m_SavedAnalyzeAfterBuild = UserPreferences.AnalyzeAfterBuild;
+            UserPreferences.AnalyzeAfterBuild = false;
 
             DescriptorLibrary.Reset();
 
@@ -83,6 +87,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             TestAsset.Cleanup();
 
             UserPreferences.AnalyzeInBackground = m_SavedAnalyzeInBackground;
+            UserPreferences.AnalyzeAfterBuild = m_SavedAnalyzeAfterBuild;
         }
 
         protected ProjectIssue[] AnalyzeFiltered(Predicate<string> filterPredicate)
