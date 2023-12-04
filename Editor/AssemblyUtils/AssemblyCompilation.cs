@@ -210,8 +210,9 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                 var filename = Path.GetFileName(assembly.outputPath);
                 var assemblyName = Path.GetFileNameWithoutExtension(assembly.outputPath);
                 var assemblyPath = Path.Combine(m_OutputFolder, filename);
+#pragma warning disable 618 // disable warning for obsolete AssemblyBuilder
                 var assemblyBuilder = new AssemblyBuilder(assemblyPath, assembly.sourceFiles);
-
+#pragma warning restore 618
                 assemblyBuilder.buildTarget = platform;
                 assemblyBuilder.buildTargetGroup = BuildPipeline.GetBuildTargetGroup(platform);
                 assemblyBuilder.buildFinished += (path, originalMessages) =>

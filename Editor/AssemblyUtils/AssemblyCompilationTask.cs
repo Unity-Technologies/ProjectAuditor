@@ -7,7 +7,9 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 {
     class AssemblyCompilationTask
     {
+#pragma warning disable 618 // disable warning for obsolete AssemblyBuilder
         public AssemblyBuilder builder;
+#pragma warning restore 618
         public AssemblyCompilationTask[] dependencies;
         public CompilerMessage[] messages;
         public Stopwatch stopWatch;

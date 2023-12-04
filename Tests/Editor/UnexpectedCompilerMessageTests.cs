@@ -17,25 +17,22 @@ namespace Unity.ProjectAuditor.EditorTests
 {
     class UnexpectedCompilerMessageTests : TestFixtureBase
     {
-#pragma warning disable 0414
-        private TestAsset m_TestMcsRsp;
         TestAsset m_ScriptWithWarning;
-        private TestAsset m_ScriptWithDiagnostic;
-#pragma warning restore 0414
+        TestAsset m_ScriptWithDiagnostic;
 
-        private const string k_rspPath = "Assets/mcs.rsp";
+        const string k_RspPath = "Assets/mcs.rsp";
 
         [OneTimeSetUp]
         public void SetUp()
         {
             // mcs.rsp can't be a TestAsset because it has to live directly in the root of Assets
-            if (!File.Exists(k_rspPath))
-                Directory.CreateDirectory(Path.GetDirectoryName(k_rspPath));
+            if (!File.Exists(k_RspPath))
+                Directory.CreateDirectory(Path.GetDirectoryName(k_RspPath));
 
-            File.WriteAllText(k_rspPath, "");
-            Assert.True(File.Exists(k_rspPath));
+            File.WriteAllText(k_RspPath, "");
+            Assert.True(File.Exists(k_RspPath));
 
-            AssetDatabase.ImportAsset(k_rspPath, ImportAssetOptions.ForceUpdate);
+            AssetDatabase.ImportAsset(k_RspPath, ImportAssetOptions.ForceUpdate);
 
             m_ScriptWithWarning = new TestAsset("ScriptWithWarning.cs", @"
 class ScriptWithWarning {
@@ -61,9 +58,9 @@ class MyClass
         [OneTimeTearDown]
         public void TearDown()
         {
-            if (File.Exists(k_rspPath))
+            if (File.Exists(k_RspPath))
             {
-                AssetDatabase.DeleteAsset(k_rspPath);
+                AssetDatabase.DeleteAsset(k_RspPath);
                 AssetDatabase.Refresh();
             }
         }

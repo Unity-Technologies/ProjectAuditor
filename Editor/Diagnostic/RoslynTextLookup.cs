@@ -10,9 +10,11 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         [Serializable]
         struct RawStringLookup
         {
+#pragma warning disable 649 // Disable warning CS0649. The fields are assigned through Newtonsoft.Json
             public string id;
             public string description;
             public string solution;
+#pragma warning restore 649
         }
 
         struct StringLookup
