@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using Unity.ProjectAuditor.Editor.Build;
@@ -174,9 +175,10 @@ namespace Unity.ProjectAuditor.Editor
             {
                 if (string.IsNullOrEmpty(m_LastBuildDataPath))
                 {
-                    /*var buildReport = BuildReportHelper.GetLast();
-                    var lastBuildFolder = buildReport != null ? buildReport.summary.outputPath : "";*/
-                    m_LastBuildDataPath = EditorUtility.OpenFolderPanel("Choose folder with built player data","" , "");
+                    var provider = new LastBuildReportProvider();
+                    var buildReport = provider.GetBuildReport(analysisParams.Platform);
+                    var lastBuildFolder = buildReport != null ? Path.GetDirectoryName(buildReport.summary.outputPath) : "";
+                    m_LastBuildDataPath = EditorUtility.OpenFolderPanel("Choose folder with built player data", lastBuildFolder, "");
                 }
 
                 if (!string.IsNullOrEmpty(m_LastBuildDataPath))
