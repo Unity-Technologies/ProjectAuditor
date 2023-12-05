@@ -27,13 +27,11 @@ namespace Unity.ProjectAuditor.EditorTests
         [SetUp]
         public void SetUp()
         {
-
         }
 
         [TearDown]
         public void TearDown()
         {
-
         }
 
         [Test]
