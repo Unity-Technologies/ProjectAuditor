@@ -41,8 +41,8 @@ class MyClass
         {
             using (var compilationHelper = new AssemblyCompilation())
             {
-                Assert.AreEqual(CompilationMode.Player, compilationHelper.compilationMode);
-                Assert.AreEqual(EditorUserBuildSettings.activeBuildTarget, compilationHelper.platform);
+                Assert.AreEqual(CompilationMode.Player, compilationHelper.CompilationMode);
+                Assert.AreEqual(EditorUserBuildSettings.activeBuildTarget, compilationHelper.Platform);
             }
         }
 
@@ -63,7 +63,7 @@ class MyClass
         {
             using (var compilationHelper = new AssemblyCompilation
                {
-                   compilationMode =  CompilationMode.Editor
+                   CompilationMode =  CompilationMode.Editor
                })
             {
                 var assemblyInfo = compilationHelper.Compile().FirstOrDefault(a => a.name.Equals("Unity.ProjectAuditor.Editor"));
@@ -77,7 +77,7 @@ class MyClass
         {
             using (var compilationHelper = new AssemblyCompilation
                {
-                   compilationMode =  CompilationMode.EditorPlayMode
+                   CompilationMode =  CompilationMode.EditorPlayMode
                })
             {
                 var assemblyInfo = compilationHelper.Compile().FirstOrDefault(a => a.name.Equals("Unity.ProjectAuditor.Editor"));

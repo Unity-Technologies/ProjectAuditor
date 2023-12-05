@@ -117,7 +117,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             var projectAuditor = new ProjectAuditor();
             var projectAuditorParams = new AnalysisParams()
             {
-                AssemblyNames = new[] { "Assembly-CSharp" },
+                AssemblyNames = new[] { AssemblyInfo.DefaultAssemblyName },
                 Categories = categories,
                 OnIncomingIssues = issues =>
                 {
@@ -162,7 +162,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             var projectAuditor = new ProjectAuditor();
             m_AnalysisParams = new AnalysisParams
             {
-                AssemblyNames = new[] { "Assembly-CSharp" },
+                AssemblyNames = new[] { AssemblyInfo.DefaultAssemblyName },
                 Categories = new[] { category},
                 OnIncomingIssues = issues =>
                 {

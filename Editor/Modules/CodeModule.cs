@@ -202,16 +202,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var assemblyDirectories = new List<string>();
             var compilationPipeline = new AssemblyCompilation
             {
-                onAssemblyCompilationFinished = (compilationTask, compilerMessages) =>
+                OnAssemblyCompilationFinished = (compilationTask, compilerMessages) =>
                 {
                     analysisParams.OnIncomingIssues(ProcessCompilerMessages(context, compilationTask, compilerMessages));
                 },
-                codeOptimization = analysisParams.CodeOptimization,
-                compilationMode = analysisParams.CompilationMode,
-                platform = analysisParams.Platform,
+                CodeOptimization = analysisParams.CodeOptimization,
+                CompilationMode = analysisParams.CompilationMode,
+                Platform = analysisParams.Platform,
                 // TODO: reminder to add list of analyzers to metadata
-                roslynAnalyzers = UserPreferences.UseRoslynAnalyzers ? roslynAnalyzerAssets.ToArray() : null,
-                assemblyNames = analysisParams.AssemblyNames
+                RoslynAnalyzers = UserPreferences.UseRoslynAnalyzers ? roslynAnalyzerAssets.ToArray() : null,
+                AssemblyNames = analysisParams.AssemblyNames
             };
 
             Profiler.BeginSample("CodeModule.Audit.Compilation");
@@ -460,15 +460,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
             else if (compilerMessages.Any(m => m.type == CompilerMessageType.Error))
                 severity = Severity.Error;
 
-            var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(compilationTask.assemblyPath);
+            var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(compilationTask.AssemblyPath);
             yield return context.CreateInsight(IssueCategory.Assembly, assemblyInfo.name)
                 .WithCustomProperties(new object[(int)AssemblyProperty.Num]
                 {
                     assemblyInfo.packageReadOnly,
-                    compilationTask.durationInMs
+                    compilationTask.DurationInMs
                 })
                 .WithDependencies(new AssemblyDependencyNode(assemblyInfo.name,
-                    compilationTask.dependencies.Select(d => d.assemblyName).ToArray()))
+                    compilationTask.Dependencies.Select(d => d.AssemblyName).ToArray()))
                 .WithLocation(assemblyInfo.asmDefPath)
                 .WithSeverity(severity);
 

@@ -2,9 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Compilation;
@@ -65,13 +62,13 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
         Dictionary<string, AssemblyCompilationTask> m_AssemblyCompilationTasks;
         string m_OutputFolder = string.Empty;
 
-        public string[] assemblyNames;
-        public CodeOptimization codeOptimization = CodeOptimization.Release;
-        public CompilationMode compilationMode = CompilationMode.Player;
-        public BuildTarget platform = EditorUserBuildSettings.activeBuildTarget;
-        public string[] roslynAnalyzers;
+        public string[] AssemblyNames;
+        public CodeOptimization CodeOptimization = CodeOptimization.Release;
+        public CompilationMode CompilationMode = CompilationMode.Player;
+        public BuildTarget Platform = EditorUserBuildSettings.activeBuildTarget;
+        public string[] RoslynAnalyzers;
 
-        public Action<AssemblyCompilationTask, CompilerMessage[]> onAssemblyCompilationFinished;
+        public Action<AssemblyCompilationTask, CompilerMessage[]> OnAssemblyCompilationFinished;
 
         public void Dispose()
         {
@@ -79,8 +76,8 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
             {
                 foreach (var task in m_AssemblyCompilationTasks.Select(pair => pair.Value).Where(u => u.Success()))
                 {
-                    File.Delete(task.assemblyPath);
-                    File.Delete(Path.ChangeExtension(task.assemblyPath, ".pdb"));
+                    File.Delete(task.AssemblyPath);
+                    File.Delete(Path.ChangeExtension(task.AssemblyPath, ".pdb"));
                 }
 
                 m_AssemblyCompilationTasks.Clear();
@@ -93,13 +90,13 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 
         public AssemblyInfo[] Compile(IProgress progress = null)
         {
-            var editorAssemblies = compilationMode == CompilationMode.Editor || compilationMode == CompilationMode.EditorPlayMode;
+            var editorAssemblies = CompilationMode == CompilationMode.Editor || CompilationMode == CompilationMode.EditorPlayMode;
             var assemblies = GetAssemblies(editorAssemblies);
 
-            if (assemblyNames != null)
+            if (AssemblyNames != null)
             {
                 var assembliesAndDependencies = new List<Assembly>();
-                foreach (var assembly in assemblies.Where(a => assemblyNames.Contains(a.name)))
+                foreach (var assembly in assemblies.Where(a => AssemblyNames.Contains(a.name)))
                 {
                     CollectAssemblyDependencies(assembly, assembliesAndDependencies);
                 }
@@ -139,7 +136,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 
         IEnumerable<string> GetEditorAssemblies(IEnumerable<Assembly> assemblies)
         {
-            if (compilationMode == CompilationMode.EditorPlayMode)
+            if (CompilationMode == CompilationMode.EditorPlayMode)
             {
                 // exclude Editor-Only Assemblies
                 assemblies = assemblies.Where(a => a.flags != AssemblyFlags.EditorAssembly);
@@ -175,30 +172,30 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                 var assemblyName = assemblyInfo.name;
                 var compilationTask = m_AssemblyCompilationTasks[assemblyName];
 
-                compilationTask.messages = messages;
+                compilationTask.Messages = messages;
 
                 if (progress != null)
                     progress.Advance(assemblyName);
 
-                var stopWatch = compilationTask.stopWatch;
+                var stopWatch = compilationTask.StopWatch;
                 if (stopWatch != null)
                     stopWatch.Stop();
 
-                if (onAssemblyCompilationFinished != null)
-                    onAssemblyCompilationFinished(compilationTask, messages);
+                if (OnAssemblyCompilationFinished != null)
+                    OnAssemblyCompilationFinished(compilationTask, messages);
             });
             UpdateAssemblyBuilders();
 
             if (progress != null)
                 progress.Clear();
 
-            if (onAssemblyCompilationFinished != null)
+            if (OnAssemblyCompilationFinished != null)
                 foreach (var compilationTask in m_AssemblyCompilationTasks.Where(pair => pair.Value.status == CompilationStatus.MissingDependency).Select(p => p.Value))
                 {
-                    onAssemblyCompilationFinished(compilationTask, new CompilerMessage[] {});
+                    OnAssemblyCompilationFinished(compilationTask, new CompilerMessage[] {});
                 }
 
-            return m_AssemblyCompilationTasks.Where(pair => pair.Value.Success()).Select(task => task.Value.assemblyPath);
+            return m_AssemblyCompilationTasks.Where(pair => pair.Value.Success()).Select(task => task.Value.AssemblyPath);
         }
 
         void PrepareAssemblyBuilders(Assembly[] assemblies, Action<string, CompilerMessage[]> assemblyCompilationFinished)
@@ -213,8 +210,8 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 #pragma warning disable 618 // disable warning for obsolete AssemblyBuilder
                 var assemblyBuilder = new AssemblyBuilder(assemblyPath, assembly.sourceFiles);
 #pragma warning restore 618
-                assemblyBuilder.buildTarget = platform;
-                assemblyBuilder.buildTargetGroup = BuildPipeline.GetBuildTargetGroup(platform);
+                assemblyBuilder.buildTarget = Platform;
+                assemblyBuilder.buildTargetGroup = BuildPipeline.GetBuildTargetGroup(Platform);
                 assemblyBuilder.buildFinished += (path, originalMessages) =>
                 {
                     var messages = new CompilerMessage[originalMessages.Length];
@@ -295,11 +292,11 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                     AdditionalCompilerArguments = assembly.compilerOptions.AdditionalCompilerArguments,
                     AllowUnsafeCode = assembly.compilerOptions.AllowUnsafeCode,
                     ApiCompatibilityLevel = assembly.compilerOptions.ApiCompatibilityLevel,
-                    CodeOptimization = codeOptimization == CodeOptimization.Release ? UnityEditor.Compilation.CodeOptimization.Release : UnityEditor.Compilation.CodeOptimization.Debug, // assembly.compilerOptions.CodeOptimization,
-                    RoslynAnalyzerDllPaths = roslynAnalyzers ?? Array.Empty<string>()
+                    CodeOptimization = CodeOptimization == CodeOptimization.Release ? UnityEditor.Compilation.CodeOptimization.Release : UnityEditor.Compilation.CodeOptimization.Debug, // assembly.compilerOptions.CodeOptimization,
+                    RoslynAnalyzerDllPaths = RoslynAnalyzers ?? Array.Empty<string>()
                 };
 
-                switch (compilationMode)
+                switch (CompilationMode)
                 {
                     case CompilationMode.Player:
                         assemblyBuilder.flags = AssemblyBuilderFlags.None;
@@ -331,7 +328,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 
                 assemblyBuilder.referencesOptions = ReferencesOptions.UseEngineModules;
 
-                m_AssemblyCompilationTasks.Add(assemblyName, new AssemblyCompilationTask { builder = assemblyBuilder });
+                m_AssemblyCompilationTasks.Add(assemblyName, new AssemblyCompilationTask { Builder = assemblyBuilder });
             }
 
             // second pass: find all assembly reference builders
@@ -343,7 +340,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                     dependencies.Add(m_AssemblyCompilationTasks[referenceName]);
                 }
 
-                m_AssemblyCompilationTasks[Path.GetFileName(assembly.name)].dependencies =
+                m_AssemblyCompilationTasks[Path.GetFileName(assembly.name)].Dependencies =
                     dependencies.ToArray();
             }
         }

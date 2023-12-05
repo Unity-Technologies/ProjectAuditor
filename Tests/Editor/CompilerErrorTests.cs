@@ -70,9 +70,9 @@ class ScriptWithError {
             CompilerMessage[] compilerMessages = null;
             using (var compilationPipeline = new AssemblyCompilation
                {
-                   onAssemblyCompilationFinished = (compilationTask, messages) =>
+                   OnAssemblyCompilationFinished = (compilationTask, messages) =>
                    {
-                       if (compilationTask.assemblyName.Equals(k_TempAssemblyName))
+                       if (compilationTask.AssemblyName.Equals(k_TempAssemblyName))
                        {
                            compilerMessages = messages;
                        }
