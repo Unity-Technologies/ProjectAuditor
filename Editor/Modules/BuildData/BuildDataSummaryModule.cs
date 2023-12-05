@@ -6,17 +6,9 @@ using SerializedObject = Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    enum BuildDataListProperty
-    {
-        Type,
-        Size,
-        Num,
-    }
-
     enum BuildDataSummaryProperty
     {
         Type,
-        Count,
         Size,
         Num,
     }
@@ -38,21 +30,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.BuildDataSummary,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataSummaryProperty.Type), format = PropertyFormat.String, name = "Type", longName = "Asset Type" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataSummaryProperty.Count), format = PropertyFormat.Integer, name = "Count", longName = "Number Of Assets Of This Type" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataSummaryProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size In Bytes" },
-            }
-        };
-
-        static readonly IssueLayout k_ListLayout = new IssueLayout
-        {
-            category = IssueCategory.BuildDataList,
-            properties = new[]
-            {
                 new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataListProperty.Type), format = PropertyFormat.String, name = "Type", longName = "Asset Type" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataListProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size In Bytes" },
-            }
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataSummaryProperty.Type), format = PropertyFormat.String, name = "Type", longName = "Asset Type", defaultGroup = true },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataSummaryProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size In Bytes" },
+            },
         };
 
         internal static readonly IssueLayout k_DiagnosticIssueLayout = new IssueLayout
@@ -90,7 +71,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_SummaryLayout,
-            k_ListLayout,
             k_DiagnosticIssueLayout
         };
 
@@ -126,18 +106,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             RegisterDescriptor(k_DuplicateDiagnosticDescriptor);
         }
 
-        ProjectIssue CreateIssueForObjectType(string type, int count, long size)
-        {
-            return new IssueBuilder(IssueCategory.BuildDataSummary, type)
-                .WithCustomProperties(
-                new object[((int)BuildDataSummaryProperty.Num)]
-                {
-                    type,
-                    count,
-                    size
-                });
-        }
-
         public override void Audit(AnalysisParams projectAuditorParams, IProgress progress = null)
         {
             if (projectAuditorParams.BuildObjects != null)
@@ -158,9 +126,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                     var size = obj.Size;
 
+                    // Build a table with all objects, which also allows grouping and summarizing them
                     var name = obj.Name != null ? obj.Name : string.Empty;
-                    var issue = new IssueBuilder(IssueCategory.BuildDataList, name)
-                        .WithCustomProperties(new object[((int)BuildDataListProperty.Num)]
+                    var issue = new IssueBuilder(IssueCategory.BuildDataSummary, name)
+                        .WithCustomProperties(new object[((int)BuildDataSummaryProperty.Num)]
                     {
                         obj.Type,
                         obj.Size
@@ -189,14 +158,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         newList.Add(obj);
                         m_PotentialDuplicates.Add(key, newList);
                     }
-                }
-
-                // Create one issue per type of SerializedObjects
-                foreach (var key in m_SerializedObjectInfos.Keys)
-                {
-                    var issue = CreateIssueForObjectType(key, m_SerializedObjectInfos[key].Count,
-                        m_SerializedObjectInfos[key].Size);
-                    issues.Add(issue);
                 }
 
                 // Diagnostic issues

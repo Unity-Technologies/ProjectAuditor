@@ -170,8 +170,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     IssueCategory.BuildDataTexture2D, IssueCategory.BuildDataMesh, IssueCategory.BuildDataAnimationClip,
                     IssueCategory.BuildDataShader, IssueCategory.BuildDataAudioClip,
-                    IssueCategory.BuildDataSummary, IssueCategory.BuildDataList,
-                    IssueCategory.BuildDataDiagnostic
+                    IssueCategory.BuildDataSummary, IssueCategory.BuildDataDiagnostic
                 }
             },
         };
@@ -871,18 +870,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 onOpenIssue = null,
                 type = typeof(BuildDataView),
                 analyticsEvent = (int)AnalyticsReporter.UIButton.BuildDataSummary
-            });
-            ViewDescriptor.Register(new ViewDescriptor
-            {
-                category = IssueCategory.BuildDataList,
-                displayName = "List",
-                menuLabel = "BuildData/List of build data",
-                menuOrder = 6,
-                descriptionWithIcon = true,
-                showFilters = true,
-                onOpenIssue = null,
-                type = typeof(BuildDataView),
-                analyticsEvent = (int)AnalyticsReporter.UIButton.BuildDataList
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
