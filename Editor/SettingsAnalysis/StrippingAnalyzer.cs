@@ -4,7 +4,9 @@ using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using Unity.ProjectAuditor.Editor.Modules;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
+using UnityEditor.Build;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
@@ -17,17 +19,17 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         static readonly Descriptor k_EngineCodeStrippingDescriptor = new Descriptor(
             PAS0009,
             "Player: Engine Code Stripping is disabled",
-            Area.BuildSize,
+            Areas.BuildSize,
             "The <b>Strip Engine Code</b> is option in Player Settings is disabled. The generated build will be larger than necessary.",
             "Enable <b>Strip Engine Code</b> in <b>Project Settings > Player > Other Settings > Optimization</b>.")
         {
-            Platforms = new string[] { BuildTarget.Android.ToString(), BuildTarget.iOS.ToString(), BuildTarget.WebGL.ToString() }
+            Platforms = new[] { BuildTarget.Android, BuildTarget.iOS, BuildTarget.WebGL }
         };
 
         static readonly Descriptor k_AndroidManagedStrippingDescriptor = new Descriptor(
             PAS0025,
             "Player (Android): Managed Code Stripping is set to Disabled or Low",
-            Area.BuildSize,
+            Areas.BuildSize,
 #if UNITY_2021_2_OR_NEWER
             "The <b>Managed Stripping Level</b> in the Android Player Settings is set to <b>Disabled</b>, <b>Low</b> or <b>Minimal</b>. The generated build will be larger than necessary.",
 #else
@@ -35,17 +37,17 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 #endif
             "Set <b>Managed Stripping Level</b> in the Android Player Settings to Medium or High.")
         {
-            Platforms = new string[] { BuildTarget.Android.ToString() }
+            Platforms = new[] { BuildTarget.Android }
         };
 
         static readonly Descriptor k_iOSManagedStrippingDescriptor = new Descriptor(
             PAS0026,
             "Player (iOS): Managed Code Stripping is set to Disabled, Low or Minimal",
-            Area.BuildSize,
+            Areas.BuildSize,
             "The <b>Managed Stripping Level</b> in the iOS Player Settings is set to <b>Disabled</b>, <b>Low</b> or <b>Minimal</b>. The generated build will be larger than necessary.",
             "Set <b>Managed Stripping Level</b> in the iOS Player Settings to Medium or High.")
         {
-            Platforms = new string[] { BuildTarget.iOS.ToString() }
+            Platforms = new[] { BuildTarget.iOS }
         };
 
         public void Initialize(Module module)
@@ -59,27 +61,27 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
             if (k_EngineCodeStrippingDescriptor.IsApplicable(context.Params) && !PlayerSettings.stripEngineCode)
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_EngineCodeStrippingDescriptor.Id)
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_EngineCodeStrippingDescriptor.Id)
                     .WithLocation("Project/Player");
             }
 
             if (k_AndroidManagedStrippingDescriptor.IsApplicable(context.Params))
             {
-                var value = PlayerSettings.GetManagedStrippingLevel(BuildTargetGroup.Android);
+                var value = PlayerSettingsUtil.GetManagedStrippingLevel(BuildTargetGroup.Android);
                 if (value == ManagedStrippingLevel.Disabled || value == ManagedStrippingLevel.Low
 #if UNITY_2021_2_OR_NEWER
                     || value == ManagedStrippingLevel.Minimal
 #endif
                 )
-                    yield return context.Create(IssueCategory.ProjectSetting, k_AndroidManagedStrippingDescriptor.Id)
+                    yield return context.CreateIssue(IssueCategory.ProjectSetting, k_AndroidManagedStrippingDescriptor.Id)
                         .WithLocation("Project/Player");
             }
 
             if (k_iOSManagedStrippingDescriptor.IsApplicable(context.Params))
             {
-                var value = PlayerSettings.GetManagedStrippingLevel(BuildTargetGroup.iOS);
+                var value = PlayerSettingsUtil.GetManagedStrippingLevel(BuildTargetGroup.iOS);
                 if (value == ManagedStrippingLevel.Disabled || value == ManagedStrippingLevel.Low)
-                    yield return context.Create(IssueCategory.ProjectSetting, k_iOSManagedStrippingDescriptor.Id)
+                    yield return context.CreateIssue(IssueCategory.ProjectSetting, k_iOSManagedStrippingDescriptor.Id)
                         .WithLocation("Project/Player");
             }
         }

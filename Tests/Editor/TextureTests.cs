@@ -241,7 +241,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotNull(descriptor);
             Assert.NotNull(descriptor.fixer);
 
-            descriptor.Fix(textureDiagnostic);
+            descriptor.Fix(textureDiagnostic, m_AnalysisParams);
 
             textureDiagnostic = AnalyzeAndFindAssetIssues(m_TestTextureMipMapGui, IssueCategory.AssetDiagnostic)
                 .FirstOrDefault(i => i.Id.Equals(TextureAnalyzer.k_TextureMipMapEnabledDescriptor.Id));
@@ -260,7 +260,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotNull(descriptor);
             Assert.NotNull(descriptor.fixer);
 
-            descriptor.Fix(textureDiagnostic);
+            descriptor.Fix(textureDiagnostic, m_AnalysisParams);
 
             textureDiagnostic = AnalyzeAndFindAssetIssues(m_TestTextureMipMapSprite, IssueCategory.AssetDiagnostic)
                 .FirstOrDefault(i => i.Id.Equals(TextureAnalyzer.k_TextureMipMapEnabledDescriptor.Id));
@@ -280,7 +280,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotNull(descriptor);
             Assert.NotNull(descriptor.fixer);
 
-            descriptor.Fix(textureDiagnostic);
+            descriptor.Fix(textureDiagnostic, m_AnalysisParams);
 
             textureDiagnostic = AnalyzeAndFindAssetIssues(m_TestTextureReadWriteEnabled, IssueCategory.AssetDiagnostic)
                 .FirstOrDefault(i => i.Id.Equals(TextureAnalyzer.k_TextureReadWriteEnabledDescriptor.Id));
@@ -311,7 +311,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotNull(descriptor);
             Assert.NotNull(descriptor.fixer);
 
-            descriptor.Fix(textureDiagnostic);
+            descriptor.Fix(textureDiagnostic, m_AnalysisParams);
 
             textureDiagnostic =
                 AnalyzeAndFindAssetIssues(m_TextureStreamingMipmapDisabled, IssueCategory.AssetDiagnostic)
@@ -348,7 +348,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotNull(descriptor);
             Assert.NotNull(descriptor.fixer);
 
-            descriptor.Fix(textureDiagnostic);
+            descriptor.Fix(textureDiagnostic, m_AnalysisParams);
 
             textureDiagnostic =
                 AnalyzeAndFindAssetIssues(m_TestTextureAnisotropicLevelBig, IssueCategory.AssetDiagnostic)

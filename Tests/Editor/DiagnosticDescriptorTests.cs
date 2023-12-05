@@ -6,11 +6,9 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Tests.Common;
 using UnityEditor;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.TestTools;
@@ -23,7 +21,7 @@ namespace Unity.ProjectAuditor.EditorTests
             (
             "TDD2001",
             "test",
-            Area.CPU,
+            Areas.CPU,
             "this is not actually a problem",
             "do nothing"
             );
@@ -41,7 +39,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 (
                 "TDD2001",
                 "test",
-                Area.CPU,
+                Areas.CPU,
                 "this is not actually a problem",
                 "do nothing"
                 );
@@ -49,7 +47,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 (
                 "TDD2001",
                 "test",
-                Area.CPU,
+                Areas.CPU,
                 "this is not actually a problem",
                 "do nothing"
                 );
@@ -70,7 +68,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 (
                 "TDD2001",
                 "test",
-                Area.CPU,
+                Areas.CPU,
                 "this is not actually a problem",
                 "do nothing"
                 );
@@ -85,7 +83,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 (
                 "TDD2001",
                 "test",
-                Area.CPU,
+                Areas.CPU,
                 "this is not actually a problem",
                 "do nothing"
                 );
@@ -139,13 +137,11 @@ namespace Unity.ProjectAuditor.EditorTests
                 (
                 "TDD2001",
                 "test",
-                new[] {Area.CPU, Area.Memory},
+                Areas.CPU | Areas.Memory,
                 "this is not actually a problem",
                 "do nothing"
                 );
-            Assert.AreEqual(2, desc.GetAreas().Length);
-            Assert.Contains(Area.CPU, desc.GetAreas());
-            Assert.Contains(Area.Memory, desc.GetAreas());
+            Assert.AreEqual(desc.Areas, (Areas.CPU | Areas.Memory));
         }
 
         [Test]
@@ -155,7 +151,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 (
                 "TDD2001",
                 "test",
-                new[] {Area.CPU},
+                Areas.CPU,
                 "this is not actually a problem",
                 "do nothing"
                 );
@@ -170,12 +166,12 @@ namespace Unity.ProjectAuditor.EditorTests
                 (
                 "TDD2001",
                 "test",
-                new[] {Area.CPU},
+                Areas.CPU,
                 "this is not actually a problem",
                 "do nothing"
                 )
             {
-                Platforms = new[] { TestFixtureBase.GetStandaloneBuildTarget().ToString() }
+                Platforms = new[] { TestFixtureBase.GetStandaloneBuildTarget() }
             };
 
             Assert.True(desc.IsPlatformSupported());
@@ -188,12 +184,12 @@ namespace Unity.ProjectAuditor.EditorTests
                 (
                 "TDD2001",
                 "test",
-                new[] {Area.CPU},
+                Areas.CPU,
                 "this is not actually a problem",
                 "do nothing"
                 )
             {
-                Platforms = new[] { BuildTarget.WSAPlayer.ToString() }  // assuming WSAPlayer is not installed by default
+                Platforms = new[] { BuildTarget.WSAPlayer }  // assuming WSAPlayer is not installed by default
             };
 
             Assert.False(desc.IsPlatformSupported());
@@ -211,7 +207,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotZero(IDs.Count(id => id.AsString() == m_Descriptor.Id), "Descriptor {0} is not registered", m_Descriptor.Id);
 
             // This will throw an exception if the Descriptor is somehow registered in the module but not in the DescriptorLibrary
-            var descriptor = new DescriptorID(m_Descriptor.Id).GetDescriptor();
+            var descriptor = new DescriptorId(m_Descriptor.Id).GetDescriptor();
         }
 
         [Test]
@@ -229,8 +225,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 Assert.IsFalse(string.IsNullOrEmpty(descriptor.Title), "Descriptor {0} has no Title", descriptor.Id);
                 Assert.IsFalse(string.IsNullOrEmpty(descriptor.Description), "Descriptor {0} has no Description", descriptor.Id);
                 Assert.IsFalse(string.IsNullOrEmpty(descriptor.Solution), "Descriptor {0} has no Solution", descriptor.Id);
-
-                Assert.NotNull(descriptor.Areas);
+                Assert.AreNotEqual(Areas.None, descriptor.Areas);
             }
         }
 
@@ -249,8 +244,6 @@ namespace Unity.ProjectAuditor.EditorTests
 
                 CheckHtmlTags(descriptor.Description);
                 CheckHtmlTags(descriptor.Solution);
-
-                Assert.NotNull(descriptor.Areas);
             }
         }
 
@@ -368,22 +361,6 @@ namespace Unity.ProjectAuditor.EditorTests
             }
         }
 
-        [Test]
-        public void DiagnosticDescriptor_Areas_Exist()
-        {
-            var projectAuditor = new Editor.ProjectAuditor();
-            var IDs = projectAuditor.GetDescriptorIDs();
-            foreach (var id in IDs)
-            {
-                var descriptor = id.GetDescriptor();
-                for (int i = 0; i < descriptor.Areas.Length; i++)
-                {
-                    Area area;
-                    Assert.True(Enum.TryParse(descriptor.Areas[i], out area), "Invalid area {0} for descriptor {1}", descriptor.Areas[i], descriptor.Id);
-                }
-            }
-        }
-
         [UnityTest]
         public IEnumerator DiagnosticDescriptor_DocumentationUrl_Exist()
         {
@@ -412,7 +389,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var IDs = projectAuditor.GetDescriptorIDs();
 
             // PAS0005 should only be available if iOS Editor component is installed
-            var foundID = IDs.Contains(new DescriptorID("PAS0005"));
+            var foundID = IDs.Contains(new DescriptorId("PAS0005"));
 
             // Yamato tests don't have iOS as a supported build target, but we want to pass tests locally as well,
             // where iOS support might be installed.

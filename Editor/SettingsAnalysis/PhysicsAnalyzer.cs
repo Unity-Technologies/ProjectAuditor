@@ -1,13 +1,8 @@
 using System.Collections.Generic;
-using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
-using Unity.ProjectAuditor.Editor.Modules;
-using UnityEditor;
-using UnityEditor.Rendering;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
@@ -18,7 +13,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         static readonly Descriptor k_DefaultLayerCollisionMatrixDescriptor = new Descriptor(
             PAS0013,
             "Physics: Layer Collision Matrix has all boxes ticked",
-            new[] { Area.CPU },
+            Areas.CPU,
             "In Physics Settings, all of the boxes in the <b>Layer Collision Matrix</b> are ticked. This increases the CPU work required to calculate collision detections.",
             "Un-tick all of the boxes except the ones that represent collisions that should be considered by the Physics system."
         );
@@ -32,7 +27,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
             if (IsDefaultLayerCollisionMatrix())
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_DefaultLayerCollisionMatrixDescriptor.Id)
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_DefaultLayerCollisionMatrixDescriptor.Id)
                     .WithLocation("Project/Physics");
             }
         }

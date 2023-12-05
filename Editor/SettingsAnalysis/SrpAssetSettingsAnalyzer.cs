@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         static readonly Descriptor k_SRPBatcherSettingDescriptor = new Descriptor(
             PAS1008,
             "SRP Asset: SRP Batcher is disabled",
-            Area.CPU,
+            Areas.CPU,
             "<b>SRP Batcher</b> is disabled in a Render Pipeline Asset.",
             "Enable <b>SRP Batcher</b> in Render Pipeline Asset. If the option is hidden, click the vertical ellipsis icon and select <b>Show Additional Properties</b>. Enabling the SRP Batcher will reduce the CPU time Unity requires to prepare and dispatch draw calls for materials that use the same shader variant.")
         {
@@ -36,21 +36,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
-#if UNITY_2019_3_OR_NEWER
             return RenderPipelineUtils.AnalyzeAssets(context, Analyze);
-#else
-            yield break;
-#endif
         }
 
-        static void FixSrpBatcherSetting(ProjectIssue issue)
+        static void FixSrpBatcherSetting(ProjectIssue issue, AnalysisParams analysisParams)
         {
-#if UNITY_2019_3_OR_NEWER
             RenderPipelineUtils.FixAssetSetting(issue, p => SetSrpBatcherSetting(p, true));
-#endif
         }
 
-#if UNITY_2019_3_OR_NEWER
         IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context, RenderPipelineAsset renderPipeline, int qualityLevel)
         {
             bool? srpBatcherSetting = GetSrpBatcherSetting(renderPipeline);
@@ -117,7 +110,6 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             return null;
         }
 
-#endif
 #endif
     }
 }

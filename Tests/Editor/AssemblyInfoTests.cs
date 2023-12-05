@@ -104,7 +104,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
 
             Assert.AreEqual($"Library/ScriptAssemblies/{AssemblyInfo.DefaultAssemblyFileName}", assemblyInfo.path);
-            Assert.IsNull(assemblyInfo.asmDefPath);
+            Assert.AreEqual("Built-in", assemblyInfo.asmDefPath);
             Assert.IsFalse(assemblyInfo.packageReadOnly);
         }
 

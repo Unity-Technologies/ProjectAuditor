@@ -18,7 +18,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_MeshReadWriteEnabledDescriptor = new Descriptor(
             PAA1000,
             "Mesh: Read/Write enabled",
-            Area.Memory,
+            Areas.Memory,
             "The <b>Read/Write Enabled</b> flag in the Model Import Settings is enabled. This causes the mesh data to be duplicated in memory.",
             "If not required, disable the <b>Read/Write Enabled</b> option in the Model Import Settings."
         )
@@ -30,7 +30,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_Mesh32BitIndexFormatUsedDescriptor = new Descriptor(
             PAA1001,
             "Mesh: Index Format is 32 bits",
-            Area.Memory,
+            Areas.Memory,
             "The <b>Index Format</b> in the Model Import Settings is set to <b>32 bit</b>. This increases the mesh size and may not work on certain mobile devices.",
             "Consider using changing the <b>Index Format</b> option in the Model Import Settings. This should be set to either <b>16 bits</b> or <b>Auto</b>."
         )
@@ -64,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler is not the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(mesh);
 
-                yield return context.CreateWithoutDiagnostic(IssueCategory.Mesh, meshName)
+                yield return context.CreateInsight(IssueCategory.Mesh, meshName)
                     .WithCustomProperties(
                         new object[((int)MeshProperty.Num)]
                         {
@@ -79,14 +79,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 if (mesh.isReadable)
                 {
-                    yield return context.Create(IssueCategory.AssetDiagnostic, k_MeshReadWriteEnabledDescriptor.Id, meshName)
+                    yield return context.CreateIssue(IssueCategory.AssetDiagnostic, k_MeshReadWriteEnabledDescriptor.Id, meshName)
                         .WithLocation(assetPath);
                 }
 
                 if (mesh.indexFormat == IndexFormat.UInt32 &&
                     mesh.vertexCount <= 65535)
                 {
-                    yield return context.Create(IssueCategory.AssetDiagnostic,
+                    yield return context.CreateIssue(IssueCategory.AssetDiagnostic,
                         k_Mesh32BitIndexFormatUsedDescriptor.Id, meshName)
                         .WithLocation(assetPath);
                 }

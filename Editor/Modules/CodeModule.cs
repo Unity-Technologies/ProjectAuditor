@@ -80,7 +80,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
                 new PropertyDefinition { type = PropertyType.Severity, format = PropertyFormat.String, name = "Severity"},
-                new PropertyDefinition { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"},
+                new PropertyDefinition { type = PropertyType.Areas, name = "Areas", longName = "The areas the issue might have an impact on"},
                 new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CodeProperty.Assembly), format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" },
                 new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true, hidden = true},
@@ -162,7 +162,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             };
 
             var precompiledAssemblies = AssemblyInfoProvider.GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.All)
-                .Select(assemblyPath => (ProjectIssue)context.CreateWithoutDiagnostic(IssueCategory.PrecompiledAssembly, Path.GetFileNameWithoutExtension(assemblyPath))
+                .Select(assemblyPath => (ProjectIssue)context.CreateInsight(IssueCategory.PrecompiledAssembly, Path.GetFileNameWithoutExtension(assemblyPath))
                     .WithCustomProperties(new object[(int)PrecompiledAssemblyProperty.Num]
                     {
                         false
@@ -173,7 +173,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 analysisParams.OnIncomingIssues(precompiledAssemblies);
 
             // find all roslyn analyzer DLLs by label
-            var roslynAnalyzerAssets = GetAssetPathsByFilter("l:RoslynAnalyzer").ToList();
+            var roslynAnalyzerAssets = AssetDatabase.FindAssets("l:RoslynAnalyzer").Select(AssetDatabase.GUIDToAssetPath).ToList();
 
             // find all roslyn analyzers packaged with Project Auditor
             if (Directory.Exists($"{ProjectAuditor.PackagePath}/RoslynAnalyzers"))
@@ -188,7 +188,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             // report all roslyn analyzers as PrecompiledAssembly issues
             var roslynAnalyzerIssues = roslynAnalyzerAssets
-                .Select(roslynAnalyzerDllPath => (ProjectIssue)context.CreateWithoutDiagnostic(
+                .Select(roslynAnalyzerDllPath => (ProjectIssue)context.CreateInsight(
                 IssueCategory.PrecompiledAssembly,
                 Path.GetFileNameWithoutExtension(roslynAnalyzerDllPath))
                 .WithCustomProperties(new object[(int)PrecompiledAssemblyProperty.Num]
@@ -226,7 +226,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (analysisParams.CompilationMode == CompilationMode.Editor ||
                 analysisParams.CompilationMode == CompilationMode.EditorPlayMode)
             {
-                var issues = assemblyInfos.Select(assemblyInfo => (ProjectIssue)context.CreateWithoutDiagnostic(IssueCategory.Assembly, assemblyInfo.name)
+                var issues = assemblyInfos.Select(assemblyInfo => (ProjectIssue)context.CreateInsight(IssueCategory.Assembly, assemblyInfo.name)
                     .WithCustomProperties(new object[(int)AssemblyProperty.Num]
                     {
                         assemblyInfo.packageReadOnly,
@@ -397,9 +397,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
 
                 Location location = null;
-                if (s != null && !s.IsHidden)
+                if (s != null)
                 {
-                    location = new Location(AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, s.Document.Url), s.StartLine);
+                    location = new Location(AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, s.Document.Url), s.IsHidden ? 0 : s.StartLine);
                     callerNode.location = location;
                 }
                 else
@@ -461,7 +461,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 severity = Severity.Error;
 
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(compilationTask.assemblyPath);
-            yield return context.CreateWithoutDiagnostic(IssueCategory.Assembly, assemblyInfo.name)
+            yield return context.CreateInsight(IssueCategory.Assembly, assemblyInfo.name)
                 .WithCustomProperties(new object[(int)AssemblyProperty.Num]
                 {
                     assemblyInfo.packageReadOnly,
@@ -484,13 +484,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     var descriptor = new Descriptor(
                         message.code,
                         message.message,
-                        Area.IterationTime,
+                        Areas.IterationTime,
                         RoslynTextLookup.GetDescription(message.code),
                         RoslynTextLookup.GetRecommendation(message.code));
 
                     DescriptorLibrary.RegisterDescriptor(descriptor.Id, descriptor);
 
-                    yield return context.Create(IssueCategory.DomainReload, descriptor.Id)
+                    yield return context.CreateIssue(IssueCategory.DomainReload, descriptor.Id)
                         .WithLocation(relativePath, message.line)
                         .WithLogLevel(CompilerMessageTypeToLogLevel(message.type))
                         .WithCustomProperties(new object[(int)CompilerMessageProperty.Num]
@@ -501,7 +501,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
                 else
                 {
-                    yield return context.CreateWithoutDiagnostic(IssueCategory.CodeCompilerMessage, message.message)
+                    yield return context.CreateInsight(IssueCategory.CodeCompilerMessage, message.message)
                         .WithCustomProperties(new object[(int)CompilerMessageProperty.Num]
                         {
                             message.code,

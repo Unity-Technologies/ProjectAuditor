@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 
@@ -27,7 +27,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 for (var i = 0; i < (m_SearchComponents?.Length ?? 0); i++)
                 {
                     actualDirectory += "/";
-                    actualDirectory += m_SearchComponents?[i];
+                    actualDirectory += m_SearchComponents ? [i];
                 }
                 filterPath = m_SearchComponents == null ? null : actualDirectory;
                 precedence = m_SearchComponents?.Length ?? -1;
@@ -104,7 +104,7 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 var component = directoryComponents[j]?.Trim();
                 switch (component)
                 {
-                    case null:
+                    case null :
                     case "":
                     case ".":
                     {
@@ -198,7 +198,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
                         }
                         if (currentComponent.Length - 1 != componentCharacterIndex)
                         {
-
                             int startingSearchCharacter = j;
                             int startingIndex = componentCharacterIndex;
 
@@ -380,7 +379,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 character |= ' ';
             }
             return character;
-
         }
     }
 }

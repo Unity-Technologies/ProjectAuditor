@@ -8,13 +8,13 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
     /// An unique identifier for a diagnostic descriptor. IDs must have exactly 3 upper case characters, followed by 4 digits.
     /// </summary>
     /// <remarks>
-    /// Diagnostic <seealso cref="ProjectIssue"/>s (as opposed to purely informational non-diagnostic ones) all contain a DescriptorID.
-    /// The DescriptorID is used to reference the information about a particular issue (for example, "PAC2002" is the code for "Object allocation"),
-    /// and the ProjectIssue simply contains the file:line location in code where the allocation occurs and a "PAC2002" DescriptorID.
+    /// Diagnostic <seealso cref="ProjectIssue"/>s (as opposed to purely informational non-diagnostic ones) all contain a DescriptorId.
+    /// The DescriptorId is used to reference the information about a particular issue (for example, "PAC2002" is the code for "Object allocation"),
+    /// and the ProjectIssue simply contains the file:line location in code where the allocation occurs and a "PAC2002" DescriptorId.
     /// The descriptor can generally be treated as a string, but for efficient descriptor lookups the string is converted to an int in the struct's constructor.
     /// </remarks>
     [Serializable]
-    public struct DescriptorID : IEquatable<DescriptorID>
+    public struct DescriptorId : IEquatable<DescriptorId>
     {
         [SerializeField][HideInInspector]
         int m_AsInt;
@@ -22,32 +22,32 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         [SerializeField]
         string m_AsString;
 
-        /// <summary>Implicit conversion of DescriptorID to string.</summary>
-        /// <param name="d">A DescriptorID to convert</param>
+        /// <summary>Implicit conversion of DescriptorId to string.</summary>
+        /// <param name="d">A DescriptorId to convert</param>
         /// <returns>A string representation of the ID</returns>
-        public static implicit operator string(DescriptorID d) => d.m_AsString;
+        public static implicit operator string(DescriptorId d) => d.m_AsString;
 
-        /// <summary>Implicit conversion of string to DescriptorID.</summary>
+        /// <summary>Implicit conversion of string to DescriptorId.</summary>
         /// <param name="id">A string to convert</param>
-        /// <returns>A DescriptorID constructed using the string ID</returns>
-        public static implicit operator DescriptorID(string id) => new DescriptorID(id);
+        /// <returns>A DescriptorId constructed using the string ID</returns>
+        public static implicit operator DescriptorId(string id) => new DescriptorId(id);
 
-        /// <summary>Implicit conversion of DescriptorID to int.</summary>
-        /// <param name="d">A DescriptorID to convert</param>
+        /// <summary>Implicit conversion of DescriptorId to int.</summary>
+        /// <param name="d">A DescriptorId to convert</param>
         /// <returns>The integer hash of the ID</returns>
-        public static implicit operator int(DescriptorID d) => d.m_AsInt;
+        public static implicit operator int(DescriptorId d) => d.m_AsInt;
 
         /// <summary>
         /// Returns the string representation of the ID
         /// </summary>
-        /// <returns>The DescriptorID in string form.</returns>
+        /// <returns>The DescriptorId in string form.</returns>
         public override string ToString() => m_AsString;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="id">String representing a valid and unique Descriptor ID. IDs must have exactly 3 upper case characters, followed by 4 digits.</param>
-        public DescriptorID(string id)
+        public DescriptorId(string id)
         {
             m_AsString = id;
 
@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             var regExp = new Regex(@"\b[A-Z]{3}\d{4}\b");
             if (!regExp.IsMatch(id))
             {
-                Debug.LogError("Invalid ID string supplied to DescriptorID");
+                Debug.LogError("Invalid ID string supplied to DescriptorId");
                 m_AsInt = -1;
                 return;
             }
@@ -109,9 +109,9 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// <summary>
         /// Checks whether two DescriptorIDs contain the same ID.
         /// </summary>
-        /// <param name="other">A DescriptorID to compare to.</param>
+        /// <param name="other">A DescriptorId to compare to.</param>
         /// <returns>True if the descriptors are the same, false if they are different.</returns>
-        public bool Equals(DescriptorID other)
+        public bool Equals(DescriptorId other)
         {
             return m_AsInt == other.m_AsInt;
         }

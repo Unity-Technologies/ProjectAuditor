@@ -10,7 +10,7 @@ namespace Unity.ProjectAuditor.Editor.Core
         Descriptor,
         Severity,
         LogLevel,
-        Area,
+        Areas,
         Path,
         Directory,
         Filename,

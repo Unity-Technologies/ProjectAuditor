@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.BuildData;
 using UnityEditor;
 using UnityEngine;
@@ -25,13 +26,12 @@ namespace Unity.ProjectAuditor.Editor
         [SerializeField]
         BuildTarget m_Platform;
 
-        [SerializeField]
         string m_PlatformString;
 
         /// <summary>
         /// Analysis platform. The default platform is the currently active build target.
         /// </summary>
-        [JsonIgnore]
+        [JsonConverter(typeof(BuildTargetJsonConverter))]
         public BuildTarget Platform
         {
             get => m_Platform;
@@ -91,16 +91,11 @@ namespace Unity.ProjectAuditor.Editor
         [NonSerialized]
         internal ProjectReport ExistingReport;
 
-        [JsonProperty("Platform")]
-        internal string PlatformString
-        {
-            get => m_PlatformString;
-            set
-            {
-                m_PlatformString = value;
-                m_Platform = (BuildTarget)Enum.Parse(typeof(BuildTarget), m_PlatformString);
-            }
-        }
+        [JsonIgnore]
+        [NonSerialized]
+        internal Predicate<string> AssetPathFilter;
+
+        internal string PlatformString => m_PlatformString;
 
         public BuildObjects BuildObjects;
 
@@ -146,6 +141,7 @@ namespace Unity.ProjectAuditor.Editor
 
             ExistingReport = original.ExistingReport;
 
+            AssetPathFilter = original.AssetPathFilter;
             BuildObjects = original.BuildObjects;
         }
 

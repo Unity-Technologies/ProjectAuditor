@@ -19,18 +19,19 @@ namespace Unity.ProjectAuditor.Editor
     /// <summary>
     /// The ProjectAuditor class is responsible for auditing the Unity project
     /// </summary>
-    public sealed class ProjectAuditor
-        : IPreprocessBuildWithReport
+    public sealed class ProjectAuditor : IPostprocessBuildWithReport
     {
         /// <summary>
         /// Returns the relative callback order for callbacks. Callbacks with lower values are called before ones with higher values.
         /// </summary>
-        public int callbackOrder => 0;
+        public int callbackOrder => 1;  // We want LastBuildReportProvider to update its cached report before we run analysis.
 
         internal static string s_DataPath => PackagePath + "/Data";
         internal const string k_CanonicalPackagePath = "Packages/" + k_PackageName;
 
         internal const string k_PackageName = "com.unity.project-auditor";
+
+        public const string DisplayName = "Project Auditor";
 
         internal static string PackagePath
         {
@@ -150,7 +151,7 @@ namespace Unity.ProjectAuditor.Editor
             if (!BuildPipeline.IsBuildTargetSupported(BuildPipeline.GetBuildTargetGroup(platform), platform))
             {
                 // Error and early out if the user has request analysis of a platform which the Unity Editor doesn't have installed support for
-                Debug.LogError($"Build target {platform} is not supported in this Unity Editor");
+                Debug.LogError($"[{ProjectAuditor.DisplayName}] Build target {platform} is not supported in this Unity Editor");
                 analysisParams.OnCompleted(report);
                 return;
             }
@@ -173,10 +174,9 @@ namespace Unity.ProjectAuditor.Editor
             {
                 if (string.IsNullOrEmpty(m_LastBuildDataPath))
                 {
-                    var buildReport = BuildReportHelper.GetLast();
-                    var lastBuildFolder = buildReport != null ? buildReport.summary.outputPath : "";
-                    m_LastBuildDataPath =
-                        EditorUtility.OpenFolderPanel("Choose folder with built player data", lastBuildFolder, "");
+                    /*var buildReport = BuildReportHelper.GetLast();
+                    var lastBuildFolder = buildReport != null ? buildReport.summary.outputPath : "";*/
+                    m_LastBuildDataPath = EditorUtility.OpenFolderPanel("Choose folder with built player data","" , "");
                 }
 
                 if (!string.IsNullOrEmpty(m_LastBuildDataPath))
@@ -209,7 +209,7 @@ namespace Unity.ProjectAuditor.Editor
                     {
                         var moduleEndTime = DateTime.Now;
                         if (logTimingsInfo)
-                            Debug.Log($"Project Auditor module {module.Name} took: " +
+                            Debug.Log($"[{ProjectAuditor.DisplayName}] Module {module.Name} analysis took: " +
                                 (moduleEndTime - moduleStartTime).TotalMilliseconds / 1000.0 + " seconds.");
 
                         report.RecordModuleInfo(module, moduleStartTime, moduleEndTime);
@@ -221,7 +221,7 @@ namespace Unity.ProjectAuditor.Editor
                         {
                             stopwatch.Stop();
                             if (logTimingsInfo)
-                                Debug.Log("Project Auditor took: " + stopwatch.ElapsedMilliseconds / 1000.0f +
+                                Debug.Log($"[{ProjectAuditor.DisplayName}] Analysis took: " + stopwatch.ElapsedMilliseconds / 1000.0f +
                                     " seconds.");
 
                             analysisParams.OnCompleted?.Invoke(report);
@@ -235,34 +235,43 @@ namespace Unity.ProjectAuditor.Editor
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"Project Auditor module {module.Name} failed: " + e.Message + " " + e.StackTrace);
+                    Debug.LogError($"[{ProjectAuditor.DisplayName}] Module {module.Name} failed: " + e.Message + " " + e.StackTrace);
                     moduleParams.OnModuleCompleted();
                 }
             }
 
             if (logTimingsInfo)
-                Debug.Log("Project Auditor time to interactive: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
+                Debug.Log($"[{ProjectAuditor.DisplayName}] Time to interactive: " + stopwatch.ElapsedMilliseconds / 1000.0f + " seconds.");
         }
 
         /// <summary>
-        /// Callback function which is called before a build is started. Performs a full audit and logs the number of issues found.
+        /// Callback function which is called after a build is completed.
+        /// If UserPreferences.AnalyzeAfterBuild is true, performs a full audit and logs the number of issues found.
         /// </summary>
         /// <param name="report">A report containing information about the build, such as its target platform and output path.</param>
-        public void OnPreprocessBuild(BuildReport report)
+        public void OnPostprocessBuild(BuildReport report)
         {
-            if (UserPreferences.AnalyzeOnBuild)
+            if (UserPreferences.AnalyzeAfterBuild)
             {
-                var projectReport = Audit();
-
-                var numIssues = projectReport.NumTotalIssues;
-                if (numIssues > 0)
-                {
-                    if (UserPreferences.FailBuildOnIssues)
-                        Debug.LogError("Project Auditor found " + numIssues + " issues");
-                    else
-                        Debug.Log("Project Auditor found " + numIssues + " issues");
-                }
+                // Library/LastBuild.buildreport is only created AFTER OnPostprocessBuild so we need to defer analysis until the file is copied.
+                EditorApplication.update += DelayedPostBuildAudit;
             }
+        }
+
+        internal void DelayedPostBuildAudit()
+        {
+            var projectReport = Audit();
+
+            var numIssues = projectReport.NumTotalIssues;
+            if (numIssues > 0)
+            {
+                if (UserPreferences.FailBuildOnIssues)
+                    Debug.LogError($"[{ProjectAuditor.DisplayName}] Analysis found " + numIssues + " issues");
+                else
+                    Debug.Log($"[{ProjectAuditor.DisplayName}] Analysis found " + numIssues + " issues");
+            }
+
+            EditorApplication.update -= DelayedPostBuildAudit;
         }
 
         /// <summary>
@@ -341,7 +350,7 @@ namespace Unity.ProjectAuditor.Editor
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"Project Auditor [{instance.Name}]: {e.Message} {e.StackTrace}");
+                    Debug.LogError($"{DisplayName} [{instance.Name}]: {e.Message} {e.StackTrace}");
                     continue;
                 }
                 m_Modules.Add(instance);
@@ -349,7 +358,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         // Only used for testing
-        internal DescriptorID[] GetDescriptorIDs()
+        internal DescriptorId[] GetDescriptorIDs()
         {
             return m_Modules.SelectMany(m => m.SupportedDescriptorIds).ToArray();
         }

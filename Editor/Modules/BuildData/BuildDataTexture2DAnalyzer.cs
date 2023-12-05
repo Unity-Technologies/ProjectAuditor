@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public IEnumerable<ProjectIssue> Analyze(BuildDataTexture2DAnalyzerContext context)
         {
-            yield return context.CreateWithoutDiagnostic(IssueCategory.BuildDataTexture2D, context.Texture.Name)
+            yield return context.CreateInsight(IssueCategory.BuildDataTexture2D, context.Texture.Name)
                 .WithCustomProperties(
                     new object[((int)BuildDataTextureProperty.Num)]
                     {

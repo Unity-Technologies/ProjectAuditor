@@ -42,9 +42,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         const ProjectAreaFlags k_ProjectAreaDefaultFlags = ProjectAreaFlags.Code | ProjectAreaFlags.Settings | ProjectAreaFlags.Build;
 
-        const string k_ProjectAuditorName = "Project Auditor";
-
-        static readonly string[] AreaNames = Enum.GetNames(typeof(Area));
+        static readonly string[] AreaNames = Enum.GetNames(typeof(Areas)).Where(a => a != "None" && a != "All").ToArray();
         static ProjectAuditorWindow s_Instance;
 
         public static ProjectAuditorWindow Instance
@@ -68,6 +66,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         TreeViewSelection m_AreaSelection;
         TreeViewSelection m_AssemblySelection;
         Draw2D m_Draw2D;
+
+        Areas m_SelectedAreas;
 
         // Serialized fields
         [SerializeField] BuildTarget m_Platform = BuildTarget.NoTarget;
@@ -207,8 +207,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             // TODO: the rest of this logic is common to all diagnostic views. It should be moved to the AnalysisView
 
             Profiler.BeginSample("MatchArea");
-            var matchArea = m_AreaSelection.ContainsGroup("All") ||
-                (issue.Id.IsValid() && m_AreaSelection.ContainsAny(issue.Id.GetDescriptor().Areas));
+            var matchArea = issue.Id.IsValid() && issue.Id.GetDescriptor().MatchesAnyAreas(m_SelectedAreas);
 
             Profiler.EndSample();
             if (!matchArea)
@@ -767,7 +766,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 menuOrder = 100,
                 showFilters = true,
                 showInfoPanel = true,
-                type = typeof(BuildReportView),
+                type = typeof(BuildStepsView),
                 analyticsEvent = (int)AnalyticsReporter.UIButton.BuildSteps
             });
             ViewDescriptor.Register(new ViewDescriptor
@@ -780,7 +779,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 showFilters = true,
                 showInfoPanel = true,
                 onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                type = typeof(BuildReportView),
+                type = typeof(BuildSizeView),
                 analyticsEvent = (int)AnalyticsReporter.UIButton.BuildFiles
             });
             ViewDescriptor.Register(new ViewDescriptor
@@ -1056,7 +1055,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         internal string GetSelectedAreasSummary()
         {
-            return Utility.GetTreeViewSelectedSummary(m_AreaSelection, AreaNames);
+            return m_SelectedAreas.ToString();
         }
 
         IssueCategory[] GetSelectedCategories()
@@ -1397,7 +1396,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                             if (category != IssueCategory.Metadata && !m_ProjectReport.HasCategory(category))
                             {
                                 var displayName = m_ViewManager.GetView(category).Desc.displayName;
-                                if (!EditorUtility.DisplayDialog(k_ProjectAuditorName,
+                                if (!EditorUtility.DisplayDialog(ProjectAuditor.DisplayName,
                                     $"'{displayName}' analysis will now begin.", "Ok",
                                     "Cancel"))
                                     return; // do not analyze and change view
@@ -1463,6 +1462,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         internal void SetAreaSelection(TreeViewSelection selection)
         {
+            var selectedStrings = selection.GetSelectedStrings(AreaNames, true);
+
+            m_SelectedAreas = Areas.None;
+            foreach (var areaString in selectedStrings)
+            {
+                m_SelectedAreas |= (Areas)Enum.Parse(typeof(Areas), areaString);
+            }
+
             m_AreaSelection = selection;
             RefreshWindow();
         }
@@ -1483,16 +1490,19 @@ namespace Unity.ProjectAuditor.Editor.UI
                     if (m_AreaSelectionSummary == "All")
                     {
                         m_AreaSelection.SetAll(AreaNames);
+                        m_SelectedAreas = Areas.All;
                     }
                     else if (m_AreaSelectionSummary != "None")
                     {
                         var areas = Formatting.SplitStrings(m_AreaSelectionSummary);
                         m_AreaSelection.selection.AddRange(areas);
+                        m_SelectedAreas = (Areas)Enum.Parse(typeof(Areas), m_AreaSelectionSummary);
                     }
                 }
                 else
                 {
                     m_AreaSelection.SetAll(AreaNames);
+                    m_SelectedAreas = Areas.All;
                 }
             }
         }
@@ -1644,7 +1654,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 var tab = m_Tabs[tabToAudit];
 
-                if (EditorUtility.DisplayDialog(k_ProjectAuditorName,
+                if (EditorUtility.DisplayDialog(ProjectAuditor.DisplayName,
                     $"'{tab.name}' analysis will now begin.", "Ok", "Cancel"))
                 {
                     AuditCategories(tab.allCategories, true);
@@ -1761,11 +1771,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             var preferencesWindow = SettingsService.OpenUserPreferences(UserPreferences.Path);
             if (preferencesWindow == null)
             {
-                Debug.LogError($"Could not find Preferences for 'Analysis/{k_ProjectAuditorName}'");
+                Debug.LogError($"Could not find Preferences for 'Analysis/{ProjectAuditor.DisplayName}'");
             }
         }
 
-        [MenuItem("Window/Analysis/" + k_ProjectAuditorName)]
+        [MenuItem("Window/Analysis/" + ProjectAuditor.DisplayName)]
         public static ProjectAuditorWindow ShowWindow()
         {
             var wnd = GetWindow(typeof(ProjectAuditorWindow)) as ProjectAuditorWindow;
@@ -1795,12 +1805,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         static class Contents
         {
-            public static readonly GUIContent WindowTitle = new GUIContent(k_ProjectAuditorName);
+            public static readonly GUIContent WindowTitle = new GUIContent(ProjectAuditor.DisplayName);
 
             public static readonly GUIContent AnalyzeButton =
                 new GUIContent("Analyze", "Analyze Project and list all issues found.");
             public static readonly GUIContent ProjectAreaSelection =
-                new GUIContent("Project Area", $"Select project area to analyze.");
+                new GUIContent("Project Areas", $"Select project areas to analyze.");
             public static readonly GUIContent PlatformSelection =
                 new GUIContent("Platform", "Select the target platform.");
             public static readonly GUIContent CompilationModeSelection =
@@ -1814,7 +1824,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent DiscardButton = Utility.GetIcon(Utility.IconType.Trash, "Discard the current report.");
 
             public static readonly GUIContent HelpButton = Utility.GetIcon(Utility.IconType.Help, "Open Manual (in a web browser)");
-            public static readonly GUIContent PreferencesMenuItem = EditorGUIUtility.TrTextContent("Preferences", $"Open User Preferences for {k_ProjectAuditorName}");
+            public static readonly GUIContent PreferencesMenuItem = EditorGUIUtility.TrTextContent("Preferences", $"Open User Preferences for {ProjectAuditor.DisplayName}");
 
             public static readonly GUIContent AssemblyFilter =
                 new GUIContent("Assembly : ", "Select assemblies to examine");
@@ -1823,18 +1833,18 @@ namespace Unity.ProjectAuditor.Editor.UI
                 new GUIContent("Select", "Select assemblies to examine");
 
             public static readonly GUIContent AreaFilter =
-                new GUIContent("Area : ", "Select performance areas to display");
+                new GUIContent("Areas : ", "Select performance areas to display");
 
             public static readonly GUIContent AreaFilterSelect =
                 new GUIContent("Select", "Select performance areas to display");
 
             public static readonly GUIContent FiltersFoldout = new GUIContent("Filters", "Filtering Criteria");
 
-            public static readonly GUIContent WelcomeTextTitle = new GUIContent("Welcome to Project Auditor");
+            public static readonly GUIContent WelcomeTextTitle = new GUIContent($"Welcome to {ProjectAuditor.DisplayName}");
 
             public static readonly GUIContent WelcomeText = new GUIContent(
-@"
-Project Auditor is a static analysis tool that analyzes assets, settings, and scripts of the Unity project and produces a report that contains the following:
+                $@"
+{ProjectAuditor.DisplayName} is a static analysis tool that analyzes assets, settings, and scripts of the Unity project and produces a report that contains the following:
 
  •  <b>Diagnostics</b>: a list of possible problems that might affect performance, memory and other areas.
  •  <b>BuildReport</b>: timing and size information of the last build.
@@ -1842,7 +1852,7 @@ Project Auditor is a static analysis tool that analyzes assets, settings, and sc
 
 To Analyze the project, click on <b>Analyze</b>.
 
-Once the project is analyzed, Project Auditor displays a summary with high-level information. Then, it is possible to dive into a specific section of the report from the View menu.
+Once the project is analyzed, {ProjectAuditor.DisplayName} displays a summary with high-level information. Then, it is possible to dive into a specific section of the report from the View menu.
 
 A view allows the user to browse through the listed items and filter by string or other search criteria.
 "

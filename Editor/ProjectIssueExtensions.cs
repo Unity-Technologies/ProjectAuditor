@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
@@ -10,6 +12,9 @@ namespace Unity.ProjectAuditor.Editor
     internal static class ProjectIssueExtensions
     {
         internal const string k_NotAvailable = "N/A";
+
+        // -2 because we're not interested in "None" or "All"
+        static readonly int s_NumAreaEnumValues = Enum.GetNames(typeof(Areas)).Length - 2;
 
         public static string GetContext(this ProjectIssue issue)
         {
@@ -28,7 +33,7 @@ namespace Unity.ProjectAuditor.Editor
                     return issue.LogLevel.ToString();
                 case PropertyType.Severity:
                     return issue.Severity.ToString();
-                case PropertyType.Area:
+                case PropertyType.Areas:
                     return issue.Id.GetDescriptor().GetAreasSummary();
                 case PropertyType.FileType:
                     if (issue.Location == null)
@@ -95,20 +100,23 @@ namespace Unity.ProjectAuditor.Editor
                     return issueA.LogLevel.CompareTo(issueB.LogLevel);
                 case PropertyType.Severity:
                     return issueA.Severity.CompareTo(issueB.Severity);
-                case PropertyType.Area:
-                    var areasA = issueA.Id.GetDescriptor().Areas;
-                    var areasB = issueB.Id.GetDescriptor().Areas;
+                case PropertyType.Areas:
+                    var areasA = (int)issueA.Id.GetDescriptor().Areas;
+                    var areasB = (int)issueB.Id.GetDescriptor().Areas;
 
-                    var minLength = Math.Min(areasA.Length, areasB.Length);
+                    if (areasA == areasB)
+                        return 0;
 
-                    for (var i = 0; i < minLength; i++)
+                    // Sort according to differences in the least significant bit
+                    // (i.e. the smallest enum value, which is the one that comes first alphabetically)
+                    for (int i = 0; i < s_NumAreaEnumValues; ++i)
                     {
-                        var ca = string.CompareOrdinal(areasA[i], areasB[i]);
-                        if (ca != 0)
-                            return ca;
+                        var mask = 1 << i;
+                        var c = (areasB & mask) - (areasA & mask);
+                        if (c != 0)
+                            return c;
                     }
-
-                    return areasA.Length.CompareTo(areasB.Length);
+                    return 0;
                 case PropertyType.Description:
                     return string.CompareOrdinal(issueA.Description, issueB.Description);
                 case PropertyType.FileType:

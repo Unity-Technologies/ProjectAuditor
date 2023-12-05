@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             if (!typeReference.IsGenericInstance)
                 return null;
 
-            return context.CreateWithoutDiagnostic(IssueCategory.GenericInstance, $"'{typeReference.FullName}' generic instance");
+            return context.CreateInsight(IssueCategory.GenericInstance, $"'{typeReference.FullName}' generic instance");
         }
     }
 }

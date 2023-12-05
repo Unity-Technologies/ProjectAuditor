@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public IEnumerable<ProjectIssue> Analyze(BuildDataAudioClipAnalyzerContext context)
         {
-            yield return context.CreateWithoutDiagnostic(IssueCategory.BuildDataAudioClip, context.AudioClip.Name)
+            yield return context.CreateInsight(IssueCategory.BuildDataAudioClip, context.AudioClip.Name)
                 .WithCustomProperties(
                     new object[((int)BuildDataAudioClipProperty.Num)]
                     {

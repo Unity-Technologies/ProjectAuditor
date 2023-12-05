@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor.Core
     /// </summary>
     internal abstract class Module
     {
-        protected HashSet<DescriptorID> m_Ids;
+        protected HashSet<DescriptorId> m_Ids;
 
         public abstract string Name
         {
@@ -28,26 +28,61 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         public virtual bool IsSupported => true;
 
-        public IReadOnlyCollection<DescriptorID> SupportedDescriptorIds => m_Ids != null ? m_Ids.ToArray() : Array.Empty<DescriptorID>();
+        public IReadOnlyCollection<DescriptorId> SupportedDescriptorIds => m_Ids != null ? m_Ids.ToArray() : Array.Empty<DescriptorId>();
 
         public abstract IReadOnlyCollection<IssueLayout> SupportedLayouts
         {
             get;
         }
 
-        public static string[] GetAssetPaths()
+        public static string[] GetAssetPaths(AnalysisContext context)
         {
-            return AssetDatabase.GetAllAssetPaths();
+            return FilterAssetPathsArray(context, AssetDatabase.GetAllAssetPaths());
         }
 
-        public static string[] GetAssetPathsByFilter(string filter)
+        public static string[] GetAssetPathsByFilter(string filter, AnalysisContext context)
         {
-            return AssetDatabase.FindAssets(filter).Select(AssetDatabase.GUIDToAssetPath).ToArray();
+            var assetsEnumerable = AssetDatabase.FindAssets(filter).Select(AssetDatabase.GUIDToAssetPath);
+            if (context.Params.AssetPathFilter != null)
+            {
+                assetsEnumerable = assetsEnumerable.Where(path => context.Params.AssetPathFilter(path));
+            }
+            return assetsEnumerable.ToArray();
+        }
+
+        static string[] FilterAssetPathsArray(AnalysisContext context, string[] assets)
+        {
+            var filter = context.Params.AssetPathFilter;
+            if (filter != null)
+            {
+                var readIndex = 0;
+                var writeIndex = 0;
+                for (; readIndex < assets.Length; readIndex++)
+                {
+                    var asset = assets[readIndex];
+                    if (filter(asset))
+                    {
+                        assets[writeIndex] = asset;
+                        writeIndex++;
+                    }
+                }
+                if (writeIndex == 0)
+                {
+                    return Array.Empty<string>();
+                }
+                if (writeIndex < readIndex)
+                {
+                    var newArray = new string[writeIndex];
+                    Array.Copy(assets, newArray, writeIndex);
+                    return newArray;
+                }
+            }
+            return assets;
         }
 
         public virtual void Initialize()
         {
-            m_Ids = new HashSet<DescriptorID>();
+            m_Ids = new HashSet<DescriptorId>();
         }
 
         public virtual void RegisterParameters(DiagnosticParams diagnosticParams)
@@ -69,7 +104,7 @@ namespace Unity.ProjectAuditor.Editor.Core
                 throw new Exception("Duplicate descriptor with Id: " + descriptor.Id);
         }
 
-        public bool SupportsDescriptor(DescriptorID id)
+        public bool SupportsDescriptor(DescriptorId id)
         {
             return m_Ids.Contains(id);
         }

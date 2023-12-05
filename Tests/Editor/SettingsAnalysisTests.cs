@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.SettingsAnalysis;
 using Unity.ProjectAuditor.Editor.Tests.Common;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -16,9 +12,7 @@ using UnityEditor.TestTools;
 using UnityEngine;
 using UnityEngine.Rendering;
 using FogMode = Unity.ProjectAuditor.Editor.SettingsAnalysis.FogMode;
-#if PACKAGE_URP
-using UnityEngine.Rendering.Universal;
-#endif
+
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -138,16 +132,13 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.True(issues.Length == 0);
         }
 
-#if !PACKAGE_HYBRID_RENDERER
-        [Ignore("This requires the Hybrid Renderer package")]
-#endif
-        [Test]
-        public void HybridRendererSettingsAnalysis_Default_StaticBatching_Enabled_IsReported()
+        void SetupStaticBatchingGetterAndSetter(out MethodInfo getterMethod, out MethodInfo setterMethod,
+            out object[] getterArgs, out object[] setterArgs, int staticBatchingForTest)
         {
-            var getterMethod = typeof(PlayerSettings).GetMethod("GetBatchingForPlatform",
+            getterMethod = typeof(PlayerSettings).GetMethod("GetBatchingForPlatform",
                 BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
 
-            var setterMethod = typeof(PlayerSettings).GetMethod("SetBatchingForPlatform",
+            setterMethod = typeof(PlayerSettings).GetMethod("SetBatchingForPlatform",
                 BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
 
             Assert.True(getterMethod != null, "GetBatchingForPlatform method does not exist");
@@ -155,7 +146,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             const int initialStaticBatching = 0;
             const int initialDynamicBatching = 0;
-            var getterArgs = new object[]
+            getterArgs = new object[]
             {
                 m_Platform,
                 initialStaticBatching,
@@ -164,62 +155,68 @@ namespace Unity.ProjectAuditor.EditorTests
 
             getterMethod.Invoke(null, getterArgs);
 
-            const int staticBatching = 1;
+            int staticBatching = staticBatchingForTest;
             const int dynamicBatching = 0;
-            var setterArgs = new object[]
+            setterArgs = new object[]
             {
                 m_Platform,
                 staticBatching,
                 dynamicBatching
             };
+        }
+
+#if !PACKAGE_HYBRID_RENDERER && !PACKAGE_ENTITIES_GRAPHICS
+        [Ignore("This requires the Hybrid Renderer or Entities Graphics package")]
+#endif
+        [Test]
+        public void SettingsAnalysis_Default_StaticBatching_Enabled_IsReported()
+        {
+            SetupStaticBatchingGetterAndSetter(
+                out var getterMethod, out var setterMethod,
+                out var getterArgs, out var setterArgs,
+                1);
 
             setterMethod.Invoke(null, setterArgs);
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id == HybridRenderingAnalyzer.PAS1000);
+            var id = new DescriptorId();
+#if PACKAGE_ENTITIES_GRAPHICS
+            id = EntitiesGraphicsAnalyzer.PAS1013;
+#elif PACKAGE_HYBRID_RENDERER
+            id = EntitiesGraphicsAnalyzer.PAS1000;
+#endif
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(id));
+            Assert.True(issues.Length == 1);
+
+            // Test fixer
+            issues[0].Id.GetDescriptor().Fix(issues[0], m_AnalysisParams);
+            var issuesAfterFix = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(id));
 
             setterMethod.Invoke(null, getterArgs);
 
-            Assert.True(issues.Length == 1);
+            Assert.True(issuesAfterFix.Length == 0);
         }
 
-#if !PACKAGE_HYBRID_RENDERER
-        [Ignore("This requires the Hybrid Renderer package")]
+#if !PACKAGE_HYBRID_RENDERER && !PACKAGE_ENTITIES_GRAPHICS
+        [Ignore("This requires the Hybrid Renderer or Entities Graphics package")]
 #endif
         [Test]
-        public void HybridRendererSettingsAnalysis_StaticBatching_Disabled_IsNotReported()
+        public void SettingsAnalysis_StaticBatching_Disabled_IsNotReported()
         {
-            var getterMethod = typeof(PlayerSettings).GetMethod("GetBatchingForPlatform",
-                BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
-
-            var setterMethod = typeof(PlayerSettings).GetMethod("SetBatchingForPlatform",
-                BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
-
-            Assert.True(getterMethod != null, "GetBatchingForPlatform method does not exist");
-            Assert.True(setterMethod != null, "SetBatchingForPlatform method does not exist");
-
-            const int initialStaticBatching = 0;
-            const int initialDynamicBatching = 0;
-            var getterArgs = new object[]
-            {
-                m_Platform,
-                initialStaticBatching,
-                initialDynamicBatching
-            };
-
-            getterMethod.Invoke(null, getterArgs);
-
-            const int staticBatching = 0;
-            const int dynamicBatching = 0;
-            var setterArgs = new object[]
-            {
-                m_Platform,
-                staticBatching,
-                dynamicBatching
-            };
-
+            SetupStaticBatchingGetterAndSetter(
+                out var getterMethod, out var setterMethod,
+                out var getterArgs, out var setterArgs,
+                0);
             setterMethod.Invoke(null, setterArgs);
 
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id == HybridRenderingAnalyzer.PAS1000);
+            var id = new DescriptorId();
+#if PACKAGE_ENTITIES_GRAPHICS
+            id = EntitiesGraphicsAnalyzer.PAS1013;
+#elif PACKAGE_HYBRID_RENDERER
+            id = EntitiesGraphicsAnalyzer.PAS1000;
+#endif
+
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(id));
 
             setterMethod.Invoke(null, getterArgs);
 
@@ -242,9 +239,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual("Player: Prebake Collision Meshes is disabled", playerSettingIssue.Description);
             Assert.AreEqual("Project/Player", playerSettingIssue.Location.Path);
             Assert.AreEqual("Player", playerSettingIssue.Location.Filename);
-            Assert.AreEqual(2, descriptor.GetAreas().Length);
-            Assert.Contains(Area.BuildSize, descriptor.GetAreas());
-            Assert.Contains(Area.LoadTime, descriptor.GetAreas());
+            Assert.AreEqual((Areas.BuildSize | Areas.LoadTime), descriptor.Areas);
             Assert.AreEqual("Any", descriptor.GetPlatformsSummary());
 
             // restore bakeCollisionMeshes
@@ -522,12 +517,12 @@ namespace Unity.ProjectAuditor.EditorTests
             Il2CppCompilerConfiguration il2CppCompilerConfiguration)
         {
             var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform);
-            var scriptingBackend = PlayerSettings.GetScriptingBackend(buildTargetGroup);
+            var scriptingBackend = PlayerSettingsUtil.GetScriptingBackend(buildTargetGroup);
 
-            PlayerSettings.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.IL2CPP);
+            PlayerSettingsUtil.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.IL2CPP);
 
-            var compilerConfiguration = PlayerSettings.GetIl2CppCompilerConfiguration(buildTargetGroup);
-            PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, il2CppCompilerConfiguration);
+            var compilerConfiguration = PlayerSettingsUtil.GetIl2CppCompilerConfiguration(buildTargetGroup);
+            PlayerSettingsUtil.SetIl2CppCompilerConfiguration(buildTargetGroup, il2CppCompilerConfiguration);
 
             var id = il2CppCompilerConfiguration == Il2CppCompilerConfiguration.Master
                 ? PlayerSettingsAnalyzer.PAS1004
@@ -537,8 +532,8 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.AreEqual(1, issues.Length);
 
-            PlayerSettings.SetScriptingBackend(buildTargetGroup, scriptingBackend);
-            PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, compilerConfiguration);
+            PlayerSettingsUtil.SetScriptingBackend(buildTargetGroup, scriptingBackend);
+            PlayerSettingsUtil.SetIl2CppCompilerConfiguration(buildTargetGroup, compilerConfiguration);
         }
 
         [Test]
@@ -547,19 +542,19 @@ namespace Unity.ProjectAuditor.EditorTests
         public void SettingsAnalysis_Il2CppCompilerConfigurationRelease_IsNotReported(string id)
         {
             var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform);
-            var scriptingBackend = PlayerSettings.GetScriptingBackend(buildTargetGroup);
+            var scriptingBackend = PlayerSettingsUtil.GetScriptingBackend(buildTargetGroup);
 
-            PlayerSettings.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.IL2CPP);
+            PlayerSettingsUtil.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.IL2CPP);
 
-            var compilerConfiguration = PlayerSettings.GetIl2CppCompilerConfiguration(buildTargetGroup);
-            PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, Il2CppCompilerConfiguration.Release);
+            var compilerConfiguration = PlayerSettingsUtil.GetIl2CppCompilerConfiguration(buildTargetGroup);
+            PlayerSettingsUtil.SetIl2CppCompilerConfiguration(buildTargetGroup, Il2CppCompilerConfiguration.Release);
 
             var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(id));
 
             Assert.AreEqual(0, issues.Length);
 
-            PlayerSettings.SetScriptingBackend(buildTargetGroup, scriptingBackend);
-            PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, compilerConfiguration);
+            PlayerSettingsUtil.SetScriptingBackend(buildTargetGroup, scriptingBackend);
+            PlayerSettingsUtil.SetIl2CppCompilerConfiguration(buildTargetGroup, compilerConfiguration);
         }
 
         [Test]
@@ -568,33 +563,33 @@ namespace Unity.ProjectAuditor.EditorTests
         public void SettingsAnalysis_Il2CppCompilerConfigurationMaster_ScriptingBackendMono_IsNotReported(string id)
         {
             var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform);
-            var scriptingBackend = PlayerSettings.GetScriptingBackend(buildTargetGroup);
+            var scriptingBackend = PlayerSettingsUtil.GetScriptingBackend(buildTargetGroup);
 
-            PlayerSettings.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.Mono2x);
+            PlayerSettingsUtil.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.Mono2x);
 
             var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(id));
 
             Assert.AreEqual(0, issues.Length);
 
-            PlayerSettings.SetScriptingBackend(buildTargetGroup, scriptingBackend);
+            PlayerSettingsUtil.SetScriptingBackend(buildTargetGroup, scriptingBackend);
         }
 
         [Test]
         public void SettingsAnalysis_SwitchIL2CPP_Compiler_Configuration_To_Release()
         {
             var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform);
-            var scriptingBackend = PlayerSettings.GetScriptingBackend(buildTargetGroup);
+            var scriptingBackend = PlayerSettingsUtil.GetScriptingBackend(buildTargetGroup);
 
-            PlayerSettings.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.IL2CPP);
-            var compilerConfiguration = PlayerSettings.GetIl2CppCompilerConfiguration(buildTargetGroup);
+            PlayerSettingsUtil.SetScriptingBackend(buildTargetGroup, ScriptingImplementation.IL2CPP);
+            var compilerConfiguration = PlayerSettingsUtil.GetIl2CppCompilerConfiguration(buildTargetGroup);
 
-            PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, Il2CppCompilerConfiguration.Debug);
+            PlayerSettingsUtil.SetIl2CppCompilerConfiguration(buildTargetGroup, Il2CppCompilerConfiguration.Debug);
 
             PlayerSettingsAnalyzer.SetIL2CPPConfigurationToRelease(buildTargetGroup);
-            Assert.AreEqual(Il2CppCompilerConfiguration.Release, PlayerSettings.GetIl2CppCompilerConfiguration(buildTargetGroup));
+            Assert.AreEqual(Il2CppCompilerConfiguration.Release, PlayerSettingsUtil.GetIl2CppCompilerConfiguration(buildTargetGroup));
 
-            PlayerSettings.SetScriptingBackend(buildTargetGroup, scriptingBackend);
-            PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, compilerConfiguration);
+            PlayerSettingsUtil.SetScriptingBackend(buildTargetGroup, scriptingBackend);
+            PlayerSettingsUtil.SetIl2CppCompilerConfiguration(buildTargetGroup, compilerConfiguration);
         }
 
         [Test]
@@ -614,7 +609,7 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void SettingsAnalysis_LightmapStreaming_Disabled_Is_Not_Reported()
+        public void SettingsAnalysis_LightmapStreaming_Disabled_IsNotReported()
         {
             var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(m_Platform);
             var currentState = PlayerSettingsUtil.IsLightmapStreamingEnabled(buildTargetGroup);
@@ -642,196 +637,5 @@ namespace Unity.ProjectAuditor.EditorTests
 
             PlayerSettingsUtil.SetLightmapStreaming(buildTargetGroup, currentState);
         }
-
-        [Test]
-        public void SrpAssetSettingsAnalysis_SrpBatching_IsNotReportedOnceFixed()
-        {
-            RenderPipelineAsset defaultRP = GraphicsSettings.defaultRenderPipeline;
-            RenderPipelineAsset qualityRP = QualitySettings.renderPipeline;
-
-            if (defaultRP != null)
-            {
-                TestSrpBatchingSetting(defaultRP, -1);
-            }
-
-            if (qualityRP != null)
-            {
-                TestSrpBatchingSetting(qualityRP, QualitySettings.GetQualityLevel());
-            }
-        }
-
-        void TestSrpBatchingSetting(RenderPipelineAsset renderPipeline, int qualityLevel)
-        {
-            bool? initialSetting = SrpAssetSettingsAnalyzer.GetSrpBatcherSetting(renderPipeline);
-
-            SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(renderPipeline, false);
-            var issues = Analyze(IssueCategory.ProjectSetting,
-                i => i.Id.IsValid() && i.Id.GetDescriptor().Id == SrpAssetSettingsAnalyzer.PAS1008);
-            var srpBatchingIssue = issues.FirstOrDefault();
-            Assert.NotNull(srpBatchingIssue);
-            Assert.IsTrue(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
-                $"Render Pipeline with quality level {qualityLevel} should have disabled SRP Batcher.");
-
-            SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(renderPipeline, true);
-            issues = Analyze(IssueCategory.ProjectSetting,
-                i => i.Id.IsValid() && i.Id.GetDescriptor().Id == SrpAssetSettingsAnalyzer.PAS1008);
-            Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
-                $"Render Pipeline with quality level {qualityLevel} should have enabled SRP Batcher.");
-
-            if (initialSetting != null)
-            {
-                SrpAssetSettingsAnalyzer.SetSrpBatcherSetting(renderPipeline, initialSetting.Value);
-            }
-        }
-
-        [Test]
-#if !PACKAGE_URP
-        [Ignore("This requires the URP package")]
-#endif
-        public void UrpAssetIsSpecifiedAnalysis_IsNotReportedOnceFixed()
-        {
-#if PACKAGE_URP
-            RenderPipelineAsset defaultRP = GraphicsSettings.defaultRenderPipeline;
-            RenderPipelineAsset qualityRP = QualitySettings.renderPipeline;
-
-            if (defaultRP != null || qualityRP != null)
-            {
-                GraphicsSettings.defaultRenderPipeline = null;
-                QualitySettings.renderPipeline = null;
-
-                const string urpAssetTitle = "URP: URP Asset is not specified";
-                var issues = Analyze(IssueCategory.ProjectSetting,
-                    i => i.Id.GetDescriptor().Title.Equals(urpAssetTitle));
-                var urpIssue = issues.FirstOrDefault();
-                Assert.NotNull(urpIssue);
-
-                GraphicsSettings.defaultRenderPipeline = defaultRP;
-                QualitySettings.renderPipeline = qualityRP;
-
-                issues = Analyze(IssueCategory.ProjectSetting,
-                    i => i.Id.GetDescriptor().Title.Equals(urpAssetTitle));
-                urpIssue = issues.FirstOrDefault();
-                Assert.Null(urpIssue);
-            }
-#endif
-        }
-
-        [Test]
-#if !UNITY_2019_3_OR_NEWER || !PACKAGE_URP || !(UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH)
-        [Ignore("This requires the URP package and a mobile platform.")]
-#endif
-        public void UrpCameraStopNaNAnalysis_IsNotReportedOnceFixed()
-        {
-#if UNITY_2019_3_OR_NEWER && PACKAGE_URP && (UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH)
-            var cameraData = RenderPipelineUtils
-                .GetAllComponents<UniversalAdditionalCameraData>().FirstOrDefault();
-            if (cameraData != null)
-            {
-                const string stopNaNTitle = "URP: Stop NaN property is enabled";
-                var initStopNaN = cameraData.stopNaN;
-
-                cameraData.stopNaN = true;
-                var issues = Analyze(IssueCategory.ProjectSetting,
-                    i => i.Id.GetDescriptor().title.Equals(stopNaNTitle));
-                var issuesLength = issues.Length;
-                Assert.IsTrue(issuesLength > 0);
-
-                cameraData.stopNaN = false;
-                issues = Analyze(IssueCategory.ProjectSetting,
-                    i => i.Id.GetDescriptor().title.Equals(stopNaNTitle));
-                var issuesLength2 = issues.Length;
-                Assert.IsTrue(issuesLength - issuesLength2 == 1);
-
-                cameraData.stopNaN = initStopNaN;
-            }
-#endif
-        }
-
-        [Test]
-#if !UNITY_2019_3_OR_NEWER || !PACKAGE_URP || !(UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH)
-        [Ignore("This requires the URP package and a mobile platform.")]
-#endif
-        public void UrpAssetHdrSettingsAnalysis_IsNotReportedOnceFixed()
-        {
-#if UNITY_2019_3_OR_NEWER && PACKAGE_URP && (UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH)
-            RenderPipelineAsset defaultRP = GraphicsSettings.defaultRenderPipeline;
-            RenderPipelineAsset qualityRP = QualitySettings.renderPipeline;
-            if (defaultRP != null)
-            {
-                TestUrpHdrSetting(defaultRP, -1);
-            }
-
-            if (qualityRP != null)
-            {
-                int qualityLevel = QualitySettings.GetQualityLevel();
-                TestUrpHdrSetting(qualityRP, qualityLevel);
-            }
-#endif
-        }
-
-        [Test]
-#if !UNITY_2019_3_OR_NEWER || !PACKAGE_URP || !(UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH)
-        [Ignore("This requires the URP package and a mobile platform.")]
-#endif
-        public void UrpAssetMsaaSettingsAnalysis_IsNotReportedOnceFixed()
-        {
-#if UNITY_2019_3_OR_NEWER && PACKAGE_URP && (UNITY_ANDROID || UNITY_IOS || UNITY_SWITCH)
-            RenderPipelineAsset defaultRP = GraphicsSettings.defaultRenderPipeline;
-            RenderPipelineAsset qualityRP = QualitySettings.renderPipeline;
-            if (defaultRP != null)
-            {
-                TestUrpMsaaSetting(defaultRP, -1);
-            }
-
-            if (qualityRP != null)
-            {
-                int qualityLevel = QualitySettings.GetQualityLevel();
-                TestUrpMsaaSetting(qualityRP, qualityLevel);
-            }
-#endif
-        }
-
-#if UNITY_2019_3_OR_NEWER && PACKAGE_URP
-        void TestUrpHdrSetting(RenderPipelineAsset renderPipeline, int qualityLevel)
-        {
-            bool initialHdrSetting = UniversalRenderPipelineAnalyzer.GetHdrSetting(renderPipeline);
-
-            const string hdrTitle = "URP: HDR is enabled";
-            UniversalRenderPipelineAnalyzer.SetHdrSetting(renderPipeline, true);
-            var issues = Analyze(IssueCategory.ProjectSetting,
-                i => i.Id.GetDescriptor().Title.Equals(hdrTitle));
-            Assert.IsTrue(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
-                $"Render Pipeline with quality level {qualityLevel} should have enabled HDR.");
-
-            UniversalRenderPipelineAnalyzer.SetHdrSetting(renderPipeline, false);
-            issues = Analyze(IssueCategory.ProjectSetting,
-                i => i.Id.GetDescriptor().Title.Equals(hdrTitle));
-            Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
-                $"Render Pipeline with quality level {qualityLevel} should have disabled HDR.");
-
-            UniversalRenderPipelineAnalyzer.SetHdrSetting(renderPipeline, initialHdrSetting);
-        }
-
-        void TestUrpMsaaSetting(RenderPipelineAsset renderPipeline, int qualityLevel)
-        {
-            int initialMsaaSetting = UniversalRenderPipelineAnalyzer.GetMsaaSampleCountSetting(renderPipeline);
-
-            const string msaaTitle = "URP: MSAA is set to 4x or 8x";
-            UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(renderPipeline, 4);
-            var issues = Analyze(IssueCategory.ProjectSetting,
-                i => i.Id.GetDescriptor().Title.Equals(msaaTitle));
-            Assert.IsTrue(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
-                $"Render Pipeline with quality level {qualityLevel} should have MSAA set to 4x.");
-
-            UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(renderPipeline, 2);
-            issues = Analyze(IssueCategory.ProjectSetting,
-                i => i.Id.GetDescriptor().Title.Equals(msaaTitle));
-            Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
-                $"Render Pipeline with quality level {qualityLevel} should have MSAA set to 2x.");
-
-            UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(renderPipeline, initialMsaaSetting);
-        }
-
-#endif
     }
 }

@@ -18,7 +18,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             (
             PAC2001,
             "Empty MonoBehaviour Method",
-            Area.CPU,
+            Areas.CPU,
             "Any empty MonoBehaviour message handling method (for example, Awake(), Start(), Update()) will be included in the build and executed even if it is empty. Every message handling method on every instance of a MonoBehaviour takes a small amount of CPU time.",
             "Remove any empty MonoBehaviour methods."
             )
@@ -55,7 +55,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             if (!MonoBehaviourAnalysis.IsMonoBehaviourEvent(context.MethodDefinition))
                 return null;
 
-            return context.Create(IssueCategory.Code, k_Descriptor.Id, context.MethodDefinition.Name);
+            return context.CreateIssue(IssueCategory.Code, k_Descriptor.Id, context.MethodDefinition.Name);
         }
 
         internal static string GetDescriptorID()

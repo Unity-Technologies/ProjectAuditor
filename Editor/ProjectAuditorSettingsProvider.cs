@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor
             var provider = new SettingsProvider("Project/ProjectAuditor", SettingsScope.Project)
             {
                 // By default the last token of the path is used as display name if no label is provided.
-                label = "Project Auditor",
+                label = ProjectAuditor.DisplayName,
                 // Create the SettingsProvider and initialize its drawing (IMGUI) function in place:
                 guiHandler = SettingsGUI,
 

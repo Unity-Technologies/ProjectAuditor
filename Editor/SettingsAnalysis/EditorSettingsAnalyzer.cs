@@ -14,13 +14,13 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         static readonly Descriptor k_EnterPlayModeOptionsDescriptor = new Descriptor(
             PAS0035,
             "Editor: Enter Play Mode Options is not enabled",
-            new[] { Area.IterationTime },
+            Areas.IterationTime,
             "The <b>Enter Play Mode Options</b> option in Editor Settings is not enabled. Without enabling this option, you cannot disable Domain Reload, meaning that entering Play Mode will take longer every time.",
             "In Editor Settings, enable the <b>Enter Play Mode Settings > Enter Play Mode Options</b> option, then disable the <b>Reload Domain</b> option. Be sure to view the <b>Code/Domain Reload</b> view in this tool for additional things you may need to fix as a result of disabling domain reload."
         )
         {
             MaximumVersion = "2023.4",
-            fixer = (issue) =>
+            fixer = (issue, analysisParams) =>
             {
                 EditorSettings.enterPlayModeOptionsEnabled = true;
             }
@@ -29,13 +29,13 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         static readonly Descriptor k_DomainReloadDescriptor = new Descriptor(
             PAS0036,
             "Editor: Reload Domain is enabled",
-            new[] { Area.IterationTime },
+            Areas.IterationTime,
             "The <b>Reload Domain</b> option In Editor Settings is enabled. If Reload Domain is enabled, the entire script state will be reloaded when entering and exiting Play Mode, and after every code change. This can considerably slow down iteration time.",
             "In Editor Settings, enable the <b>Enter Play Mode Settings > Enter Play Mode Options</b> option, then disable the <b>Reload Domain</b> checkbox. Be sure to view the <b>Code/Domain Reload</b> view in this tool for additional things you may need to fix as a result of disabling domain reload."
         )
         {
             MaximumVersion = "2023.4",
-            fixer = (issue) =>
+            fixer = (issue, analysisParams) =>
             {
                 EditorSettings.enterPlayModeOptions |= EnterPlayModeOptions.DisableDomainReload;
             }
@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             if (k_EnterPlayModeOptionsDescriptor.IsVersionCompatible() &&
                 !EditorSettings.enterPlayModeOptionsEnabled)
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_EnterPlayModeOptionsDescriptor.Id)
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_EnterPlayModeOptionsDescriptor.Id)
                     .WithLocation("Project/Editor");
             }
             else
@@ -60,7 +60,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 if (k_DomainReloadDescriptor.IsVersionCompatible() &&
                     (EditorSettings.enterPlayModeOptions & EnterPlayModeOptions.DisableDomainReload) != EnterPlayModeOptions.DisableDomainReload)
                 {
-                    yield return context.Create(IssueCategory.ProjectSetting, k_DomainReloadDescriptor.Id)
+                    yield return context.CreateIssue(IssueCategory.ProjectSetting, k_DomainReloadDescriptor.Id)
                         .WithLocation("Project/Editor");
                 }
             }

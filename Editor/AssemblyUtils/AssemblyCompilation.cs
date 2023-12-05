@@ -118,15 +118,11 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 
         static Assembly[] GetAssemblies(bool editorAssemblies)
         {
-#if UNITY_2019_3_OR_NEWER
             var assemblies =
                 CompilationPipeline.GetAssemblies(editorAssemblies
                     ? AssembliesType.Editor
                     : AssembliesType.PlayerWithoutTestAssemblies);
-#else
-            var assemblies =
-                CompilationPipeline.GetAssemblies(editorAssemblies ? AssembliesType.Editor : AssembliesType.Player);
-#endif
+
             return assemblies;
         }
 
@@ -214,8 +210,9 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                 var filename = Path.GetFileName(assembly.outputPath);
                 var assemblyName = Path.GetFileNameWithoutExtension(assembly.outputPath);
                 var assemblyPath = Path.Combine(m_OutputFolder, filename);
+#pragma warning disable 618 // disable warning for obsolete AssemblyBuilder
                 var assemblyBuilder = new AssemblyBuilder(assemblyPath, assembly.sourceFiles);
-
+#pragma warning restore 618
                 assemblyBuilder.buildTarget = platform;
                 assemblyBuilder.buildTargetGroup = BuildPipeline.GetBuildTargetGroup(platform);
                 assemblyBuilder.buildFinished += (path, originalMessages) =>
@@ -332,9 +329,8 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                 assemblyBuilder.excludeReferences =
                     assemblyBuilder.defaultReferences.Where(r => r.StartsWith("Library")).ToArray();
 
-#if UNITY_2019_1_OR_NEWER
                 assemblyBuilder.referencesOptions = ReferencesOptions.UseEngineModules;
-#endif
+
                 m_AssemblyCompilationTasks.Add(assemblyName, new AssemblyCompilationTask { builder = assemblyBuilder });
             }
 

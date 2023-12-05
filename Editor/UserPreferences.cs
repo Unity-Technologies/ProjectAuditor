@@ -11,10 +11,10 @@ namespace Unity.ProjectAuditor.Editor
 
         static readonly string k_EditorPrefsPrefix = "ProjectAuditor";
 
-        static readonly string k_AnalysisOnBuildLabel = "Auto Analysis on Build";
-        static readonly bool k_AnalysisOnBuildDefault = false;
+        static readonly string k_AnalyzeAfterBuildLabel = "Auto Analyze after Build";
+        static readonly bool k_AnalyzeAfterBuildDefault = false;
 
-        static readonly string k_AnalysisInBackgroundLabel = "Analysis in Background";
+        static readonly string k_AnalysisInBackgroundLabel = "Analyze in Background";
         static readonly bool k_AnalysisInBackgroundDefault = true;
 
         static readonly string k_UseRoslynAnalyzersLabel = "Use Roslyn Analyzers";
@@ -29,24 +29,19 @@ namespace Unity.ProjectAuditor.Editor
 
         static readonly string k_DeveloperModeLabel = "Enable Developer Mode";
 
-        static string k_BuildReportAutoSaveLabel = "Auto Save Last Report";
-        static bool k_BuildReportAutoSaveDefault = false;
-
-        static string k_BuildReportPathLabel = "Library Path";
-        static string k_BuildReportPathDefault = "Assets/BuildReports";
-
         internal static string LoadSavePath = string.Empty;
 
         public static string Path => k_PreferencesKey;
 
         /// <summary>
-        /// If enabled, ProjectAuditor will run every time the project is built.
+        /// If enabled, ProjectAuditor will re-run the BuildReport analysis every time the project is built.
         /// </summary>
-        public static bool AnalyzeOnBuild
+        public static bool AnalyzeAfterBuild
         {
-            get => EditorPrefs.GetBool(MakeKey(nameof(AnalyzeOnBuild)), k_AnalysisOnBuildDefault);
-            set => EditorPrefs.SetBool(MakeKey(nameof(AnalyzeOnBuild)), value);
+            get => EditorPrefs.GetBool(MakeKey(nameof(AnalyzeAfterBuild)), k_AnalyzeAfterBuildDefault);
+            set => EditorPrefs.SetBool(MakeKey(nameof(AnalyzeAfterBuild)), value);
         }
+
 
         /// <summary>
         /// If enabled, ProjectAuditor will try to partially analyze the project in the background.
@@ -73,24 +68,6 @@ namespace Unity.ProjectAuditor.Editor
         {
             get => EditorPrefs.GetBool(MakeKey(nameof(FailBuildOnIssues)), k_FailBuildOnIssuesDefault);
             set => EditorPrefs.SetBool(MakeKey(nameof(FailBuildOnIssues)), value);
-        }
-
-        /// <summary>
-        /// If enabled, the BuildReport is automatically saved as asset after each build
-        /// </summary>
-        public static bool BuildReportAutoSave
-        {
-            get => EditorPrefs.GetBool(MakeKey(nameof(BuildReportAutoSave)), k_BuildReportAutoSaveDefault);
-            set => EditorPrefs.SetBool(MakeKey(nameof(BuildReportAutoSave)), value);
-        }
-
-        /// <summary>
-        /// Customizable path to save the BuildReport
-        /// </summary>
-        public static string BuildReportPath
-        {
-            get => EditorPrefs.GetString(MakeKey(nameof(BuildReportPath)), k_BuildReportPathDefault);
-            set => EditorPrefs.SetString(MakeKey(nameof(BuildReportPath)), value);
         }
 
         public static bool DeveloperMode
@@ -164,27 +141,7 @@ namespace Unity.ProjectAuditor.Editor
 
             EditorGUILayout.LabelField("Build", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
-            AnalyzeOnBuild = EditorGUILayout.Toggle(k_AnalysisOnBuildLabel, AnalyzeOnBuild);
-            BuildReportAutoSave = EditorGUILayout.Toggle(k_BuildReportAutoSaveLabel, BuildReportAutoSave);
-
-            GUI.enabled = BuildReportAutoSave;
-
-            EditorGUILayout.BeginHorizontal();
-            var newPath = EditorGUILayout.DelayedTextField(k_BuildReportPathLabel, BuildReportPath);
-            if (!string.IsNullOrEmpty(newPath))
-                BuildReportPath = newPath;
-            if (GUILayout.Button("Browse...", GUILayout.Width(80)))
-            {
-                newPath = EditorUtility.OpenFolderPanel("Select Build Report destination", BuildReportPath, "");
-                if (!string.IsNullOrEmpty(newPath))
-                {
-                    BuildReportPath = FileUtil.GetProjectRelativePath(newPath);
-                    InternalEditorUtility.RepaintAllViews();
-                }
-            }
-            EditorGUILayout.EndHorizontal();
-
-            GUI.enabled = true;
+            AnalyzeAfterBuild = EditorGUILayout.Toggle(k_AnalyzeAfterBuildLabel, AnalyzeAfterBuild);
 
             FailBuildOnIssues = EditorGUILayout.Toggle(k_FailBuildOnIssuesLabel, FailBuildOnIssues);
 

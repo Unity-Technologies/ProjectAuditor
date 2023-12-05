@@ -18,21 +18,21 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_TextureSolidColorDescriptor = new Descriptor(
             PAA0005,
             "Texture: Solid color is not 1x1 size",
-            new[] {Area.Memory},
+            Areas.Memory,
             "The texture is a single, solid color and is bigger than 1x1 pixels in size. Redundant texture data occupies memory unnecessarily.",
             "Consider shrinking the texture to 1x1 size."
         )
         {
             IsEnabledByDefault = false,
             MessageFormat = "Texture '{0}' is a solid color and not 1x1 size",
-            fixer = (issue) => { ShrinkSolidTexture(issue.RelativePath); }
+            fixer = (issue, analysisParams) => { ShrinkSolidTexture(issue.RelativePath); }
         };
 
         // NOTE:  This is only here to run the same analysis without a quick fix button.  Clean up when we either have appropriate quick fix for other dimensions or improved fixer support.
         internal static readonly Descriptor k_TextureSolidColorNoFixerDescriptor = new Descriptor(
             PAA0006,
             "Texture: Solid color is not 1x1 size",
-            new[] { Area.Memory },
+            Areas.Memory,
             "The texture is a single, solid color and is bigger than 1x1 pixels in size. Redundant texture data occupies memory unnecessarily.",
             "Consider shrinking the texture to 1x1 size."
         )
@@ -44,7 +44,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_TextureAtlasEmptyDescriptor = new Descriptor(
             PAA0007,
             "Texture Atlas: Too much empty space",
-            new[] {Area.Memory},
+            Areas.Memory,
             "The texture atlas contains a lot of empty space. Empty space contributes to texture memory usage.",
             "Consider reorganizing your texture atlas in order to reduce the amount of empty space."
         )
@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (context.IsDescriptorEnabled(dimensionAppropriateDescriptor) &&
                 TextureUtils.IsTextureSolidColorTooBig(context.Importer, context.Texture))
             {
-                yield return context.Create(IssueCategory.AssetDiagnostic, dimensionAppropriateDescriptor.Id, context.Name)
+                yield return context.CreateIssue(IssueCategory.AssetDiagnostic, dimensionAppropriateDescriptor.Id, context.Name)
                     .WithLocation(context.Importer.assetPath);
             }
 
@@ -76,7 +76,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var emptyPercent = TextureUtils.GetEmptyPixelsPercent(texture2D);
                 if (emptyPercent > context.SpriteAtlasEmptySpaceLimit)
                 {
-                    yield return context.Create(IssueCategory.AssetDiagnostic, k_TextureAtlasEmptyDescriptor.Id, context.Name, Formatting.FormatPercentage(emptyPercent / 100.0f))
+                    yield return context.CreateIssue(IssueCategory.AssetDiagnostic, k_TextureAtlasEmptyDescriptor.Id, context.Name, Formatting.FormatPercentage(emptyPercent / 100.0f))
                         .WithLocation(context.Importer.assetPath);
                 }
             }

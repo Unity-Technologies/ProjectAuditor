@@ -133,17 +133,27 @@ namespace Unity.ProjectAuditor.Editor
         [JsonIgnore][SerializeField]
         List<ProjectIssue> m_Issues = new List<ProjectIssue>();
 
+        static Mutex s_Mutex = new Mutex();
+
+        [JsonProperty("insights")]
+        internal ProjectIssue[] Insights
+        {
+            get
+            {
+                return m_Issues.Where(i => !i.IsDiagnostic()).ToArray();
+            }
+            set => m_Issues.AddRange(value);
+        }
+
         [JsonProperty("issues")]
         internal ProjectIssue[] UnfixedIssues
         {
             get
             {
-                return m_Issues.Where(i => !i.WasFixed).ToArray();
+                return m_Issues.Where(i => i.IsDiagnostic() && !i.WasFixed).ToArray();
             }
-            set => m_Issues = value.ToList();
+            set => m_Issues.AddRange(value);
         }
-
-        static Mutex s_Mutex = new Mutex();
 
         [JsonProperty("descriptors")]
         internal List<Descriptor> Descriptors

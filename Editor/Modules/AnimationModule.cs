@@ -168,7 +168,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var issues = new List<ProjectIssue>();
 
-            var assetPaths = GetAssetPathsByFilter("t:animatorcontroller, a:assets");
+            var assetPaths = GetAssetPathsByFilter("t:animatorcontroller, a:assets", context);
             progress?.Start("Finding Animator Controllers", "Search in Progress...", assetPaths.Length);
             foreach (var assetPath in assetPaths)
             {
@@ -183,7 +183,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler may not be the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(controller);
 
-                issues.Add(context.CreateWithoutDiagnostic(k_AnimatorControllerLayout.category, controller.name)
+                issues.Add(context.CreateInsight(k_AnimatorControllerLayout.category, controller.name)
                     .WithCustomProperties(new object[(int)AnimatorControllerProperty.Num]
                     {
                         controller.layers.Length,
@@ -206,7 +206,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         void ProcessAnimationClips(AnalysisContext context, IProgress progress)
         {
             var issues = new List<ProjectIssue>();
-            var assetPaths = GetAssetPathsByFilter("t:animationclip, a:assets");
+            var assetPaths = GetAssetPathsByFilter("t:animationclip, a:assets", context);
 
             progress?.Start("Finding Animation Clips", "Search in Progress...", assetPaths.Length);
 
@@ -223,7 +223,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler may not be the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(clip);
 
-                issues.Add(context.CreateWithoutDiagnostic(k_AnimationClipLayout.category, clip.name)
+                issues.Add(context.CreateInsight(k_AnimationClipLayout.category, clip.name)
                     .WithCustomProperties(new object[(int)AnimationClipProperty.Num]
                     {
                         clip.empty,
@@ -255,7 +255,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         void ProcessAvatars(AnalysisContext context, IProgress progress)
         {
             var issues = new List<ProjectIssue>();
-            var assetPaths = GetAssetPathsByFilter("t:avatar, a:assets");
+            var assetPaths = GetAssetPathsByFilter("t:avatar, a:assets", context);
 
             progress?.Start("Finding Avatars", "Search in Progress...", assetPaths.Length);
 
@@ -272,7 +272,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler may not be the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(avatar);
 
-                issues.Add(context.CreateWithoutDiagnostic(k_AvatarLayout.category, avatar.name)
+                issues.Add(context.CreateInsight(k_AvatarLayout.category, avatar.name)
                     .WithCustomProperties(new object[(int)AvatarProperty.Num]
                     {
                         avatar.isValid,
@@ -304,7 +304,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         void ProcessAvatarMasks(AnalysisContext context, IProgress progress)
         {
             var issues = new List<ProjectIssue>();
-            var assetPaths = GetAssetPathsByFilter("t:avatarmask, a:assets");
+            var assetPaths = GetAssetPathsByFilter("t:avatarmask, a:assets", context);
 
             progress?.Start("Finding Avatar Masks", "Search in Progress...", assetPaths.Length);
 
@@ -321,7 +321,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler may not be the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(mask);
 
-                issues.Add(context.CreateWithoutDiagnostic(k_AvatarMaskLayout.category, mask.name)
+                issues.Add(context.CreateInsight(k_AvatarMaskLayout.category, mask.name)
                     .WithCustomProperties(new object[(int)AvatarMaskProperty.Num]
                     {
                         mask.transformCount,

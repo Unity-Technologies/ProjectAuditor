@@ -1,7 +1,6 @@
 using System;
-using System.Linq;
 using Newtonsoft.Json;
-using UnityEngine.Serialization;
+using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
@@ -39,12 +38,13 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// <summary>
         /// Affected areas
         /// </summary>
-        public string[] Areas;
+        public Areas Areas;
 
         /// <summary>
         /// Affected platforms. If null, the diagnostic applies to all platforms.
         /// </summary>
-        public string[] Platforms;
+        [JsonConverter(typeof(BuildTargetJsonConverter))]
+        public BuildTarget[] Platforms;
 
         /// <summary>
         /// Description of the diagnostic.
@@ -75,7 +75,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// Optional Auto-fixer
         /// </summary>
         [JsonIgnore]
-        public Action<ProjectIssue> fixer;
+        public Action<ProjectIssue, AnalysisParams> fixer;
 
         /// <summary>
         /// Name of the type (namespace and class/struct) of a known code API issue.
@@ -103,10 +103,10 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// </summary>
         /// <param name="id">The Issue ID string.</param>
         /// <param name="title">A short human-readable 'name' for the issue</param>
-        /// <param name="areas">The areas affected by this issue (see the values in the Areas enum)</param>
+        /// <param name="areas">The area(s) affected by this issue.</param>
         /// <param name="description">A description of the issue.</param>
         /// <param name="solution">Advice on how to resolve the issue.</param>
-        public Descriptor(string id, string title, string[] areas, string description, string solution)
+        public Descriptor(string id, string title, Areas areas, string description, string solution)
         {
             Id = id;
             Title = title;
@@ -118,32 +118,6 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             Type = string.Empty;
             Method = string.Empty;
             DefaultSeverity = Severity.Moderate;
-        }
-
-        /// <summary>
-        /// Initializes and returns an instance of Descriptor.
-        /// </summary>
-        /// <param name="id">The Issue ID string.</param>
-        /// <param name="title">A short human-readable 'name' for the issue</param>
-        /// <param name="area">The Area affected by this issue</param>
-        /// <param name="description">A description of the issue.</param>
-        /// <param name="solution">Advice on how to resolve the issue.</param>
-        public Descriptor(string id, string title, Area area, string description, string solution)
-            : this(id, title, new[] {area.ToString()}, description, solution)
-        {
-        }
-
-        /// <summary>
-        /// Initializes and returns an instance of Descriptor.
-        /// </summary>
-        /// <param name="id">The Issue ID string.</param>
-        /// <param name="title">A short human-readable 'name' for the issue</param>
-        /// <param name="areas">The Areas affected by this issue</param>
-        /// <param name="description">A description of the issue.</param>
-        /// <param name="solution">Advice on how to resolve the issue.</param>
-        public Descriptor(string id, string title, Area[] areas, string description, string solution)
-            : this(id, title, areas.Select(a => a.ToString()).ToArray(), description, solution)
-        {
         }
 
         /// <summary>Returns true if the Descriptor is equal to a given Descriptor, false otherwise.</summary>
@@ -166,13 +140,13 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             return obj.GetType() == GetType() && Equals((Descriptor)obj);
         }
 
-        internal void Fix(ProjectIssue issue)
+        internal void Fix(ProjectIssue issue, AnalysisParams analysisParams)
         {
             // Temp workaround for lost 'fixer' after domain reload
             if (fixer == null)
                 return;
 
-            fixer(issue);
+            fixer(issue, analysisParams);
             issue.WasFixed = true;
         }
 

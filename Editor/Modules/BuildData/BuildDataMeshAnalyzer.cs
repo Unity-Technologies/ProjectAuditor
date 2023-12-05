@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 channelsAsString += channel.Usage.ToString() + " " + channel.Type.ToString() + "[" + channel.Dimension + "]";
             }
 
-            yield return context.CreateWithoutDiagnostic(IssueCategory.BuildDataMesh, context.Mesh.Name)
+            yield return context.CreateInsight(IssueCategory.BuildDataMesh, context.Mesh.Name)
                 .WithCustomProperties(
                     new object[((int)BuildDataMeshProperty.Num)]
                     {

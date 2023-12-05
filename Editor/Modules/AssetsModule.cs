@@ -18,7 +18,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
                 new PropertyDefinition { type = PropertyType.Severity, format = PropertyFormat.String, name = "Severity"},
-                new PropertyDefinition { type = PropertyType.Area, format = PropertyFormat.String, name = "Area", longName = "Impacted Area" },
+                new PropertyDefinition { type = PropertyType.Areas, format = PropertyFormat.String, name = "Areas", longName = "Impacted Areas" },
                 new PropertyDefinition { type = PropertyType.Path, name = "Path"},
                 new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true, hidden = true},
             }
@@ -31,7 +31,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             (
             PAA3000,
             "Resources folder asset & dependencies",
-            Area.BuildSize,
+            Areas.BuildSize,
             "The <b>Resources folder</b> is a common source of many problems in Unity projects. Improper use of the Resources folder can bloat the size of a project’s build, lead to uncontrollable excessive memory utilization, and significantly increase application startup times.",
             "Use AssetBundles or Addressables when possible."
             )
@@ -42,12 +42,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
         static readonly Descriptor k_StreamingAssetsFolderDescriptor = new Descriptor(
             PAA3001,
             "StreamingAssets folder size",
-            Area.BuildSize,
+            Areas.BuildSize,
             $"There are many files in the <b>StreamingAssets folder</b>. Keeping them in the StreamingAssets folder will increase the build size.",
             $"Try to move files outside this folder and use Asset Bundles or Addressables when possible."
         )
         {
-            Platforms = new[] {"Android", "iOS"},
+            Platforms = new[] { BuildTarget.Android, BuildTarget.iOS},
             MessageFormat = "StreamingAssets folder contains {0} of data",
         };
 
@@ -92,7 +92,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         static void AnalyzeResources(AnalysisContext context, IList<ProjectIssue> issues)
         {
-            var allAssetPaths = GetAssetPaths();
+            var allAssetPaths = GetAssetPaths(context);
             var allResources =
                 allAssetPaths.Where(path => path.IndexOf("/resources/", StringComparison.OrdinalIgnoreCase) >= 0);
             var allPlayerResources =
@@ -135,7 +135,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 if (totalBytes > folderSizeLimitMB * 1024 * 1024)
                 {
                     issues.Add(
-                        context.Create(IssueCategory.AssetDiagnostic, k_StreamingAssetsFolderDescriptor.Id,
+                        context.CreateIssue(IssueCategory.AssetDiagnostic, k_StreamingAssetsFolderDescriptor.Id,
                             Formatting.FormatSize((ulong)totalBytes))
                     );
                 }
@@ -167,7 +167,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             var isInResources = assetPath.IndexOf("/resources/", StringComparison.OrdinalIgnoreCase) >= 0;
 
-            issues.Add(context.Create
+            issues.Add(context.CreateIssue
                 (
                     IssueCategory.AssetDiagnostic,
                     k_AssetInResourcesFolderDescriptor.Id,

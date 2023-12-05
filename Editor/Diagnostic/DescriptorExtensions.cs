@@ -9,19 +9,19 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
     internal static class DescriptorExtensions
     {
-        public static Area[] GetAreas(this Descriptor descriptor)
-        {
-            return descriptor.Areas.Select(a => (Area)Enum.Parse(typeof(Area), a)).ToArray();
-        }
-
         public static string GetAreasSummary(this Descriptor descriptor)
         {
-            return Formatting.CombineStrings(descriptor.Areas);
+            return descriptor.Areas.ToString();
+        }
+
+        public static bool MatchesAnyAreas(this Descriptor descriptor, Areas areasToMatch)
+        {
+            return (descriptor.Areas & areasToMatch) != 0;
         }
 
         public static string GetPlatformsSummary(this Descriptor descriptor)
         {
-            return (descriptor.Platforms == null || descriptor.Platforms.Length == 0) ? "Any" : Formatting.CombineStrings(descriptor.Platforms);
+            return (descriptor.Platforms == null || descriptor.Platforms.Length == 0) ? "Any" : Formatting.CombineStrings(descriptor.Platforms.Select(p => p.ToString()).ToArray());
         }
 
         public static string GetFullTypeName(this Descriptor descriptor)
@@ -36,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         {
             if (descriptor.Platforms == null || descriptor.Platforms.Length == 0)
                 return true;
-            return descriptor.Platforms.Contains(buildTarget.ToString());
+            return descriptor.Platforms.Contains(buildTarget);
         }
 
         public static bool IsApplicable(this Descriptor desc, AnalysisParams analysisParams)
@@ -52,9 +52,8 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
             var platforms = desc.Platforms;
             if (platforms == null)
                 return true;
-            foreach (var platform in platforms)
+            foreach (var buildTarget in platforms)
             {
-                var buildTarget = (BuildTarget)System.Enum.Parse(typeof(BuildTarget), platform, true);
                 var buildTargetGroup = BuildPipeline.GetBuildTargetGroup(buildTarget);
                 if (BuildPipeline.IsBuildTargetSupported(buildTargetGroup, buildTarget))
                     return true;

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
-using Unity.ProjectAuditor.Editor.Modules;
+using UnityEditor;
 using UnityEngine.Rendering;
 #if PACKAGE_URP
 using UnityEngine.Rendering.Universal;
@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         static readonly Descriptor k_URPAssetDescriptor = new Descriptor(
             PAS1009,
             "URP: URP Asset is not specified",
-            new[] {Area.GPU, Area.Quality},
+            Areas.GPU | Areas.Quality,
             "Graphics Settings do not refer to a URP Asset.",
             "Check the settings: Graphics > Scriptable Render Pipeline Settings > Render Pipeline Asset.")
         {
@@ -30,11 +30,11 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         static readonly Descriptor k_HdrSettingDescriptor = new Descriptor(
             PAS1010,
             "URP: HDR is enabled",
-            new[] {Area.GPU, Area.Quality},
+            Areas.GPU | Areas.Quality,
             "<b>HDR</b> (High Dynamic Range) is enabled in a URP Asset for mobile platforms. HDR rendering can be very intensive on low-end mobile GPUs.",
             "Disable <b>HDR</b> in the URP Asset.")
         {
-            Platforms = new[] {"Android", "iOS", "Switch"},
+            Platforms = new[] { BuildTarget.Android, BuildTarget.iOS, BuildTarget.Switch},
             MessageFormat = "URP: HDR is enabled in {0}.asset in {1}",
             fixer = FixHdrSetting
         };
@@ -42,11 +42,11 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         static readonly Descriptor k_MsaaSampleCountSettingDescriptor = new Descriptor(
             PAS1011,
             "URP: MSAA is set to 4x or 8x",
-            new[] {Area.GPU, Area.Quality},
+            Areas.GPU | Areas.Quality,
             "<b>Anti Aliasing (MSAA)</b> is set to <b>4x</b> or <b>8x</b> in a URP Asset for mobile platforms. MSAA 4x/8x rendering can be intensive on low-end mobile GPUs.",
             "Decrease <b>Anti Aliasing (MSAA)</b> value to <b>2x</b> in the URP Asset.")
         {
-            Platforms = new[] {"Android", "iOS", "Switch"},
+            Platforms = new[] { BuildTarget.Android, BuildTarget.iOS, BuildTarget.Switch},
             MessageFormat = "URP: MSAA is set to 4x or 8x in {0}.asset in {1}",
             fixer = FixMsaaSampleCountSetting
         };
@@ -54,12 +54,12 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         static readonly Descriptor k_CameraStopNanDescriptor = new Descriptor(
             PAS1012,
             "URP: Stop NaN property is enabled",
-            Area.GPU,
+            Areas.GPU,
             "The <b>Stop NaNs</b> property is enabled on a Camera component. This stops certain effects from breaking, but is a resource-intensive process on the GPU. Only enable this feature if you experience NaN issues that you cannot fix.",
             "Disable <b>Stop NaNs</b> on as Camera components as you can."
         )
         {
-            Platforms = new[] { "Android", "iOS", "Switch" }
+            Platforms = new[] { BuildTarget.Android, BuildTarget.iOS, BuildTarget.Switch}
         };
 
         public void Initialize(Module module)
@@ -72,11 +72,11 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
-#if UNITY_2019_3_OR_NEWER && PACKAGE_URP
+#if PACKAGE_URP
             var renderPipeline = GraphicsSettings.currentRenderPipeline;
             if (renderPipeline == null || !(renderPipeline is UniversalRenderPipelineAsset))
             {
-                yield return context.Create(IssueCategory.ProjectSetting, k_URPAssetDescriptor.Id)
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_URPAssetDescriptor.Id)
                     .WithLocation("Project/Graphics");
             }
 
@@ -91,7 +91,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             foreach (var cameraData in allCameraData)
             {
                 if (cameraData.stopNaN)
-                    yield return context.Create(IssueCategory.ProjectSetting,
+                    yield return context.CreateIssue(IssueCategory.ProjectSetting,
                         k_CameraStopNanDescriptor.Id);
             }
 #else
@@ -99,21 +99,20 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 #endif
         }
 
-        private static void FixHdrSetting(ProjectIssue issue)
+        private static void FixHdrSetting(ProjectIssue issue, AnalysisParams analysisParams)
         {
-#if UNITY_2019_3_OR_NEWER && PACKAGE_URP
+#if PACKAGE_URP
             RenderPipelineUtils.FixAssetSetting(issue, p => SetHdrSetting(p, false));
 #endif
         }
 
-        static void FixMsaaSampleCountSetting(ProjectIssue issue)
+        static void FixMsaaSampleCountSetting(ProjectIssue issue, AnalysisParams analysisParams)
         {
-#if UNITY_2019_3_OR_NEWER && PACKAGE_URP
+#if PACKAGE_URP
             RenderPipelineUtils.FixAssetSetting(issue, p => SetMsaaSampleCountSetting(p, 2));
 #endif
         }
 
-#if UNITY_2019_3_OR_NEWER
         IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context, RenderPipelineAsset renderPipeline, int qualityLevel)
         {
 #if PACKAGE_URP
@@ -160,7 +159,6 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             }
         }
 
-#endif
 #endif
     }
 }

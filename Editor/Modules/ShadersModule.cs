@@ -265,12 +265,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
-            var shaderPathMap = CollectShaders();
+            var context = new AnalysisContext()
+            {
+                Params = analysisParams
+            };
+
+            var shaderPathMap = CollectShaders(context);
             ProcessShaders(analysisParams, shaderPathMap);
 
             ProcessComputeShaders(analysisParams);
 
-            ProcessMaterials(analysisParams);
+            ProcessMaterials(context);
 
             // clear collected variants before next build
             ClearBuildData();
@@ -278,10 +283,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             analysisParams.OnModuleCompleted?.Invoke();
         }
 
-        Dictionary<Shader, string> CollectShaders()
+        Dictionary<Shader, string> CollectShaders(AnalysisContext context)
         {
             var shaderPathMap = new Dictionary<Shader, string>();
-            var assetPaths = GetAssetPathsByFilter("t:shader");
+            var assetPaths = GetAssetPathsByFilter("t:shader", context);
             foreach (var assetPath in assetPaths)
             {
                 // skip editor shaders
@@ -317,10 +322,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return shaderPathMap;
         }
 
-        Dictionary<Material, string> CollectMaterials()
+        Dictionary<Material, string> CollectMaterials(AnalysisContext context)
         {
             var materialPathMap = new Dictionary<Material, string>();
-            var assetPaths = GetAssetPathsByFilter("t:material");
+            var assetPaths = GetAssetPathsByFilter("t:material", context);
             foreach (var assetPath in assetPaths)
             {
                 var material = AssetDatabase.LoadAssetAtPath<Material>(assetPath);
@@ -440,7 +445,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     if (shaderVariantData.buildTarget != BuildTarget.NoTarget && shaderVariantData.buildTarget != analysisParams.Platform)
                         continue;
 
-                    issues.Add(context.CreateWithoutDiagnostic(k_ComputeShaderVariantLayout.category, computeShaderName)
+                    issues.Add(context.CreateInsight(k_ComputeShaderVariantLayout.category, computeShaderName)
                         .WithCustomProperties(new object[(int)ComputeShaderVariantProperty.Num]
                         {
                             shaderVariantData.compilerPlatform,
@@ -456,18 +461,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 analysisParams.OnIncomingIssues(issues);
         }
 
-        void ProcessMaterials(AnalysisParams analysisParams)
+        void ProcessMaterials(AnalysisContext context)
         {
-            var context = new AnalysisContext()
-            {
-                Params = analysisParams
-            };
             var issues = new List<ProjectIssue>();
 
-            var materialPathMap = CollectMaterials();
+            var materialPathMap = CollectMaterials(context);
             foreach (var material in materialPathMap)
             {
-                issues.Add(context.CreateWithoutDiagnostic(k_MaterialLayout.category, material.Key.name)
+                issues.Add(context.CreateInsight(k_MaterialLayout.category, material.Key.name)
                     .WithCustomProperties(new object[(int)MaterialProperty.Num]
                     {
                         material.Key.shader.name
@@ -477,7 +478,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
 
             if (issues.Any())
-                analysisParams.OnIncomingIssues(issues);
+                context.Params.OnIncomingIssues(issues);
         }
 
         IEnumerable<ProjectIssue> ProcessShader(ShaderAnalysisContext context, string assetSize, bool isAlwaysIncluded)
@@ -503,7 +504,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var message = shaderMessage.message;
                 if (message.EndsWith("\n"))
                     message = message.Substring(0, message.Length - 2);
-                yield return context.CreateWithoutDiagnostic(IssueCategory.ShaderCompilerMessage, message)
+                yield return context.CreateInsight(IssueCategory.ShaderCompilerMessage, message)
                     .WithCustomProperties(new object[(int)ShaderMessageProperty.Num]
                     {
                         shaderName,
@@ -524,7 +525,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (shaderHasError)
             {
-                yield return context.CreateWithoutDiagnostic(IssueCategory.Shader, Path.GetFileNameWithoutExtension(context.AssetPath))
+                yield return context.CreateInsight(IssueCategory.Shader, Path.GetFileNameWithoutExtension(context.AssetPath))
                     .WithCustomProperties((int)ShaderProperty.Num, k_NotAvailable)
                     .WithLocation(context.AssetPath)
                     .WithSeverity(severity);
@@ -548,7 +549,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var propertyCount = ShaderUtilProxy.GetPropertyCount(context.Shader);
                 var texturePropertyCount = ShaderUtilProxy.GetTexturePropertyCount(context.Shader);
 
-                yield return context.CreateWithoutDiagnostic(IssueCategory.Shader, shaderName)
+                yield return context.CreateInsight(IssueCategory.Shader, shaderName)
                     .WithCustomProperties(new object[(int)ShaderProperty.Num]
                     {
                         assetSize,
@@ -579,7 +580,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     if (shaderVariantData.buildTarget != BuildTarget.NoTarget && shaderVariantData.buildTarget != context.Params.Platform)
                         continue;
 
-                    yield return context.CreateWithoutDiagnostic(IssueCategory.ShaderVariant, context.Shader.name)
+                    yield return context.CreateInsight(IssueCategory.ShaderVariant, context.Shader.name)
                         .WithLocation(context.AssetPath)
                         .WithCustomProperties(new object[(int)ShaderVariantProperty.Num]
                         {
@@ -905,7 +906,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             switch (shaderCompilerPlatform)
             {
                 // On OpenGL and Vulkan, all stages supported by the shader are combined into a single ShaderType (Vertex).
+#if !UNITY_2023_1_OR_NEWER
                 case ShaderCompilerPlatform.GLES20:
+#endif
                 case ShaderCompilerPlatform.GLES3x:
                 case ShaderCompilerPlatform.OpenGLCore:
                 case ShaderCompilerPlatform.Vulkan:

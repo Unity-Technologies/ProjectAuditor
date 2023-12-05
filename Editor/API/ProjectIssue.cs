@@ -14,7 +14,7 @@ namespace Unity.ProjectAuditor.Editor
     public class ProjectIssue
     {
         [SerializeField][JsonIgnore]
-        DescriptorID m_DescriptorId;
+        DescriptorId m_DescriptorId;
 
         [SerializeField]
         IssueCategory m_Category;
@@ -42,30 +42,30 @@ namespace Unity.ProjectAuditor.Editor
         internal bool WasFixed = false;
 
         /// <summary>
-        /// An unique identifier for the issue diagnostic (read-only).
+        /// An unique identifier for the issue descriptor (read-only).
         /// </summary>
         /// <remarks>
         /// Project Reports can contain two different types of ProjectIssue:
         /// - Diagnostic issues, which indicate a potential problem which should be investigated and possibly fixed: for example, a texture with its Read/Write Enabled checkbox ticked.
         /// - Non-diagnostic issues, for informational purposes: for example, general information about a texture in the project.
         ///
-        /// Diagnostic issues can be identified by having a valid <seealso cref="DescriptorID"/>. See also: the <seealso cref="ProjectIssue.IsDiagnostic"/> method.
+        /// Diagnostic issues can be identified by having a valid <seealso cref="DescriptorId"/>. See also: the <seealso cref="ProjectIssue.IsDiagnostic"/> method.
         /// </remarks>
         [JsonIgnore]
-        public DescriptorID Id
+        public DescriptorId Id
         {
             get => m_DescriptorId;
             internal set => m_DescriptorId = value;
         }
 
-        [JsonProperty("diagnosticID")]
-        internal string DiagnosticIDAsString
+        [JsonProperty("descriptorId")]
+        internal string DescriptorIdAsString
         {
             get { return m_DescriptorId.IsValid() ? m_DescriptorId.AsString() : null; }
             set
             {
                 // TODO: check if ID is registered
-                m_DescriptorId = new DescriptorID(value);
+                m_DescriptorId = new DescriptorId(value);
             }
         }
 
@@ -189,7 +189,7 @@ namespace Unity.ProjectAuditor.Editor
         internal ProjectIssue()
         {
             // only for json serialization purposes
-            m_DescriptorId = new DescriptorID(string.Empty);
+            m_DescriptorId = new DescriptorId(string.Empty);
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="args">Arguments to be used in the message formatting</param>
         internal ProjectIssue(IssueCategory category, string id, params object[] args)
         {
-            m_DescriptorId = new DescriptorID(id);
+            m_DescriptorId = new DescriptorId(id);
             var descriptor = DescriptorLibrary.GetDescriptor(m_DescriptorId.AsInt());
 
             m_Category = category;
@@ -224,7 +224,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="description">Issue description</param>
         internal ProjectIssue(IssueCategory category, string description)
         {
-            m_DescriptorId = new DescriptorID(null);  // Empty, invalid descriptor
+            m_DescriptorId = new DescriptorId(null);  // Empty, invalid descriptor
             m_Category = category;
             m_Description = description;
             m_Severity = Severity.Default;

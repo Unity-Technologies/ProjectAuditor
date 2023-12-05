@@ -33,7 +33,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 dependencyNode.AddChild(childDependencyNode);
             }
 
-            yield return context.CreateWithoutDiagnostic(IssueCategory.BuildDataShader, context.Shader.Name)
+            yield return context.CreateInsight(IssueCategory.BuildDataShader, context.Shader.Name)
                 .WithCustomProperties(
                     new object[((int)BuildDataShaderProperty.Num)]
                     {

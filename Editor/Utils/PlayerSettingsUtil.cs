@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using UnityEditor;
+using UnityEditor.Build;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Utils
@@ -19,6 +20,68 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 return null;
 
             return new SerializedObject(playerSettings as UnityEngine.Object);
+        }
+
+        public static int GetArchitecture(BuildTargetGroup buildTargetGroup)
+        {
+#if UNITY_2021_2_OR_NEWER
+            var namedBuildTarget = NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup);
+            return PlayerSettings.GetArchitecture(namedBuildTarget);
+#else
+            return PlayerSettings.GetArchitecture(buildTargetGroup);
+#endif
+        }
+
+        public static Il2CppCompilerConfiguration GetIl2CppCompilerConfiguration(BuildTargetGroup buildTargetGroup)
+        {
+#if UNITY_2021_2_OR_NEWER
+            var namedBuildTarget = NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup);
+            return PlayerSettings.GetIl2CppCompilerConfiguration(namedBuildTarget);
+#else
+            return PlayerSettings.GetIl2CppCompilerConfiguration(buildTargetGroup);
+#endif
+        }
+
+        public static void SetIl2CppCompilerConfiguration(BuildTargetGroup buildTargetGroup, Il2CppCompilerConfiguration configuration)
+        {
+#if UNITY_2021_2_OR_NEWER
+            var namedBuildTarget = NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup);
+            PlayerSettings.SetIl2CppCompilerConfiguration(namedBuildTarget, configuration);
+#else
+            PlayerSettings.SetIl2CppCompilerConfiguration(buildTargetGroup, configuration);
+#endif
+        }
+
+        public static ScriptingImplementation GetScriptingBackend(BuildTargetGroup buildTargetGroup)
+        {
+#if UNITY_2021_2_OR_NEWER
+            var namedBuildTarget = NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup);
+            return PlayerSettings.GetScriptingBackend(namedBuildTarget);
+#else
+            return PlayerSettings.GetScriptingBackend(buildTargetGroup);
+#endif
+        }
+
+        public static void SetScriptingBackend(
+            BuildTargetGroup buildTargetGroup,
+            ScriptingImplementation backend)
+        {
+#if UNITY_2021_2_OR_NEWER
+            var namedBuildTarget = NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup);
+            PlayerSettings.SetScriptingBackend(namedBuildTarget, backend);
+#else
+            PlayerSettings.SetScriptingBackend(buildTargetGroup, backend);
+#endif
+        }
+
+        public static ManagedStrippingLevel GetManagedStrippingLevel(BuildTargetGroup buildTargetGroup)
+        {
+#if UNITY_2021_2_OR_NEWER
+            var namedBuildTarget = NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup);
+            return PlayerSettings.GetManagedStrippingLevel(namedBuildTarget);
+#else
+            return PlayerSettings.GetManagedStrippingLevel(buildTargetGroup);
+#endif
         }
 
         public static int GetVertexChannelCompressionMask()
@@ -65,6 +128,24 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             method.Invoke(null, args);
             return (int)args[1] > 0;
+        }
+
+        public static void SetStaticBatchingEnabled(BuildTarget platform, bool enabled)
+        {
+            var setterMethod = typeof(PlayerSettings).GetMethod("SetBatchingForPlatform",
+                BindingFlags.Static | BindingFlags.Default | BindingFlags.NonPublic);
+
+            if (setterMethod != null)
+            {
+                var setterArgs = new object[]
+                {
+                    platform,
+                    enabled ? 1 : 0,
+                    0
+                };
+
+                setterMethod.Invoke(null, setterArgs);
+            }
         }
 
         public static bool IsLightmapStreamingEnabled(BuildTargetGroup platform)

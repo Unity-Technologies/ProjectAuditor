@@ -116,7 +116,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotNull(descriptor.fixer);
             Assert.AreEqual(AudioClipAnalyzer.PAA4000, issue.Id.ToString());
 
-            descriptor.Fix(issue);
+            descriptor.Fix(issue, m_AnalysisParams);
 
             issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
                 .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioLongClipDoesNotStreamDescriptor.Id));
@@ -156,7 +156,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(AudioClipAnalyzer.PAA4002, issue.Id.ToString());
 
             var descriptor = issue.Id.GetDescriptor();
-            descriptor.Fix(issue);
+            descriptor.Fix(issue, m_AnalysisParams);
 
             issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
                 .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioStereoClipsOnMobileDescriptor.Id));
@@ -182,7 +182,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(AudioClipAnalyzer.PAA4003, issue.Id.ToString());
 
             var descriptor = issue.Id.GetDescriptor();
-            descriptor.Fix(issue);
+            descriptor.Fix(issue, m_AnalysisParams);
 
             issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
                 .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioStereoClipWhichIsNotStreamingDescriptor.Id));
@@ -249,7 +249,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(AudioClipAnalyzer.PAA4007, issue.Id.ToString());
 
             var descriptor = issue.Id.GetDescriptor();
-            descriptor.Fix(issue);
+            descriptor.Fix(issue, m_AnalysisParams);
 
             issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
                 .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_Audio48KHzDescriptor.Id));
@@ -273,7 +273,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(AudioClipAnalyzer.PAA4008, issue.Id.ToString());
 
             var descriptor = issue.Id.GetDescriptor();
-            descriptor.Fix(issue);
+            descriptor.Fix(issue, m_AnalysisParams);
 
             issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
                 .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioPreloadDescriptor.Id));
@@ -297,7 +297,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(AudioClipAnalyzer.PAA4009, issue.Id.ToString());
 
             var descriptor = issue.Id.GetDescriptor();
-            descriptor.Fix(issue);
+            descriptor.Fix(issue, m_AnalysisParams);
 
             issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
                 .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioLoadInBackgroundDisabledDescriptor.Id));
@@ -325,7 +325,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(AudioClipAnalyzer.PAA4010, issue.Id.ToString());
 
             var descriptor = issue.Id.GetDescriptor();
-            descriptor.Fix(issue);
+            descriptor.Fix(issue, m_AnalysisParams);
 
             issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
                 .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioMP3Descriptor.Id));

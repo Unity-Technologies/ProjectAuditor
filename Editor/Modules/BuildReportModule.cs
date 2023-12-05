@@ -44,11 +44,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             public BuildReport Report;
         }
 
-        internal interface IBuildReportProvider
-        {
-            BuildReport GetBuildReport(BuildTarget platform);
-        }
-
         const string k_KeyBuildPath = "Path";
         const string k_KeyPlatform = "Platform";
         const string k_KeyResult = "Result";
@@ -96,16 +91,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             hierarchy = true
         };
 
-        static IBuildReportProvider s_BuildReportProvider;
-        static IBuildReportProvider s_DefaultBuildReportProvider = new LastBuildReportProvider();
-
-        internal static IBuildReportProvider BuildReportProvider
-        {
-            get => s_BuildReportProvider != null ? s_BuildReportProvider : s_DefaultBuildReportProvider;
-            set => s_BuildReportProvider = value;
-        }
-
-        internal static IBuildReportProvider DefaultBuildReportProvider => s_BuildReportProvider;
+        internal static LastBuildReportProvider BuildReportProvider = new LastBuildReportProvider();
 
         public override string Name => "Build Report";
 
@@ -149,7 +135,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             foreach (var step in context.Report.steps)
             {
                 var depth = step.depth;
-                yield return context.CreateWithoutDiagnostic(IssueCategory.BuildStep, step.name)
+                yield return context.CreateInsight(IssueCategory.BuildStep, step.name)
                     .WithCustomProperties(new object[(int)BuildReportStepProperty.Num]
                     {
                         Formatting.FormatDuration(step.duration),
@@ -162,7 +148,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 {
                     var logMessage = message.content;
                     var description = new StringReader(logMessage).ReadLine(); // only take first line
-                    yield return context.CreateWithoutDiagnostic(IssueCategory.BuildStep, description)
+                    yield return context.CreateInsight(IssueCategory.BuildStep, description)
                         .WithCustomProperties(new object[(int)BuildReportStepProperty.Num]
                         {
                             0,
@@ -188,7 +174,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     var assetImporter = AssetImporter.GetAtPath(assetPath);
                     var description = string.IsNullOrEmpty(assetPath) ? k_Unknown : Path.GetFileNameWithoutExtension(assetPath);
 
-                    yield return context.CreateWithoutDiagnostic(IssueCategory.BuildFile, description)
+                    yield return context.CreateInsight(IssueCategory.BuildFile, description)
                         .WithLocation(assetPath)
                         .WithCustomProperties(new object[(int)BuildReportFileProperty.Num]
                         {
@@ -204,7 +190,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         ProjectIssue NewMetaData(BuildAnalysisContext context, string key, object value)
         {
-            return context.CreateWithoutDiagnostic(IssueCategory.BuildSummary, key)
+            return context.CreateInsight(IssueCategory.BuildSummary, key)
                 .WithCustomProperties(new object[(int)BuildReportMetaData.Num] { value });
         }
     }

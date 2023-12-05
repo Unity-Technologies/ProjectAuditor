@@ -4,6 +4,7 @@ using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
+using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
@@ -17,39 +18,39 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             (
             PAC1005,
             "System.Net",
-            Area.Support,
+            Areas.Support,
             "<b>System.Net</b> is not supported on this platform. This might lead to build/runtime errors.",
             "Do not use the System.Net API on this platform."
             )
         {
             MessageFormat = "'{0}' usage",
-            Platforms = new[] { "WebGL" }
+            Platforms = new[] { BuildTarget.WebGL }
         };
 
         internal static readonly Descriptor k_DescriptorSystemThreading = new Descriptor
             (
             PAC1006,
             "System.Threading",
-            Area.Support,
+            Areas.Support,
             "Dot Net threads are not supported on this platform. Using System.Threading might lead to build/runtime errors.",
             "Do not use the <b>System.Threading</b> API on this platform."
             )
         {
             MessageFormat = "'{0}' usage",
-            Platforms = new[] { "WebGL" }
+            Platforms = new[] { BuildTarget.WebGL }
         };
 
         internal static readonly Descriptor k_DescriptorMicrophone = new Descriptor
             (
             PAC0233,
             "UnityEngine.Microphone",
-            Area.Support,
+            Areas.Support,
             "The <b>UnityEngine.Microphone</b> API is not supported on this platform. Using Microphone might lead to build/runtime errors.",
             "Do not use the Microphone API on this platform."
             )
         {
             MessageFormat = "'{0}' usage",
-            Platforms = new[] { "WebGL" }
+            Platforms = new[] { BuildTarget.WebGL }
         };
 
         readonly OpCode[] m_OpCodes =
@@ -80,15 +81,15 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             var methodReference = (MethodReference)context.Instruction.Operand;
             if (descriptorSystemNetSupported && methodReference.DeclaringType.FullName.StartsWith("System.Net."))
             {
-                return context.Create(IssueCategory.Code, k_DescriptorSystemNet.Id, methodReference.FullName);
+                return context.CreateIssue(IssueCategory.Code, k_DescriptorSystemNet.Id, methodReference.FullName);
             }
             if (descriptorSystemThreadingSupported && methodReference.DeclaringType.FullName.StartsWith("System.Threading."))
             {
-                return context.Create(IssueCategory.Code, k_DescriptorSystemThreading.Id, methodReference.FullName);
+                return context.CreateIssue(IssueCategory.Code, k_DescriptorSystemThreading.Id, methodReference.FullName);
             }
             if (descriptorMicrophoneSupported && methodReference.DeclaringType.FullName.Equals("UnityEngine.Microphone"))
             {
-                return context.Create(IssueCategory.Code, k_DescriptorMicrophone.Id, methodReference.FullName);
+                return context.CreateIssue(IssueCategory.Code, k_DescriptorMicrophone.Id, methodReference.FullName);
             }
 
             return null;

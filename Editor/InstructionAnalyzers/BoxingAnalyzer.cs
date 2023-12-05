@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             (
             PAC2000,
             "Boxing Allocation",
-            Area.Memory,
+            Areas.Memory,
             "Boxing happens where a value type, such as an integer, is converted into an object of reference type. This causes an allocation on the managed heap.",
             "Try to avoid boxing when possible. Create methods and APIs that can accept value types."
             )
@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             else if (type.FullName.Equals("System.Double"))
                 typeName = "double";
 
-            return context.Create(IssueCategory.Code, k_Descriptor.Id, typeName);
+            return context.CreateIssue(IssueCategory.Code, k_Descriptor.Id, typeName);
         }
     }
 }

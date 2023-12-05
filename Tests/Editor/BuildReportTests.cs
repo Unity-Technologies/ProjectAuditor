@@ -16,7 +16,6 @@ namespace Unity.ProjectAuditor.EditorTests
     {
         TestAsset m_TestAsset;
 
-        string m_OriginalBuildReportPath;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -28,18 +27,11 @@ namespace Unity.ProjectAuditor.EditorTests
         [SetUp]
         public void SetUp()
         {
-            m_OriginalBuildReportPath = UserPreferences.BuildReportPath;
-            UserPreferences.BuildReportPath = Path.Combine("Assets", Path.GetFileName(FileUtil.GetUniqueTempPathInProject()));
-
-            File.Delete(BuildReportHelper.k_LastBuildReportPath);
         }
 
         [TearDown]
         public void TearDown()
         {
-            if (Directory.Exists(UserPreferences.BuildReportPath))
-                AssetDatabase.DeleteAsset(UserPreferences.BuildReportPath);
-            UserPreferences.BuildReportPath = m_OriginalBuildReportPath;
         }
 
         [Test]
@@ -52,48 +44,6 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void BuildReport_IsNotAvailable()
-        {
-            var buildReport = BuildReportHelper.GetLast();
-            Assert.IsNull(buildReport);
-        }
-
-        [UnityTest]
-        [TestCase(true, ExpectedResult = null)]
-        [TestCase(false, ExpectedResult = null)]
-        public IEnumerator BuildReport_AutoSave_Works(bool autoSave)
-        {
-            var originalBuildReportAutoSave = UserPreferences.BuildReportAutoSave;
-
-            UserPreferences.BuildReportAutoSave = autoSave;
-
-            Build();
-
-            // skip 2 frames so that LastBuildReportProvider.CheckLastBuildReport can run
-            yield return null;
-            yield return null;
-
-            Assert.AreEqual(autoSave, UserPreferences.BuildReportAutoSave);
-            Assert.AreEqual(autoSave, Directory.Exists(UserPreferences.BuildReportPath), $"Path: {UserPreferences.BuildReportPath}, Auto Save: {UserPreferences.BuildReportAutoSave}");
-            Assert.AreEqual(autoSave, File.Exists(UserPreferences.BuildReportPath + ".meta"));
-
-            UserPreferences.BuildReportAutoSave = originalBuildReportAutoSave;
-        }
-
-        [Test]
-        public void BuildReport_ObjectName_IsCorrect()
-        {
-            Build();
-
-            // don't use provider to get build report since we might have a different build report selected in the Editor
-            var buildReport = BuildReportHelper.GetLast();
-            var assetPath = AssetDatabase.GetAssetPath(buildReport);
-            var assetName = Path.GetFileNameWithoutExtension(assetPath);
-            Assert.AreEqual(assetName, buildReport.name);
-            Assert.True(assetName.StartsWith("Build_"));
-        }
-
-        [Test]
         public void BuildReport_Files_AreReported()
         {
             var issues = AnalyzeBuild(IssueCategory.BuildFile, i => i.RelativePath.Equals(m_TestAsset.relativePath));
@@ -102,7 +52,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotNull(matchingIssue);
 
             var buildFile = matchingIssue.GetCustomProperty(BuildReportFileProperty.BuildFile);
-            var buildReport = BuildReportHelper.GetLast();
+            var buildReport = BuildReportModule.BuildReportProvider.GetBuildReport(m_Platform);
 
             Assert.NotNull(buildReport);
 

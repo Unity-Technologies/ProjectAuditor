@@ -75,7 +75,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static readonly Descriptor k_DuplicateDiagnosticDescriptor = new Descriptor(
             PBD0000,
             "Duplicate Data",
-            new[] {Area.GPU, Area.Quality},
+            Areas.BuildSize,
             "This data is potentially duplicated.",
             "Investigate how the data was authored and/or built into the listed data files. If multiple files contain this data build size and loading times may be improved by moving the data into a shared data file."
         )
@@ -238,7 +238,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                         mainDependencyNode.AddChild(bundleDependencyNode);
 
-                        var issue = context.Create(IssueCategory.BuildDataDiagnostic,
+                        var issue = context.CreateIssue(IssueCategory.BuildDataDiagnostic,
                             k_DuplicateDiagnosticDescriptor.Id, name)
                             .WithCustomProperties(new object[]
                             {

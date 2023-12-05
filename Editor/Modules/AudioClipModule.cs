@@ -73,7 +73,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
 
-            var assetPaths = GetAssetPathsByFilter("t:AudioClip, a:assets");
+            var diagnosticParams = analysisParams.DiagnosticParams;
+
+            var context = new AudioClipAnalysisContext
+            {
+                // Importer is set in the loop
+                Params = analysisParams,
+                StreamingClipThresholdBytes = diagnosticParams.GetParameter(k_StreamingClipThresholdBytes),
+                LongDecompressedClipThresholdBytes = diagnosticParams.GetParameter(k_LongDecompressedClipThresholdBytes),
+                LongCompressedMobileClipThresholdBytes = diagnosticParams.GetParameter(k_LongCompressedMobileClipThresholdBytes),
+                LoadInBackGroundClipSizeThresholdBytes = diagnosticParams.GetParameter(k_LoadInBackGroundClipSizeThresholdBytes)
+            };
+
+            var assetPaths = GetAssetPathsByFilter("t:AudioClip, a:assets", context);
 
             progress?.Start("Finding AudioClips", "Search in Progress...", assetPaths.Length);
 
@@ -85,18 +97,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     continue;
                 }
 
-                var diagnosticParams = analysisParams.DiagnosticParams;
-
-                var context = new AudioClipAnalysisContext
-                {
-                    Importer = audioImporter,
-                    Params = analysisParams,
-                    StreamingClipThresholdBytes = diagnosticParams.GetParameter(k_StreamingClipThresholdBytes),
-                    LongDecompressedClipThresholdBytes = diagnosticParams.GetParameter(k_LongDecompressedClipThresholdBytes),
-                    LongCompressedMobileClipThresholdBytes = diagnosticParams.GetParameter(k_LongCompressedMobileClipThresholdBytes),
-                    LoadInBackGroundClipSizeThresholdBytes = diagnosticParams.GetParameter(k_LoadInBackGroundClipSizeThresholdBytes)
-                };
-
+                context.Importer = audioImporter;
                 foreach (var analyzer in analyzers)
                 {
                     analysisParams.OnIncomingIssues(analyzer.Analyze(context));
