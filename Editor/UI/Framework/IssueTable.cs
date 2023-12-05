@@ -671,7 +671,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     for (var i = 0; i < columnSortOrder.Length; i++)
                     {
                         var order = isColumnAscending[i] ? 1 : -1;
-                        rtn = order * ProjectIssueExtensions.CompareTo(a.m_Item.ProjectIssue != null ? a.m_Item.ProjectIssue : null, b.m_Item.ProjectIssue != null ? b.m_Item.ProjectIssue : null, m_Layout.properties[columnSortOrder[i]].type);
+
+                        if (a.m_Item.IsGroup() && b.m_Item.IsGroup())
+                            rtn = order * CompareGroupItemTo(a.m_Item, b.m_Item, columnSortOrder[i]);
+                        else
+                            rtn = order * ProjectIssueExtensions.CompareTo(a.m_Item.ProjectIssue != null ? a.m_Item.ProjectIssue : null, b.m_Item.ProjectIssue != null ? b.m_Item.ProjectIssue : null, m_Layout.properties[columnSortOrder[i]].type);
 
                         if (rtn == 0)
                             continue;
@@ -684,6 +688,92 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 foreach (var child in m_Children)
                     child.Sort(columnSortOrder, isColumnAscending);
+            }
+
+            int CompareGroupItemTo(IssueTableItem itemA, IssueTableItem itemB, int columnIndex)
+            {
+                if (columnIndex == 0)
+                    return string.CompareOrdinal(itemA.GroupName, itemB.GroupName);
+
+                var property = m_Layout.properties[columnIndex];
+                if (property.hidden)
+                    return 0;
+
+                var propertyType = property.type;
+
+                if (PropertyTypeUtil.IsCustom(property.type))
+                {
+                    var customPropertyIndex = PropertyTypeUtil.ToCustomIndex(propertyType);
+                    if (property.format == PropertyFormat.Bytes)
+                    {
+                        var valueA = GetGroupColumnSumUlong(itemA, customPropertyIndex);
+                        var valueB = GetGroupColumnSumUlong(itemB, customPropertyIndex);
+
+                        return valueA > valueB ? 1 : (valueA < valueB ? -1 : 0);
+                    }
+                    if (property.format == PropertyFormat.Time ||
+                        property.format == PropertyFormat.Percentage)
+                    {
+                        var valueA = GetGroupColumnSumFloat(itemA, customPropertyIndex);
+                        var valueB = GetGroupColumnSumFloat(itemB, customPropertyIndex);
+
+                        return valueA > valueB ? 1 : (valueA < valueB ? -1 : 0);
+                    }
+
+                    var stringA = GetGroupFirstChildCustomProperty(itemA, customPropertyIndex);
+                    var stringB = GetGroupFirstChildCustomProperty(itemB, customPropertyIndex);
+                    return string.CompareOrdinal(stringA, stringB);
+                }
+                else
+                {
+                    var stringA = GetGroupFirstChildProperty(itemA, property.type);
+                    var stringB = GetGroupFirstChildProperty(itemB, property.type);
+                    return string.CompareOrdinal(stringA, stringB);
+                }
+            }
+
+            string GetGroupFirstChildCustomProperty(IssueTableItem item, int customPropertyIndex)
+            {
+                if (item.children.Count == 0)
+                    return string.Empty;
+
+                var issueTableItem = item.children[0] as IssueTableItem;
+                return issueTableItem.ProjectIssue.GetCustomProperty(customPropertyIndex);
+            }
+
+            string GetGroupFirstChildProperty(IssueTableItem item, PropertyType propertyType)
+            {
+                if (item.children.Count == 0)
+                    return string.Empty;
+
+                var issueTableItem = item.children[0] as IssueTableItem;
+                return issueTableItem.ProjectIssue.GetProperty(propertyType);
+            }
+
+            ulong GetGroupColumnSumUlong(IssueTableItem item, int customPropertyIndex)
+            {
+                ulong sum = 0;
+                foreach (var childItem in item.children)
+                {
+                    var issueTableItem = childItem as IssueTableItem;
+                    var value = issueTableItem.ProjectIssue.GetCustomPropertyUInt64(customPropertyIndex);
+                    sum += value;
+                }
+
+                return sum;
+            }
+
+            float GetGroupColumnSumFloat(IssueTableItem item, int customPropertyIndex)
+            {
+                float sum = 0;
+                foreach (var childItem in item.children)
+                {
+                    var issueTableItem = childItem as IssueTableItem;
+                    var value = issueTableItem.ProjectIssue.GetCustomPropertyFloat(customPropertyIndex);
+                    sum += value;
+                }
+
+                return sum;
             }
 
             public void ToList(List<TreeViewItem> list)
