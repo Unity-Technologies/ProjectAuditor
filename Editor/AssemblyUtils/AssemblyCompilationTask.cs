@@ -7,20 +7,20 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 {
     class AssemblyCompilationTask
     {
-#pragma warning disable 618 // disable warning for obsolete AssemblyBuilder
-        public AssemblyBuilder builder;
-#pragma warning restore 618
-        public AssemblyCompilationTask[] dependencies;
-        public CompilerMessage[] messages;
-        public Stopwatch stopWatch;
-
         CompilationStatus m_CompilationStatus = CompilationStatus.NotStarted;
 
-        public string assemblyName => Path.GetFileNameWithoutExtension(builder.assemblyPath);
+#pragma warning disable 618 // disable warning for obsolete AssemblyBuilder
+        public AssemblyBuilder Builder;
+#pragma warning restore 618
+        public AssemblyCompilationTask[] Dependencies;
+        public CompilerMessage[] Messages;
+        public Stopwatch StopWatch;
 
-        public string assemblyPath => builder.assemblyPath;
+        public string AssemblyName => Path.GetFileNameWithoutExtension(Builder.assemblyPath);
 
-        public long durationInMs => stopWatch != null ? stopWatch.ElapsedMilliseconds : 0;
+        public string AssemblyPath => Builder.assemblyPath;
+
+        public long DurationInMs => StopWatch != null ? StopWatch.ElapsedMilliseconds : 0;
 
         public CompilationStatus status => m_CompilationStatus;
 
@@ -38,15 +38,15 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 
         public void Update()
         {
-            switch (builder.status)
+            switch (Builder.status)
             {
                 case AssemblyBuilderStatus.NotStarted:
-                    if (dependencies.All(dep => dep.IsDone()))
+                    if (Dependencies.All(dep => dep.IsDone()))
                     {
-                        if (dependencies.All(dep => dep.Success()))
+                        if (Dependencies.All(dep => dep.Success()))
                         {
-                            stopWatch = Stopwatch.StartNew();
-                            builder.Build(); // all references are built, we can kick off this builder
+                            StopWatch = Stopwatch.StartNew();
+                            Builder.Build(); // all references are built, we can kick off this builder
                         }
                         else
                         {
@@ -66,9 +66,9 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 
         public bool Success()
         {
-            if (messages == null)
+            if (Messages == null)
                 return false;
-            return messages.All(message => message.type != CompilerMessageType.Error);
+            return Messages.All(message => message.type != CompilerMessageType.Error);
         }
     }
 }
