@@ -116,7 +116,6 @@ namespace Unity.ProjectAuditor.Editor
             var categories = analysisParams.Categories != null
                 ? analysisParams.Categories
                 : m_Modules
-                    .Where(m => m.IsEnabledByDefault)
                     .SelectMany(m => m.Categories)
                     .ToArray();
             var report = analysisParams.ExistingReport;

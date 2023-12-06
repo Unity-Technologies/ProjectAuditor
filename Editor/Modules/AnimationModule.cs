@@ -139,8 +139,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override string Name => "Animation";
 
-        public override bool IsEnabledByDefault => false;
-
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_AnimatorControllerLayout,

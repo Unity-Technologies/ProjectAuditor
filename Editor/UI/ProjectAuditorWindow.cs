@@ -36,11 +36,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             Shaders = 1 << 3,
             Build = 1 << 4,
 
-            // this is just helper enum to display Default instead of Every
-            Default = ~None
+            // this is just helper enum to display All instead of Every
+            All = ~None
         }
 
-        const ProjectAreaFlags k_ProjectAreaDefaultFlags = ProjectAreaFlags.Code | ProjectAreaFlags.Settings | ProjectAreaFlags.Build;
+        const ProjectAreaFlags k_ProjectAreaDefaultFlags = ProjectAreaFlags.Code | ProjectAreaFlags.Settings | ProjectAreaFlags.Assets | ProjectAreaFlags.Shaders | ProjectAreaFlags.Build;
 
         static readonly string[] AreaNames = Enum.GetNames(typeof(Areas)).Where(a => a != "None" && a != "All").ToArray();
         static ProjectAuditorWindow s_Instance;
@@ -1192,11 +1192,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.Space();
 
             m_SelectedProjectAreas = (ProjectAreaFlags)EditorGUILayout.EnumFlagsField(Contents.ProjectAreaSelection, m_SelectedProjectAreas, GUILayout.ExpandWidth(true));
-            if (m_SelectedProjectAreas == ProjectAreaFlags.Default)
-            {
-                // this is a workaround for the fact that EnumFlagsField doesn't support a default value
-                m_SelectedProjectAreas = k_ProjectAreaDefaultFlags;
-            }
 
             var selectedTarget = Array.IndexOf(m_SupportedBuildTargets, m_Platform);
             selectedTarget = EditorGUILayout.Popup(Contents.PlatformSelection, selectedTarget, m_PlatformContents);

@@ -8,8 +8,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         public override string Name => "Sprites Atlas";
 
-        public override bool IsEnabledByDefault => false;
-
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts  => new IssueLayout[] { AssetsModule.k_IssueLayout };
 
         const string k_SpriteAtlasEmptySpaceLimit   = "SpriteAtlasEmptySpaceLimit";

@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor
     public class AnalysisParams
     {
         /// <summary>
-        /// Issue Categories to include in the audit. If null, the analysis will include all categories except for those relating to assets.
+        /// Issue Categories to include in the audit. If null, the analysis will include all categories.
         /// </summary>
         [SerializeField]
         public IssueCategory[] Categories;

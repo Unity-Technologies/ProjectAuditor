@@ -45,8 +45,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override string Name => "Textures";
 
-        public override bool IsEnabledByDefault => false;
-
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_TextureLayout,
