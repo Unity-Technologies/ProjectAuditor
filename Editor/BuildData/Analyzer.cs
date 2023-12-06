@@ -34,7 +34,15 @@ namespace Unity.ProjectAuditor.Editor.BuildData
                             if (node.Flags.HasFlag(ArchiveNodeFlags.SerializedFile))
                             {
                                 var fileInfo = archiveFileInfo.AddArchivedFile(Path.Combine("archive:", node.Path), node.Size);
-                                AnalyzeSerializedFile(fileInfo, buildObjects);
+                                try
+                                {
+                                    AnalyzeSerializedFile(fileInfo, buildObjects);
+                                }
+                                catch (Exception e)
+                                {
+                                    if (e.Message != "Unknown error.")
+                                        throw;
+                                }
                             }
                         }
                     }
