@@ -83,7 +83,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (k_StreamingAssetsFolderDescriptor.IsApplicable(analysisParams))
                 AnalyzeStreamingAssets(context, issues);
 
-            if (issues.Any())
+            if (issues.Count > 0)
                 analysisParams.OnIncomingIssues(issues);
             return AnalysisResult.Success;
         }
@@ -91,14 +91,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
         static void AnalyzeResources(AnalysisContext context, IList<ProjectIssue> issues)
         {
             var allAssetPaths = GetAssetPaths(context);
-            var allResources =
-                allAssetPaths.Where(path => path.IndexOf("/resources/", StringComparison.OrdinalIgnoreCase) >= 0);
-            var allPlayerResources =
-                allResources.Where(path => path.IndexOf("/editor/", StringComparison.OrdinalIgnoreCase) == -1);
 
             var assetPathsDict = new Dictionary<string, DependencyNode>();
-            foreach (var assetPath in allPlayerResources)
+            foreach (var assetPath in allAssetPaths)
             {
+                if (assetPath.IndexOf("/resources/", StringComparison.OrdinalIgnoreCase) < 0)
+                {
+                    continue;
+                }
+                if (assetPath.IndexOf("/editor/", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    continue;
+                }
+
                 if ((File.GetAttributes(assetPath) & FileAttributes.Directory) == FileAttributes.Directory)
                     continue;
 

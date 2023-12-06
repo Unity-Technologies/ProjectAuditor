@@ -43,6 +43,9 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         /// <returns>The DescriptorId in string form.</returns>
         public override string ToString() => m_AsString;
 
+        // ID must be a whole word (\b), beginning with exactly 3 uppercase letters ([A-Z]{3}), followed by exactly 4 digits (\d{4})
+        static readonly Regex s_RegEx = new Regex(@"\b[A-Z]{3}\d{4}\b");
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -58,9 +61,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
                 return;
             }
 
-            // ID must be a whole word (\b), beginning with exactly 3 uppercase letters ([A-Z]{3}), followed by exactly 4 digits (\d{4})
-            var regExp = new Regex(@"\b[A-Z]{3}\d{4}\b");
-            if (!regExp.IsMatch(id))
+            if (!s_RegEx.IsMatch(id))
             {
                 Debug.LogError("Invalid ID string supplied to DescriptorId");
                 m_AsInt = -1;
