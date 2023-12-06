@@ -116,6 +116,8 @@ namespace Unity.ProjectAuditor.Editor
 
             public string startTime;
             public string endTime;
+
+            public AnalysisResult result;
         }
 
         /// <summary>
@@ -286,7 +288,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <returns>True is none of the issues in the report have a null description string. Otherwise returns false.</returns>
         public bool IsValid()
         {
-            return m_Issues.All(i => i.IsValid());
+            return m_Issues.All(i => i.IsValid()) && m_ModuleInfos.All(m => m.result != AnalysisResult.Cancelled);
         }
 
         /// <summary>
@@ -343,26 +345,24 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         // Internal only: Data written by ProjectAuditor during analysis
-        internal void RecordModuleInfo(Module module, DateTime startTime, DateTime endTime)
+        internal void RecordModuleInfo(Module module, DateTime startTime, DateTime endTime, AnalysisResult analysisResult)
         {
             var name = module.Name;
             var info = m_ModuleInfos.FirstOrDefault(m => m.name.Equals(name));
-            if (info != null)
+            if (info == null)
             {
-                info.startTime = Utils.Json.SerializeDateTime(startTime);
-                info.endTime = Utils.Json.SerializeDateTime(endTime);
-            }
-            else
-            {
-                m_ModuleInfos.Add(new ModuleInfo
+                info = new ModuleInfo
                 {
                     name = module.Name,
                     categories = module.Categories,
                     layouts = module.SupportedLayouts,
-                    startTime = Utils.Json.SerializeDateTime(startTime),
-                    endTime = Utils.Json.SerializeDateTime(endTime)
-                });
+                };
+                m_ModuleInfos.Add(info);
             }
+
+            info.startTime = Utils.Json.SerializeDateTime(startTime);
+            info.endTime = Utils.Json.SerializeDateTime(endTime);
+            info.result = analysisResult;
         }
 
         // Internal only: Data written by ProjectAuditor during analysis

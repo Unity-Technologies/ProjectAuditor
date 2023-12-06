@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Domain Reload diagnostic issues in the Settings view if Domain Reload is enabled
 * Diagnostics for unsupported APIs on WebGL target
 * Diagnostic for Static Batching being enabled whilst Entities Graphics is installed
+* Support for cancelling analysis
 
 ### Changed
 * Improved issue description and suggestion strings, to make them clearer and more consistent

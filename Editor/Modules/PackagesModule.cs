@@ -83,15 +83,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             RegisterDescriptor(k_RecommendPackagePreView);
         }
 
-        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
+        public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
             var request = Client.List();
             while (!request.IsCompleted)
                 System.Threading.Thread.Sleep(10);
             if (request.Status == StatusCode.Failure)
             {
-                analysisParams.OnModuleCompleted?.Invoke();
-                return;
+                return AnalysisResult.Failure;
             }
 
             var context = new AnalysisContext()
@@ -104,7 +103,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 analysisParams.OnIncomingIssues(EnumerateInstalledPackages(context, package));
                 analysisParams.OnIncomingIssues(EnumeratePackageDiagnostics(context, package));
             }
-            analysisParams.OnModuleCompleted?.Invoke();
+            return AnalysisResult.Success;
         }
 
         IEnumerable<ProjectIssue> EnumerateInstalledPackages(AnalysisContext context, UnityEditor.PackageManager.PackageInfo package)

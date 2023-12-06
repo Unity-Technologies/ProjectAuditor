@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Unity.ProjectAuditor.Editor.Core;
@@ -63,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             diagnosticParams.RegisterParameter(k_SpriteAtlasEmptySpaceLimit, 50);
         }
 
-        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
+        public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
 
@@ -90,6 +91,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             foreach (var assetPath in assetPaths)
             {
+                if (progress?.IsCancelled ?? false)
+                    return AnalysisResult.Cancelled;
+
                 var textureImporter = AssetImporter.GetAtPath(assetPath) as TextureImporter;
                 if (textureImporter == null)
                 {
@@ -99,7 +103,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 context.Importer = textureImporter;
                 context.ImporterPlatformSettings = textureImporter.GetPlatformTextureSettings(platformString);
                 context.Texture = AssetDatabase.LoadAssetAtPath<Texture>(assetPath);
-
 
                 if (string.IsNullOrEmpty(context.Texture.name))
                     context.Name = Path.GetFileNameWithoutExtension(assetPath);
@@ -116,7 +119,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             progress?.Clear();
 
-            analysisParams.OnModuleCompleted?.Invoke();
+            return AnalysisResult.Success;
         }
     }
 }

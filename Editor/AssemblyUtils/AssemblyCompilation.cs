@@ -184,7 +184,9 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                 if (OnAssemblyCompilationFinished != null)
                     OnAssemblyCompilationFinished(compilationTask, messages);
             });
-            UpdateAssemblyBuilders();
+            UpdateAssemblyBuilders(progress);
+            if (progress?.IsCancelled ?? false)
+                return Array.Empty<string>();
 
             if (progress != null)
                 progress.Clear();
@@ -345,10 +347,13 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
             }
         }
 
-        void UpdateAssemblyBuilders()
+        void UpdateAssemblyBuilders(IProgress progress)
         {
             while (true)
             {
+                if (progress?.IsCancelled ?? false)
+                    return; // compilation of assemblies will continue but we won't wait for it
+
                 var pendingTasks = m_AssemblyCompilationTasks.Select(pair => pair.Value).Where(task => !task.IsDone());
                 if (!pendingTasks.Any())
                     break;

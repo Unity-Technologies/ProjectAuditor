@@ -148,7 +148,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             m_OpCodes = m_Analyzers.Select(a => a.opCodes).SelectMany(c => c).Distinct().ToList();
         }
 
-        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
+        public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
             if (m_Ids == null)
                 throw new Exception("Descriptors Database not initialized.");
@@ -218,6 +218,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var assemblyInfos = compilationPipeline.Compile(progress);
             Profiler.EndSample();
 
+            if (progress?.IsCancelled ?? false)
+                return AnalysisResult.Cancelled;
+
             if (analysisParams.AssemblyNames != null)
             {
                 assemblyInfos = assemblyInfos.Where(a => analysisParams.AssemblyNames.Contains(a.name)).ToArray();
@@ -280,7 +283,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // workaround for empty 'relativePath' strings which are not all available when 'onIssueFoundInternal' is called
                 if (foundIssues.Any())
                     analysisParams.OnIncomingIssues(foundIssues);
-                analysisParams.OnModuleCompleted?.Invoke();
+                analysisParams.OnModuleCompleted?.Invoke(AnalysisResult.Success);
             });
 
             assemblyDirectories.AddRange(AssemblyInfoProvider.GetPrecompiledAssemblyDirectories(PrecompiledAssemblyTypes.UserAssembly | PrecompiledAssemblyTypes.UnityEngine | PrecompiledAssemblyTypes.SystemAssembly));
@@ -291,6 +294,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             // first phase: analyze assemblies generated from editable scripts
             AnalyzeAssemblies(localAssemblyInfos, analysisParams.AssemblyNames, assemblyDirectories, onCallFound, onIssueFoundInternal, null, progress);
+            if (progress?.IsCancelled ?? false)
+                return AnalysisResult.Cancelled;
 
             var enableBackgroundAnalysis = UserPreferences.AnalyzeInBackground;
 
@@ -310,6 +315,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 Profiler.EndSample();
             }
             Profiler.EndSample();
+
+            if (progress?.IsCancelled ?? false)
+                return AnalysisResult.Cancelled;
+            return AnalysisResult.InProgress;
         }
 
         void AnalyzeAssemblies(IReadOnlyCollection<AssemblyInfo> assemblyInfos, IReadOnlyCollection<string> assemblyFilters, IReadOnlyCollection<string> assemblyDirectories, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound, Action<IProgress> onComplete, IProgress progress = null)
@@ -328,6 +337,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // Analyse all Player assemblies
                 foreach (var assemblyInfo in assemblyInfos)
                 {
+                    if (progress?.IsCancelled ?? false)
+                        return;
+
                     if (progress != null)
                         progress.Advance(assemblyInfo.name);
 

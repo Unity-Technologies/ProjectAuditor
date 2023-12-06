@@ -103,7 +103,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             k_StepLayout
         };
 
-        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
+        public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
             var buildReport = BuildReportProvider.GetBuildReport(analysisParams.Platform);
             if (buildReport != null)
@@ -127,7 +127,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 analysisParams.OnIncomingIssues(AnalyzeBuildSteps(context));
                 analysisParams.OnIncomingIssues(AnalyzePackedAssets(context));
             }
-            analysisParams.OnModuleCompleted?.Invoke();
+            return AnalysisResult.Success;
         }
 
         IEnumerable<ProjectIssue> AnalyzeBuildSteps(BuildAnalysisContext context)

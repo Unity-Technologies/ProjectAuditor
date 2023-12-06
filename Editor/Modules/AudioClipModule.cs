@@ -69,7 +69,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             diagnosticParams.RegisterParameter(k_LoadInBackGroundClipSizeThresholdBytes, 200 * 1024);
         }
 
-        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
+        public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
 
@@ -91,6 +91,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             foreach (var assetPath in assetPaths)
             {
+                // Check if the operation was cancelled
+                if (progress?.IsCancelled ?? false)
+                    return AnalysisResult.Cancelled;
+
                 var audioImporter = AssetImporter.GetAtPath(assetPath) as AudioImporter;
                 if (audioImporter == null)
                 {
@@ -108,7 +112,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             progress?.Clear();
 
-            analysisParams.OnModuleCompleted?.Invoke();
+            return AnalysisResult.Success;
         }
     }
 }

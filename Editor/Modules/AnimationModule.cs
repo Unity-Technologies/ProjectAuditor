@@ -150,18 +150,29 @@ namespace Unity.ProjectAuditor.Editor.Modules
             AssetsModule.k_IssueLayout
         };
 
-        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
+        public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
             var context = new AnalysisContext
             {
                 Params = analysisParams
             };
             ProcessAnimatorControllers(context, progress);
-            ProcessAnimationClips(context, progress);
-            ProcessAvatars(context, progress);
-            ProcessAvatarMasks(context, progress);
+            if (progress?.IsCancelled ?? false)
+                return AnalysisResult.Cancelled;
 
-            analysisParams.OnModuleCompleted?.Invoke();
+            ProcessAnimationClips(context, progress);
+            if (progress?.IsCancelled ?? false)
+                return AnalysisResult.Cancelled;
+
+            ProcessAvatars(context, progress);
+            if (progress?.IsCancelled ?? false)
+                return AnalysisResult.Cancelled;
+
+            ProcessAvatarMasks(context, progress);
+            if (progress?.IsCancelled ?? false)
+                return AnalysisResult.Cancelled;
+
+            return AnalysisResult.Success;
         }
 
         void ProcessAnimatorControllers(AnalysisContext context, IProgress progress)
@@ -172,6 +183,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             progress?.Start("Finding Animator Controllers", "Search in Progress...", assetPaths.Length);
             foreach (var assetPath in assetPaths)
             {
+                if (progress?.IsCancelled ?? false)
+                    return;
+
                 var controller = AssetDatabase.LoadAssetAtPath<AnimatorController>(assetPath);
                 if (controller == null)
                 {
@@ -212,6 +226,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             foreach (var assetPath in assetPaths)
             {
+                if (progress?.IsCancelled ?? false)
+                    return;
+
                 var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(assetPath);
                 if (clip == null)
                 {
@@ -261,6 +278,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             foreach (var assetPath in assetPaths)
             {
+                if (progress?.IsCancelled ?? false)
+                    return;
+
                 var avatar = AssetDatabase.LoadAssetAtPath<Avatar>(assetPath);
                 if (avatar == null)
                 {
@@ -310,6 +330,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             foreach (var assetPath in assetPaths)
             {
+                if (progress?.IsCancelled ?? false)
+                    return;
+
                 var mask = AssetDatabase.LoadAssetAtPath<AvatarMask>(assetPath);
                 if (mask == null)
                 {

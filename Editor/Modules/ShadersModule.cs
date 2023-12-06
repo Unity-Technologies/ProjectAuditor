@@ -263,7 +263,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             AssetsModule.k_IssueLayout
         };
 
-        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
+        public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
             var context = new AnalysisContext()
             {
@@ -280,7 +280,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             // clear collected variants before next build
             ClearBuildData();
 
-            analysisParams.OnModuleCompleted?.Invoke();
+            return AnalysisResult.Success;
         }
 
         Dictionary<Shader, string> CollectShaders(AnalysisContext context)

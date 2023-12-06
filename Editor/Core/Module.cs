@@ -114,6 +114,6 @@ namespace Unity.ProjectAuditor.Editor.Core
         /// </summary>
         /// <param name="analysisParams"> Project audit parameters  </param>
         /// <param name="progress"> Progress bar, if applicable </param>
-        public abstract void Audit(AnalysisParams analysisParams, IProgress progress = null);
+        public abstract AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null);
     }
 }

@@ -814,6 +814,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 },
                 OnCompleted = report =>
                 {
+                    if (!report.IsValid())
+                    {
+                        m_AnalysisState = AnalysisState.Initialized;
+                        return;
+                    }
                     m_ViewManager.OnAnalysisCompleted(report);
 
                     m_ShouldRefresh = true;
@@ -876,6 +881,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 ExistingReport = m_ProjectReport,
                 OnCompleted = report =>
                 {
+                    if (!report.IsValid())
+                    {
+                        m_AnalysisState = AnalysisState.Initialized;
+                        return;
+                    }
                     m_ViewManager.OnAnalysisCompleted(report);
 
                     m_ShouldRefresh = true;

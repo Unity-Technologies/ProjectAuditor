@@ -7,34 +7,50 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     internal class ProgressBar : IProgress
     {
         int m_Current;
+        int m_Total;
+
         string m_Description;
         string m_Title;
-        int m_Total;
+
+        bool m_IsCancelled = false;
 
         public void Advance(string description = "")
         {
+            if (m_IsCancelled)
+                return;
+
             if (!string.IsNullOrEmpty(description))
                 m_Description = description;
             m_Current++;
             var currentFrame = Mathf.Clamp(0, m_Current, m_Total);
             var progress = m_Total > 0 ? (float)currentFrame / m_Total : 0f;
-            EditorUtility.DisplayProgressBar(m_Title, description, progress);
+
+            m_IsCancelled = EditorUtility.DisplayCancelableProgressBar(m_Title, description, progress);
+            if (m_IsCancelled)
+                EditorUtility.DisplayProgressBar("Cancelling...", "Please wait while the operation is cancelled", 0f);
         }
 
         public void Start(string title, string description, int total)
         {
+            if (m_IsCancelled)
+                return;
+
             m_Current = 0;
             m_Total = total;
 
             m_Title = title;
             m_Description = description;
 
-            EditorUtility.DisplayProgressBar(m_Title, m_Description, m_Current);
+            m_IsCancelled = EditorUtility.DisplayCancelableProgressBar(m_Title, m_Description, m_Current);
+            if (m_IsCancelled)
+                EditorUtility.DisplayProgressBar("Canceling...", "Please wait while the operation is cancelled", 0f);
         }
 
         public void Clear()
         {
             EditorUtility.ClearProgressBar();
         }
+
+        public bool IsCancelled => m_IsCancelled;
     }
 }

@@ -72,7 +72,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             diagnosticParams.RegisterParameter(k_StreamingAssetsFolderSizeLimit, 50);
         }
 
-        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
+        public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
             var context = new AnalysisContext
             {
@@ -87,7 +87,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (issues.Any())
                 analysisParams.OnIncomingIssues(issues);
-            analysisParams.OnModuleCompleted?.Invoke();
+            return AnalysisResult.Success;
         }
 
         static void AnalyzeResources(AnalysisContext context, IList<ProjectIssue> issues)

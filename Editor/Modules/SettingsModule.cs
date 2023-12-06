@@ -30,15 +30,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[] {k_IssueLayout};
 
-        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
+        public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
             if (progress != null)
                 progress.Start("Analyzing Settings", "Analyzing project settings", analyzers.Length);
 
-
             foreach (var analyzer in analyzers)
             {
+                if (progress?.IsCancelled ?? false)
+                    return AnalysisResult.Cancelled;
+
                 if (progress != null)
                     progress.Advance();
 
@@ -53,7 +55,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
 
             progress?.Clear();
-            analysisParams.OnModuleCompleted?.Invoke();
+            return AnalysisResult.Success;
         }
     }
 }

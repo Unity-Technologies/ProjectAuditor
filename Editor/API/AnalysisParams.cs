@@ -8,6 +8,14 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
+    public enum AnalysisResult
+    {
+        InProgress,
+        Success,
+        Failure,
+        Cancelled
+    }
+
     /// <summary>
     /// Represents an object which can be passed to an instance of <see cref="ProjectAuditor"/> to specify how analysis should be performed and to provide delegates to be called when analysis steps have completed.
     /// AnalysisParams defaults to values which instruct ProjectAuditor to analyse everything in the project for the current build target, but instances can be populated with custom data in an object initializer to provide additional constraints.
@@ -72,7 +80,7 @@ namespace Unity.ProjectAuditor.Editor
         /// Notifies that a Module completed its analysis.
         /// </summary>
         [JsonIgnore]
-        public Action OnModuleCompleted;
+        public Action<AnalysisResult> OnModuleCompleted;
 
         /// <summary>
         /// The DiagnosticParams object which defines the customizable thresholds for reporting certain diagnostics.
