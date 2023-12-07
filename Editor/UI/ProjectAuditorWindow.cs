@@ -314,6 +314,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_ViewManager.OnAnalysisRequested += category =>
             {
                 AuditCategories(new[] {category});
+                GUIUtility.ExitGUI();
             };
 
             m_ViewManager.OnViewExportCompleted += () =>
@@ -844,9 +845,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                 return;
 
             AuditCategories(module.Categories);
+            GUIUtility.ExitGUI();
         }
 
-        void AuditCategories(IssueCategory[] categories, bool refreshSummaryView = false)
+        void AuditCategories(IssueCategory[] categories)
         {
             // a module might report more categories than requested so we need to make sure we clean up the views accordingly
             var modules = categories.SelectMany(m_ProjectAuditor.GetModules).ToArray();
@@ -891,14 +893,11 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ProjectAuditor.Audit(analysisParams, new ProgressBar());
 
-            if (refreshSummaryView)
+            var summaryView = m_ViewManager.GetView(IssueCategory.Metadata);
+            if (summaryView != null)
             {
-                var summaryView = m_ViewManager.GetView(IssueCategory.Metadata);
-                if (summaryView != null)
-                {
-                    summaryView.Clear();
-                    summaryView.AddIssues(m_ProjectReport.GetAllIssues());
-                }
+                summaryView.Clear();
+                summaryView.AddIssues(m_ProjectReport.GetAllIssues());
             }
         }
 
@@ -1276,6 +1275,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         m_Tabs[m_ActiveTabIndex].currentCategoryIndex,
                         (arg) =>
                         {
+                            bool exitGui = false;
                             var categoryIndex = (int)arg;
                             if (m_ProjectReport == null)
                                 return; // this happens from the summary view while the report is being generated
@@ -1306,16 +1306,20 @@ namespace Unity.ProjectAuditor.Editor.UI
                                     if (m_ViewManager.GetView(IssueCategory.AudioClip) != null)
                                         categories.Add(IssueCategory.AudioClip);
 
-                                    AuditCategories(categories.ToArray(), true);
+                                    AuditCategories(categories.ToArray());
                                 }
                                 else
-                                    AuditCategories(new[] { category }, true);
+                                    AuditCategories(new[] { category });
 
+                                exitGui = true;
                                 var tab = m_Tabs[m_ActiveTabIndex];
                                 RefreshTabCategories(tab, false);
                             }
 
                             m_ViewManager.ChangeView(category);
+
+                            if(exitGui)
+                                GUIUtility.ExitGUI();
                         }, GUILayout.Width(180));
                 }
             }
@@ -1546,12 +1550,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                 if (EditorUtility.DisplayDialog(ProjectAuditor.DisplayName,
                     $"'{tab.name}' analysis will now begin.", "Ok", "Cancel"))
                 {
-                    AuditCategories(tab.allCategories, true);
+                    AuditCategories(tab.allCategories);
 
                     RefreshTabCategories(tab, false);
 
                     if (tab.availableCategories.Length > 0)
                         m_ViewManager.ChangeView(tab.availableCategories[0]);
+
+                    GUIUtility.ExitGUI();
                 }
             }
         }
@@ -1644,7 +1650,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 UpdateAssemblySelection();
 
                 m_ViewManager.MarkViewColumnWidthsAsDirty();
-                
+
                 // switch to summary view after loading
                 m_ViewManager.ChangeView(IssueCategory.Metadata);
             }
