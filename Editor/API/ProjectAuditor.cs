@@ -127,6 +127,7 @@ namespace Unity.ProjectAuditor.Editor
                 var reportCategories = report.SessionInfo.Categories.ToList();
                 reportCategories.AddRange(categories);
                 report.SessionInfo.Categories = reportCategories.Distinct().ToArray();
+                report.SessionInfo.UseRoslynAnalyzers = UserPreferences.UseRoslynAnalyzers;
 
                 foreach (var category in categories)
                 {
