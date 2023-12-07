@@ -172,6 +172,11 @@ namespace Unity.ProjectAuditor.Editor
         BuildDataShader,
 
         /// <summary>
+        /// Issues relating to shader variants inside build data
+        /// </summary>
+        BuildDataShaderVariant,
+
+        /// <summary>
         /// Issues relating to texture assets inside build data
         /// </summary>
         BuildDataTexture2D,

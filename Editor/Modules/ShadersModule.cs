@@ -809,7 +809,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return ParseLogResult.Success;
         }
 
-        static string[] GetCompiledShaderLines(string logFile)
+        internal static string[] GetCompiledShaderLines(string logFile)
         {
             var compilationLines = new List<string>();
             try
@@ -834,7 +834,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         }
 
-        static bool ShaderVariantsMatch(CompiledVariantData cv, string stage, string passName, string[] secondSet)
+        internal static bool ShaderVariantsMatch(CompiledVariantData cv, string stage, string passName, string[] secondSet)
         {
             if (!cv.stage.Equals(stage, StringComparison.InvariantCultureIgnoreCase))
                 return false;

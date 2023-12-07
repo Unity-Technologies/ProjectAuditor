@@ -16,6 +16,21 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num,
     }
 
+    enum BuildDataShaderVariantProperty
+    {
+        Compiled,
+        GraphicsAPI,
+        Tier,
+        Stage,
+        PassType,
+        PassName,
+        Keywords,
+        PlatformKeywords,
+        Requirements,
+        AssetBundle,
+        Num,
+    }
+
     class BuildDataShaderModule : ModuleWithAnalyzers<IBuildDataShaderModuleAnalyzer>
     {
         static readonly IssueLayout k_ShaderLayout = new IssueLayout
@@ -23,7 +38,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.BuildDataShader,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Shader Name" },
+                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Shader Name", longName = "Shader Name" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.AssetBundle), format = PropertyFormat.String, name = "File", longName = "File Name" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.DecompressedSize), format = PropertyFormat.Bytes, name = "Decompressed Size", longName = "Decompressed Size" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.SubShaders), format = PropertyFormat.Integer, name = "Sub Shaders", longName = "Number Of Sub Shaders" },
@@ -32,13 +47,34 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
+        static readonly IssueLayout k_ShaderVariantLayout = new IssueLayout
+        {
+            category = IssueCategory.BuildDataShaderVariant,
+            properties = new[]
+            {
+                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Shader Name", longName = "Shader Name" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.Compiled), format = PropertyFormat.Bool, name = "Compiled", longName = "Compiled During Runtime" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.GraphicsAPI), format = PropertyFormat.String, name = "Graphics API", longName = "Graphics API" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.Tier), format = PropertyFormat.String, name = "Tier", longName = "Tier" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.Stage), format = PropertyFormat.String, name = "Stage", longName = "Stage" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.PassType), format = PropertyFormat.String, name = "Pass Type", longName = "Pass Type" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.PassName), format = PropertyFormat.String, name = "Pass Name", longName = "Pass Name" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.Keywords), format = PropertyFormat.String, name = "Keywords", longName = "Keywords" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.PlatformKeywords), format = PropertyFormat.String, name = "Platform Keywords", longName = "Platform Keywords" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.PlatformKeywords), format = PropertyFormat.String, name = "Requirements", longName = "Requirements" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.AssetBundle), format = PropertyFormat.String, name = "File", longName = "File Name" },
+            }
+        };
+
+
         public override string Name => "Shaders";
 
         public override bool IsEnabledByDefault => false;
 
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
-            k_ShaderLayout
+            k_ShaderLayout,
+            k_ShaderVariantLayout
         };
 
         public override void Audit(AnalysisParams projectAuditorParams, IProgress progress = null)

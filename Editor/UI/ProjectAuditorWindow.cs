@@ -169,7 +169,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 categories = new[]
                 {
                     IssueCategory.BuildDataTexture2D, IssueCategory.BuildDataMesh, IssueCategory.BuildDataAnimationClip,
-                    IssueCategory.BuildDataShader, IssueCategory.BuildDataAudioClip,
+                    IssueCategory.BuildDataShader, IssueCategory.BuildDataShaderVariant,
+                    IssueCategory.BuildDataAudioClip,
                     IssueCategory.BuildDataSummary, IssueCategory.BuildDataDiagnostic
                 }
             },
@@ -883,6 +884,18 @@ namespace Unity.ProjectAuditor.Editor.UI
                 dependencyViewGuiContent = new GUIContent("Build Data Diagnostics"),
                 analyticsEvent = (int)AnalyticsReporter.UIButton.BuildDataDiagnostics,
                 type = typeof(BuildDataView),
+            });
+
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                category = IssueCategory.BuildDataShaderVariant,
+                displayName = "Shader Variants",
+                menuOrder = 3,
+                menuLabel = "BuildData/Shaders Variants in build data",
+                showFilters = true,
+                showInfoPanel = true,
+                type = typeof(BuildDataShaderVariantsView),
+                analyticsEvent = (int)AnalyticsReporter.UIButton.BuildDataShaderVariants
             });
         }
 

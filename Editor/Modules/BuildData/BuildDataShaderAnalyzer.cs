@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Interfaces;
 
@@ -15,13 +16,38 @@ namespace Unity.ProjectAuditor.Editor.Modules
             int subProgramCount = 0;
             foreach (var subShader in context.Shader.SubShaders)
             {
+                int passCount = 0;
                 foreach (var pass in subShader.Passes)
                 {
                     foreach (var program in pass.Programs)
                     {
                         var subPrograms = program.Value;
                         subProgramCount += subPrograms.Count;
+
+                        foreach (var subprog in subPrograms)
+                        {
+                            var keywordsAsStrings = subprog.Keywords.Select(i => context.Shader.Keywords[i]);
+                            var keywordString = string.Join(", ", keywordsAsStrings);
+
+                            yield return context.CreateInsight(IssueCategory.BuildDataShaderVariant, context.Shader.Name)
+                                .WithCustomProperties(
+                                    new object[((int)BuildDataShaderVariantProperty.Num)]
+                                    {
+                                        context.Shader.BuildFile.DisplayName,
+                                        false,
+                                        subprog.Api.ToString(),
+                                        subprog.HwTier.ToString(),
+                                        program.Key, // Stage
+                                        "TODO-PassType",
+                                        string.IsNullOrEmpty(pass.Name) ? "Pass " + passCount.ToString() : pass.Name,
+                                        keywordString,
+                                        "TODO-PlatformKeywords",
+                                        "TODO-Requirements"
+                                    });
+                        }
                     }
+
+                    passCount++;
                 }
             }
 

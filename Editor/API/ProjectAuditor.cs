@@ -74,7 +74,8 @@ namespace Unity.ProjectAuditor.Editor
 
         internal static readonly IssueCategory[] k_BuildDataCategories = new IssueCategory[]
         {
-            IssueCategory.BuildDataTexture2D, IssueCategory.BuildDataMesh, IssueCategory.BuildDataShader,
+            IssueCategory.BuildDataTexture2D, IssueCategory.BuildDataMesh,
+            IssueCategory.BuildDataShader, IssueCategory.BuildDataShaderVariant,
             IssueCategory.BuildDataAnimationClip, IssueCategory.BuildDataAudioClip, IssueCategory.BuildDataSummary
         };
 
