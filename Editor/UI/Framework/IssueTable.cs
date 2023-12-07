@@ -178,7 +178,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     var groupIsExpanded = state.expandedIDs.Contains(group.id);
                     var children = filteredItems.Where(item => item.Value.GroupName.Equals(groupName));
 
-                    group.displayName = string.Format("{0} ({1})", groupName, children.Count());
+                    group.NumVisibleChildren = children.Count();
+                    group.DisplayName = groupName;
 
                     foreach (var child in children)
                     {
@@ -282,16 +283,17 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 return;
             }
 
+            var contentIndent = GetContentIndent(treeViewItem);
             // indent first column, if necessary
             if (columnIndex == 0 && !hasSearch && !m_FlatView)
             {
-                var indent = GetContentIndent(treeViewItem) + extraSpaceBeforeIconAndLabel;
+                var indent = contentIndent + extraSpaceBeforeIconAndLabel;
                 cellRect.xMin += indent;
                 CenterRectUsingSingleLineHeight(ref cellRect);
             }
             else if (m_Layout.hierarchy && property.type == PropertyType.Description)
             {
-                var indent = GetContentIndent(treeViewItem);
+                var indent = contentIndent;
                 cellRect.xMin += indent;
                 CenterRectUsingSingleLineHeight(ref cellRect);
             }
@@ -302,7 +304,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 {
                     // use all available space to display description
                     cellRect.xMax = args.rowRect.xMax;
-                    EditorGUI.LabelField(cellRect, item.GetDisplayName(), labelStyle);
+
+                    var guiContent = new GUIContent(item.GetDisplayName());
+                    EditorGUI.LabelField(cellRect, guiContent, labelStyle);
+
+                    EditorGUI.LabelField(new Rect(cellRect)
+                    {
+                        x = labelStyle.CalcSize(guiContent).x + contentIndent
+                    }, $"({item.NumVisibleChildren} Items)", SharedStyles.LabelDarkWithDynamicSize);
                 }
                 else if (PropertyTypeUtil.IsCustom(property.type))
                 {

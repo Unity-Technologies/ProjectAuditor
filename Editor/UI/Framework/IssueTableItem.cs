@@ -9,6 +9,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public readonly string GroupName;
         public readonly ProjectIssue ProjectIssue;
 
+        public int NumVisibleChildren;
+
+        public virtual string DisplayName
+        {
+            get => displayName;
+            set => displayName = value;
+        }
+
         public IssueTableItem(int id, int depth, string displayName,
                               ProjectIssue projectIssue, string groupName = null) : base(id, depth, displayName)
         {

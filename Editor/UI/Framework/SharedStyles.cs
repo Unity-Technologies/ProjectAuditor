@@ -16,6 +16,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static GUIStyle s_TextArea;
 
         static GUIStyle s_LabelWithDynamicSize;
+        static GUIStyle s_LabelDarkWithDynamicSize;
         static GUIStyle s_TextAreaWithDynamicSize;
 
         static GUIStyle s_TitleLabel;
@@ -205,7 +206,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-
         public static GUIStyle LabelWithDynamicSize
         {
             get
@@ -216,6 +216,20 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         wordWrap = false
                     };
                 return s_LabelWithDynamicSize;
+            }
+        }
+
+        public static GUIStyle LabelDarkWithDynamicSize
+        {
+            get
+            {
+                if (s_LabelDarkWithDynamicSize == null)
+                    s_LabelDarkWithDynamicSize = new GUIStyle(EditorStyles.label)
+                    {
+                        normal = { textColor = Color.gray },
+                        wordWrap = false
+                    };
+                return s_LabelDarkWithDynamicSize;
             }
         }
 
