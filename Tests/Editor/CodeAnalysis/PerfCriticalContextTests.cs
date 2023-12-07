@@ -120,12 +120,13 @@ class ShaderWarmUpIssueIsCritical
     }
 }
 ");
+            AnalyzeTempAssetsFolder();
         }
 
         [Test]
         public void CodeAnalysis_IssueInSimpleClass_IsSeverityCorrect()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInSimpleClass);
+            var issues = FindTestAssetIssues(m_TestAssetIssueInSimpleClass);
             var issue = issues.First();
             Assert.AreEqual(Severity.Moderate, issue.Severity);
         }
@@ -133,7 +134,7 @@ class ShaderWarmUpIssueIsCritical
         [Test]
         public void CodeAnalysis_IssueInMonoBehaviourUpdate_IsSeverityCorrect()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInMonoBehaviourUpdate);
+            var issues = FindTestAssetIssues(m_TestAssetIssueInMonoBehaviourUpdate);
             var issue = issues.First();
             Assert.AreEqual(Severity.Major, issue.Severity);
         }
@@ -141,7 +142,7 @@ class ShaderWarmUpIssueIsCritical
         [Test]
         public void CodeAnalysis_IssueInMonoBehaviourOnAnimatorMove_IsSeverityCorrect()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInMonoBehaviourOnAnimatorMove);
+            var issues = FindTestAssetIssues(m_TestAssetIssueInMonoBehaviourOnAnimatorMove);
             var issue = issues.First();
             Assert.AreEqual(Severity.Major, issue.Severity);
         }
@@ -149,7 +150,7 @@ class ShaderWarmUpIssueIsCritical
         [Test]
         public void CodeAnalysis_MonoBehaviourOnRenderObject_IsSeverityCorrect()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInMonoBehaviourOnRenderObject);
+            var issues = FindTestAssetIssues(m_TestAssetIssueInMonoBehaviourOnRenderObject);
             var issue = issues.First();
             Assert.AreEqual(Severity.Major, issue.Severity);
         }
@@ -157,9 +158,7 @@ class ShaderWarmUpIssueIsCritical
         [Test]
         public void CodeAnalysis_IssueInClassMethodCalledFromMonoBehaviourUpdate_IsSeverityCorrect()
         {
-            var issues =
-                AnalyzeAndFindAssetIssues(
-                    m_TestAssetIssueInClassMethodCalledFromMonoBehaviourUpdate);
+            var issues = FindTestAssetIssues(m_TestAssetIssueInClassMethodCalledFromMonoBehaviourUpdate);
             var issue = issues.First();
             Assert.AreEqual(Severity.Major, issue.Severity);
         }
@@ -167,9 +166,7 @@ class ShaderWarmUpIssueIsCritical
         [Test]
         public void CodeAnalysis_IssueInClassInheritedFromMonoBehaviour_IsSeverityCorrect()
         {
-            var issues =
-                AnalyzeAndFindAssetIssues(
-                    m_TestAssetIssueInClassInheritedFromMonoBehaviour);
+            var issues = FindTestAssetIssues(m_TestAssetIssueInClassInheritedFromMonoBehaviour);
             var issue = issues.First();
             Assert.AreEqual(Severity.Major, issue.Severity);
         }
@@ -177,9 +174,7 @@ class ShaderWarmUpIssueIsCritical
         [UnityTest]
         public IEnumerator CodeAnalysis_Critical_PersistsAfterDomainReload()
         {
-            var issues =
-                AnalyzeAndFindAssetIssues(
-                    m_TestAssetIssueInClassInheritedFromMonoBehaviour);
+            var issues = FindTestAssetIssues(m_TestAssetIssueInClassInheritedFromMonoBehaviour);
             m_Issue = issues.First();
 
             Assert.AreEqual(Severity.Major, m_Issue.Severity);
@@ -193,9 +188,7 @@ class ShaderWarmUpIssueIsCritical
         [Test]
         public void CodeAnalysis_ShaderWarmupIssue_IsSeverityCorrect()
         {
-            var issues =
-                AnalyzeAndFindAssetIssues(
-                    m_TestAssetShaderWarmupIssueIsCritical);
+            var issues = FindTestAssetIssues(m_TestAssetShaderWarmupIssueIsCritical);
             var issue = issues.First();
             Assert.AreEqual(Severity.Major, issue.Severity);
         }

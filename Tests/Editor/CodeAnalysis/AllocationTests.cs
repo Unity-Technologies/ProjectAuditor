@@ -82,12 +82,13 @@ class ParamsArrayAllocation
     }
 }
 ");
+            AnalyzeTempAssetsFolder();
         }
 
         [Test]
         public void CodeAnalysis_NewObject_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetObjectAllocation);
+            var issues = FindTestAssetIssues(m_TestAssetObjectAllocation);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -100,7 +101,7 @@ class ParamsArrayAllocation
         [Test]
         public void CodeAnalysis_ClosureAllocation_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetClosureAllocation);
+            var issues = FindTestAssetIssues(m_TestAssetClosureAllocation);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -114,7 +115,7 @@ class ParamsArrayAllocation
         [Test]
         public void CodeAnalysis_NewArray_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetArrayAllocation);
+            var issues = FindTestAssetIssues(m_TestAssetArrayAllocation);
             Assert.AreEqual(1, issues.Count());
 
             var allocationIssue = issues.First();
@@ -126,7 +127,7 @@ class ParamsArrayAllocation
         [Test]
         public void CodeAnalysis_NewMultidimensionalArray_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetMultidimensionalArrayAllocation);
+            var issues = FindTestAssetIssues(m_TestAssetMultidimensionalArrayAllocation);
             Assert.AreEqual(1, issues.Count());
 
             var allocationIssue = issues.First();
@@ -138,7 +139,7 @@ class ParamsArrayAllocation
         [Test]
         public void CodeAnalysis_NewParamsArray_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetParamsArrayAllocation);
+            var issues = FindTestAssetIssues(m_TestAssetParamsArrayAllocation);
             Assert.AreEqual(2, issues.Count());
 
             Assert.AreEqual(IssueCategory.Code, issues[0].Category);

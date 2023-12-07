@@ -1,3 +1,4 @@
+using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
@@ -68,12 +69,13 @@ class HierarchyTest
     void B() { A(); Y(); }
     void C() { B(); }
 }");
+            AnalyzeTempAssetsFolder();
         }
 
         [Test]
         public void CallTree_Root_IsValid()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAsset);
+            var issues = FindTestAssetIssues(m_TestAsset).ToArray();
 
             Assert.AreEqual(1, issues.Length);
 
@@ -91,7 +93,7 @@ class HierarchyTest
         [Test]
         public void CallTree_Hierarchy_IsNotRecursive()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetRecursive);
+            var issues = FindTestAssetIssues(m_TestAssetRecursive).ToArray();
 
             var root = issues[0].Dependencies as CallTreeNode;
 
@@ -104,7 +106,7 @@ class HierarchyTest
         [Test]
         public void CallTree_SameSubHierarchy_IsUnique()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetHierarchy);
+            var issues = FindTestAssetIssues(m_TestAssetHierarchy).ToArray();
 
             Assert.AreEqual(2, issues.Length);
 

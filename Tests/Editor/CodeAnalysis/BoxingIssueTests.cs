@@ -2,12 +2,9 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
-using Unity.ProjectAuditor.Editor.CodeAnalysis;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
 using Unity.ProjectAuditor.Editor.Tests.Common;
-using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -29,12 +26,14 @@ namespace Unity.ProjectAuditor.EditorTests
                 "class SomeClass {}; class BoxingGenericRefType<T> where T : SomeClass { T refToGenericType; void Dummy() { if (refToGenericType == null){} } }");
             m_TestAssetBoxingGeneric = new TestAsset("BoxingGeneric.cs",
                 "class BoxingGeneric<T> { T refToGenericType; void Dummy() { if (refToGenericType == null){} } }");
+
+            AnalyzeTempAssetsFolder();
         }
 
         [Test]
         public void CodeAnalysis_BoxingIntValue_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetBoxingInt);
+            var issues = FindTestAssetIssues(m_TestAssetBoxingInt);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -64,7 +63,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void CodeAnalysis_BoxingFloatValue_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetBoxingFloat);
+            var issues = FindTestAssetIssues(m_TestAssetBoxingFloat);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -94,7 +93,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void CodeAnalysis_BoxingGeneric_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetBoxingGeneric);
+            var issues = FindTestAssetIssues(m_TestAssetBoxingGeneric);
 
             Assert.AreEqual(1, issues.Count());
         }
@@ -102,7 +101,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void CodeAnalysis_BoxingGenericRefType_IsNotReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetBoxingGenericRefType);
+            var issues = FindTestAssetIssues(m_TestAssetBoxingGenericRefType);
 
             Assert.Zero(issues.Count());
         }

@@ -5,6 +5,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
@@ -30,6 +31,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         bool m_SavedAnalyzeInBackground;
         bool m_SavedAnalyzeAfterBuild;
 
+        protected ProjectIssue[] m_CodeDiagnostics;
         public static BuildTarget GetStandaloneBuildTarget()
         {
 #if UNITY_EDITOR_WIN
@@ -88,6 +90,12 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
             UserPreferences.AnalyzeInBackground = m_SavedAnalyzeInBackground;
             UserPreferences.AnalyzeAfterBuild = m_SavedAnalyzeAfterBuild;
+        }
+
+        protected void AnalyzeTempAssetsFolder()
+        {
+            m_CodeDiagnostics = Analyze(IssueCategory.Code, i =>
+                PathUtils.GetDirectoryName(i.RelativePath).Equals(TestAsset.TempAssetsFolder));
         }
 
         protected ProjectIssue[] AnalyzeFiltered(Predicate<string> filterPredicate)
@@ -176,6 +184,11 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             projectAuditor.Audit(m_AnalysisParams);
 
             return foundIssues.ToArray();
+        }
+
+        protected ProjectIssue[] FindTestAssetIssues(TestAsset testAsset)
+        {
+            return m_CodeDiagnostics.Where(x => x.RelativePath == testAsset.relativePath).ToArray();
         }
 
         protected ProjectIssue[] AnalyzeAndFindAssetIssues(TestAsset testAsset,

@@ -1,27 +1,29 @@
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
-using Unity.ProjectAuditor.Editor.AssemblyUtils;
-using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
-using UnityEngine;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
     internal class EditorCodeAnalysisTests
     {
-        [Test]
-        public void EditorCodeAnalysis_GetAssemblies_IsFound()
+        private readonly Unity.ProjectAuditor.Editor.ProjectAuditor m_ProjectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+        private ProjectReport m_ProjectReport;
+
+        [OneTimeSetUp]
+        public void EditorCodeAnalysisSetup()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit(new AnalysisParams
+            m_ProjectReport = m_ProjectAuditor.Audit(new AnalysisParams
             {
                 CompilationMode = CompilationMode.Editor,
                 Categories = new[] { IssueCategory.Code }
             });
+        }
 
-            var issues = projectReport.FindByCategory(IssueCategory.Code);
+        [Test]
+        public void EditorCodeAnalysis_GetAssemblies_IsFound()
+        {
+            var issues = m_ProjectReport.FindByCategory(IssueCategory.Code);
             var codeIssue = issues.FirstOrDefault(i => i.Id.IsValid() &&
                 i.Id.GetDescriptor().Type.Equals("System.AppDomain") &&
                 i.Id.GetDescriptor().Method.Equals("GetAssemblies") &&
@@ -34,14 +36,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void EditorCodeAnalysis_FindAssets_IsFound()
         {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit(new AnalysisParams
-            {
-                CompilationMode = CompilationMode.Editor,
-                Categories = new[] { IssueCategory.Code }
-            });
-
-            var issues = projectReport.FindByCategory(IssueCategory.Code);
+            var issues = m_ProjectReport.FindByCategory(IssueCategory.Code);
             var codeIssue = issues.FirstOrDefault(i => i.Id.IsValid() &&
                 i.Id.GetDescriptor().Type.Equals("UnityEditor.AssetDatabase") &&
                 i.Id.GetDescriptor().Method.Equals("FindAssets") &&

@@ -75,12 +75,13 @@ class UxmlAttributeDescriptionPropertyUsage
     }
 }
 ");
+            AnalyzeTempAssetsFolder();
         }
 
         [Test]
         public void CodeAnalysis_PropertyName_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetObjectName);
+            var issues = FindTestAssetIssues(m_TestAssetObjectName);
 
             var propertyNameIssues = issues.Where(i => i.Id == "PAC0231").ToArray();
 
@@ -91,7 +92,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_PropertyOfBaseType_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetBaseTypePropertyUsage);
+            var issues = FindTestAssetIssues(m_TestAssetBaseTypePropertyUsage);
 
             var propertyOfBaseTypeIssues = issues.Where(
                 i => i.Id == "PAC0039" || i.Id == "PAC0084" || i.Id == "PAC0085")
@@ -103,7 +104,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_PropertyUxmlAttributeDescription_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetUxmlAttributeDescriptionPropertyUsage);
+            var issues = FindTestAssetIssues(m_TestAssetUxmlAttributeDescriptionPropertyUsage);
 
             var propertyUxmlAttributeIssues = issues.Where(i => i.Id == "PAC0191").ToArray();
 

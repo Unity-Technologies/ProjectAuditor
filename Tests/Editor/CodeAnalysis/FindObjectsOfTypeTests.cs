@@ -34,22 +34,19 @@ class FindObjectsOfTypeClass
     }
 }
 ");
+            AnalyzeTempAssetsFolder();
         }
 
         [Test]
         public void CodeAnalysis_FindObjectsOfType_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAsset);
-
-            Assert.AreEqual(4, issues.Count(i => i.Id == "PAC0129"));
+            Assert.AreEqual(4, m_CodeDiagnostics.Count(i => i.Id == "PAC0129"));
         }
 
         [Test]
         public void CodeAnalysis_FindObjectOfType_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAsset);
-
-            Assert.AreEqual(4, issues.Count(i => i.Id == "PAC0234"));
+            Assert.AreEqual(4, m_CodeDiagnostics.Count(i => i.Id == "PAC0234"));
         }
     }
 }
