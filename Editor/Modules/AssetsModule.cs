@@ -16,10 +16,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.AssetDiagnostic,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
+                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description", maxAutoWidth = 800 },
                 new PropertyDefinition { type = PropertyType.Severity, format = PropertyFormat.String, name = "Severity"},
                 new PropertyDefinition { type = PropertyType.Areas, format = PropertyFormat.String, name = "Areas", longName = "Impacted Areas" },
-                new PropertyDefinition { type = PropertyType.Path, name = "Path"},
+                new PropertyDefinition { type = PropertyType.Path, name = "Path", maxAutoWidth = 500 },
                 new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true, hidden = true},
             }
         };

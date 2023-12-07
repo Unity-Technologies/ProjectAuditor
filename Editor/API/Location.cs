@@ -18,25 +18,62 @@ namespace Unity.ProjectAuditor.Editor
         /// File extension
         /// </summary>
         [JsonIgnore]
-        public string Extension => System.IO.Path.GetExtension(m_Path) ?? string.Empty;
+        public string Extension
+        {
+            get
+            {
+                if (m_Extension == null)
+                {
+                    m_Extension = System.IO.Path.GetExtension(m_Path) ?? string.Empty;
+                    if (m_Extension.StartsWith("."))
+                        m_Extension = m_Extension.Substring(1);
+                }
+
+                return m_Extension;
+            }
+        }
 
         /// <summary>
         /// Filename
         /// </summary>
         [JsonIgnore]
-        public string Filename => string.IsNullOrEmpty(m_Path) ? string.Empty : System.IO.Path.GetFileName(m_Path);
+        public string Filename
+        {
+            get
+            {
+                if(m_Filename == null)
+                    m_Filename = string.IsNullOrEmpty(m_Path) ? string.Empty : System.IO.Path.GetFileName(m_Path);
+                return m_Filename;
+            }
+        }
 
         /// <summary>
         /// Formatted filename with line number
         /// </summary>
         [JsonIgnore]
-        public string FormattedFilename => GetFormattedPath(Filename);
+        public string FormattedFilename
+        {
+            get
+            {
+                if(m_FormattedFilename == null)
+                    m_FormattedFilename = GetFormattedPath(Filename);
+                return m_FormattedFilename;
+            }
+        }
 
         /// <summary>
         /// Formatted path with line number
         /// </summary>
         [JsonIgnore]
-        public string FormattedPath => GetFormattedPath(Path);
+        public string FormattedPath
+        {
+            get
+            {
+                if (m_FormattedPath == null)
+                    m_FormattedPath = GetFormattedPath(Path);
+                return m_FormattedPath;
+            }
+        }
 
         /// <summary>
         /// Line number
@@ -68,6 +105,12 @@ namespace Unity.ProjectAuditor.Editor
                     m_Path = value.Replace("UNITY_PATH/Data", EditorApplication.applicationContentsPath);
             }
         }
+
+        // Cached string storage to reduce constant string manipulation in UI
+        string m_Extension;
+        string m_Filename;
+        string m_FormattedFilename;
+        string m_FormattedPath;
 
         /// <summary>
         /// Constructor

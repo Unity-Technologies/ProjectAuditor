@@ -29,7 +29,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.AudioClip,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Name" },
+                new PropertyDefinition { type = PropertyType.Description, name = "Name", maxAutoWidth = 500 },
                 new PropertyDefinition { type = PropertyType.FileType, name = "Format", defaultGroup = true },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.Length), format = PropertyFormat.String, name = "Length"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.SourceFileSize), format = PropertyFormat.Bytes, name = "Source File Size"},
@@ -42,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.LoadInBackground), format = PropertyFormat.Bool, name = "Load In Background"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.PreloadAudioData), format = PropertyFormat.Bool, name = "Preload Audio Data" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.LoadType), format = PropertyFormat.String, name = "Load Type" },
-                new PropertyDefinition { type = PropertyType.Path, name = "Path"}
+                new PropertyDefinition { type = PropertyType.Path, name = "Path", maxAutoWidth = 500 }
             }
         };
 

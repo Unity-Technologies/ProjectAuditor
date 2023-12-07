@@ -43,7 +43,7 @@ namespace MyNamespace
             category = ProjectAuditor.GetOrRegisterCategory("New Category"),
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
+                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description", maxAutoWidth = 800 },
                 new PropertyDefinition { type = PropertyType.Filename, name = "File"}
             }
         };

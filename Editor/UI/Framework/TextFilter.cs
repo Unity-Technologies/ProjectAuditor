@@ -62,8 +62,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         bool MatchesSearch(string text)
         {
-            return !string.IsNullOrEmpty(text) &&
-                text.IndexOf(searchString, ignoreCase ? StringComparison.CurrentCultureIgnoreCase : StringComparison.CurrentCulture) >= 0;
+            return text.IndexOf(searchString, ignoreCase ? StringComparison.CurrentCultureIgnoreCase : StringComparison.CurrentCulture) >= 0;
         }
 
         bool MatchesSearch(DependencyNode node, bool recursive)

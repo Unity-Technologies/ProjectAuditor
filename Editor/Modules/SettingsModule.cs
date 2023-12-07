@@ -18,7 +18,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.ProjectSetting,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
+                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description", maxAutoWidth = 800 },
                 new PropertyDefinition { type = PropertyType.Severity, format = PropertyFormat.String, name = "Severity"},
                 new PropertyDefinition { type = PropertyType.Areas, name = "Areas", longName = "The areas the issue might have an impact on"},
                 new PropertyDefinition { type = PropertyType.Filename, name = "System", defaultGroup = true},

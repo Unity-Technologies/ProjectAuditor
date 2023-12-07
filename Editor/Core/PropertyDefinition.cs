@@ -56,6 +56,7 @@ namespace Unity.ProjectAuditor.Editor.Core
         public PropertyFormat format;
         public string name;
         public string longName;
+        public int maxAutoWidth;
         public bool defaultGroup;
         public bool hidden;
     }

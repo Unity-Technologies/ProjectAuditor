@@ -132,8 +132,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.Instancing), format = PropertyFormat.Bool, name = "Instancing", longName = "GPU Instancing Support" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.SrpBatcher), format = PropertyFormat.Bool, name = "SRP Batcher", longName = "SRP Batcher Compatible" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.AlwaysIncluded), format = PropertyFormat.Bool, name = "Always Included", longName = "Always Included in Build" },
-                new PropertyDefinition { type = PropertyType.Path, name = "Source Asset"},
-                new PropertyDefinition { type = PropertyType.Directory, name = "Directory", defaultGroup = true}
+                new PropertyDefinition { type = PropertyType.Path, name = "Source Asset", maxAutoWidth = 500 },
+                new PropertyDefinition { type = PropertyType.Directory, name = "Directory", defaultGroup = true, maxAutoWidth = 500 }
             }
         };
 
@@ -144,7 +144,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 new PropertyDefinition { type = PropertyType.Description, name = "Material Name" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(MaterialProperty.Shader), format = PropertyFormat.String, name = "Shader", defaultGroup = true },
-                new PropertyDefinition { type = PropertyType.Path, name = "Source Asset" }
+                new PropertyDefinition { type = PropertyType.Path, name = "Source Asset", maxAutoWidth = 500 }
             }
         };
 
@@ -187,12 +187,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition
                 {
                     type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Keywords), format = PropertyFormat.String,
-                    name = "Keywords"
+                    name = "Keywords",
+                    maxAutoWidth = 500
                 },
                 new PropertyDefinition
                 {
                     type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.PlatformKeywords),
-                    format = PropertyFormat.String, name = "Platform Keywords"
+                    format = PropertyFormat.String, name = "Platform Keywords",
+                    maxAutoWidth = 500
                 },
                 new PropertyDefinition
                 {
@@ -214,8 +216,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
 #if PA_CAN_USE_COMPUTESHADER_KEYWORDSPACE
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.KernelThreadCount), format = PropertyFormat.Integer, name = "Kernel Thread Count" },
 #endif
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Keywords), format = PropertyFormat.String, name = "Keywords" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.PlatformKeywords), format = PropertyFormat.String, name = "Platform Keywords" },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Keywords), format = PropertyFormat.String, name = "Keywords", maxAutoWidth = 500 },
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.PlatformKeywords), format = PropertyFormat.String, name = "Platform Keywords", maxAutoWidth = 500 },
             }
         };
 
@@ -225,10 +227,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.LogLevel},
-                new PropertyDefinition { type = PropertyType.Description, name = "Message"},
+                new PropertyDefinition { type = PropertyType.Description, name = "Message", maxAutoWidth = 500 },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderMessageProperty.ShaderName), format = PropertyFormat.String, name = "Shader Name", defaultGroup = true},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderMessageProperty.Platform), format = PropertyFormat.String, name = "Platform"},
-                new PropertyDefinition { type = PropertyType.Path, name = "Path"},
+                new PropertyDefinition { type = PropertyType.Path, name = "Path", maxAutoWidth = 500 },
             }
         };
 

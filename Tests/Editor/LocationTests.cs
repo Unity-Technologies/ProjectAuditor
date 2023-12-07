@@ -27,7 +27,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual("texture.png", location.FormattedFilename);
             Assert.AreEqual("some/path/texture.png", location.Path);
             Assert.AreEqual("some/path/texture.png", location.FormattedPath);
-            Assert.AreEqual(".png", location.Extension);
+            Assert.AreEqual("png", location.Extension);
             Assert.AreEqual(0, location.Line);
         }
 
@@ -40,7 +40,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual("script.cs:6", location.FormattedFilename);
             Assert.AreEqual("some/path/script.cs:6", location.FormattedPath);
             Assert.AreEqual("some/path/script.cs", location.Path);
-            Assert.AreEqual(".cs", location.Extension);
+            Assert.AreEqual("cs", location.Extension);
             Assert.AreEqual(6, location.Line);
         }
 

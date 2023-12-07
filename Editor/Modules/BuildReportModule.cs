@@ -68,14 +68,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.BuildFile,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Source Asset"},
+                new PropertyDefinition { type = PropertyType.Description, name = "Source Asset", maxAutoWidth = 500},
                 new PropertyDefinition { type = PropertyType.FileType, name = "File Type", longName = "File Extension"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.ImporterType), format = PropertyFormat.String, name = "Importer Type"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.RuntimeType), format = PropertyFormat.String, name = "Runtime Type", defaultGroup = true},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size in the Build"},
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.SizePercent), format = PropertyFormat.Percentage, name = "Size % (of Data)", longName = "Percentage of the total data size"},
                 new PropertyDefinition { type = PropertyType.Path, name = "Path", hidden = true},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.BuildFile), format = PropertyFormat.String, name = "Build File"}
+                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.BuildFile), format = PropertyFormat.String, name = "Build File", maxAutoWidth = 500 }
             }
         };
 
@@ -85,7 +85,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             properties = new[]
             {
                 new PropertyDefinition { type = PropertyType.LogLevel},
-                new PropertyDefinition { type = PropertyType.Description, name = "Build Step"},
+                new PropertyDefinition { type = PropertyType.Description, name = "Build Step", maxAutoWidth = 500 },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportStepProperty.Duration), format = PropertyFormat.String, name = "Duration"}
             },
             hierarchy = true

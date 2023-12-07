@@ -38,10 +38,7 @@ namespace Unity.ProjectAuditor.Editor
                 case PropertyType.FileType:
                     if (issue.Location == null)
                         return k_NotAvailable;
-                    var ext = issue.Location.Extension;
-                    if (ext.StartsWith("."))
-                        ext = ext.Substring(1);
-                    return ext;
+                    return issue.Location.Extension;
                 case PropertyType.Description:
                     return issue.Description;
                 case PropertyType.Descriptor:

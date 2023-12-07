@@ -70,12 +70,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.AnimatorController,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Controller Name" },
+                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Controller Name", maxAutoWidth = 500  },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimatorControllerProperty.NumLayers), format = PropertyFormat.Integer, name = "Layers", longName = "Number of Layers" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimatorControllerProperty.NumParameters), format = PropertyFormat.Integer, name = "Params", longName = "Number of Parameters" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimatorControllerProperty.NumClips), format = PropertyFormat.Integer, name = "Clips", longName = "Number of Animation Clips" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimatorControllerProperty.SizeOnDisk), format = PropertyFormat.Bytes, name = "Size", longName = "Controller Size" },
-                new PropertyDefinition { type = PropertyType.Path, name = "Path" }
+                new PropertyDefinition { type = PropertyType.Path, name = "Path", maxAutoWidth = 500 }
             }
         };
 
@@ -84,7 +84,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.AnimationClip,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Clip Name" },
+                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Clip Name", maxAutoWidth = 500 },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimationClipProperty.IsEmpty), format = PropertyFormat.Bool, name = "Empty?", longName = "Contains no curves and no events" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimationClipProperty.NumEvents), format = PropertyFormat.Integer, name = "Events", longName = "Number of Events" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimationClipProperty.Framerate), format = PropertyFormat.String, name = "Frame Rate" },
@@ -98,7 +98,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimationClipProperty.HumanMotion), format = PropertyFormat.Bool, name = "Human Motion?", longName = "Contains curves that drive a humanoid rig" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimationClipProperty.IsLegacy), format = PropertyFormat.Bool, name = "Legacy?", longName = "Is this clip used with a Legacy Animation component?" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimationClipProperty.SizeOnDisk), format = PropertyFormat.Bytes, name = "Size", longName = "Clip Size" },
-                new PropertyDefinition { type = PropertyType.Path, name = "Path" }
+                new PropertyDefinition { type = PropertyType.Path, name = "Path", maxAutoWidth = 500 }
             }
         };
 
@@ -107,7 +107,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             category = IssueCategory.Avatar,
             properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Avatar Name" },
+                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Avatar Name", maxAutoWidth = 500 },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.IsValid), format = PropertyFormat.Bool, name = "Valid?" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.IsHuman), format = PropertyFormat.Bool, name = "Human?" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.NumHumanBones), format = PropertyFormat.Integer, name = "Human Bones", longName = "Number of bones mappings" },
@@ -121,7 +121,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.FeetSpacing), format = PropertyFormat.String, name = "Feet Spacing" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.HasTranslationDoF), format = PropertyFormat.Bool, name = "Translation DoF?" },
                 new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.SizeOnDisk), format = PropertyFormat.Bytes, name = "Size", longName = "Avatar Size" },
-                new PropertyDefinition { type = PropertyType.Path, name = "Path" }
+                new PropertyDefinition { type = PropertyType.Path, name = "Path", maxAutoWidth = 500 }
             }
         };
 

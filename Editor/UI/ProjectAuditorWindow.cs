@@ -279,11 +279,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 AnalyticsReporter.SendEvent(
                     (AnalyticsReporter.UIButton)viewDesc.analyticsEvent,
                     AnalyticsReporter.BeginAnalytic());
-            };
 
-            m_ViewManager.OnActiveViewChanged += i =>
-            {
-                var viewDesc = m_ViewManager.GetView(i).Desc;
                 SyncTabOnViewChange(viewDesc.category);
             };
 
@@ -1647,6 +1643,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 UpdateAssemblyNames();
                 UpdateAssemblySelection();
 
+                m_ViewManager.MarkViewColumnWidthsAsDirty();
+                
                 // switch to summary view after loading
                 m_ViewManager.ChangeView(IssueCategory.Metadata);
             }

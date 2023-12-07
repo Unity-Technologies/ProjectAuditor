@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Interfaces;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -22,6 +23,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         protected Draw2D m_2D;
         protected bool m_Dirty = true;
+        protected bool m_ColumnWidthsDirty;
         protected SeverityRules m_Rules;
         protected ViewStates m_ViewStates;
         protected ViewDescriptor m_Desc;
@@ -151,7 +153,165 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Issues.AddRange(issues);
             m_Table.AddIssues(issues);
 
-            m_Dirty = true;
+            MarkDirty();
+        }
+
+        void AdjustColumnWidths()
+        {
+            bool flatView = m_Table.flatView;
+            bool showIgnoredIssues = m_Table.showIgnoredIssues;
+            bool needToExpand = flatView == false || showIgnoredIssues == true;
+
+            // Base column widths on the contents of a flat table, skipping ignored issues.
+            if (needToExpand)
+            {
+                m_Table.flatView = true;
+                m_Table.showIgnoredIssues = false;
+                m_Table.Reload();
+            }
+
+            var rows = m_Table.GetRows();
+
+            if (rows == null || rows.Count == 0 || (rows.Count == 1 && rows[0].displayName == "No items"))
+                return;
+
+            Profiler.BeginSample("AnalysisView.AdjustColumnWidth");
+
+            var header = m_Table.multiColumnHeader;
+
+            for (var columnIndex = 0; columnIndex < m_Layout.properties.Length; columnIndex++)
+            {
+                var property = m_Layout.properties[columnIndex];
+                if (property.hidden)
+                {
+                    header.GetColumn(columnIndex).width = 0;
+                    continue;
+                }
+
+                var propertyType = property.type;
+                var propertyFormat = property.format;
+
+                string widestPropString = property.name;
+                float widestPropWidth = Utility.EstimateWidth(widestPropString);
+
+                if (propertyFormat != PropertyFormat.Bool) // Just use the column header for bool columns
+                {
+                    for (int rowIndex = 0; rowIndex < rows.Count; ++rowIndex)
+                    {
+                        Profiler.BeginSample("AnalysisView.AdjustColumnWidth.GetCellString");
+
+                        var row = rows[rowIndex];
+                        var item = ((IssueTableItem)row);
+                        var issue = item.ProjectIssue;
+                        string cellString;
+
+                        if (PropertyTypeUtil.IsCustom(propertyType))
+                        {
+                            var customPropertyIndex = PropertyTypeUtil.ToCustomIndex(propertyType);
+
+                            switch (propertyFormat)
+                            {
+                                case PropertyFormat.Bytes:
+                                    cellString =
+                                        Formatting.FormatSize(issue.GetCustomPropertyUInt64(customPropertyIndex));
+                                    break;
+                                case PropertyFormat.Time:
+                                    cellString =
+                                        Formatting.FormatTime(issue.GetCustomPropertyFloat(customPropertyIndex));
+                                    break;
+                                case PropertyFormat.ULong:
+                                    var ulongAsString = issue.GetCustomProperty(customPropertyIndex);
+                                    cellString = ulong.TryParse(ulongAsString, out var ulongValue) ? ulongAsString : "";
+                                    break;
+                                case PropertyFormat.Integer:
+                                    var intAsString = issue.GetCustomProperty(customPropertyIndex);
+                                    cellString = int.TryParse(intAsString, out var intValue) ? intAsString : "";
+                                    break;
+                                case PropertyFormat.Percentage:
+                                    cellString =
+                                        Formatting.FormatPercentage(issue.GetCustomPropertyFloat(customPropertyIndex), 1);
+                                    break;
+                                default:
+                                    cellString = issue.GetProperty(propertyType);
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            cellString = issue.GetProperty(propertyType);
+                        }
+
+                        Profiler.EndSample();
+
+                        var propWidth = Utility.EstimateWidth(cellString);
+
+                        if (propWidth > widestPropWidth)
+                        {
+                            widestPropString = cellString;
+                            widestPropWidth = propWidth;
+                        }
+                    }
+                }
+
+                var width = Utility.GetWidth_SlowButAccurate(widestPropString, m_ViewStates.fontSize);
+
+                // Space to accommodate indenting in column 0
+                if (columnIndex == 0)
+                {
+                    width += LayoutSize.CellItemTreeIndent;
+                }
+
+                if (widestPropString != property.name && HasIcon(property))
+                    width += LayoutSize.CellItemIconSize;
+
+                // CalcSize underestimates the width of text in cells. Why? No idea. This is a fudge.
+                width += LayoutSize.CellWidthPadding;
+
+                var clamp = property.maxAutoWidth;
+                if (clamp != 0 && width > clamp)
+                    width = clamp;
+
+                header.GetColumn(columnIndex).width = width;
+            }
+
+            if (needToExpand)
+            {
+                m_Table.flatView = flatView;
+                m_Table.showIgnoredIssues = showIgnoredIssues;
+                m_Table.Reload();
+            }
+
+            Profiler.EndSample();
+        }
+
+        bool HasIcon(PropertyDefinition property)
+        {
+            switch (property.type)
+            {
+                case PropertyType.LogLevel:
+                case PropertyType.Severity:
+                    return true;
+                case PropertyType.Description:
+                    return m_Desc.descriptionWithIcon;
+                default:
+                    if (PropertyTypeUtil.IsCustom(property.type))
+                    {
+                        // ULong and Integer actually CAN have icons, but only when they also have empty strings, so the size
+                        // of the column is likely to be dictated by some other cell.
+                        switch (property.format)
+                        {
+                            case PropertyFormat.Bool:
+                                return true;
+                            case PropertyFormat.ULong:
+                                return false;
+                            case PropertyFormat.Integer:
+                                return false;
+                            default:
+                                return false;
+                        }
+                    }
+                    return false;
+            }
         }
 
         public virtual void Clear()
@@ -162,7 +322,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Issues.Clear();
             m_Table.Clear();
 
-            m_Dirty = true;
+            MarkDirty();
         }
 
         /// <summary>
@@ -171,6 +331,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public void MarkDirty()
         {
             m_Dirty = true;
+        }
+
+        /// <summary>
+        /// Mark column widths as dirty. Use this to force the table columns to resize to fit the displayed content.
+        /// </summary>
+        public void MarkColumnWidthsDirty()
+        {
+            m_ColumnWidthsDirty = true;
         }
 
         void RefreshIfDirty()
@@ -261,6 +429,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUILayout.BeginVertical();
 
             DrawToolbar();
+
+            // Because adjusting the column width relies on GUIStyle.CalcSize, and because that method can only be called during an OnGUI event, we have to set the widths here.
+            if (m_ColumnWidthsDirty)
+            {
+                AdjustColumnWidths();
+                m_ColumnWidthsDirty = false;
+            }
 
             var r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
 
@@ -642,6 +817,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly int ToolbarIconSize = 32;
             public static readonly int ActionButtonHeight = 30;
             public static readonly int CopyToClipboardButtonSize = 24;
+            public static readonly int CellItemIconSize = 16;
+            public static readonly int CellWidthPadding = 6;
+            public static readonly int CellItemTreeIndent = 30;
+
         }
 
         static class Contents

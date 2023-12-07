@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Reworked ProjectAuditor configuration: ProjectAuditorConfig and ProjectAuditorDiagnosticParams have been replaced with SeverityRules and DiagnosticParams.
 * Configuration is now handled via a ProjectAuditorSettings class/asset
 * Refactored and documented public API to allow CI/CD integration
+* Table views automatically resize columns to fit the data being displayed
 
 ### Removed
 * Actions section and Mute/Unmute buttons

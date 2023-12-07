@@ -183,9 +183,21 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
+        /// <summary>
+        /// Mark all views as dirty. Use this to reload their tables.
+        /// </summary>
+        public void MarkViewColumnWidthsAsDirty()
+        {
+            foreach (var view in m_Views)
+            {
+                view.MarkColumnWidthsDirty();
+            }
+        }
+
         public void OnAnalysisCompleted(ProjectReport report)
         {
             m_Report = report;
+            MarkViewColumnWidthsAsDirty();
         }
 
         public void OnAnalysisRestored(ProjectReport report)
