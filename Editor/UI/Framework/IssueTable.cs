@@ -237,7 +237,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 return;
 
             var propertyType = property.type;
-            var labelStyle = SharedStyles.LabelWithDynamicSizeWithDynamicSize;
+            var labelStyle = SharedStyles.LabelWithDynamicSize;
             var item = treeViewItem as IssueTableItem;
 
             if (item == null)

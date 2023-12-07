@@ -206,7 +206,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         }
 
 
-        public static GUIStyle LabelWithDynamicSizeWithDynamicSize
+        public static GUIStyle LabelWithDynamicSize
         {
             get
             {
@@ -294,7 +294,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public static void SetFontDynamicSize(int fontSize)
         {
-            LabelWithDynamicSizeWithDynamicSize.fontSize = fontSize;
+            LabelWithDynamicSize.fontSize = fontSize;
             TextAreaWithDynamicSize.fontSize = fontSize;
         }
 
