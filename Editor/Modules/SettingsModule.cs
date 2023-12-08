@@ -33,6 +33,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
+            var context = new SettingsAnalysisContext
+            {
+                Params = analysisParams
+            };
+
             if (progress != null)
                 progress.Start("Analyzing Settings", "Analyzing project settings", analyzers.Length);
 
@@ -43,11 +48,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 if (progress != null)
                     progress.Advance();
-
-                var context = new SettingsAnalysisContext
-                {
-                    Params = analysisParams
-                };
 
                 var issues = analyzer.Analyze(context).ToArray();
                 if (issues.Any())
