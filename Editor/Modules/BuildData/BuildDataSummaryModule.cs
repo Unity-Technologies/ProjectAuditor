@@ -6,7 +6,7 @@ using SerializedObject = Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    enum BuildDataSummaryProperty
+    internal enum BuildDataSummaryProperty
     {
         Type,
         Size,

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
@@ -32,6 +31,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         bool m_FlatView;
         bool m_ShowIgnoredIssues;
         int m_GroupPropertyIndex;
+        bool m_IsForcedGroup;
 
         public bool flatView
         {
@@ -55,6 +55,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 if (value >= 0)
                     m_GroupPropertyIndex = value;
             }
+        }
+
+        public bool isForcedGroup
+        {
+            get => m_IsForcedGroup;
+            set => m_IsForcedGroup = value;
         }
 
         public IssueTable(TreeViewState state, MultiColumnHeader multicolumnHeader,
@@ -148,9 +154,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Rows.Clear();
 
             // find all issues matching the filters and make an array out of them
-            Profiler.BeginSample("IssueTable.Match");
             var filteredItems = m_TreeViewItemIssues.Where(item => m_View.Match(item.Value.ProjectIssue)).ToArray();
-            Profiler.EndSample();
 
             m_NumMatchingIssues = filteredItems.Length;
             if (m_NumMatchingIssues == 0)
@@ -165,7 +169,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     group.children.Clear();
             }
 
-            Profiler.BeginSample("IssueTable.BuildRows");
             if (!hasSearch && !m_FlatView)
             {
                 var groupedItemQuery = filteredItems.GroupBy(i => i.Value.ProjectIssue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
@@ -199,8 +202,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
             }
             SortIfNeeded(m_Rows);
-
-            Profiler.EndSample();
 
             return m_Rows;
         }

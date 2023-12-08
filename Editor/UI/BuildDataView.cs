@@ -1,5 +1,6 @@
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Interfaces;
+using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 
 namespace Unity.ProjectAuditor.Editor.UI
@@ -23,6 +24,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_DirtySorting = true;
             m_ExpandOnSelection = true;
+
+            m_Table.isForcedGroup = true;
         }
 
         public override void Clear()
@@ -54,13 +57,19 @@ namespace Unity.ProjectAuditor.Editor.UI
             // Only for summary view, sort by size in descending order
             if (m_Desc.category == IssueCategory.BuildDataSummary)
             {
+                var sizePropertyType = PropertyTypeUtil.FromCustom(BuildDataSummaryProperty.Size);
+                var typePropertyType = PropertyTypeUtil.FromCustom(BuildDataSummaryProperty.Type);
+
                 for (int i = 0; i < m_Layout.properties.Length; ++i)
                 {
                     var layoutProperty = m_Layout.properties[i];
-                    if (layoutProperty.name == "Size")
+                    if (layoutProperty.type == sizePropertyType)
                     {
                         m_Table.multiColumnHeader.SetSorting(i, false);
-                        break;
+                    }
+                    else if (layoutProperty.type == typePropertyType)
+                    {
+                        m_Table.groupPropertyIndex = i;
                     }
                 }
             }

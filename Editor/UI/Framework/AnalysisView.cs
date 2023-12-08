@@ -42,7 +42,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public ViewDescriptor Desc => m_Desc;
 
         public DependencyView DependencyView => m_DependencyView;
-        
+
         public virtual string Description => $"A list of {m_Desc.displayName} found in the project.";
 
         public string DocumentationUrl => Documentation.GetPageUrl(new string(m_Desc.displayName.Where(char.IsLetterOrDigit).ToArray()));
@@ -337,6 +337,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 using (new EditorGUI.DisabledScope(m_Table.flatView))
                 {
+                    if (m_Table.isForcedGroup)
+                        GUI.enabled = false;
+
                     Utility.ToolbarDropdownList(m_GroupDropdownItems, m_Table.groupPropertyIndex,
                         (data) =>
                         {
@@ -351,6 +354,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                                 m_Table.Reload();
                             }
                         }, GUILayout.Width(ToolbarButtonSize * 2));
+
+                    GUI.enabled = true;
 
                     // collapse/expand buttons
                     DrawToolbarButton(Contents.CollapseAllButton,  () => SetRowsExpanded(false));
