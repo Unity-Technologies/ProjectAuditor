@@ -33,7 +33,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                                 .WithCustomProperties(
                                     new object[((int)BuildDataShaderVariantProperty.Num)]
                                     {
-                                        context.Shader.BuildFile.DisplayName,
                                         false,
                                         subprog.Api.ToString(),
                                         subprog.HwTier.ToString(),
@@ -42,7 +41,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                                         string.IsNullOrEmpty(pass.Name) ? "Pass " + passCount.ToString() : pass.Name,
                                         keywordString,
                                         "TODO-PlatformKeywords",
-                                        "TODO-Requirements"
+                                        "TODO-Requirements",
+                                        context.Shader.BuildFile.DisplayName,
                                     });
                         }
                     }
