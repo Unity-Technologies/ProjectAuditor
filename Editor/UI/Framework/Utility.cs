@@ -406,7 +406,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 // a whole 16KB. We're in an extremely hot code path here, and speed is more important than accuracy.
                 var charByte = (byte)currChar;
                 byte charWidth = s_LetterWidths[charByte];
-                if(charWidth == 0)
+                if (charWidth == 0)
                 {
                     var content = new GUIContent(currChar.ToString());
                     charWidth = (byte)((int)style.CalcSize(content).x);

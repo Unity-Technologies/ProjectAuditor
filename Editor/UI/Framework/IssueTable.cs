@@ -237,7 +237,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var customPropertyIndex = PropertyTypeUtil.ToCustomIndex(property.type);
             if (property.format == PropertyFormat.Bytes || property.format == PropertyFormat.Time || property.format == PropertyFormat.Percentage)
             {
-
                 if (property.format == PropertyFormat.Bytes)
                 {
                     ulong sum = 0;
@@ -317,7 +316,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 {
                     string label = GetCustomGroupPropertyCellString(item, property);
 
-                    if(!string.IsNullOrEmpty(label))
+                    if (!string.IsNullOrEmpty(label))
                     {
                         EditorGUI.LabelField(cellRect, label, labelStyle);
                     }

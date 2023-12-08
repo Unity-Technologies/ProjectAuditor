@@ -1318,7 +1318,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                             m_ViewManager.ChangeView(category);
 
-                            if(exitGui)
+                            if (exitGui)
                                 GUIUtility.ExitGUI();
                         }, GUILayout.Width(180));
                 }

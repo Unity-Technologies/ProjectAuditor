@@ -820,7 +820,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly int CellItemIconSize = 16;
             public static readonly int CellWidthPadding = 6;
             public static readonly int CellItemTreeIndent = 30;
-
         }
 
         static class Contents

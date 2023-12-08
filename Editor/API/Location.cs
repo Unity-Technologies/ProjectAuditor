@@ -41,7 +41,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
-                if(m_Filename == null)
+                if (m_Filename == null)
                     m_Filename = string.IsNullOrEmpty(m_Path) ? string.Empty : System.IO.Path.GetFileName(m_Path);
                 return m_Filename;
             }
@@ -55,7 +55,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
-                if(m_FormattedFilename == null)
+                if (m_FormattedFilename == null)
                     m_FormattedFilename = GetFormattedPath(Filename);
                 return m_FormattedFilename;
             }

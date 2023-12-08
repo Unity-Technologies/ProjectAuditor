@@ -78,7 +78,7 @@ class MyClass : MonoBehaviour
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var projectReport = projectAuditor.Audit(new AnalysisParams
             {
-                Categories = new[]{ category },
+                Categories = new[] { category },
                 CompilationMode = CompilationMode.Player
             });
             var layout = IssueLayout.GetLayout(category);
