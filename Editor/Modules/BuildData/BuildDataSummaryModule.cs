@@ -248,11 +248,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 info += " (" + serializedObject.Type + ")";
             }
 
-            if (isObjectCycle)
-                return false;
-
             var node = new SimpleDependencyNode(info);
             parentNode.AddChild(node);
+
+            if (isObjectCycle)
+            {
+                return false;
+            }
 
             visitedObjects.Add(serializedObject.Id);
 
@@ -277,6 +279,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 isLeafNode = allLeaves;
             }
+
+            visitedObjects.Remove(serializedObject.Id);
 
             return isLeafNode;
         }
