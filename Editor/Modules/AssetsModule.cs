@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.Interfaces;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    internal class AssetsModule : Module
+    internal class AssetsModule : ModuleWithAnalyzers<IAssetsModuleAnalyzer>
     {
         internal static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
@@ -24,23 +24,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        internal const string PAA3000 = nameof(PAA3000);
-        internal const string PAA3001 = nameof(PAA3001);
-
-        static readonly Descriptor k_AssetInResourcesFolderDescriptor = new Descriptor
-            (
-            PAA3000,
-            "Resources folder asset & dependencies",
-            Areas.BuildSize,
-            "The <b>Resources folder</b> is a common source of many problems in Unity projects. Improper use of the Resources folder can bloat the size of a project’s build, lead to uncontrollable excessive memory utilization, and significantly increase application startup times.",
-            "Use AssetBundles or Addressables when possible."
-            )
-        {
-            MessageFormat = "'{0}' {1}"
-        };
+        internal const string PAA3002 = nameof(PAA3002);
 
         static readonly Descriptor k_StreamingAssetsFolderDescriptor = new Descriptor(
-            PAA3001,
+            PAA3002,
             "StreamingAssets folder size",
             Areas.BuildSize,
             $"There are many files in the <b>StreamingAssets folder</b>. Keeping them in the StreamingAssets folder will increase the build size.",
@@ -59,7 +46,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             base.Initialize();
 
-            RegisterDescriptor(k_AssetInResourcesFolderDescriptor);
             RegisterDescriptor(k_StreamingAssetsFolderDescriptor);
         }
 
@@ -77,111 +63,71 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 Params = analysisParams
             };
 
-            var issues = new List<ProjectIssue>();
-            AnalyzeResources(context, issues);
-
+            // StreamingAssets folder is checked once, AssetsModule might not be the best place this check
             if (k_StreamingAssetsFolderDescriptor.IsApplicable(analysisParams))
-                AnalyzeStreamingAssets(context, issues);
+            {
+                var issue = AnalyzeStreamingAssets(context);
+                if (issue != null)
+                    analysisParams.OnIncomingIssues(new[] {issue});
+            }
 
-            if (issues.Count > 0)
-                analysisParams.OnIncomingIssues(issues);
-            return AnalysisResult.Success;
-        }
+            var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
+            if (analyzers.Length == 0)
+                return AnalysisResult.Success;
 
-        static void AnalyzeResources(AnalysisContext context, IList<ProjectIssue> issues)
-        {
             var allAssetPaths = GetAssetPaths(context);
 
-            var assetPathsDict = new Dictionary<string, DependencyNode>();
+            progress?.Start("Finding Assets", "Search in Progress...", allAssetPaths.Length);
+
             foreach (var assetPath in allAssetPaths)
             {
-                if (assetPath.IndexOf("/resources/", StringComparison.OrdinalIgnoreCase) < 0)
-                {
-                    continue;
-                }
                 if (assetPath.IndexOf("/editor/", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     continue;
                 }
+                if (progress?.IsCancelled ?? false)
+                    return AnalysisResult.Cancelled;
 
-                if ((File.GetAttributes(assetPath) & FileAttributes.Directory) == FileAttributes.Directory)
-                    continue;
-
-                var root = AddResourceAsset(context, assetPath, assetPathsDict, issues, null);
-                var dependencies = AssetDatabase.GetDependencies(assetPath, true);
-                foreach (var depAssetPath in dependencies)
+                var assetAnalysisContext = new AssetAnalysisContext
                 {
-                    // skip self
-                    if (depAssetPath.Equals(assetPath))
-                        continue;
+                    AssetPath = assetPath,
+                    Params = analysisParams
+                };
 
-                    AddResourceAsset(context, depAssetPath, assetPathsDict, issues, root);
+                foreach (var analyzer in analyzers)
+                {
+                    analysisParams.OnIncomingIssues(analyzer.Analyze(assetAnalysisContext));
                 }
+
+                progress?.Advance();
             }
+
+            progress?.Clear();
+
+            return AnalysisResult.Success;
         }
 
-        static void AnalyzeStreamingAssets(AnalysisContext context, IList<ProjectIssue> issues)
+        static ProjectIssue AnalyzeStreamingAssets(AnalysisContext context)
         {
-            if (Directory.Exists("Assets/StreamingAssets"))
-            {
-                long totalBytes = 0;
-                string[] files = Directory.GetFiles("Assets/StreamingAssets", "*", SearchOption.AllDirectories);
-                foreach (var file in files)
-                {
-                    var fileInfo = new FileInfo(file);
-                    totalBytes += fileInfo.Length;
-                }
-
-                var folderSizeLimitMB =
-                    context.Params.DiagnosticParams.GetParameter(k_StreamingAssetsFolderSizeLimit);
-
-                if (totalBytes > folderSizeLimitMB * 1024 * 1024)
-                {
-                    issues.Add(
-                        context.CreateIssue(IssueCategory.AssetDiagnostic, k_StreamingAssetsFolderDescriptor.Id,
-                            Formatting.FormatSize((ulong)totalBytes))
-                    );
-                }
-            }
-        }
-
-        static DependencyNode AddResourceAsset(AnalysisContext context,
-            string assetPath, Dictionary<string, DependencyNode> assetPathsDict, IList<ProjectIssue> issues, DependencyNode parent)
-        {
-            // skip C# scripts
-            if (Path.GetExtension(assetPath).Equals(".cs"))
+            if (!Directory.Exists("Assets/StreamingAssets"))
                 return null;
 
-            if (assetPathsDict.ContainsKey(assetPath))
+            long totalBytes = 0;
+            string[] files = Directory.GetFiles("Assets/StreamingAssets", "*", SearchOption.AllDirectories);
+            foreach (var file in files)
             {
-                var dep = assetPathsDict[assetPath];
-                if (parent != null)
-                    dep.AddChild(parent);
-                return dep;
+                var fileInfo = new FileInfo(file);
+                totalBytes += fileInfo.Length;
             }
 
-            var location = new Location(assetPath);
-            var dependencyNode = new AssetDependencyNode
-            {
-                location = new Location(assetPath)
-            };
-            if (parent != null)
-                dependencyNode.AddChild(parent);
+            var folderSizeLimitMB =
+                context.Params.DiagnosticParams.GetParameter(k_StreamingAssetsFolderSizeLimit);
 
-            var isInResources = assetPath.IndexOf("/resources/", StringComparison.OrdinalIgnoreCase) >= 0;
+            if (totalBytes <= folderSizeLimitMB * 1024 * 1024)
+                return null;
 
-            issues.Add(context.CreateIssue
-                (
-                    IssueCategory.AssetDiagnostic,
-                    k_AssetInResourcesFolderDescriptor.Id,
-                    Path.GetFileName(assetPath), isInResources ? "is in a Resources folder" : "is a dependency of a Resources folder asset"
-                )
-                .WithDependencies(dependencyNode)
-                .WithLocation(location));
-
-            assetPathsDict.Add(assetPath, dependencyNode);
-
-            return dependencyNode;
+            return context.CreateIssue(IssueCategory.AssetDiagnostic, k_StreamingAssetsFolderDescriptor.Id,
+                Formatting.FormatSize((ulong)totalBytes));
         }
     }
 }

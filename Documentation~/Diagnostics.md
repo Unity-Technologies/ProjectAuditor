@@ -86,8 +86,9 @@ Builtin asset-specific diagnostics:
 | PAA1000 | Mesh: Read/Write enabled                                    | Graphics                    | Any                             |
 | PAA1001 | Mesh: Index Format is 32 bits                               | Graphics                    | Any                             |
 | PAA2000 | Shader: Not compatible with SRP batcher                     | Graphics                    | Any                             |
-| PAA3000 | Files: Resources folder asset & dependencies                | BuildSize                   | Any                             |
-| PAA3001 | Files: StreamingAssets folder size                          | BuildSize                   | Any                             |
+| PAA3000 | Files: Resources folder asset                               | BuildSize                   | Any                             |
+| PAA3001 | Files: Resources folder asset dependency                    | BuildSize                   | Any                             |
+| PAA3002 | Files: StreamingAssets folder size                          | BuildSize                   | Any                             |
 | PAA4000 | Audio: Long AudioClip is not set to Streaming               | Memory                      | Any                             |
 | PAA4001 | Audio: Short AudioClip is set to streaming                  | Memory                      | Any                             |
 | PAA4002 | Audio: AudioClip is stereo                                  | Memory                      | Android, iOS, Switch            |
