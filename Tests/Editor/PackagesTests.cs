@@ -16,7 +16,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void SetUp()
         {
             AddPackage("com.unity.2d.pixel-perfect@3.0.2");
-            AddPackage("com.unity.services.vivox");
+            AddPackage("com.unity.services.vivox@15.1.210100-pre.1");
         }
 
         [OneTimeTearDown]
@@ -88,24 +88,26 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void Package_Upgrade_IsRecommended()
+        [TestCase("com.unity.2d.pixel-perfect")]
+        public void Package_Upgrade_IsRecommended(string packageName)
         {
             var packageDiagnostics = Analyze(IssueCategory.PackageDiagnostic);
-            var diagnostic = packageDiagnostics.FirstOrDefault(issue => issue.Description.Contains("com.unity.2d.pixel-perfect"));
+            var diagnostic = packageDiagnostics.FirstOrDefault(issue => issue.Description.Contains(packageName));
 
-            Assert.IsNotNull(diagnostic, "Cannot find the upgrade package: com.unity.2d.pixel-perfect");
-            Assert.IsTrue(diagnostic.Description.StartsWith("'com.unity.2d.pixel-perfect' could be updated from version '3.0.2' to "), "Description: " + diagnostic.Description);
+            Assert.IsNotNull(diagnostic, $"Cannot find package diagnostic for: {packageName}");
+            Assert.IsTrue(diagnostic.Description.StartsWith($"'{packageName}' could be updated from version '3.0.2' to "), "Description: " + diagnostic.Description);
             Assert.AreEqual(Severity.Minor, diagnostic.Severity);
         }
 
         [Test]
-        public void Package_Preview_IsReported()
+        [TestCase("com.unity.services.vivox")]
+        public void Package_Preview_IsReported(string packageName)
         {
             var packageDiagnostics = Analyze(IssueCategory.PackageDiagnostic);
-            var diagnostic = packageDiagnostics.FirstOrDefault(issue => issue.Description.Contains("com.unity.services.vivox"));
+            var diagnostic = packageDiagnostics.FirstOrDefault(issue => issue.Description.Contains(packageName));
 
-            Assert.IsNotNull(diagnostic, "Cannot find the upgrade package: com.unity.services.vivox");
-            Assert.IsTrue(diagnostic.Description.StartsWith("'com.unity.services.vivox' version "), "Description: " + diagnostic.Description);
+            Assert.IsNotNull(diagnostic, $"Cannot find package diagnostic for: {packageName}");
+            Assert.IsTrue(diagnostic.Description.StartsWith($"'{packageName}' version "), "Description: " + diagnostic.Description);
             Assert.AreEqual(Severity.Moderate, diagnostic.Severity);
         }
 
