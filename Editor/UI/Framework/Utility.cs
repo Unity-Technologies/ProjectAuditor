@@ -68,7 +68,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static readonly string k_DisplayedIgnoredIssuesIconName = "animationvisibilitytoggleon";
         static readonly string k_HiddenIgnoredIssuesIconName = "animationvisibilitytoggleoff";
         static readonly string k_IgnoredIssuesLabel = " Ignored Issues";
-        static readonly string k_CopyToClipboardIconName = "Icon-CopyToClipboard";
+        static readonly string k_CopyToClipboardIconName = "CopyToClipboard";
 
         static Texture2D s_CriticalIcon;
         static Texture2D s_MajorIcon;
