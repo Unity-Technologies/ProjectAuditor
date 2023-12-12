@@ -78,14 +78,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             public long Size;
         }
 
-        struct SerliazedObjectKey
+        struct SerializedObjectKey
         {
             public int NameHash;
             public int TypeHash;
             public long Size;
             public uint Crc;
 
-            public SerliazedObjectKey(string name, string type, long size, uint crc)
+            public SerializedObjectKey(string name, string type, long size, uint crc)
             {
                 NameHash = name?.GetHashCode() ?? -1;
                 TypeHash = type.GetHashCode();
@@ -95,7 +95,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
         }
 
         Dictionary<string, SerializedObjectInfo> m_SerializedObjectInfos = new Dictionary<string, SerializedObjectInfo>();
-        Dictionary<SerliazedObjectKey, List<SerializedObject>> m_PotentialDuplicates = new Dictionary<SerliazedObjectKey, List<SerializedObject>>();
+        Dictionary<SerializedObjectKey, List<SerializedObject>> m_PotentialDuplicates = new Dictionary<SerializedObjectKey, List<SerializedObject>>();
+
+        SimpleDependencyNode k_CycleNode = new SimpleDependencyNode("(cycle)");
 
         public override void Initialize()
         {
@@ -110,13 +112,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 var buildObjects = projectAuditorParams.BuildObjects;
 
-                progress?.Start("Parsing all assets from Build Data", "Search in Progress...", 1);
-
                 List<ProjectIssue> issues = new List<ProjectIssue>();
 
                 // Count all SerializedObjects
                 var objects = buildObjects.GetObjects<SerializedObject>();
                 var objectDict = new Dictionary<int, SerializedObject>();
+
+                List<List<SerializedObject>> duplicatesList = new List<List<SerializedObject>>();
+
+                progress?.Start($"Summarizing {objects.Count} objects from Build Data", "Search in Progress...", objects.Count);
 
                 foreach (var obj in objects)
                 {
@@ -144,11 +148,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         m_SerializedObjectInfos.Add(obj.Type, new SerializedObjectInfo { Count = 1, Size = size });
                     }
 
-                    SerliazedObjectKey key = new SerliazedObjectKey(obj.Name, obj.Type, obj.Size, obj.Crc32);
+                    SerializedObjectKey key = new SerializedObjectKey(obj.Name, obj.Type, obj.Size, obj.Crc32);
 
                     if (m_PotentialDuplicates.TryGetValue(key, out var objList))
                     {
                         objList.Add(obj);
+
+                        if (objList.Count == 2)
+                            duplicatesList.Add(objList);
                     }
                     else
                     {
@@ -156,61 +163,68 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         newList.Add(obj);
                         m_PotentialDuplicates.Add(key, newList);
                     }
+
+                    progress?.Advance();
                 }
 
-                // Diagnostic issues
                 var context = new AnalysisContext();
 
-                foreach (var duplicate in m_PotentialDuplicates)
+                progress?.Start($"Finding duplicate objects in Build Data ({duplicatesList.Count})", "Search in Progress...", duplicatesList.Count);
+
+                var files = new HashSet<string>();
+
+                foreach (var list in duplicatesList)
                 {
-                    if (duplicate.Value.Count > 1)
+                    var firstObj = list[0];
+
+                    var mainDependencyNode = new SimpleDependencyNode("Information");
+
+                    // Dependency view: Add tree with a list of bundles as child items
+                    var bundleDependencyNode = new SimpleDependencyNode("Files containing this asset");
+
+                    // Dependency view: Add tree with inverse references from this object to objects referencing it
+                    var inverseDependencyNode = new LazyEvaluationDependencyNode("Objects referencing this asset");
+                    mainDependencyNode.AddChild(inverseDependencyNode);
+
+                    files.Clear();
+                    foreach (var obj in list)
                     {
-                        var firstObj = duplicate.Value[0];
-
-                        var mainDependencyNode = new SimpleDependencyNode("Information");
-
-                        // Dependency view: Add tree with a list of bundles as child items
-                        var bundleDependencyNode = new SimpleDependencyNode("Files containing this asset");
-
-                        // Dependency view: Add tree with inverse references from this object to objects referencing it
-                        var inverseDependencyNode = new SimpleDependencyNode("Objects referencing this asset");
-                        mainDependencyNode.AddChild(inverseDependencyNode);
-
-                        var files = new HashSet<string>();
-                        foreach (var obj in duplicate.Value)
+                        var filename = obj.BuildFile.DisplayName;
+                        if (!files.Contains(filename))
                         {
-                            var filename = obj.BuildFile.DisplayName;
-                            if (!files.Contains(filename))
-                            {
-                                files.Add(filename);
+                            files.Add(filename);
 
-                                var childDependencyNode = new SimpleDependencyNode(filename);
-                                bundleDependencyNode.AddChild(childDependencyNode);
-                            }
-
-                            HashSet<int> visitedObjects = new HashSet<int>();
-                            AddChildDependencyNodes(obj, inverseDependencyNode, buildObjects, objectDict,
-                                visitedObjects, 10);
+                            var childDependencyNode = new SimpleDependencyNode(filename);
+                            bundleDependencyNode.AddChild(childDependencyNode);
                         }
 
-                        var name = firstObj.Name != null ? firstObj.Name : string.Empty;
-
-                        mainDependencyNode.AddChild(bundleDependencyNode);
-
-                        var issue = context.CreateIssue(IssueCategory.BuildDataDiagnostic,
-                            k_DuplicateDiagnosticDescriptor.Id, name)
-                            .WithCustomProperties(new object[]
-                            {
-                                name,
-                                firstObj.Type,
-                                duplicate.Value.Count,
-                                firstObj.Size,
-                                duplicate.Value.Count * firstObj.Size
-                            }
-                            ).WithDependencies(mainDependencyNode);
-
-                        issues.Add(issue);
+                        inverseDependencyNode.OnEvaluate += () =>
+                        {
+                            var visitedObjects = new Stack<int>();
+                            AddChildDependencyNodes(obj, inverseDependencyNode, buildObjects, objectDict,
+                                visitedObjects, 10);
+                        };
                     }
+
+                    var name = firstObj.Name != null ? firstObj.Name : string.Empty;
+
+                    mainDependencyNode.AddChild(bundleDependencyNode);
+
+                    var issue = context.CreateIssue(IssueCategory.BuildDataDiagnostic,
+                        k_DuplicateDiagnosticDescriptor.Id, name)
+                        .WithCustomProperties(new object[]
+                        {
+                            name,
+                            firstObj.Type,
+                            list.Count,
+                            firstObj.Size,
+                            list.Count * firstObj.Size
+                        }
+                        ).WithDependencies(mainDependencyNode);
+
+                    issues.Add(issue);
+
+                    progress?.Advance();
                 }
 
                 projectAuditorParams.OnIncomingIssues(issues);
@@ -223,38 +237,37 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         private bool AddChildDependencyNodes(SerializedObject serializedObject,
             SimpleDependencyNode parentNode, BuildObjects buildObjects,
-            Dictionary<int, SerializedObject> serializedObjects, HashSet<int> visitedObjects, int depthLeft)
+            Dictionary<int, SerializedObject> serializedObjects, Stack<int> visitedObjects, int depthLeft)
         {
             if (depthLeft == 0 || serializedObject == null)
                 return false;
 
             var isObjectCycle = visitedObjects.Contains(serializedObject.Id);
-            string info = string.Empty;
 
-            if (isObjectCycle)
-            {
-                info += "Cycle: ";
-            }
+            SimpleDependencyNode node;
 
             if (serializedObject.Type == "AssetBundle")
             {
-                info += serializedObject.BuildFile.DisplayName;
+                node = new SimpleDependencyNode(serializedObject.BuildFile.DisplayName);
             }
             else
             {
-                info += string.IsNullOrEmpty(serializedObject.Name) ? "---" : serializedObject.Name;
-                info += " (" + serializedObject.Type + ")";
+                if (visitedObjects.Count == 0)
+                    node = new SimpleDependencyNode(
+                        serializedObject.Name + " (" + serializedObject.Type + ") - " + serializedObject.BuildFile.DisplayName);
+                else
+                    node = new SimpleDependencyNode(serializedObject.Name + " (" + serializedObject.Type + ")");
             }
 
-            var node = new SimpleDependencyNode(info);
             parentNode.AddChild(node);
 
             if (isObjectCycle)
             {
+                node.AddChild(k_CycleNode);
                 return false;
             }
 
-            visitedObjects.Add(serializedObject.Id);
+            visitedObjects.Push(serializedObject.Id);
 
             bool isLeafNode = true;
 
@@ -278,7 +291,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 isLeafNode = allLeaves;
             }
 
-            visitedObjects.Remove(serializedObject.Id);
+            visitedObjects.Pop();
 
             return isLeafNode;
         }

@@ -45,7 +45,23 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 m_Root = root;
 
+                EvaluateNodes(root);
+
                 Reload();
+            }
+        }
+
+        private void EvaluateNodes(DependencyNode node)
+        {
+            if (node is LazyEvaluationDependencyNode { OnEvaluate : {} } simpleNode)
+            {
+                simpleNode.OnEvaluate();
+                simpleNode.OnEvaluate = null;
+            }
+
+            for (int i = 0; i < node.GetNumChildren(); i++)
+            {
+                EvaluateNodes(node.GetChild(i));
             }
         }
 
