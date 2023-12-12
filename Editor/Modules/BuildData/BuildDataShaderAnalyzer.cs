@@ -40,8 +40,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                                         "TODO-PassType",
                                         string.IsNullOrEmpty(pass.Name) ? "Pass " + passCount.ToString() : pass.Name,
                                         keywordString,
-                                        "TODO-PlatformKeywords",
-                                        "TODO-Requirements",
                                         context.Shader.BuildFile.DisplayName,
                                     });
                         }

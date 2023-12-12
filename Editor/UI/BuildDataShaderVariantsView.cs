@@ -68,20 +68,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 enabled = true,
                 content = new GUIContent("Keywords")
             });
-            propertyFoldouts.Add(new PropertyFoldout
-            {
-                id = descriptor.Category == IssueCategory.BuildDataShaderVariant ? (int)BuildDataShaderVariantProperty.PlatformKeywords : (int)ComputeShaderVariantProperty.PlatformKeywords,
-                enabled = true,
-                content = new GUIContent("Platform Keywords")
-            });
 
-            if (descriptor.Category == IssueCategory.BuildDataShaderVariant)
-                propertyFoldouts.Add(new PropertyFoldout
-                {
-                    id = (int)BuildDataShaderVariantProperty.Requirements,
-                    enabled = true,
-                    content = new GUIContent("Requirements")
-                });
             m_PropertyFoldouts = propertyFoldouts.ToArray();
 
             base.Create(descriptor, layout, rules, viewStates, filter);

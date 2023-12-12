@@ -25,8 +25,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         PassType,
         PassName,
         Keywords,
-        PlatformKeywords,
-        Requirements,
         AssetBundle,
         Num,
     }
@@ -60,8 +58,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.PassType), Format = PropertyFormat.String, Name = "Pass Type", LongName = "Pass Type" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.PassName), Format = PropertyFormat.String, Name = "Pass Name", LongName = "Pass Name" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.Keywords), Format = PropertyFormat.String, Name = "Keywords", LongName = "Keywords" },
-                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.PlatformKeywords), Format = PropertyFormat.String, Name = "Platform Keywords", LongName = "Platform Keywords" },
-                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.PlatformKeywords), Format = PropertyFormat.String, Name = "Requirements", LongName = "Requirements" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.AssetBundle), Format = PropertyFormat.String, Name = "File", LongName = "File Name" },
             }
         };
