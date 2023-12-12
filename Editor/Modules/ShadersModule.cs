@@ -79,33 +79,33 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     class ShaderVariantData
     {
-        public PassType passType;
-        public string passName;
-        public ShaderType shaderType;
-        public string[] keywords;
-        public string[] platformKeywords;
-        public ShaderRequirements[] requirements;
-        public GraphicsTier graphicsTier;
-        public BuildTarget buildTarget;
-        public ShaderCompilerPlatform compilerPlatform;
+        public PassType PassType;
+        public string PassName;
+        public ShaderType ShaderType;
+        public string[] Keywords;
+        public string[] PlatformKeywords;
+        public ShaderRequirements[] Requirements;
+        public GraphicsTier GraphicsTier;
+        public BuildTarget BuildTarget;
+        public ShaderCompilerPlatform CompilerPlatform;
     }
 
     class ComputeShaderVariantData
     {
-        public string kernelName;
-        public string kernelThreadCount;
-        public string[] keywords;
-        public string[] platformKeywords;
-        public GraphicsTier graphicsTier;
-        public BuildTarget buildTarget;
-        public ShaderCompilerPlatform compilerPlatform;
+        public string KernelName;
+        public string KernelThreadCount;
+        public string[] Keywords;
+        public string[] PlatformKeywords;
+        public GraphicsTier GraphicsTier;
+        public BuildTarget BuildTarget;
+        public ShaderCompilerPlatform CompilerPlatform;
     }
 
     class CompiledVariantData
     {
-        public string pass;
-        public string stage;
-        public string[] keywords;
+        public string Pass;
+        public string Stage;
+        public string[] Keywords;
     }
 
     class ShadersModule : ModuleWithAnalyzers<IShaderModuleAnalyzer>
@@ -116,119 +116,121 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         static readonly IssueLayout k_ShaderLayout = new IssueLayout
         {
-            category = IssueCategory.Shader,
-            properties = new[]
+            Category = IssueCategory.Shader,
+            Properties = new[]
             {
 //                new PropertyDefinition { type = PropertyType.LogLevel},
-                new PropertyDefinition { type = PropertyType.Description, name = "Shader Name"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size of the variants in the build" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumVariants), format = PropertyFormat.ULong, name = "Num Variants", longName = "Number of potential shader variants for a single stage (e.g. fragment), per shader platform (e.g. GLES30)" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumBuiltVariants), format = PropertyFormat.Integer, name = "Built Fragment Variants", longName = "Number of fragment shader variants in the build for a single stage (e.g. fragment), per shader platform (e.g. GLES30)" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumPasses), format = PropertyFormat.Integer, name = "Num Passes", longName = "Number of Passes" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumKeywords), format = PropertyFormat.Integer, name = "Num Keywords", longName = "Number of Keywords" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumProperties), format = PropertyFormat.Integer, name = "Num Properties", longName = "Number of Properties" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.NumTextureProperties), format = PropertyFormat.Integer, name = "Num Tex Properties", longName = "Number of Texture Properties" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.RenderQueue), format = PropertyFormat.Integer, name = "Render Queue" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.Instancing), format = PropertyFormat.Bool, name = "Instancing", longName = "GPU Instancing Support" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.SrpBatcher), format = PropertyFormat.Bool, name = "SRP Batcher", longName = "SRP Batcher Compatible" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderProperty.AlwaysIncluded), format = PropertyFormat.Bool, name = "Always Included", longName = "Always Included in Build" },
-                new PropertyDefinition { type = PropertyType.Path, name = "Source Asset"},
-                new PropertyDefinition { type = PropertyType.Directory, name = "Directory", defaultGroup = true}
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Shader Name"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ShaderProperty.Size), Format = PropertyFormat.Bytes, Name = "Size", LongName = "Size of the variants in the build" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ShaderProperty.NumVariants), Format = PropertyFormat.ULong, Name = "Num Variants", LongName = "Number of potential shader variants for a single stage (e.g. fragment), per shader platform (e.g. GLES30)" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ShaderProperty.NumBuiltVariants), Format = PropertyFormat.Integer, Name = "Built Fragment Variants", LongName = "Number of fragment shader variants in the build for a single stage (e.g. fragment), per shader platform (e.g. GLES30)" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ShaderProperty.NumPasses), Format = PropertyFormat.Integer, Name = "Num Passes", LongName = "Number of Passes" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ShaderProperty.NumKeywords), Format = PropertyFormat.Integer, Name = "Num Keywords", LongName = "Number of Keywords" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ShaderProperty.NumProperties), Format = PropertyFormat.Integer, Name = "Num Properties", LongName = "Number of Properties" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ShaderProperty.NumTextureProperties), Format = PropertyFormat.Integer, Name = "Num Tex Properties", LongName = "Number of Texture Properties" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ShaderProperty.RenderQueue), Format = PropertyFormat.Integer, Name = "Render Queue" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ShaderProperty.Instancing), Format = PropertyFormat.Bool, Name = "Instancing", LongName = "GPU Instancing Support" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ShaderProperty.SrpBatcher), Format = PropertyFormat.Bool, Name = "SRP Batcher", LongName = "SRP Batcher Compatible" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ShaderProperty.AlwaysIncluded), Format = PropertyFormat.Bool, Name = "Always Included", LongName = "Always Included in Build" },
+                new PropertyDefinition { Type = PropertyType.Path, Name = "Source Asset", MaxAutoWidth = 500 },
+                new PropertyDefinition { Type = PropertyType.Directory, Name = "Directory", IsDefaultGroup = true, MaxAutoWidth = 500 }
             }
         };
 
         static readonly IssueLayout k_MaterialLayout = new IssueLayout
         {
-            category = IssueCategory.Material,
-            properties = new[]
+            Category = IssueCategory.Material,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Material Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(MaterialProperty.Shader), format = PropertyFormat.String, name = "Shader", defaultGroup = true },
-                new PropertyDefinition { type = PropertyType.Path, name = "Source Asset" }
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Material Name" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(MaterialProperty.Shader), Format = PropertyFormat.String, Name = "Shader", IsDefaultGroup = true },
+                new PropertyDefinition { Type = PropertyType.Path, Name = "Source Asset", MaxAutoWidth = 500 }
             }
         };
 
         static readonly IssueLayout k_ShaderVariantLayout = new IssueLayout
         {
-            category = IssueCategory.ShaderVariant,
-            properties = new[]
+            Category = IssueCategory.ShaderVariant,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Shader Name", defaultGroup = true },
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Shader Name", IsDefaultGroup = true },
                 new PropertyDefinition
                 {
-                    type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Compiled), format = PropertyFormat.Bool,
-                    name = "Compiled", longName = "Compiled at runtime by the player"
+                    Type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Compiled), Format = PropertyFormat.Bool,
+                    Name = "Compiled", LongName = "Compiled at runtime by the player"
                 },
                 new PropertyDefinition
                 {
-                    type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Platform), format = PropertyFormat.String,
-                    name = "Graphics API"
+                    Type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Platform), Format = PropertyFormat.String,
+                    Name = "Graphics API"
                 },
                 new PropertyDefinition
                 {
-                    type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Tier), format = PropertyFormat.String,
-                    name = "Tier"
+                    Type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Tier), Format = PropertyFormat.String,
+                    Name = "Tier"
                 },
                 new PropertyDefinition
                 {
-                    type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Stage), format = PropertyFormat.String,
-                    name = "Stage"
+                    Type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Stage), Format = PropertyFormat.String,
+                    Name = "Stage"
                 },
                 new PropertyDefinition
                 {
-                    type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.PassType), format = PropertyFormat.String,
-                    name = "Pass Type"
+                    Type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.PassType), Format = PropertyFormat.String,
+                    Name = "Pass Type"
                 },
                 new PropertyDefinition
                 {
-                    type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.PassName), format = PropertyFormat.String,
-                    name = "Pass Name"
+                    Type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.PassName), Format = PropertyFormat.String,
+                    Name = "Pass Name"
                 },
                 new PropertyDefinition
                 {
-                    type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Keywords), format = PropertyFormat.String,
-                    name = "Keywords"
+                    Type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Keywords), Format = PropertyFormat.String,
+                    Name = "Keywords",
+                    MaxAutoWidth = 500
                 },
                 new PropertyDefinition
                 {
-                    type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.PlatformKeywords),
-                    format = PropertyFormat.String, name = "Platform Keywords"
+                    Type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.PlatformKeywords),
+                    Format = PropertyFormat.String, Name = "Platform Keywords",
+                    MaxAutoWidth = 500
                 },
                 new PropertyDefinition
                 {
-                    type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Requirements),
-                    format = PropertyFormat.String, name = "Requirements"
+                    Type = PropertyTypeUtil.FromCustom(ShaderVariantProperty.Requirements),
+                    Format = PropertyFormat.String, Name = "Requirements"
                 }
             }
         };
 
         static readonly IssueLayout k_ComputeShaderVariantLayout = new IssueLayout
         {
-            category = IssueCategory.ComputeShaderVariant,
-            properties = new[]
+            Category = IssueCategory.ComputeShaderVariant,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Shader Name", defaultGroup = true },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Platform), format = PropertyFormat.String, name = "Graphics API" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Tier), format = PropertyFormat.String, name = "Tier" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Kernel), format = PropertyFormat.String, name = "Kernel" },
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Shader Name", IsDefaultGroup = true },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Platform), Format = PropertyFormat.String, Name = "Graphics API" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Tier), Format = PropertyFormat.String, Name = "Tier" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Kernel), Format = PropertyFormat.String, Name = "Kernel" },
 #if PA_CAN_USE_COMPUTESHADER_KEYWORDSPACE
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.KernelThreadCount), format = PropertyFormat.Integer, name = "Kernel Thread Count" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.KernelThreadCount), Format = PropertyFormat.Integer, Name = "Kernel Thread Count" },
 #endif
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Keywords), format = PropertyFormat.String, name = "Keywords" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.PlatformKeywords), format = PropertyFormat.String, name = "Platform Keywords" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.Keywords), Format = PropertyFormat.String, Name = "Keywords", MaxAutoWidth = 500 },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ComputeShaderVariantProperty.PlatformKeywords), Format = PropertyFormat.String, Name = "Platform Keywords", MaxAutoWidth = 500 },
             }
         };
 
         static readonly IssueLayout k_ShaderCompilerMessageLayout = new IssueLayout
         {
-            category = IssueCategory.ShaderCompilerMessage,
-            properties = new[]
+            Category = IssueCategory.ShaderCompilerMessage,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.LogLevel},
-                new PropertyDefinition { type = PropertyType.Description, name = "Message"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderMessageProperty.ShaderName), format = PropertyFormat.String, name = "Shader Name", defaultGroup = true},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(ShaderMessageProperty.Platform), format = PropertyFormat.String, name = "Platform"},
-                new PropertyDefinition { type = PropertyType.Path, name = "Path"},
+                new PropertyDefinition { Type = PropertyType.LogLevel},
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Message", MaxAutoWidth = 500 },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ShaderMessageProperty.ShaderName), Format = PropertyFormat.String, Name = "Shader Name", IsDefaultGroup = true},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ShaderMessageProperty.Platform), Format = PropertyFormat.String, Name = "Platform"},
+                new PropertyDefinition { Type = PropertyType.Path, Name = "Path", MaxAutoWidth = 500 },
             }
         };
 
@@ -263,7 +265,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             AssetsModule.k_IssueLayout
         };
 
-        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
+        public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
             var context = new AnalysisContext()
             {
@@ -280,7 +282,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             // clear collected variants before next build
             ClearBuildData();
 
-            analysisParams.OnModuleCompleted?.Invoke();
+            return AnalysisResult.Success;
         }
 
         Dictionary<Shader, string> CollectShaders(AnalysisContext context)
@@ -442,18 +444,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var computeShaderName = shaderCompilerData.Key.name;
                 foreach (var shaderVariantData in shaderCompilerData.Value)
                 {
-                    if (shaderVariantData.buildTarget != BuildTarget.NoTarget && shaderVariantData.buildTarget != analysisParams.Platform)
+                    if (shaderVariantData.BuildTarget != BuildTarget.NoTarget && shaderVariantData.BuildTarget != analysisParams.Platform)
                         continue;
 
-                    issues.Add(context.CreateInsight(k_ComputeShaderVariantLayout.category, computeShaderName)
+                    issues.Add(context.CreateInsight(k_ComputeShaderVariantLayout.Category, computeShaderName)
                         .WithCustomProperties(new object[(int)ComputeShaderVariantProperty.Num]
                         {
-                            shaderVariantData.compilerPlatform,
-                            shaderVariantData.graphicsTier,
-                            shaderVariantData.kernelName,
-                            shaderVariantData.kernelThreadCount,
-                            CombineKeywords(shaderVariantData.keywords),
-                            CombineKeywords(shaderVariantData.platformKeywords)
+                            shaderVariantData.CompilerPlatform,
+                            shaderVariantData.GraphicsTier,
+                            shaderVariantData.KernelName,
+                            shaderVariantData.KernelThreadCount,
+                            CombineKeywords(shaderVariantData.Keywords),
+                            CombineKeywords(shaderVariantData.PlatformKeywords)
                         }));
                 }
             }
@@ -468,7 +470,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var materialPathMap = CollectMaterials(context);
             foreach (var material in materialPathMap)
             {
-                issues.Add(context.CreateInsight(k_MaterialLayout.category, material.Key.name)
+                issues.Add(context.CreateInsight(k_MaterialLayout.Category, material.Key.name)
                     .WithCustomProperties(new object[(int)MaterialProperty.Num]
                     {
                         material.Key.shader.name
@@ -490,8 +492,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (s_ShaderVariantData.ContainsKey(context.Shader))
             {
                 var variants = s_ShaderVariantData[context.Shader];
-                var numCompilerPlatforms = variants.Select(v => v.compilerPlatform).Distinct().Count();
-                variantCountPerCompilerPlatform = variants.Count(v => ShaderTypeIsFragment(v.shaderType, v.compilerPlatform)) / numCompilerPlatforms;
+                var numCompilerPlatforms = variants.Select(v => v.CompilerPlatform).Distinct().Count();
+                variantCountPerCompilerPlatform = variants.Count(v => ShaderTypeIsFragment(v.ShaderType, v.CompilerPlatform)) / numCompilerPlatforms;
             }
 
             var shaderName = context.Shader.name;
@@ -577,7 +579,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var shaderVariantData in shaderVariants)
                 {
-                    if (shaderVariantData.buildTarget != BuildTarget.NoTarget && shaderVariantData.buildTarget != context.Params.Platform)
+                    if (shaderVariantData.BuildTarget != BuildTarget.NoTarget && shaderVariantData.BuildTarget != context.Params.Platform)
                         continue;
 
                     yield return context.CreateInsight(IssueCategory.ShaderVariant, context.Shader.name)
@@ -585,14 +587,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         .WithCustomProperties(new object[(int)ShaderVariantProperty.Num]
                         {
                             k_NoRuntimeData,
-                            shaderVariantData.compilerPlatform,
-                            shaderVariantData.graphicsTier,
-                            shaderVariantData.shaderType,
-                            shaderVariantData.passType,
-                            shaderVariantData.passName,
-                            CombineKeywords(shaderVariantData.keywords),
-                            CombineKeywords(shaderVariantData.platformKeywords),
-                            CombineKeywords(shaderVariantData.requirements.Select(r => r.ToString()).ToArray())
+                            shaderVariantData.CompilerPlatform,
+                            shaderVariantData.GraphicsTier,
+                            shaderVariantData.ShaderType,
+                            shaderVariantData.PassType,
+                            shaderVariantData.PassName,
+                            CombineKeywords(shaderVariantData.Keywords),
+                            CombineKeywords(shaderVariantData.PlatformKeywords),
+                            CombineKeywords(shaderVariantData.Requirements.Select(r => r.ToString()).ToArray())
                         });
                 }
             }
@@ -661,13 +663,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 s_ComputeShaderVariantData[shader].Add(new ComputeShaderVariantData
                 {
-                    kernelName = kernelName,
-                    kernelThreadCount = kernelThreadCount == 0 ? k_ComputeShaderMayHaveBadVariants : kernelThreadCount.ToString(),
-                    keywords = GetShaderKeywords(shader, shaderCompilerData.shaderKeywordSet.GetShaderKeywords()),
-                    platformKeywords = PlatformKeywordSetToStrings(shaderCompilerData.platformKeywordSet),
-                    graphicsTier = shaderCompilerData.graphicsTier,
-                    buildTarget = (buildTargetPropertyInfo != null) ? (BuildTarget)buildTargetPropertyInfo.GetValue(shaderCompilerData) : BuildTarget.NoTarget,
-                    compilerPlatform = shaderCompilerData.shaderCompilerPlatform
+                    KernelName = kernelName,
+                    KernelThreadCount = kernelThreadCount == 0 ? k_ComputeShaderMayHaveBadVariants : kernelThreadCount.ToString(),
+                    Keywords = GetShaderKeywords(shader, shaderCompilerData.shaderKeywordSet.GetShaderKeywords()),
+                    PlatformKeywords = PlatformKeywordSetToStrings(shaderCompilerData.platformKeywordSet),
+                    GraphicsTier = shaderCompilerData.graphicsTier,
+                    BuildTarget = (buildTargetPropertyInfo != null) ? (BuildTarget)buildTargetPropertyInfo.GetValue(shaderCompilerData) : BuildTarget.NoTarget,
+                    CompilerPlatform = shaderCompilerData.shaderCompilerPlatform
                 });
             }
         }
@@ -697,15 +699,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 s_ShaderVariantData[shader].Add(new ShaderVariantData
                 {
-                    passType = snippet.passType,
-                    passName =  snippet.passName,
-                    shaderType = snippet.shaderType,
-                    keywords = GetShaderKeywords(shader, shaderCompilerData.shaderKeywordSet.GetShaderKeywords()),
-                    platformKeywords = PlatformKeywordSetToStrings(shaderCompilerData.platformKeywordSet),
-                    requirements = shaderRequirementsList.ToArray(),
-                    graphicsTier = shaderCompilerData.graphicsTier,
-                    buildTarget = (buildTargetPropertyInfo != null) ? (BuildTarget)buildTargetPropertyInfo.GetValue(shaderCompilerData) : BuildTarget.NoTarget,
-                    compilerPlatform = shaderCompilerData.shaderCompilerPlatform
+                    PassType = snippet.passType,
+                    PassName =  snippet.passName,
+                    ShaderType = snippet.shaderType,
+                    Keywords = GetShaderKeywords(shader, shaderCompilerData.shaderKeywordSet.GetShaderKeywords()),
+                    PlatformKeywords = PlatformKeywordSetToStrings(shaderCompilerData.platformKeywordSet),
+                    Requirements = shaderRequirementsList.ToArray(),
+                    GraphicsTier = shaderCompilerData.graphicsTier,
+                    BuildTarget = (buildTargetPropertyInfo != null) ? (BuildTarget)buildTargetPropertyInfo.GetValue(shaderCompilerData) : BuildTarget.NoTarget,
+                    CompilerPlatform = shaderCompilerData.shaderCompilerPlatform
                 });
             }
         }
@@ -765,9 +767,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
                 compiledVariants[shaderName].Add(new CompiledVariantData
                 {
-                    pass = pass,
-                    stage = stage,
-                    keywords = keywords
+                    Pass = pass,
+                    Stage = stage,
+                    Keywords = keywords
                 });
             }
 
@@ -836,13 +838,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         internal static bool ShaderVariantsMatch(CompiledVariantData cv, string stage, string passName, string[] secondSet)
         {
-            if (!cv.stage.Equals(stage, StringComparison.InvariantCultureIgnoreCase))
+            if (!cv.Stage.Equals(stage, StringComparison.InvariantCultureIgnoreCase))
                 return false;
 
-            var passMatch = cv.pass.Equals(passName);
+            var passMatch = cv.Pass.Equals(passName);
             if (!passMatch)
             {
-                var isUnnamed = k_NoPassNames.Contains(cv.pass) || cv.pass.StartsWith("<Unnamed Pass ");
+                var isUnnamed = k_NoPassNames.Contains(cv.Pass) || cv.Pass.StartsWith("<Unnamed Pass ");
 #if UNITY_2021_3_OR_NEWER || UNITY_2021_2_14 || UNITY_2021_2_15 || UNITY_2021_2_16 || UNITY_2021_2_17 || UNITY_2021_2_18 || UNITY_2021_2_19
                 passMatch = isUnnamed && string.IsNullOrEmpty(passName);
 #else
@@ -853,7 +855,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (!passMatch)
                 return false;
-            return cv.keywords.OrderBy(e => e).SequenceEqual(secondSet.OrderBy(e => e));
+            return cv.Keywords.OrderBy(e => e).SequenceEqual(secondSet.OrderBy(e => e));
         }
 
         static string[] GetShaderKeywords(Shader shader, ShaderKeyword[] shaderKeywords)

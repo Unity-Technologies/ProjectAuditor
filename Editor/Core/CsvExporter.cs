@@ -11,10 +11,10 @@ namespace Unity.ProjectAuditor.Editor.Core
         public override void WriteHeader()
         {
             var stringBuilder = new StringBuilder();
-            for (var i = 0; i < m_Layout.properties.Length; i++)
+            for (var i = 0; i < m_Layout.Properties.Length; i++)
             {
-                stringBuilder.Append(m_Layout.properties[i].name);
-                if (i + 1 < m_Layout.properties.Length)
+                stringBuilder.Append(m_Layout.Properties[i].Name);
+                if (i + 1 < m_Layout.Properties.Length)
                     stringBuilder.Append(",");
             }
             m_StreamWriter.WriteLine(stringBuilder);
@@ -23,16 +23,16 @@ namespace Unity.ProjectAuditor.Editor.Core
         protected override void WriteIssue(ProjectIssue issue)
         {
             var stringBuilder = new StringBuilder();
-            for (var i = 0; i < m_Layout.properties.Length; i++)
+            for (var i = 0; i < m_Layout.Properties.Length; i++)
             {
-                var columnType = m_Layout.properties[i].type;
+                var columnType = m_Layout.Properties[i].Type;
                 var prop = issue.GetProperty(columnType);
 
                 stringBuilder.Append('"');
                 stringBuilder.Append(prop);
                 stringBuilder.Append('"');
 
-                if (i + 1 < m_Layout.properties.Length)
+                if (i + 1 < m_Layout.Properties.Length)
                     stringBuilder.Append(",");
             }
             m_StreamWriter.WriteLine(stringBuilder);

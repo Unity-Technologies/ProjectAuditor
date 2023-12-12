@@ -11,6 +11,8 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
     {
         static Dictionary<int, Descriptor> s_Descriptors;
 
+        static Dictionary<Areas, string> s_DescriptorAreaStrings;
+
         [SerializeField]
         internal List<Descriptor> m_SerializedDescriptors;
 
@@ -32,6 +34,19 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public static Descriptor GetDescriptor(int idAsInt)
         {
             return s_Descriptors[idAsInt];
+        }
+
+        public static string GetAreasString(Areas areas)
+        {
+            if (s_DescriptorAreaStrings == null)
+                s_DescriptorAreaStrings = new Dictionary<Areas, string>();
+
+            if (s_DescriptorAreaStrings.TryGetValue(areas, out string desc))
+                return desc;
+
+            desc = areas.ToString();
+            s_DescriptorAreaStrings[areas] = desc;
+            return desc;
         }
 
         public void OnBeforeSerialize()

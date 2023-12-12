@@ -64,14 +64,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_NodeDictionary.Add(id, node);
 
             // if the tree is too deep, serialization will exceed the 7 levels limit.
-            if (!node.HasValidChildren())
+            if (!node.HasValidChildren)
                 items.Add(new TreeViewItem {id = id + 1, depth = depth + 1, displayName = "<Serialization Limit>"});
             else
             {
                 namesStack.Push(name);
 
                 node.SortChildren();
-                for (int i = 0; i < node.GetNumChildren(); i++)
+                for (int i = 0; i < node.NumChildren; i++)
                 {
                     AddNode(items, namesStack, node.GetChild(i), depth + 1);
                 }
@@ -85,8 +85,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             if (m_NodeDictionary.ContainsKey(id))
             {
                 var node = m_NodeDictionary[id];
-                if (node.location != null)
-                    m_OnDoubleClick(node.location);
+                if (node.Location != null)
+                    m_OnDoubleClick(node.Location);
             }
         }
     }

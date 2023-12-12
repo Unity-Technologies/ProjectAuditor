@@ -11,7 +11,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
     {
         public static string GetAreasSummary(this Descriptor descriptor)
         {
-            return descriptor.Areas.ToString();
+            return DescriptorLibrary.GetAreasString(descriptor.Areas);
         }
 
         public static bool MatchesAnyAreas(this Descriptor descriptor, Areas areasToMatch)

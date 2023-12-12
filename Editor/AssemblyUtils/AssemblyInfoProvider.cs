@@ -70,13 +70,13 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
         internal static bool IsReadOnlyAssembly(string assemblyName)
         {
             var info = GetAssemblyInfoFromAssemblyName(assemblyName);
-            return info.packageReadOnly;
+            return info.IsPackageReadOnly;
         }
 
         internal static AssemblyInfo GetAssemblyInfoFromAssemblyPath(string assemblyPath)
         {
             var info = GetAssemblyInfoFromAssemblyName(Path.GetFileNameWithoutExtension(assemblyPath));
-            info.path = assemblyPath;
+            info.Path = assemblyPath;
             return info;
         }
 
@@ -85,25 +85,25 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
             // by default let's assume it's not a package
             var assemblyInfo = new AssemblyInfo
             {
-                name = assemblyName,
-                relativePath = "Assets",
-                packageReadOnly = false
+                Name = assemblyName,
+                RelativePath = "Assets",
+                IsPackageReadOnly = false
             };
 
-            var asmDefPath = CompilationPipeline.GetAssemblyDefinitionFilePathFromAssemblyName(assemblyInfo.name);
+            var asmDefPath = CompilationPipeline.GetAssemblyDefinitionFilePathFromAssemblyName(assemblyInfo.Name);
             if (asmDefPath != null)
             {
-                assemblyInfo.asmDefPath = asmDefPath;
+                assemblyInfo.AsmDefPath = asmDefPath;
                 var folders = PathUtils.Split(asmDefPath);
                 if (folders.Length > 2 && folders[0].Equals(k_VirtualPackagesRoot))
                 {
-                    assemblyInfo.relativePath = PathUtils.Combine(folders[0], folders[1]);
+                    assemblyInfo.RelativePath = PathUtils.Combine(folders[0], folders[1]);
 
                     var info =  UnityEditor.PackageManager.PackageInfo.FindForAssetPath(asmDefPath);
                     if (info != null)
                     {
-                        assemblyInfo.packageReadOnly = info.source != PackageSource.Embedded && info.source != PackageSource.Local;
-                        assemblyInfo.packageResolvedPath = PathUtils.ReplaceSeparators(info.resolvedPath);
+                        assemblyInfo.IsPackageReadOnly = info.source != PackageSource.Embedded && info.source != PackageSource.Local;
+                        assemblyInfo.PackageResolvedPath = PathUtils.ReplaceSeparators(info.resolvedPath);
                     }
                 }
                 else
@@ -112,14 +112,14 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                     return assemblyInfo;
                 }
             }
-            else if (assemblyInfo.name.Equals(AssemblyInfo.DefaultAssemblyName))
+            else if (assemblyInfo.Name.Equals(AssemblyInfo.DefaultAssemblyName))
             {
-                assemblyInfo.asmDefPath = "Built-in";
+                assemblyInfo.AsmDefPath = "Built-in";
             }
             else
             {
                 // this might happen when loading a report from a different project
-                Debug.LogWarningFormat("Assembly Definition cannot be found for " + assemblyInfo.name);
+                Debug.LogWarningFormat("Assembly Definition cannot be found for " + assemblyInfo.Name);
             }
 
             return assemblyInfo;
@@ -130,8 +130,8 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
         {
             var fullPath = PathUtils.GetFullPath(path);
             // if it's a package, resolve from absolute+physical to logical+relative path
-            if (!string.IsNullOrEmpty(assemblyInfo.packageResolvedPath))
-                return fullPath.Replace(assemblyInfo.packageResolvedPath, assemblyInfo.relativePath);
+            if (!string.IsNullOrEmpty(assemblyInfo.PackageResolvedPath))
+                return fullPath.Replace(assemblyInfo.PackageResolvedPath, assemblyInfo.RelativePath);
 
             // if it lives in Assets/... convert to relative path
             return fullPath.Replace(s_ProjectPath + PathUtils.Separator, "");

@@ -25,7 +25,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Consider enabling mipmaps using the <b>Advanced > Generate Mip Maps</b> option in the Texture Import Settings."
         )
         {
-            MessageFormat = "Texture '{0}' mipmaps generation is not enabled",
+            MessageFormat = "Texture2D '{0}' mipmaps generation is not enabled",
             fixer = (issue, analysisParams) =>
             {
                 var textureImporter = AssetImporter.GetAtPath(issue.RelativePath) as TextureImporter;
@@ -45,7 +45,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Consider disabling mipmaps using the <b>Advanced > Generate Mip Maps</b> option in the texture inspector. This will also reduce your build size."
         )
         {
-            MessageFormat = "Texture '{0}' mipmaps generation is enabled",
+            MessageFormat = "Texture2D '{0}' mipmaps generation is enabled",
             fixer = (issue, analysisParams) =>
             {
                 var textureImporter = AssetImporter.GetAtPath(issue.RelativePath) as TextureImporter;
@@ -65,7 +65,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "If not required, disable the <b>Read/Write Enabled</b> option in the Texture Import Settings."
         )
         {
-            MessageFormat = "Texture '{0}' Read/Write is enabled",
+            MessageFormat = "Texture2D '{0}' Read/Write is enabled",
             DocumentationUrl = "https://docs.unity3d.com/Manual/class-TextureImporter.html",
             fixer = (issue, analysisParams) =>
             {
@@ -86,7 +86,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Consider enabling the <b>Streaming Mipmaps</b> option in the Texture Import Settings."
         )
         {
-            MessageFormat = "Texture '{0}' mipmaps streaming is not enabled",
+            MessageFormat = "Texture2D '{0}' mipmaps streaming is not enabled",
             fixer = (issue, analysisParams) =>
             {
                 var textureImporter = AssetImporter.GetAtPath(issue.RelativePath) as TextureImporter;
@@ -107,7 +107,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         )
         {
             Platforms = new[] { BuildTarget.Android, BuildTarget.iOS, BuildTarget.Switch},
-            MessageFormat = "Texture '{0}' anisotropic level is set to '{1}'",
+            MessageFormat = "Texture2D '{0}' anisotropic level is set to '{1}'",
             fixer = (issue, analysisParams) =>
             {
                 var textureImporter = AssetImporter.GetAtPath(issue.RelativePath) as TextureImporter;
@@ -136,7 +136,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var format = (TextureFormat)context.ImporterPlatformSettings.format;
             if (context.ImporterPlatformSettings.format == TextureImporterFormat.Automatic)
             {
-                format = (TextureFormat)context.Importer.GetAutomaticFormat(context.Params.PlatformString);
+                format = (TextureFormat)context.Importer.GetAutomaticFormat(context.Params.PlatformAsString);
             }
 
             var size = UnityEngine.Experimental.Rendering.GraphicsFormatUtility.ComputeMipChainSize(context.Texture.width, context.Texture.height, TextureUtils.GetTextureDepth(context.Texture), format, context.Texture.mipmapCount);

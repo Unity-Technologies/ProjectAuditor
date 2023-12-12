@@ -9,22 +9,22 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
     class CallInfo
     {
-        public readonly MethodReference callee;
-        public readonly MethodReference caller;
-        public readonly Location location;
-        public readonly bool perfCriticalContext;
-        public CallTreeNode hierarchy;
+        public MethodReference Callee { get; }
+        public MethodReference Caller { get; }
+        public Location Location { get; }
+        public bool IsPerfCriticalContext { get; }
+        public CallTreeNode Hierarchy { get; set; }
 
         public CallInfo(
             MethodReference callee,
             MethodReference caller,
             Location location,
-            bool perfCriticalContext)
+            bool isPerfCriticalContext)
         {
-            this.callee = callee;
-            this.caller = caller;
-            this.location = location;
-            this.perfCriticalContext = perfCriticalContext;
+            Callee = callee;
+            Caller = caller;
+            Location = location;
+            IsPerfCriticalContext = isPerfCriticalContext;
         }
 
         public override bool Equals(object obj)
@@ -35,14 +35,14 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                 return false;
             }
 
-            return other.callee == callee &&
-                other.caller == caller;
+            return other.Callee == Callee &&
+                other.Caller == Caller;
         }
 
         public override int GetHashCode()
         {
-            return callee.GetHashCode()
-                + caller.GetHashCode();
+            return Callee.GetHashCode()
+                + Caller.GetHashCode();
         }
     }
 
@@ -56,7 +56,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
         public void Add(CallInfo callInfo)
         {
-            var key = callInfo.callee.FullName;
+            var key = callInfo.Callee.FullName;
             List<CallInfo> calls;
             if (!m_BucketedCalls.TryGetValue(key, out calls))
             {
@@ -86,7 +86,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
                     // temp fix for null location (code analysis was unable to get sequence point)
                     if (issue.Location == null)
-                        issue.Location = root.location;
+                        issue.Location = root.Location;
                 }
                 if (progress != null)
                     progress.Clear();
@@ -103,7 +103,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
             // let's find all callers with matching callee
             List<CallInfo> callPairs;
-            if (m_BucketedCalls.TryGetValue(callee.methodFullName, out callPairs))
+            if (m_BucketedCalls.TryGetValue(callee.MethodFullName, out callPairs))
             {
                 var childrenCount = callPairs.Count;
                 var children = new DependencyNode[childrenCount];
@@ -111,25 +111,25 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                 for (var i = 0; i < childrenCount; i++)
                 {
                     var call = callPairs[i];
-                    if (call.hierarchy != null)
+                    if (call.Hierarchy != null)
                     {
                         // use previously built hierarchy
-                        children[i] = call.hierarchy;
+                        children[i] = call.Hierarchy;
                         continue;
                     }
 
-                    var callerName = call.caller.FullName;
-                    var hierarchy = new CallTreeNode(call.caller)
+                    var callerName = call.Caller.FullName;
+                    var hierarchy = new CallTreeNode(call.Caller)
                     {
-                        location = call.location, perfCriticalContext = call.perfCriticalContext
+                        Location = call.Location, PerfCriticalContext = call.IsPerfCriticalContext
                     };
 
                     // stop recursion, if applicable (note that this only prevents recursion when a method calls itself)
-                    if (!callerName.Equals(callee.methodFullName))
+                    if (!callerName.Equals(callee.MethodFullName))
                         BuildHierarchy(hierarchy, depth);
 
                     children[i] = hierarchy;
-                    call.hierarchy = hierarchy;
+                    call.Hierarchy = hierarchy;
                 }
                 callee.AddChildren(children);
             }

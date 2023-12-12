@@ -50,7 +50,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             get => m_GroupPropertyIndex;
             set
             {
-                if (value >= m_Layout.properties.Length)
+                if (value >= m_Layout.Properties.Length)
                     return;
                 if (value >= 0)
                     m_GroupPropertyIndex = value;
@@ -74,7 +74,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Layout = layout;
             m_FlatView = true; // by default, don't use groups
 
-            var propertyIndex = m_Layout.defaultGroupPropertyIndex;
+            var propertyIndex = m_Layout.DefaultGroupPropertyIndex;
             if (propertyIndex != -1)
             {
                 m_FlatView = false;
@@ -90,7 +90,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public void AddIssues(IReadOnlyCollection<ProjectIssue> issues)
         {
             // update groups
-            var groupNames = issues.Select(i => i.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex])).Distinct().ToArray();
+            var groupNames = issues.Select(i => i.GetPropertyGroup(m_Layout.Properties[m_GroupPropertyIndex])).Distinct().ToArray();
             foreach (var name in groupNames)
             {
                 // if necessary, create a group
@@ -110,9 +110,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             foreach (var issue in issues)
             {
                 var depth = 1;
-                if (m_Layout.hierarchy)
+                if (m_Layout.IsHierarchy)
                 {
-                    if (m_Desc.category == IssueCategory.BuildStep)
+                    if (m_Desc.Category == IssueCategory.BuildStep)
                     {
                         depth = issue.GetCustomPropertyInt32(BuildReportStepProperty.Depth);
                     }
@@ -120,7 +120,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         depth = 0;
                 }
 
-                var item = new IssueTableItem(m_NextId++, depth, issue.Description, issue, issue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
+                var item = new IssueTableItem(m_NextId++, depth, issue.Description, issue, issue.GetPropertyGroup(m_Layout.Properties[m_GroupPropertyIndex]));
                 items.Add(item.id, item);
             }
 
@@ -171,7 +171,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             if (!hasSearch && !m_FlatView)
             {
-                var groupedItemQuery = filteredItems.GroupBy(i => i.Value.ProjectIssue.GetPropertyGroup(m_Layout.properties[m_GroupPropertyIndex]));
+                var groupedItemQuery = filteredItems.GroupBy(i => i.Value.ProjectIssue.GetPropertyGroup(m_Layout.Properties[m_GroupPropertyIndex]));
                 foreach (var groupedItems in groupedItemQuery)
                 {
                     var groupName = groupedItems.Key;
@@ -181,7 +181,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     var groupIsExpanded = state.expandedIDs.Contains(group.id);
                     var children = filteredItems.Where(item => item.Value.GroupName.Equals(groupName));
 
-                    group.displayName = string.Format("{0} ({1})", groupName, children.Count());
+                    group.NumVisibleChildren = children.Count();
+                    group.DisplayName = groupName;
 
                     foreach (var child in children)
                     {
@@ -222,7 +223,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public void SetFontSize(int fontSize)
         {
-            rowHeight = k_DefaultRowHeight * fontSize / ViewStates.k_MinFontSize;
+            rowHeight = k_DefaultRowHeight * fontSize / ViewStates.DefaultMinFontSize;
         }
 
         protected override void RowGUI(RowGUIArgs args)
@@ -231,14 +232,48 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 CellGUI(args.GetCellRect(i), args.item, args.GetColumn(i), ref args);
         }
 
+        public string GetCustomGroupPropertyCellString(IssueTableItem item, PropertyDefinition property)
+        {
+            string label = null;
+            var customPropertyIndex = PropertyTypeUtil.ToCustomIndex(property.Type);
+            if (property.Format == PropertyFormat.Bytes || property.Format == PropertyFormat.Time || property.Format == PropertyFormat.Percentage)
+            {
+                if (property.Format == PropertyFormat.Bytes)
+                {
+                    ulong sum = 0;
+                    foreach (var childItem in item.children)
+                    {
+                        var issueTableItem = childItem as IssueTableItem;
+                        var value = issueTableItem.ProjectIssue.GetCustomPropertyUInt64(customPropertyIndex);
+                        sum += value;
+                    }
+
+                    label = Formatting.FormatSize(sum);
+                }
+                else
+                {
+                    float sum = 0;
+                    foreach (var childItem in item.children)
+                    {
+                        var issueTableItem = childItem as IssueTableItem;
+                        var value = issueTableItem.ProjectIssue.GetCustomPropertyFloat(customPropertyIndex);
+                        sum += value;
+                    }
+                    label = property.Format == PropertyFormat.Time ? Formatting.FormatTime(sum) : Formatting.FormatPercentage(sum, 1);
+                }
+            }
+
+            return label;
+        }
+
         void CellGUI(Rect cellRect, TreeViewItem treeViewItem, int columnIndex, ref RowGUIArgs args)
         {
-            var property = m_Layout.properties[columnIndex];
-            if (property.hidden)
+            var property = m_Layout.Properties[columnIndex];
+            if (property.IsHidden)
                 return;
 
-            var propertyType = property.type;
-            var labelStyle = SharedStyles.LabelWithDynamicSizeWithDynamicSize;
+            var propertyType = property.Type;
+            var labelStyle = SharedStyles.LabelWithDynamicSize;
             var item = treeViewItem as IssueTableItem;
 
             if (item == null)
@@ -248,16 +283,17 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 return;
             }
 
+            var contentIndent = GetContentIndent(treeViewItem);
             // indent first column, if necessary
             if (columnIndex == 0 && !hasSearch && !m_FlatView)
             {
-                var indent = GetContentIndent(treeViewItem) + extraSpaceBeforeIconAndLabel;
+                var indent = contentIndent + extraSpaceBeforeIconAndLabel;
                 cellRect.xMin += indent;
                 CenterRectUsingSingleLineHeight(ref cellRect);
             }
-            else if (m_Layout.hierarchy && property.type == PropertyType.Description)
+            else if (m_Layout.IsHierarchy && property.Type == PropertyType.Description)
             {
-                var indent = GetContentIndent(treeViewItem);
+                var indent = contentIndent;
                 cellRect.xMin += indent;
                 CenterRectUsingSingleLineHeight(ref cellRect);
             }
@@ -268,38 +304,21 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 {
                     // use all available space to display description
                     cellRect.xMax = args.rowRect.xMax;
-                    EditorGUI.LabelField(cellRect, item.GetDisplayName(), labelStyle);
-                }
-                else if (PropertyTypeUtil.IsCustom(property.type))
-                {
-                    var customPropertyIndex = PropertyTypeUtil.ToCustomIndex(propertyType);
-                    if (property.format == PropertyFormat.Bytes || property.format == PropertyFormat.Time || property.format == PropertyFormat.Percentage)
+
+                    var guiContent = new GUIContent(item.GetDisplayName());
+                    EditorGUI.LabelField(cellRect, guiContent, labelStyle);
+
+                    EditorGUI.LabelField(new Rect(cellRect)
                     {
-                        string label;
-                        if (property.format == PropertyFormat.Bytes)
-                        {
-                            ulong sum = 0;
-                            foreach (var childItem in item.children)
-                            {
-                                var issueTableItem = childItem as IssueTableItem;
-                                var value = issueTableItem.ProjectIssue.GetCustomPropertyUInt64(customPropertyIndex);
-                                sum += value;
-                            }
+                        x = labelStyle.CalcSize(guiContent).x + contentIndent
+                    }, $"({item.NumVisibleChildren} Items)", SharedStyles.LabelDarkWithDynamicSize);
+                }
+                else if (PropertyTypeUtil.IsCustom(property.Type))
+                {
+                    string label = GetCustomGroupPropertyCellString(item, property);
 
-                            label = Formatting.FormatSize(sum);
-                        }
-                        else
-                        {
-                            float sum = 0;
-                            foreach (var childItem in item.children)
-                            {
-                                var issueTableItem = childItem as IssueTableItem;
-                                var value = issueTableItem.ProjectIssue.GetCustomPropertyFloat(customPropertyIndex);
-                                sum += value;
-                            }
-                            label = property.format == PropertyFormat.Time ? Formatting.FormatTime(sum) : Formatting.FormatPercentage(sum, 1);
-                        }
-
+                    if (!string.IsNullOrEmpty(label))
+                    {
                         EditorGUI.LabelField(cellRect, label, labelStyle);
                     }
                 }
@@ -344,7 +363,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         break;
                     case PropertyType.Description:
                         GUIContent guiContent = null;
-                        if (issue.Location != null && m_Desc.descriptionWithIcon)
+                        if (issue.Location != null && m_Desc.DescriptionWithIcon)
                         {
                             guiContent =
                                 Utility.GetTextContentWithAssetIcon(item.GetDisplayName(), issue.Location.Path);
@@ -366,7 +385,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         {
                             var customPropertyIndex = PropertyTypeUtil.ToCustomIndex(propertyType);
 
-                            switch (property.format)
+                            switch (property.Format)
                             {
                                 case PropertyFormat.Bool:
                                     var boolAsString = issue.GetCustomProperty(customPropertyIndex);
@@ -435,7 +454,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         protected override void DoubleClickedItem(int id)
         {
-            if (m_Desc.onOpenIssue == null)
+            if (m_Desc.OnOpenIssue == null)
                 return;
 
             var rows = FindRows(new[] {id});
@@ -452,7 +471,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var issue = tableItem.ProjectIssue;
             if (issue != null && issue.Location != null && issue.Location.IsValid())
             {
-                m_Desc.onOpenIssue(issue.Location);
+                m_Desc.OnOpenIssue(issue.Location);
             }
         }
 
@@ -510,7 +529,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         void OnSortingChanged(MultiColumnHeader _multiColumnHeader)
         {
-            if (m_Layout.hierarchy)
+            if (m_Layout.IsHierarchy)
                 return;
 
             SortIfNeeded(GetRows());
@@ -527,11 +546,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 if (item.ProjectIssue != null)
                 {
-                    if (m_Desc.onOpenIssue != null && item.ProjectIssue.Location != null)
+                    if (m_Desc.OnOpenIssue != null && item.ProjectIssue.Location != null)
                     {
                         menu.AddItem(Utility.OpenIssue, false, () =>
                         {
-                            m_Desc.onOpenIssue(item.ProjectIssue.Location);
+                            m_Desc.OnOpenIssue(item.ProjectIssue.Location);
                         });
                     }
                     menu.AddItem(new GUIContent($"Filter by '{item.ProjectIssue.Description.Replace("/", "\u2215")}'") , false, () =>
@@ -540,27 +559,27 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     });
                 }
 
-                if (m_Desc.onOpenIssue != null && item.ProjectIssue != null && item.ProjectIssue.Location != null)
+                if (m_Desc.OnOpenIssue != null && item.ProjectIssue != null && item.ProjectIssue.Location != null)
                 {
                     menu.AddItem(Utility.OpenIssue, false, () =>
                     {
-                        m_Desc.onOpenIssue(item.ProjectIssue.Location);
+                        m_Desc.OnOpenIssue(item.ProjectIssue.Location);
                     });
                 }
 
                 var desc = item.ProjectIssue != null && item.ProjectIssue.Id.IsValid() ? item.ProjectIssue.Id.GetDescriptor() : null;
-                if (m_Desc.onOpenManual != null && desc != null && desc.Type.StartsWith("UnityEngine."))
+                if (m_Desc.OnOpenManual != null && desc != null && desc.Type.StartsWith("UnityEngine."))
                 {
                     menu.AddItem(Utility.OpenScriptReference, false, () =>
                     {
-                        m_Desc.onOpenManual(desc);
+                        m_Desc.OnOpenManual(desc);
                     });
                 }
 
-                if (m_Desc.onContextMenu != null)
+                if (m_Desc.OnContextMenu != null)
                 {
                     menu.AddSeparator("");
-                    m_Desc.onContextMenu(menu, m_View.ViewManager, item.ProjectIssue);
+                    m_Desc.OnContextMenu(menu, m_View.ViewManager, item.ProjectIssue);
                 }
 
                 menu.AddSeparator("");
@@ -676,7 +695,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         if (a.m_Item.IsGroup() && b.m_Item.IsGroup())
                             rtn = order * CompareGroupItemTo(a.m_Item, b.m_Item, columnSortOrder[i]);
                         else
-                            rtn = order * ProjectIssueExtensions.CompareTo(a.m_Item.ProjectIssue != null ? a.m_Item.ProjectIssue : null, b.m_Item.ProjectIssue != null ? b.m_Item.ProjectIssue : null, m_Layout.properties[columnSortOrder[i]].type);
+                            rtn = order * ProjectIssueExtensions.CompareTo(a.m_Item.ProjectIssue != null ? a.m_Item.ProjectIssue : null, b.m_Item.ProjectIssue != null ? b.m_Item.ProjectIssue : null, m_Layout.Properties[columnSortOrder[i]].Type);
 
                         if (rtn == 0)
                             continue;
@@ -696,24 +715,24 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 if (columnIndex == 0)
                     return string.CompareOrdinal(itemA.GroupName, itemB.GroupName);
 
-                var property = m_Layout.properties[columnIndex];
-                if (property.hidden)
+                var property = m_Layout.Properties[columnIndex];
+                if (property.IsHidden)
                     return 0;
 
-                var propertyType = property.type;
+                var propertyType = property.Type;
 
-                if (PropertyTypeUtil.IsCustom(property.type))
+                if (PropertyTypeUtil.IsCustom(property.Type))
                 {
                     var customPropertyIndex = PropertyTypeUtil.ToCustomIndex(propertyType);
-                    if (property.format == PropertyFormat.Bytes)
+                    if (property.Format == PropertyFormat.Bytes)
                     {
                         var valueA = GetGroupColumnSumUlong(itemA, customPropertyIndex);
                         var valueB = GetGroupColumnSumUlong(itemB, customPropertyIndex);
 
                         return valueA > valueB ? 1 : (valueA < valueB ? -1 : 0);
                     }
-                    if (property.format == PropertyFormat.Time ||
-                        property.format == PropertyFormat.Percentage)
+                    if (property.Format == PropertyFormat.Time ||
+                        property.Format == PropertyFormat.Percentage)
                     {
                         var valueA = GetGroupColumnSumFloat(itemA, customPropertyIndex);
                         var valueB = GetGroupColumnSumFloat(itemB, customPropertyIndex);
@@ -727,8 +746,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
                 else
                 {
-                    var stringA = GetGroupFirstChildProperty(itemA, property.type);
-                    var stringB = GetGroupFirstChildProperty(itemB, property.type);
+                    var stringA = GetGroupFirstChildProperty(itemA, property.Type);
+                    var stringB = GetGroupFirstChildProperty(itemB, property.Type);
                     return string.CompareOrdinal(stringA, stringB);
                 }
             }

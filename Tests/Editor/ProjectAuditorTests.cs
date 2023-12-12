@@ -92,7 +92,7 @@ namespace Unity.ProjectAuditor.EditorTests
             projectAuditor.Audit(new AnalysisParams
             {
                 Categories = new[] { IssueCategory.ProjectSetting },
-                OnModuleCompleted = () => numModules++,
+                OnModuleCompleted = (analysisResult) => numModules++,
                 OnCompleted = report =>
                 {
                     Assert.Null(projectReport);

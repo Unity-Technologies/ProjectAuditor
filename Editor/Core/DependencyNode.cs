@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor.Core
         /// <summary>
         /// The location represented by this node
         /// </summary>
-        public Location location;
+        public Location Location;
 
         /// <summary>
         /// Whether this node forms part of a performance-critical context
@@ -28,35 +28,35 @@ namespace Unity.ProjectAuditor.Editor.Core
         /// If the node represents part of a code call stack, perfCriticalContext is true if that callstack
         /// includes a known update method (for example, a MonoBehaviour.Update())
         /// </remarks>
-        public bool perfCriticalContext;
+        public bool PerfCriticalContext;
 
         /// <summary>
         /// This node's name
         /// </summary>
-        public string name => GetName();
+        public string Name => GetName();
 
         /// <summary>
         /// A prettified, UI-friendly version of this node's name
         /// </summary>
-        public string prettyName => GetPrettyName();
+        public string PrettyName => GetPrettyName();
 
         /// <summary>
         /// Checks whether this node has a valid list of children
         /// </summary>
         /// <returns>True if the node has a valid list of children. Otherwise, returns false.</returns>
-        public bool HasValidChildren()
-        {
-            return m_Children != null;
-        }
+        public bool HasValidChildren => m_Children != null;
 
         /// <summary>
         /// Checks whether this node has at least one valid child
         /// </summary>
-        /// <returns>True if the node has at least one valid child. Otherwise, returns false.</returns>
-        public bool HasChildren()
-        {
-            return m_Children != null && m_Children.Count > 0;
-        }
+        /// <value>True if the node has at least one valid child. Otherwise, returns false.</value>
+        public bool HasChildren => m_Children != null && m_Children.Count > 0;
+
+        /// <summary>
+        /// Gets the number of children that this node has
+        /// </summary>
+        /// <value></value>
+        public int NumChildren => m_Children.Count;
 
         /// <summary>
         /// Adds a child to this node
@@ -75,8 +75,8 @@ namespace Unity.ProjectAuditor.Editor.Core
         {
             // if any child is critical, make parent critical too
             // this is to propagate perfCriticalContext up to the root of the hierarchy
-            if (children.Any(c => c.perfCriticalContext))
-                perfCriticalContext = true;
+            if (children.Any(c => c.PerfCriticalContext))
+                PerfCriticalContext = true;
             m_Children.AddRange(children);
         }
 
@@ -91,20 +91,11 @@ namespace Unity.ProjectAuditor.Editor.Core
         }
 
         /// <summary>
-        /// Gets the number of children that this node has
-        /// </summary>
-        /// <returns></returns>
-        public int GetNumChildren()
-        {
-            return m_Children.Count;
-        }
-
-        /// <summary>
         /// Sorts this node's children by their prettyName, in ascending alphabetical order.
         /// </summary>
         public void SortChildren()
         {
-            m_Children = m_Children.OrderBy(c => c.prettyName).ToList();
+            m_Children = m_Children.OrderBy(c => c.PrettyName).ToList();
         }
 
         /// <summary>

@@ -8,8 +8,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         public override string Name => "Sprites Atlas";
 
-        public override bool IsEnabledByDefault => false;
-
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts  => new IssueLayout[] { AssetsModule.k_IssueLayout };
 
         const string k_SpriteAtlasEmptySpaceLimit   = "SpriteAtlasEmptySpaceLimit";
@@ -19,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             diagnosticParams.RegisterParameter(k_SpriteAtlasEmptySpaceLimit, 50);
         }
 
-        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
+        public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
 
@@ -38,6 +36,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             foreach (var assetPath in assetPaths)
             {
+                if (progress?.IsCancelled ?? false)
+                    return AnalysisResult.Cancelled;
+
                 context.AssetPath = assetPath;
 
                 foreach (var analyzer in analyzers)
@@ -50,7 +51,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             progress?.Clear();
 
-            analysisParams.OnModuleCompleted.Invoke();
+            return AnalysisResult.Success;
         }
     }
 }

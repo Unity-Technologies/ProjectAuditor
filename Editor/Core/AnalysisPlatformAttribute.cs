@@ -5,11 +5,11 @@ namespace Unity.ProjectAuditor.Editor.Core
 {
     internal class AnalysisPlatformAttribute : Attribute
     {
-        public BuildTarget platform { get;}
+        public BuildTarget Platform { get;}
 
         public AnalysisPlatformAttribute(BuildTarget platform)
         {
-            this.platform = platform;
+            this.Platform = platform;
         }
     }
 }

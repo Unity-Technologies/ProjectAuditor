@@ -21,11 +21,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 foreach (var propertyDefinition in propertyDefinitions)
                 {
-                    if (propertyDefinition.format != PropertyFormat.String)
+                    if (propertyDefinition.Format != PropertyFormat.String)
                         continue;
-                    if (!PropertyTypeUtil.IsCustom(propertyDefinition.type))
+                    if (!PropertyTypeUtil.IsCustom(propertyDefinition.Type))
                         continue;
-                    indices.Add(PropertyTypeUtil.ToCustomIndex(propertyDefinition.type));
+                    indices.Add(PropertyTypeUtil.ToCustomIndex(propertyDefinition.Type));
                 }
             }
             searchablePropertyIndices = indices.ToArray();
@@ -62,8 +62,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         bool MatchesSearch(string text)
         {
-            return !string.IsNullOrEmpty(text) &&
-                text.IndexOf(searchString, ignoreCase ? StringComparison.CurrentCultureIgnoreCase : StringComparison.CurrentCulture) >= 0;
+            return text.IndexOf(searchString, ignoreCase ? StringComparison.CurrentCultureIgnoreCase : StringComparison.CurrentCulture) >= 0;
         }
 
         bool MatchesSearch(DependencyNode node, bool recursive)
@@ -74,11 +73,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var callTreeNode = node as CallTreeNode;
             if (callTreeNode != null)
             {
-                if (MatchesSearch(callTreeNode.prettyTypeName) || MatchesSearch(callTreeNode.prettyMethodName))
+                if (MatchesSearch(callTreeNode.PrettyTypeName) || MatchesSearch(callTreeNode.PrettyMethodName))
                     return true;
             }
             if (recursive)
-                for (var i = 0; i < node.GetNumChildren(); i++)
+                for (var i = 0; i < node.NumChildren; i++)
                 {
                     if (MatchesSearch(node.GetChild(i), true))
                         return true;

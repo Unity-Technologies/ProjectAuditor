@@ -59,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
-            if (k_OpenGLESAndMetalDescriptor.IsApplicable(context.Params) && IsUsingOpenGLESAndMetal())
+            if (k_OpenGLESAndMetalDescriptor.IsApplicable(context.Params) && IsUsingOpenGlesAndMetal())
                 yield return context.CreateIssue(IssueCategory.ProjectSetting, k_OpenGLESAndMetalDescriptor.Id)
                     .WithLocation("Project/Player");
 
@@ -81,17 +81,17 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             return !hasMetal;
         }
 
-        static bool IsUsingOpenGLESAndMetal()
+        static bool IsUsingOpenGlesAndMetal()
         {
 #if UNITY_2023_1_OR_NEWER
             return false;
 #else
             var graphicsAPIs = PlayerSettings.GetGraphicsAPIs(BuildTarget.iOS);
 
-            var hasOpenGLES = graphicsAPIs.Contains(GraphicsDeviceType.OpenGLES2) ||
+            var hasOpenGles = graphicsAPIs.Contains(GraphicsDeviceType.OpenGLES2) ||
                 graphicsAPIs.Contains(GraphicsDeviceType.OpenGLES3);
 
-            return graphicsAPIs.Contains(GraphicsDeviceType.Metal) && hasOpenGLES;
+            return graphicsAPIs.Contains(GraphicsDeviceType.Metal) && hasOpenGles;
 #endif
         }
 

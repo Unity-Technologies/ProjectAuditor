@@ -54,7 +54,7 @@ class MyClass
                 var assemblyInfos = compilationHelper.Compile();
 
                 Assert.Positive(assemblyInfos.Count());
-                Assert.NotNull(assemblyInfos.FirstOrDefault(info => info.name.Equals(AssemblyInfo.DefaultAssemblyName)));
+                Assert.NotNull(assemblyInfos.FirstOrDefault(info => info.Name.Equals(AssemblyInfo.DefaultAssemblyName)));
             }
         }
 
@@ -66,7 +66,7 @@ class MyClass
                    CompilationMode =  CompilationMode.Editor
                })
             {
-                var assemblyInfo = compilationHelper.Compile().FirstOrDefault(a => a.name.Equals("Unity.ProjectAuditor.Editor"));
+                var assemblyInfo = compilationHelper.Compile().FirstOrDefault(a => a.Name.Equals("Unity.ProjectAuditor.Editor"));
 
                 Assert.NotNull(assemblyInfo);
             }
@@ -80,7 +80,7 @@ class MyClass
                    CompilationMode =  CompilationMode.EditorPlayMode
                })
             {
-                var assemblyInfo = compilationHelper.Compile().FirstOrDefault(a => a.name.Equals("Unity.ProjectAuditor.Editor"));
+                var assemblyInfo = compilationHelper.Compile().FirstOrDefault(a => a.Name.Equals("Unity.ProjectAuditor.Editor"));
 
                 Assert.Null(assemblyInfo);
             }
@@ -103,7 +103,7 @@ class MyClass
             var codeIssue = issues.FirstOrDefault(i => i.RelativePath.Equals(m_TestAsset.relativePath));
 
             Assert.NotNull(codeIssue);
-            Assert.AreEqual("MyClass." + methodName, codeIssue.Dependencies.prettyName);
+            Assert.AreEqual("MyClass." + methodName, codeIssue.Dependencies.PrettyName);
         }
     }
 }

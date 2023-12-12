@@ -116,6 +116,8 @@ namespace Unity.ProjectAuditor.Editor
 
             public string startTime;
             public string endTime;
+
+            public AnalysisResult result;
         }
 
         /// <summary>
@@ -204,11 +206,11 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Checks whether the ProjectReport includes analysis for a given IssueCategory.
         /// </summary>
-        /// <param name="Category">The IssuesCategory to check</param>
+        /// <param name="category">The IssuesCategory to check</param>
         /// <returns>True if ProjectAuditor ran one or more Modules that reports issues of the specified IssueCategory. Otherwise, returns false.</returns>
-        public bool HasCategory(IssueCategory Category)
+        public bool HasCategory(IssueCategory category)
         {
-            return Category == IssueCategory.Metadata || m_ModuleInfos.Any(m => m.categories.Contains(Category));
+            return category == IssueCategory.Metadata || m_ModuleInfos.Any(m => m.categories.Contains(category));
         }
 
         /// <summary>
@@ -254,7 +256,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="id"> Desired Descriptor ID</param>
         /// <returns> Array of project issues</returns>
-        public IReadOnlyCollection<ProjectIssue> FindByDescriptorID(string id)
+        public IReadOnlyCollection<ProjectIssue> FindByDescriptorId(string id)
         {
             s_Mutex.WaitOne();
             var result = m_Issues.Where(i => i.Id.IsValid() && i.Id.Equals(id)).ToArray();
@@ -286,7 +288,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <returns>True is none of the issues in the report have a null description string. Otherwise returns false.</returns>
         public bool IsValid()
         {
-            return m_Issues.All(i => i.IsValid());
+            return m_Issues.All(i => i.IsValid()) && m_ModuleInfos.All(m => m.result != AnalysisResult.Cancelled);
         }
 
         /// <summary>
@@ -321,7 +323,7 @@ namespace Unity.ProjectAuditor.Editor
         // and if they should, it means also exposing IssueLayout and the data types it uses, which opens a whole can of worms.
         internal void ExportToCsv(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
         {
-            var issues = m_Issues.Where(i => i.Category == layout.category && (predicate == null || predicate(i))).ToArray();
+            var issues = m_Issues.Where(i => i.Category == layout.Category && (predicate == null || predicate(i))).ToArray();
             using (var exporter = new CsvExporter(path, layout))
             {
                 exporter.WriteHeader();
@@ -333,7 +335,7 @@ namespace Unity.ProjectAuditor.Editor
         // and if they should, it means also exposing IssueLayout and the data types it uses, which opens a whole can of worms.
         internal void ExportToHtml(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
         {
-            var issues = m_Issues.Where(i => i.Category == layout.category && (predicate == null || predicate(i))).ToArray();
+            var issues = m_Issues.Where(i => i.Category == layout.Category && (predicate == null || predicate(i))).ToArray();
             using (var exporter = new HtmlExporter(path, layout))
             {
                 exporter.WriteHeader();
@@ -343,26 +345,24 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         // Internal only: Data written by ProjectAuditor during analysis
-        internal void RecordModuleInfo(Module module, DateTime startTime, DateTime endTime)
+        internal void RecordModuleInfo(Module module, DateTime startTime, DateTime endTime, AnalysisResult analysisResult)
         {
             var name = module.Name;
             var info = m_ModuleInfos.FirstOrDefault(m => m.name.Equals(name));
-            if (info != null)
+            if (info == null)
             {
-                info.startTime = Utils.Json.SerializeDateTime(startTime);
-                info.endTime = Utils.Json.SerializeDateTime(endTime);
-            }
-            else
-            {
-                m_ModuleInfos.Add(new ModuleInfo
+                info = new ModuleInfo
                 {
                     name = module.Name,
                     categories = module.Categories,
                     layouts = module.SupportedLayouts,
-                    startTime = Utils.Json.SerializeDateTime(startTime),
-                    endTime = Utils.Json.SerializeDateTime(endTime)
-                });
+                };
+                m_ModuleInfos.Add(info);
             }
+
+            info.startTime = Utils.Json.SerializeDateTime(startTime);
+            info.endTime = Utils.Json.SerializeDateTime(endTime);
+            info.result = analysisResult;
         }
 
         // Internal only: Data written by ProjectAuditor during analysis

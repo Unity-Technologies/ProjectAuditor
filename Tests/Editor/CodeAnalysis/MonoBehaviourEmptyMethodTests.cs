@@ -1,9 +1,6 @@
-using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
-using Unity.ProjectAuditor.Editor.AssemblyUtils;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
 using Unity.ProjectAuditor.Editor.Tests.Common;
@@ -25,6 +22,8 @@ namespace Unity.ProjectAuditor.EditorTests
                 "using UnityEngine; class MonoBehaviourWithEmptyMethod : MonoBehaviour{ void NotAnEvent() { } }");
             m_NotMonoBehaviourWithEmptyMethod = new TestAsset("NotMonoBehaviourWithEmptyMethod.cs",
                 "class NotMonoBehaviourWithEmptyMethod { void Update() { } }");
+
+            AnalyzeTempAssetsFolder();
         }
 
         [Test]
@@ -35,7 +34,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var prevCodeOptimization = m_CodeOptimization;
             m_CodeOptimization = codeOptimization;
 
-            var scriptIssues = AnalyzeAndFindAssetIssues(m_MonoBehaviourWithEmptyEventMethod);
+            var scriptIssues = FindTestAssetIssues(m_MonoBehaviourWithEmptyEventMethod);
 
             m_CodeOptimization = prevCodeOptimization; // restore previous value
 
@@ -61,7 +60,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void CodeAnalysis_MonoBehaviourWithEmptyMethod_IsNotReported()
         {
-            var scriptIssues = AnalyzeAndFindAssetIssues(m_MonoBehaviourWithEmptyMethod);
+            var scriptIssues = FindTestAssetIssues(m_MonoBehaviourWithEmptyMethod);
 
             Assert.AreEqual(0, scriptIssues.Count());
         }
@@ -69,7 +68,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void CodeAnalysis_NotMonoBehaviourWithEmptyMethod_IsNotReported()
         {
-            var scriptIssues = AnalyzeAndFindAssetIssues(m_NotMonoBehaviourWithEmptyMethod);
+            var scriptIssues = FindTestAssetIssues(m_NotMonoBehaviourWithEmptyMethod);
 
             Assert.AreEqual(0, scriptIssues.Count());
         }

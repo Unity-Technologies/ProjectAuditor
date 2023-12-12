@@ -36,11 +36,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             Shaders = 1 << 3,
             Build = 1 << 4,
 
-            // this is just helper enum to display Default instead of Every
-            Default = ~None
+            // this is just helper enum to display All instead of Every
+            All = ~None
         }
 
-        const ProjectAreaFlags k_ProjectAreaDefaultFlags = ProjectAreaFlags.Code | ProjectAreaFlags.Settings | ProjectAreaFlags.Build;
+        const ProjectAreaFlags k_ProjectAreaDefaultFlags = ProjectAreaFlags.Code | ProjectAreaFlags.Settings | ProjectAreaFlags.Assets | ProjectAreaFlags.Shaders | ProjectAreaFlags.Build;
 
         static readonly string[] AreaNames = Enum.GetNames(typeof(Areas)).Where(a => a != "None" && a != "All").ToArray();
         static ProjectAuditorWindow s_Instance;
@@ -192,9 +192,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             var viewDesc = activeView.Desc;
 
             Profiler.BeginSample("MatchAssembly");
-            var matchAssembly = !viewDesc.showAssemblySelection ||
+            var matchAssembly = !viewDesc.ShowAssemblySelection ||
                 m_AssemblySelection != null &&
-                (m_AssemblySelection.Contains(viewDesc.getAssemblyName(issue)) ||
+                (m_AssemblySelection.Contains(viewDesc.GetAssemblyName(issue)) ||
                     m_AssemblySelection.ContainsGroup("All"));
             Profiler.EndSample();
             if (!matchAssembly)
@@ -279,24 +279,20 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (initialize)
             {
                 var viewDescriptors = ViewDescriptor.GetAll()
-                    .Where(descriptor => categories.Contains(descriptor.category)).ToArray();
-                Array.Sort(viewDescriptors, (a, b) => a.menuOrder.CompareTo(b.menuOrder));
+                    .Where(descriptor => categories.Contains(descriptor.Category)).ToArray();
+                Array.Sort(viewDescriptors, (a, b) => a.MenuOrder.CompareTo(b.MenuOrder));
 
-                m_ViewManager = new ViewManager(viewDescriptors.Select(d => d.category).ToArray()); // view manager needs sorted categories
+                m_ViewManager = new ViewManager(viewDescriptors.Select(d => d.Category).ToArray()); // view manager needs sorted categories
             }
 
             m_ViewManager.OnActiveViewChanged += i =>
             {
                 var viewDesc = m_ViewManager.GetView(i).Desc;
                 AnalyticsReporter.SendEvent(
-                    (AnalyticsReporter.UIButton)viewDesc.analyticsEvent,
+                    (AnalyticsReporter.UIButton)viewDesc.AnalyticsEventId,
                     AnalyticsReporter.BeginAnalytic());
-            };
 
-            m_ViewManager.OnActiveViewChanged += i =>
-            {
-                var viewDesc = m_ViewManager.GetView(i).Desc;
-                SyncTabOnViewChange(viewDesc.category);
+                SyncTabOnViewChange(viewDesc.Category);
             };
 
             m_ViewManager.OnIgnoredIssuesVisibilityChanged += showIgnoredIssues =>
@@ -330,6 +326,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_ViewManager.OnAnalysisRequested += category =>
             {
                 AuditCategories(new[] {category});
+                GUIUtility.ExitGUI();
             };
 
             m_ViewManager.OnViewExportCompleted += () =>
@@ -372,7 +369,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 if (view == null)
                     continue;
 
-                var displayName = view.IsDiagnostic() ? "Diagnostics" : view.Desc.displayName;
+                var displayName = view.IsDiagnostic() ? "Diagnostics" : view.Desc.DisplayName;
 
                 dropDownItems.Add(new Utility.DropdownItem
                 {
@@ -435,7 +432,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     DrawPanels();
 
-                    if (m_ViewManager.GetActiveView().Desc.category != IssueCategory.Metadata)
+                    if (m_ViewManager.GetActiveView().Desc.Category != IssueCategory.Metadata)
                     {
                         DrawStatusBar();
                     }
@@ -452,36 +449,36 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.Metadata,
-                displayName = "Summary",
-                menuOrder = -1,
-                showInfoPanel = true,
-                type = typeof(SummaryView),
-                analyticsEvent = (int)AnalyticsReporter.UIButton.Summary
+                Category = IssueCategory.Metadata,
+                DisplayName = "Summary",
+                MenuOrder = -1,
+                ShowInfoPanel = true,
+                Type = typeof(SummaryView),
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.Summary
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.AssetDiagnostic,
-                displayName = "Asset Diagnostics",
-                menuLabel = "Assets/Diagnostics",
-                menuOrder = 1,
-                descriptionWithIcon = true,
-                showDependencyView = true,
-                showFilters = true,
-                dependencyViewGuiContent = new GUIContent("Asset Dependencies"),
-                onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                analyticsEvent = (int)AnalyticsReporter.UIButton.Assets,
-                type = typeof(DiagnosticView),
+                Category = IssueCategory.AssetDiagnostic,
+                DisplayName = "Asset Diagnostics",
+                MenuLabel = "Assets/Diagnostics",
+                MenuOrder = 1,
+                DescriptionWithIcon = true,
+                ShowDependencyView = true,
+                ShowFilters = true,
+                DependencyViewGuiContent = new GUIContent("Asset Dependencies"),
+                OnOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.Assets,
+                Type = typeof(DiagnosticView),
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.Shader,
-                displayName = "Shaders",
-                menuOrder = 1,
-                menuLabel = "Assets/Shaders/Shaders",
-                descriptionWithIcon = true,
-                showFilters = true,
-                onContextMenu = (menu, viewManager, issue) =>
+                Category = IssueCategory.Shader,
+                DisplayName = "Shaders",
+                MenuOrder = 1,
+                MenuLabel = "Assets/Shaders/Shaders",
+                DescriptionWithIcon = true,
+                ShowFilters = true,
+                OnContextMenu = (menu, viewManager, issue) =>
                 {
                     menu.AddItem(Contents.ShaderVariants, false, () =>
                     {
@@ -489,42 +486,42 @@ namespace Unity.ProjectAuditor.Editor.UI
                         viewManager.GetActiveView().SetSearch(issue.Description);
                     });
                 },
-                onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                analyticsEvent = (int)AnalyticsReporter.UIButton.Shaders
+                OnOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.Shaders
             });
 
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.Material,
-                displayName = "Materials",
-                menuLabel = "Assets/Shaders/Materials",
-                menuOrder = 2,
-                showFilters = true,
-                onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                analyticsEvent = (int)AnalyticsReporter.UIButton.Materials
+                Category = IssueCategory.Material,
+                DisplayName = "Materials",
+                MenuLabel = "Assets/Shaders/Materials",
+                MenuOrder = 2,
+                ShowFilters = true,
+                OnOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.Materials
             });
 
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.ShaderCompilerMessage,
-                displayName = "Compiler Messages",
-                menuLabel = "Assets/Shaders/Compiler Messages",
-                menuOrder = 4,
-                descriptionWithIcon = true,
-                onOpenIssue = EditorInterop.OpenTextFile<Shader>,
-                analyticsEvent = (int)AnalyticsReporter.UIButton.ShaderCompilerMessages
+                Category = IssueCategory.ShaderCompilerMessage,
+                DisplayName = "Compiler Messages",
+                MenuLabel = "Assets/Shaders/Compiler Messages",
+                MenuOrder = 4,
+                DescriptionWithIcon = true,
+                OnOpenIssue = EditorInterop.OpenTextFile<Shader>,
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.ShaderCompilerMessages
             });
 
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.ShaderVariant,
-                displayName = "Shader Variants",
-                menuOrder = 3,
-                menuLabel = "Assets/Shaders/Variants",
-                showFilters = true,
-                showInfoPanel = true,
-                onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                onDrawToolbar = (viewManager) =>
+                Category = IssueCategory.ShaderVariant,
+                DisplayName = "Shader Variants",
+                MenuOrder = 3,
+                MenuLabel = "Assets/Shaders/Variants",
+                ShowFilters = true,
+                ShowInfoPanel = true,
+                OnOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                OnDrawToolbar = (viewManager) =>
                 {
                     GUILayout.FlexibleSpace();
 
@@ -533,20 +530,20 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     GUILayout.FlexibleSpace();
                 },
-                type = typeof(ShaderVariantsView),
-                analyticsEvent = (int)AnalyticsReporter.UIButton.ShaderVariants
+                Type = typeof(ShaderVariantsView),
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.ShaderVariants
             });
 
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.ComputeShaderVariant,
-                displayName = "Compute Shader Variants",
-                menuOrder = 3,
-                menuLabel = "Assets/Shaders/Compute Variants",
-                showFilters = true,
-                showInfoPanel = true,
-                onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                onDrawToolbar = (viewManager) =>
+                Category = IssueCategory.ComputeShaderVariant,
+                DisplayName = "Compute Shader Variants",
+                MenuOrder = 3,
+                MenuLabel = "Assets/Shaders/Compute Variants",
+                ShowFilters = true,
+                ShowInfoPanel = true,
+                OnOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                OnDrawToolbar = (viewManager) =>
                 {
                     GUILayout.FlexibleSpace();
 
@@ -555,195 +552,195 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     GUILayout.FlexibleSpace();
                 },
-                type = typeof(ShaderVariantsView),
-                analyticsEvent = (int)AnalyticsReporter.UIButton.ComputeShaderVariants
+                Type = typeof(ShaderVariantsView),
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.ComputeShaderVariants
             });
 
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.Package,
-                displayName = "Installed Packages",
-                menuLabel = "Project/Packages/Installed",
-                menuOrder = 105,
-                onOpenIssue = EditorInterop.OpenPackage,
-                showDependencyView = true,
-                dependencyViewGuiContent = new GUIContent("Package Dependencies"),
-                analyticsEvent = (int)AnalyticsReporter.UIButton.Packages
+                Category = IssueCategory.Package,
+                DisplayName = "Installed Packages",
+                MenuLabel = "Project/Packages/Installed",
+                MenuOrder = 105,
+                OnOpenIssue = EditorInterop.OpenPackage,
+                ShowDependencyView = true,
+                DependencyViewGuiContent = new GUIContent("Package Dependencies"),
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.Packages
             });
 
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.PackageDiagnostic,
-                displayName = "Package Diagnostics",
-                menuLabel = "Project/Packages/Diagnostics",
-                menuOrder = 106,
-                onOpenIssue = EditorInterop.OpenPackage,
-                type = typeof(DiagnosticView),
-                analyticsEvent = (int)AnalyticsReporter.UIButton.PackageDiagnostics
+                Category = IssueCategory.PackageDiagnostic,
+                DisplayName = "Package Diagnostics",
+                MenuLabel = "Project/Packages/Diagnostics",
+                MenuOrder = 106,
+                OnOpenIssue = EditorInterop.OpenPackage,
+                Type = typeof(DiagnosticView),
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.PackageDiagnostics
             });
 
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.AudioClip,
-                displayName = "AudioClips",
-                menuLabel = "Assets/Audio Clips",
-                menuOrder = 107,
-                descriptionWithIcon = true,
-                showFilters = true,
-                onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                analyticsEvent = (int)AnalyticsReporter.UIButton.AudioClip
+                Category = IssueCategory.AudioClip,
+                DisplayName = "AudioClips",
+                MenuLabel = "Assets/Audio Clips",
+                MenuOrder = 107,
+                DescriptionWithIcon = true,
+                ShowFilters = true,
+                OnOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.AudioClip
             });
 
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.Mesh,
-                displayName = "Meshes",
-                menuLabel = "Assets/Meshes/Meshes",
-                menuOrder = 7,
-                descriptionWithIcon = true,
-                showFilters = true,
-                onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                analyticsEvent = (int)AnalyticsReporter.UIButton.Meshes
+                Category = IssueCategory.Mesh,
+                DisplayName = "Meshes",
+                MenuLabel = "Assets/Meshes/Meshes",
+                MenuOrder = 7,
+                DescriptionWithIcon = true,
+                ShowFilters = true,
+                OnOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.Meshes
             });
 
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.Texture,
-                displayName = "Textures",
-                menuLabel = "Assets/Textures/Textures",
-                menuOrder = 6,
-                descriptionWithIcon = true,
-                showFilters = true,
-                onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                analyticsEvent = (int)AnalyticsReporter.UIButton.Textures
+                Category = IssueCategory.Texture,
+                DisplayName = "Textures",
+                MenuLabel = "Assets/Textures/Textures",
+                MenuOrder = 6,
+                DescriptionWithIcon = true,
+                ShowFilters = true,
+                OnOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.Textures
             });
 
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.AnimatorController,
-                displayName = "Animator Controllers",
-                menuLabel = "Assets/Animation/Animator Controllers",
-                menuOrder = 8,
-                descriptionWithIcon = true,
-                showFilters = true,
-                onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                analyticsEvent = (int)AnalyticsReporter.UIButton.AnimatorControllers
+                Category = IssueCategory.AnimatorController,
+                DisplayName = "Animator Controllers",
+                MenuLabel = "Assets/Animation/Animator Controllers",
+                MenuOrder = 8,
+                DescriptionWithIcon = true,
+                ShowFilters = true,
+                OnOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.AnimatorControllers
             });
 
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.AnimationClip,
-                displayName = "Animation Clips",
-                menuLabel = "Assets/Animation/Animation Clips",
-                menuOrder = 9,
-                descriptionWithIcon = true,
-                showFilters = true,
-                onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                analyticsEvent = (int)AnalyticsReporter.UIButton.AnimationClips
+                Category = IssueCategory.AnimationClip,
+                DisplayName = "Animation Clips",
+                MenuLabel = "Assets/Animation/Animation Clips",
+                MenuOrder = 9,
+                DescriptionWithIcon = true,
+                ShowFilters = true,
+                OnOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.AnimationClips
             });
 
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.Avatar,
-                displayName = "Avatars",
-                menuLabel = "Assets/Animation/Avatars",
-                menuOrder = 10,
-                descriptionWithIcon = true,
-                showFilters = true,
-                onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                analyticsEvent = (int)AnalyticsReporter.UIButton.Avatars
+                Category = IssueCategory.Avatar,
+                DisplayName = "Avatars",
+                MenuLabel = "Assets/Animation/Avatars",
+                MenuOrder = 10,
+                DescriptionWithIcon = true,
+                ShowFilters = true,
+                OnOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.Avatars
             });
 
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.AvatarMask,
-                displayName = "Avatar Masks",
-                menuLabel = "Assets/Animation/Avatar Masks",
-                menuOrder = 11,
-                descriptionWithIcon = true,
-                showFilters = true,
-                onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                analyticsEvent = (int)AnalyticsReporter.UIButton.AvatarMasks
+                Category = IssueCategory.AvatarMask,
+                DisplayName = "Avatar Masks",
+                MenuLabel = "Assets/Animation/Avatar Masks",
+                MenuOrder = 11,
+                DescriptionWithIcon = true,
+                ShowFilters = true,
+                OnOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.AvatarMasks
             });
 
             if (UserPreferences.DeveloperMode)
             {
                 ViewDescriptor.Register(new ViewDescriptor
                 {
-                    category = IssueCategory.GenericInstance,
-                    displayName = "Generics",
-                    menuLabel = "Experimental/Generic Types Instantiation",
-                    menuOrder = 90,
-                    showAssemblySelection = true,
-                    showDependencyView = true,
-                    showFilters = true,
-                    dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
-                    getAssemblyName = issue => issue.GetCustomProperty(CodeProperty.Assembly),
-                    onOpenIssue = EditorInterop.OpenTextFile<TextAsset>,
-                    analyticsEvent = (int)AnalyticsReporter.UIButton.Generics
+                    Category = IssueCategory.GenericInstance,
+                    DisplayName = "Generics",
+                    MenuLabel = "Experimental/Generic Types Instantiation",
+                    MenuOrder = 90,
+                    ShowAssemblySelection = true,
+                    ShowDependencyView = true,
+                    ShowFilters = true,
+                    DependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
+                    GetAssemblyName = issue => issue.GetCustomProperty(CodeProperty.Assembly),
+                    OnOpenIssue = EditorInterop.OpenTextFile<TextAsset>,
+                    AnalyticsEventId = (int)AnalyticsReporter.UIButton.Generics
                 });
 
                 ViewDescriptor.Register(new ViewDescriptor
                 {
-                    category = IssueCategory.PrecompiledAssembly,
-                    displayName = "Precompiled Assemblies",
-                    menuLabel = "Experimental/Precompiled Assemblies",
-                    menuOrder = 91,
-                    showFilters = true,
-                    onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                    analyticsEvent = (int)AnalyticsReporter.UIButton.PrecompiledAssemblies
+                    Category = IssueCategory.PrecompiledAssembly,
+                    DisplayName = "Precompiled Assemblies",
+                    MenuLabel = "Experimental/Precompiled Assemblies",
+                    MenuOrder = 91,
+                    ShowFilters = true,
+                    OnOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                    AnalyticsEventId = (int)AnalyticsReporter.UIButton.PrecompiledAssemblies
                 });
             }
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.Assembly,
-                displayName = "Assemblies",
-                menuLabel = "Code/Assemblies",
-                menuOrder = 98,
-                showFilters = true,
-                showDependencyView = true,
-                onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                analyticsEvent = (int)AnalyticsReporter.UIButton.Assemblies
+                Category = IssueCategory.Assembly,
+                DisplayName = "Assemblies",
+                MenuLabel = "Code/Assemblies",
+                MenuOrder = 98,
+                ShowFilters = true,
+                ShowDependencyView = true,
+                OnOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.Assemblies
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.Code,
-                displayName = "Code",
-                menuLabel = "Code/Diagnostics",
-                menuOrder = 0,
-                showAssemblySelection = true,
-                showDependencyView = true,
-                showFilters = true,
-                showInfoPanel = true,
-                dependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
-                getAssemblyName = issue => issue.GetCustomProperty(CodeProperty.Assembly),
-                onOpenIssue = EditorInterop.OpenTextFile<TextAsset>,
-                onOpenManual = EditorInterop.OpenCodeDescriptor,
-                type = typeof(CodeDiagnosticView),
-                analyticsEvent = (int)AnalyticsReporter.UIButton.ApiCalls
+                Category = IssueCategory.Code,
+                DisplayName = "Code",
+                MenuLabel = "Code/Diagnostics",
+                MenuOrder = 0,
+                ShowAssemblySelection = true,
+                ShowDependencyView = true,
+                ShowFilters = true,
+                ShowInfoPanel = true,
+                DependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
+                GetAssemblyName = issue => issue.GetCustomProperty(CodeProperty.Assembly),
+                OnOpenIssue = EditorInterop.OpenTextFile<TextAsset>,
+                OnOpenManual = EditorInterop.OpenCodeDescriptor,
+                Type = typeof(CodeDiagnosticView),
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.ApiCalls
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.CodeCompilerMessage,
-                displayName = "Compiler Messages",
-                menuOrder = 98,
-                menuLabel = "Code/C# Compiler Messages",
-                showFilters = true,
-                showInfoPanel = true,
-                onOpenIssue = EditorInterop.OpenTextFile<TextAsset>,
-                onOpenManual = EditorInterop.OpenCompilerMessageDescriptor,
-                type = typeof(CompilerMessagesView),
-                analyticsEvent = (int)AnalyticsReporter.UIButton.CodeCompilerMessages
+                Category = IssueCategory.CodeCompilerMessage,
+                DisplayName = "Compiler Messages",
+                MenuOrder = 98,
+                MenuLabel = "Code/C# Compiler Messages",
+                ShowFilters = true,
+                ShowInfoPanel = true,
+                OnOpenIssue = EditorInterop.OpenTextFile<TextAsset>,
+                OnOpenManual = EditorInterop.OpenCompilerMessageDescriptor,
+                Type = typeof(CompilerMessagesView),
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.CodeCompilerMessages
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.ProjectSetting,
-                displayName = "Settings",
-                menuLabel = "Project/Settings/Diagnostics",
-                menuOrder = 1,
-                showFilters = true,
-                showInfoPanel = true,
-                onOpenIssue = (location) =>
+                Category = IssueCategory.ProjectSetting,
+                DisplayName = "Settings",
+                MenuLabel = "Project/Settings/Diagnostics",
+                MenuOrder = 1,
+                ShowFilters = true,
+                ShowInfoPanel = true,
+                OnOpenIssue = (location) =>
                 {
                     var guid = AssetDatabase.AssetPathToGUID(location.Path);
                     if (string.IsNullOrEmpty(guid))
@@ -755,47 +752,47 @@ namespace Unity.ProjectAuditor.Editor.UI
                         EditorInterop.FocusOnAssetInProjectWindow(location);
                     }
                 },
-                type = typeof(DiagnosticView),
-                analyticsEvent = (int)AnalyticsReporter.UIButton.ProjectSettings
+                Type = typeof(DiagnosticView),
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.ProjectSettings
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.BuildStep,
-                displayName = "Build Steps",
-                menuLabel = "Build Report/Steps",
-                menuOrder = 100,
-                showFilters = true,
-                showInfoPanel = true,
-                type = typeof(BuildStepsView),
-                analyticsEvent = (int)AnalyticsReporter.UIButton.BuildSteps
+                Category = IssueCategory.BuildStep,
+                DisplayName = "Build Steps",
+                MenuLabel = "Build Report/Steps",
+                MenuOrder = 100,
+                ShowFilters = true,
+                ShowInfoPanel = true,
+                Type = typeof(BuildStepsView),
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.BuildSteps
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.BuildFile,
-                displayName = "Build Size",
-                menuLabel = "Build Report/Size",
-                menuOrder = 101,
-                descriptionWithIcon = true,
-                showFilters = true,
-                showInfoPanel = true,
-                onOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                type = typeof(BuildSizeView),
-                analyticsEvent = (int)AnalyticsReporter.UIButton.BuildFiles
+                Category = IssueCategory.BuildFile,
+                DisplayName = "Build Size",
+                MenuLabel = "Build Report/Size",
+                MenuOrder = 101,
+                DescriptionWithIcon = true,
+                ShowFilters = true,
+                ShowInfoPanel = true,
+                OnOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                Type = typeof(BuildSizeView),
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.BuildFiles
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                category = IssueCategory.DomainReload,
-                displayName = "Domain Reload",
-                menuLabel = "Code/Domain Reload",
-                menuOrder = 50,
-                showAssemblySelection = true,
-                showFilters = true,
-                showInfoPanel = true,
-                getAssemblyName = issue => issue.GetCustomProperty(CompilerMessageProperty.Assembly),
-                onOpenIssue = EditorInterop.OpenTextFile<TextAsset>,
-                onOpenManual = EditorInterop.OpenCodeDescriptor,
-                type = typeof(CodeDomainReloadView),
-                analyticsEvent = (int)AnalyticsReporter.UIButton.DomainReload
+                Category = IssueCategory.DomainReload,
+                DisplayName = "Domain Reload",
+                MenuLabel = "Code/Domain Reload",
+                MenuOrder = 50,
+                ShowAssemblySelection = true,
+                ShowFilters = true,
+                ShowInfoPanel = true,
+                GetAssemblyName = issue => issue.GetCustomProperty(CompilerMessageProperty.Assembly),
+                OnOpenIssue = EditorInterop.OpenTextFile<TextAsset>,
+                OnOpenManual = EditorInterop.OpenCodeDescriptor,
+                Type = typeof(CodeDomainReloadView),
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.DomainReload
             });
 
             ViewDescriptor.Register(new ViewDescriptor
@@ -926,6 +923,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 },
                 OnCompleted = report =>
                 {
+                    if (!report.IsValid())
+                    {
+                        m_AnalysisState = AnalysisState.Initialized;
+                        return;
+                    }
                     m_ViewManager.OnAnalysisCompleted(report);
 
                     m_ShouldRefresh = true;
@@ -955,9 +957,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                 return;
 
             AuditCategories(module.Categories);
+            GUIUtility.ExitGUI();
         }
 
-        void AuditCategories(IssueCategory[] categories, bool refreshSummaryView = false)
+        void AuditCategories(IssueCategory[] categories)
         {
             // a module might report more categories than requested so we need to make sure we clean up the views accordingly
             var modules = categories.SelectMany(m_ProjectAuditor.GetModules).ToArray();
@@ -988,6 +991,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 ExistingReport = m_ProjectReport,
                 OnCompleted = report =>
                 {
+                    if (!report.IsValid())
+                    {
+                        m_AnalysisState = AnalysisState.Initialized;
+                        return;
+                    }
                     m_ViewManager.OnAnalysisCompleted(report);
 
                     m_ShouldRefresh = true;
@@ -997,14 +1005,11 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ProjectAuditor.Audit(analysisParams, new ProgressBar());
 
-            if (refreshSummaryView)
+            var summaryView = m_ViewManager.GetView(IssueCategory.Metadata);
+            if (summaryView != null)
             {
-                var summaryView = m_ViewManager.GetView(IssueCategory.Metadata);
-                if (summaryView != null)
-                {
-                    summaryView.Clear();
-                    summaryView.AddIssues(m_ProjectReport.GetAllIssues());
-                }
+                summaryView.Clear();
+                summaryView.AddIssues(m_ProjectReport.GetAllIssues());
             }
         }
 
@@ -1111,8 +1116,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     var tabValue = tab;
 
                     var moduleCategories = module.SupportedLayouts
-                        .Where(l => tabValue.excludedModuleCategories == null || tabValue.excludedModuleCategories.Contains(l.category) == false)
-                        .Select(l => l.category);
+                        .Where(l => tabValue.excludedModuleCategories == null || tabValue.excludedModuleCategories.Contains(l.Category) == false)
+                        .Select(l => l.Category);
 
                     categories.AddRange(moduleCategories);
                 }
@@ -1129,7 +1134,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void DrawAssemblyFilter()
         {
-            if (!activeView.Desc.showAssemblySelection)
+            if (!activeView.Desc.ShowAssemblySelection)
                 return;
 
             using (new EditorGUILayout.HorizontalScope())
@@ -1246,7 +1251,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void DrawFilters()
         {
-            if (!activeView.Desc.showFilters)
+            if (!activeView.Desc.ShowFilters)
                 return;
 
             using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
@@ -1294,11 +1299,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.Space();
 
             m_SelectedProjectAreas = (ProjectAreaFlags)EditorGUILayout.EnumFlagsField(Contents.ProjectAreaSelection, m_SelectedProjectAreas, GUILayout.ExpandWidth(true));
-            if (m_SelectedProjectAreas == ProjectAreaFlags.Default)
-            {
-                // this is a workaround for the fact that EnumFlagsField doesn't support a default value
-                m_SelectedProjectAreas = k_ProjectAreaDefaultFlags;
-            }
 
             var selectedTarget = Array.IndexOf(m_SupportedBuildTargets, m_Platform);
             selectedTarget = EditorGUILayout.Popup(Contents.PlatformSelection, selectedTarget, m_PlatformContents);
@@ -1363,8 +1363,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.LabelField(Utility.GetIcon(Utility.IconType.ZoomTool), EditorStyles.label,
                     GUILayout.ExpandWidth(false), GUILayout.Width(20));
 
-                var fontSize = (int)GUILayout.HorizontalSlider(m_ViewStates.fontSize, ViewStates.k_MinFontSize,
-                    ViewStates.k_MaxFontSize, GUILayout.ExpandWidth(false),
+                var fontSize = (int)GUILayout.HorizontalSlider(m_ViewStates.fontSize, ViewStates.DefaultMinFontSize,
+                    ViewStates.DefaultMaxFontSize, GUILayout.ExpandWidth(false),
                     GUILayout.Width(AnalysisView.ToolbarButtonSize));
                 if (fontSize != m_ViewStates.fontSize)
                 {
@@ -1387,6 +1387,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         m_Tabs[m_ActiveTabIndex].currentCategoryIndex,
                         (arg) =>
                         {
+                            bool exitGui = false;
                             var categoryIndex = (int)arg;
                             if (m_ProjectReport == null)
                                 return; // this happens from the summary view while the report is being generated
@@ -1395,7 +1396,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                                 .availableCategories[categoryIndex];
                             if (category != IssueCategory.Metadata && !m_ProjectReport.HasCategory(category))
                             {
-                                var displayName = m_ViewManager.GetView(category).Desc.displayName;
+                                var displayName = m_ViewManager.GetView(category).Desc.DisplayName;
                                 if (!EditorUtility.DisplayDialog(ProjectAuditor.DisplayName,
                                     $"'{displayName}' analysis will now begin.", "Ok",
                                     "Cancel"))
@@ -1417,16 +1418,20 @@ namespace Unity.ProjectAuditor.Editor.UI
                                     if (m_ViewManager.GetView(IssueCategory.AudioClip) != null)
                                         categories.Add(IssueCategory.AudioClip);
 
-                                    AuditCategories(categories.ToArray(), true);
+                                    AuditCategories(categories.ToArray());
                                 }
                                 else
-                                    AuditCategories(new[] { category }, true);
+                                    AuditCategories(new[] { category });
 
+                                exitGui = true;
                                 var tab = m_Tabs[m_ActiveTabIndex];
                                 RefreshTabCategories(tab, false);
                             }
 
                             m_ViewManager.ChangeView(category);
+
+                            if (exitGui)
+                                GUIUtility.ExitGUI();
                         }, GUILayout.Width(180));
                 }
             }
@@ -1657,12 +1662,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                 if (EditorUtility.DisplayDialog(ProjectAuditor.DisplayName,
                     $"'{tab.name}' analysis will now begin.", "Ok", "Cancel"))
                 {
-                    AuditCategories(tab.allCategories, true);
+                    AuditCategories(tab.allCategories);
 
                     RefreshTabCategories(tab, false);
 
                     if (tab.availableCategories.Length > 0)
                         m_ViewManager.ChangeView(tab.availableCategories[0]);
+
+                    GUIUtility.ExitGUI();
                 }
             }
         }
@@ -1753,6 +1760,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 UpdateAssemblyNames();
                 UpdateAssemblySelection();
+
+                m_ViewManager.MarkViewColumnWidthsAsDirty();
 
                 // switch to summary view after loading
                 m_ViewManager.ChangeView(IssueCategory.Metadata);

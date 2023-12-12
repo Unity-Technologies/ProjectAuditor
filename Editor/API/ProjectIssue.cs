@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -179,7 +178,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         [JsonProperty("severity")]
-        internal string SeverityString
+        internal string SeverityAsString
         {
             get => IsDiagnostic() ? m_Severity.ToString() : null;
             set => m_Severity = (Severity)Enum.Parse(typeof(Severity), value);

@@ -21,10 +21,8 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         public IssueCategory[] Categories
         {
-            get { return SupportedLayouts.Select(l => l.category).ToArray(); }
+            get { return SupportedLayouts.Select(l => l.Category).ToArray(); }
         }
-
-        public virtual bool IsEnabledByDefault => true;
 
         public virtual bool IsSupported => true;
 
@@ -114,6 +112,6 @@ namespace Unity.ProjectAuditor.Editor.Core
         /// </summary>
         /// <param name="analysisParams"> Project audit parameters  </param>
         /// <param name="progress"> Progress bar, if applicable </param>
-        public abstract void Audit(AnalysisParams analysisParams, IProgress progress = null);
+        public abstract AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null);
     }
 }

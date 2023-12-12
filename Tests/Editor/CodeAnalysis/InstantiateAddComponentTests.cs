@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
@@ -50,12 +49,13 @@ class AddComponentGeneric : MonoBehaviour
     }
 }
 ");
+            AnalyzeTempAssetsFolder();
         }
 
         [Test]
         public void CodeAnalysis_Instantiate_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetInstantiate);
+            var issues = FindTestAssetIssues(m_TestAssetInstantiate);
 
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("System.Void InstantiateObject::Test()", issues[0].GetContext());
@@ -65,7 +65,7 @@ class AddComponentGeneric : MonoBehaviour
         [Test]
         public void CodeAnalysis_AddComponent_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetAddComponent);
+            var issues = FindTestAssetIssues(m_TestAssetAddComponent);
 
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("System.Void AddComponentToGameObject::Test()", issues[0].GetContext());
@@ -75,7 +75,7 @@ class AddComponentGeneric : MonoBehaviour
         [Test]
         public void CodeAnalysis_AddComponentGeneric_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetAddComponentGeneric);
+            var issues = FindTestAssetIssues(m_TestAssetAddComponentGeneric);
 
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("System.Void AddComponentGeneric::Test()", issues[0].GetContext());

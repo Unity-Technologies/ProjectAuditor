@@ -15,14 +15,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
-            category = IssueCategory.ProjectSetting,
-            properties = new[]
+            Category = IssueCategory.ProjectSetting,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
-                new PropertyDefinition { type = PropertyType.Severity, format = PropertyFormat.String, name = "Severity"},
-                new PropertyDefinition { type = PropertyType.Areas, name = "Areas", longName = "The areas the issue might have an impact on"},
-                new PropertyDefinition { type = PropertyType.Filename, name = "System", defaultGroup = true},
-                new PropertyDefinition { type = PropertyType.Platform, name = "Platform"}
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Issue", LongName = "Issue description", MaxAutoWidth = 800 },
+                new PropertyDefinition { Type = PropertyType.Severity, Format = PropertyFormat.String, Name = "Severity"},
+                new PropertyDefinition { Type = PropertyType.Areas, Name = "Areas", LongName = "The areas the issue might have an impact on"},
+                new PropertyDefinition { Type = PropertyType.Filename, Name = "System", IsDefaultGroup = true},
+                new PropertyDefinition { Type = PropertyType.Platform, Name = "Platform"}
             }
         };
 
@@ -30,22 +30,24 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[] {k_IssueLayout};
 
-        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
+        public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
+            var context = new SettingsAnalysisContext
+            {
+                Params = analysisParams
+            };
+
             if (progress != null)
                 progress.Start("Analyzing Settings", "Analyzing project settings", analyzers.Length);
 
-
             foreach (var analyzer in analyzers)
             {
+                if (progress?.IsCancelled ?? false)
+                    return AnalysisResult.Cancelled;
+
                 if (progress != null)
                     progress.Advance();
-
-                var context = new SettingsAnalysisContext
-                {
-                    Params = analysisParams
-                };
 
                 var issues = analyzer.Analyze(context).ToArray();
                 if (issues.Any())
@@ -53,7 +55,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
 
             progress?.Clear();
-            analysisParams.OnModuleCompleted?.Invoke();
+            return AnalysisResult.Success;
         }
     }
 }

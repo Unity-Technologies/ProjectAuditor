@@ -1,5 +1,6 @@
 using System.Linq;
 using NUnit.Framework;
+using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.InstructionAnalyzers;
 using Unity.ProjectAuditor.Editor.Tests.Common;
 
@@ -55,12 +56,13 @@ class ClassLoggingWithoutConditionalAttribute
     }
 }
 ");
+            AnalyzeTempAssetsFolder();
         }
 
         [Test]
         public void CodeAnalysis_LoggingMethodWithConditionalAttribute_IsNotReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetClassWithConditionalAttribute);
+            var issues = FindTestAssetIssues(m_TestAssetClassWithConditionalAttribute);
 
             Assert.IsFalse(issues.Any(i => i.Id == DebugLogAnalyzer.PAC0192));
             Assert.IsFalse(issues.Any(i => i.Id == DebugLogAnalyzer.PAC0193));
@@ -69,7 +71,7 @@ class ClassLoggingWithoutConditionalAttribute
         [Test]
         public void CodeAnalysis_LoggingMethodWithoutConditionalAttribute_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetClassWithOutConditionalAttribute);
+            var issues = FindTestAssetIssues(m_TestAssetClassWithOutConditionalAttribute);
 
             Assert.IsTrue(issues.Any(i => i.Id == DebugLogAnalyzer.PAC0192));
             Assert.IsTrue(issues.Any(i => i.Id == DebugLogAnalyzer.PAC0193));

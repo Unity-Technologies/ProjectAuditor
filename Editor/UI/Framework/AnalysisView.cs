@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Interfaces;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -22,6 +23,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         protected Draw2D m_2D;
         protected bool m_Dirty = true;
+        protected bool m_ColumnWidthsDirty;
         protected SeverityRules m_Rules;
         protected ViewStates m_ViewStates;
         protected ViewDescriptor m_Desc;
@@ -43,9 +45,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public DependencyView DependencyView => m_DependencyView;
 
-        public virtual string Description => $"A list of {m_Desc.displayName} found in the project.";
+        public virtual string Description => $"A list of {m_Desc.DisplayName} found in the project.";
 
-        public string DocumentationUrl => Documentation.GetPageUrl(new string(m_Desc.displayName.Where(char.IsLetterOrDigit).ToArray()));
+        public string DocumentationUrl => Documentation.GetPageUrl(new string(m_Desc.DisplayName.Where(char.IsLetterOrDigit).ToArray()));
 
         public int NumIssues => m_Issues.Count();
 
@@ -71,29 +73,29 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_BaseFilter = filter;
             m_Layout = layout;
 
-            if (layout.properties == null || layout.properties.Length == 0)
+            if (layout.Properties == null || layout.Properties.Length == 0)
                 return;
 
-            m_GroupDropdownItems = m_Layout.properties.Select(p => new Utility.DropdownItem
+            m_GroupDropdownItems = m_Layout.Properties.Select(p => new Utility.DropdownItem
             {
-                Content = new GUIContent(p.defaultGroup ? p.name + " (default)" : p.name),
-                SelectionContent = new GUIContent("Group By: " + p.name),
-                Enabled = p.format == PropertyFormat.String || p.format == PropertyFormat.Bool || p.format == PropertyFormat.Integer,
-                UserData = Array.IndexOf(m_Layout.properties, p)
+                Content = new GUIContent(p.IsDefaultGroup ? p.Name + " (default)" : p.Name),
+                SelectionContent = new GUIContent("Group By: " + p.Name),
+                Enabled = p.Format == PropertyFormat.String || p.Format == PropertyFormat.Bool || p.Format == PropertyFormat.Integer,
+                UserData = Array.IndexOf(m_Layout.Properties, p)
             }).ToArray();
 
             if (m_Table != null)
                 return;
 
             var state = new TreeViewState();
-            var columns = new MultiColumnHeaderState.Column[layout.properties.Length];
-            for (var i = 0; i < layout.properties.Length; i++)
+            var columns = new MultiColumnHeaderState.Column[layout.Properties.Length];
+            for (var i = 0; i < layout.Properties.Length; i++)
             {
-                var property = layout.properties[i];
+                var property = layout.Properties[i];
 
                 var minWidth = 20;
                 var width = 80;
-                switch (property.type)
+                switch (property.Type)
                 {
                     case PropertyType.Description:
                         width = 300;
@@ -110,12 +112,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         break;
                 }
 
-                if (property.hidden)
+                if (property.IsHidden)
                     minWidth = width = 0;
 
                 columns[i] = new MultiColumnHeaderState.Column
                 {
-                    headerContent = new GUIContent(property.name, layout.properties[i].longName),
+                    headerContent = new GUIContent(property.Name, layout.Properties[i].LongName),
                     width = width,
                     minWidth = minWidth,
                     autoResize = true
@@ -134,26 +136,184 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 m_Rules,
                 this);
 
-            if (m_Desc.showDependencyView)
-                m_DependencyView = new DependencyView(new TreeViewState(), m_Desc.onOpenIssue);
+            if (m_Desc.ShowDependencyView)
+                m_DependencyView = new DependencyView(new TreeViewState(), m_Desc.OnOpenIssue);
 
             if (m_TextFilter == null)
-                m_TextFilter = new TextFilter(layout.properties);
+                m_TextFilter = new TextFilter(layout.Properties);
 
-            var helpButtonTooltip = string.Format("Open Reference for {0}", m_Desc.displayName);
+            var helpButtonTooltip = string.Format("Open Reference for {0}", m_Desc.DisplayName);
             m_HelpButtonContent = Utility.GetIcon(Utility.IconType.Help, helpButtonTooltip);
         }
 
         public virtual void AddIssues(IEnumerable<ProjectIssue> allIssues)
         {
-            var issues = allIssues.Where(i => i.Category == m_Desc.category).ToArray();
+            var issues = allIssues.Where(i => i.Category == m_Desc.Category).ToArray();
             if (issues.Length == 0)
                 return;
 
             m_Issues.AddRange(issues);
             m_Table.AddIssues(issues);
 
-            m_Dirty = true;
+            MarkDirty();
+        }
+
+        void AdjustColumnWidths()
+        {
+            bool flatView = m_Table.flatView;
+            bool showIgnoredIssues = m_Table.showIgnoredIssues;
+            bool needToExpand = flatView == false || showIgnoredIssues == true;
+
+            // Base column widths on the contents of a flat table, skipping ignored issues.
+            if (needToExpand)
+            {
+                m_Table.flatView = true;
+                m_Table.showIgnoredIssues = false;
+                m_Table.Reload();
+            }
+
+            var rows = m_Table.GetRows();
+
+            if (rows == null || rows.Count == 0 || (rows.Count == 1 && rows[0].displayName == "No items"))
+                return;
+
+            Profiler.BeginSample("AnalysisView.AdjustColumnWidth");
+
+            var header = m_Table.multiColumnHeader;
+
+            for (var columnIndex = 0; columnIndex < m_Layout.Properties.Length; columnIndex++)
+            {
+                var property = m_Layout.Properties[columnIndex];
+                if (property.IsHidden)
+                {
+                    header.GetColumn(columnIndex).width = 0;
+                    continue;
+                }
+
+                var propertyType = property.Type;
+                var propertyFormat = property.Format;
+
+                string widestPropString = property.Name;
+                float widestPropWidth = Utility.EstimateWidth(widestPropString);
+
+                if (propertyFormat != PropertyFormat.Bool) // Just use the column header for bool columns
+                {
+                    for (int rowIndex = 0; rowIndex < rows.Count; ++rowIndex)
+                    {
+                        Profiler.BeginSample("AnalysisView.AdjustColumnWidth.GetCellString");
+
+                        var row = rows[rowIndex];
+                        var item = ((IssueTableItem)row);
+                        var issue = item.ProjectIssue;
+                        string cellString;
+
+                        if (PropertyTypeUtil.IsCustom(propertyType))
+                        {
+                            var customPropertyIndex = PropertyTypeUtil.ToCustomIndex(propertyType);
+
+                            switch (propertyFormat)
+                            {
+                                case PropertyFormat.Bytes:
+                                    cellString =
+                                        Formatting.FormatSize(issue.GetCustomPropertyUInt64(customPropertyIndex));
+                                    break;
+                                case PropertyFormat.Time:
+                                    cellString =
+                                        Formatting.FormatTime(issue.GetCustomPropertyFloat(customPropertyIndex));
+                                    break;
+                                case PropertyFormat.ULong:
+                                    var ulongAsString = issue.GetCustomProperty(customPropertyIndex);
+                                    cellString = ulong.TryParse(ulongAsString, out var ulongValue) ? ulongAsString : "";
+                                    break;
+                                case PropertyFormat.Integer:
+                                    var intAsString = issue.GetCustomProperty(customPropertyIndex);
+                                    cellString = int.TryParse(intAsString, out var intValue) ? intAsString : "";
+                                    break;
+                                case PropertyFormat.Percentage:
+                                    cellString =
+                                        Formatting.FormatPercentage(issue.GetCustomPropertyFloat(customPropertyIndex), 1);
+                                    break;
+                                default:
+                                    cellString = issue.GetProperty(propertyType);
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            cellString = issue.GetProperty(propertyType);
+                        }
+
+                        Profiler.EndSample();
+
+                        var propWidth = Utility.EstimateWidth(cellString);
+
+                        if (propWidth > widestPropWidth)
+                        {
+                            widestPropString = cellString;
+                            widestPropWidth = propWidth;
+                        }
+                    }
+                }
+
+                var width = Utility.GetWidth_SlowButAccurate(widestPropString, m_ViewStates.fontSize);
+
+                // Space to accommodate indenting in column 0
+                if (columnIndex == 0)
+                {
+                    width += LayoutSize.CellItemTreeIndent;
+                }
+
+                if (widestPropString != property.Name && HasIcon(property))
+                    width += LayoutSize.CellItemIconSize;
+
+                // CalcSize underestimates the width of text in cells. Why? No idea. This is a fudge.
+                width += LayoutSize.CellWidthPadding;
+
+                var clamp = property.MaxAutoWidth;
+                if (clamp != 0 && width > clamp)
+                    width = clamp;
+
+                header.GetColumn(columnIndex).width = width;
+            }
+
+            if (needToExpand)
+            {
+                m_Table.flatView = flatView;
+                m_Table.showIgnoredIssues = showIgnoredIssues;
+                m_Table.Reload();
+            }
+
+            Profiler.EndSample();
+        }
+
+        bool HasIcon(PropertyDefinition property)
+        {
+            switch (property.Type)
+            {
+                case PropertyType.LogLevel:
+                case PropertyType.Severity:
+                    return true;
+                case PropertyType.Description:
+                    return m_Desc.DescriptionWithIcon;
+                default:
+                    if (PropertyTypeUtil.IsCustom(property.Type))
+                    {
+                        // ULong and Integer actually CAN have icons, but only when they also have empty strings, so the size
+                        // of the column is likely to be dictated by some other cell.
+                        switch (property.Format)
+                        {
+                            case PropertyFormat.Bool:
+                                return true;
+                            case PropertyFormat.ULong:
+                                return false;
+                            case PropertyFormat.Integer:
+                                return false;
+                            default:
+                                return false;
+                        }
+                    }
+                    return false;
+            }
         }
 
         public virtual void Clear()
@@ -164,7 +324,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Issues.Clear();
             m_Table.Clear();
 
-            m_Dirty = true;
+            MarkDirty();
         }
 
         /// <summary>
@@ -173,6 +333,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public void MarkDirty()
         {
             m_Dirty = true;
+        }
+
+        /// <summary>
+        /// Mark column widths as dirty. Use this to force the table columns to resize to fit the displayed content.
+        /// </summary>
+        public void MarkColumnWidthsDirty()
+        {
+            m_ColumnWidthsDirty = true;
         }
 
         void RefreshIfDirty()
@@ -187,12 +355,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         // TODO: remove this method when not used anymore
         public bool IsDiagnostic()
         {
-            return m_Layout.properties.Any(p => p.type == PropertyType.Severity);
+            return m_Layout.Properties.Any(p => p.Type == PropertyType.Severity);
         }
 
         public bool IsValid()
         {
-            return m_Layout.properties.Length == 0 || m_Table != null;
+            return m_Layout.Properties.Length == 0 || m_Table != null;
         }
 
         public virtual void DrawFilters()
@@ -221,7 +389,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
             }
 
-            if (m_Desc.showDependencyView)
+            if (m_Desc.ShowDependencyView)
             {
                 DrawDependencyView(selectedIssues);
             }
@@ -237,7 +405,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 // Add a bit of space to improve readability
                 EditorGUILayout.Space();
 
-                if (!m_Desc.showInfoPanel)
+                if (!m_Desc.ShowInfoPanel)
                     return;
 
                 m_ViewStates.info = Utility.BoldFoldout(m_ViewStates.info, Contents.InfoFoldout);
@@ -264,6 +432,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             DrawToolbar();
 
+            // Because adjusting the column width relies on GUIStyle.CalcSize, and because that method can only be called during an OnGUI event, we have to set the widths here.
+            if (m_ColumnWidthsDirty)
+            {
+                AdjustColumnWidths();
+                m_ColumnWidthsDirty = false;
+            }
+
             var r = EditorGUILayout.GetControlRect(GUILayout.ExpandHeight(true));
 
             Profiler.BeginSample("IssueTable.OnGUI");
@@ -285,7 +460,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             EditorGUI.BeginChangeCheck();
 
-            if (UserPreferences.DeveloperMode && m_Desc.showDependencyView)
+            if (UserPreferences.DeveloperMode && m_Desc.ShowDependencyView)
             {
                 // this is only available in developer mode because it is still too slow at the moment
                 m_TextFilter.searchDependencies = EditorGUILayout.ToggleLeft("Dependencies (slow)",
@@ -322,11 +497,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public virtual void DrawViewOptions()
         {
             if (m_ViewManager.OnAnalysisRequested != null)
-                DrawToolbarButtonIcon(Contents.AnalyzeNowButton,  () => m_ViewManager.OnAnalysisRequested(m_Desc.category));
+                DrawToolbarButtonIcon(Contents.AnalyzeNowButton,  () => m_ViewManager.OnAnalysisRequested(m_Desc.Category));
 
             m_Table.SetFontSize(m_ViewStates.fontSize);
 
-            if (!m_Layout.hierarchy)
+            if (!m_Layout.IsHierarchy)
             {
                 EditorGUI.BeginChangeCheck();
                 m_Table.flatView = !GUILayout.Toggle(!m_Table.flatView, Contents.HierarchyButton, EditorStyles.toolbarButton, GUILayout.Width(LayoutSize.ToolbarIconSize));
@@ -366,8 +541,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         void DrawDataOptions()
         {
-            if (m_Desc.onDrawToolbar != null)
-                m_Desc.onDrawToolbar(m_ViewManager);
+            if (m_Desc.OnDrawToolbar != null)
+                m_Desc.OnDrawToolbar(m_ViewManager);
 
             if (Utility.ToolbarButtonWithDropdownList(Contents.ExportButton, k_ExportModeStrings,
                 (data) =>
@@ -401,7 +576,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Height(LayoutSize.DependencyViewHeight));
 
-            m_ViewStates.dependencies = Utility.BoldFoldout(m_ViewStates.dependencies, m_Desc.dependencyViewGuiContent != null ? m_Desc.dependencyViewGuiContent : Contents.Dependencies);
+            m_ViewStates.dependencies = Utility.BoldFoldout(m_ViewStates.dependencies, m_Desc.DependencyViewGuiContent != null ? m_Desc.DependencyViewGuiContent : Contents.Dependencies);
             if (m_ViewStates.dependencies)
             {
                 if (issues.Length == 0)
@@ -490,7 +665,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         protected virtual void Export(Func<ProjectIssue, bool> predicate = null)
         {
-            var path = EditorUtility.SaveFilePanel("Save to CSV file", UserPreferences.LoadSavePath, string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
+            var path = EditorUtility.SaveFilePanel("Save to CSV file", UserPreferences.LoadSavePath, string.Format("project-auditor-{0}.csv", m_Desc.Category.ToString()).ToLower(),
                 "csv");
             if (path.Length != 0)
             {
@@ -527,13 +702,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 return;
 
             var columns = m_Table.multiColumnHeader.state.columns;
-            for (int i = 0; i < m_Layout.properties.Length; i++)
+            for (int i = 0; i < m_Layout.Properties.Length; i++)
             {
                 // when reloading we need to make sure visible columns have a width >= minWidth
-                columns[i].width = m_Layout.properties[i].hidden ? 0 : Math.Max(columns[i].minWidth, EditorPrefs.GetFloat(GetPrefKey(k_ColumnSizeKey + i), columns[i].width));
+                columns[i].width = m_Layout.Properties[i].IsHidden ? 0 : Math.Max(columns[i].minWidth, EditorPrefs.GetFloat(GetPrefKey(k_ColumnSizeKey + i), columns[i].width));
             }
 
-            var defaultGroupPropertyIndex = m_Layout.defaultGroupPropertyIndex;
+            var defaultGroupPropertyIndex = m_Layout.DefaultGroupPropertyIndex;
             m_Table.flatView = EditorPrefs.GetBool(GetPrefKey(k_FlatModeKey), defaultGroupPropertyIndex == -1);
             m_Table.showIgnoredIssues = EditorPrefs.GetBool(GetPrefKey(k_ShowIgnoredIssuesKey), false);
             m_Table.groupPropertyIndex = EditorPrefs.GetInt(GetPrefKey(k_GroupPropertyIndexKey), defaultGroupPropertyIndex);
@@ -552,7 +727,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 return;
 
             var columns = m_Table.multiColumnHeader.state.columns;
-            for (int i = 0; i < m_Layout.properties.Length; i++)
+            for (int i = 0; i < m_Layout.Properties.Length; i++)
             {
                 EditorPrefs.SetFloat(GetPrefKey(k_ColumnSizeKey + i), columns[i].width);
             }
@@ -570,7 +745,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         string GetPrefKey(string key)
         {
-            return $"{k_PrefKeyPrefix}.{m_Desc.displayName}.{key}";
+            return $"{k_PrefKeyPrefix}.{m_Desc.DisplayName}.{key}";
         }
 
         public static void DrawActionButton(GUIContent guiContent, Action onClick)
@@ -649,6 +824,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             public static readonly int ToolbarIconSize = 32;
             public static readonly int ActionButtonHeight = 30;
             public static readonly int CopyToClipboardButtonSize = 24;
+            public static readonly int CellItemIconSize = 16;
+            public static readonly int CellWidthPadding = 6;
+            public static readonly int CellItemTreeIndent = 30;
         }
 
         static class Contents

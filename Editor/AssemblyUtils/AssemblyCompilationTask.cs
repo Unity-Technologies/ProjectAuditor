@@ -22,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 
         public long DurationInMs => StopWatch != null ? StopWatch.ElapsedMilliseconds : 0;
 
-        public CompilationStatus status => m_CompilationStatus;
+        public CompilationStatus Status => m_CompilationStatus;
 
         public bool IsDone()
         {
@@ -68,7 +68,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
         {
             if (Messages == null)
                 return false;
-            return Messages.All(message => message.type != CompilerMessageType.Error);
+            return Messages.All(message => message.Type != CompilerMessageType.Error);
         }
     }
 }

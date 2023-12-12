@@ -10,6 +10,14 @@ using SerializedObject = Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
 
 namespace Unity.ProjectAuditor.Editor
 {
+    public enum AnalysisResult
+    {
+        InProgress,
+        Success,
+        Failure,
+        Cancelled
+    }
+
     /// <summary>
     /// Represents an object which can be passed to an instance of <see cref="ProjectAuditor"/> to specify how analysis should be performed and to provide delegates to be called when analysis steps have completed.
     /// AnalysisParams defaults to values which instruct ProjectAuditor to analyse everything in the project for the current build target, but instances can be populated with custom data in an object initializer to provide additional constraints.
@@ -18,7 +26,7 @@ namespace Unity.ProjectAuditor.Editor
     public class AnalysisParams
     {
         /// <summary>
-        /// Issue Categories to include in the audit. If null, the analysis will include all categories except for those relating to assets.
+        /// Issue Categories to include in the audit. If null, the analysis will include all categories.
         /// </summary>
         [SerializeField]
         public IssueCategory[] Categories;
@@ -26,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor
         [SerializeField]
         BuildTarget m_Platform;
 
-        string m_PlatformString;
+        string m_PlatformAsString;
 
         /// <summary>
         /// Analysis platform. The default platform is the currently active build target.
@@ -38,7 +46,7 @@ namespace Unity.ProjectAuditor.Editor
             set
             {
                 m_Platform = value;
-                m_PlatformString = m_Platform.ToString();
+                m_PlatformAsString = m_Platform.ToString();
                 DiagnosticParams?.SetAnalysisPlatform(Platform);
             }
         }
@@ -74,7 +82,7 @@ namespace Unity.ProjectAuditor.Editor
         /// Notifies that a Module completed its analysis.
         /// </summary>
         [JsonIgnore]
-        public Action OnModuleCompleted;
+        public Action<AnalysisResult> OnModuleCompleted;
 
         /// <summary>
         /// The DiagnosticParams object which defines the customizable thresholds for reporting certain diagnostics.
@@ -95,7 +103,7 @@ namespace Unity.ProjectAuditor.Editor
         [NonSerialized]
         internal Predicate<string> AssetPathFilter;
 
-        internal string PlatformString => m_PlatformString;
+        internal string PlatformAsString => m_PlatformAsString;
 
         public BuildObjects BuildObjects;
 

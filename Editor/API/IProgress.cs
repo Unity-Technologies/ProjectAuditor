@@ -23,5 +23,11 @@ namespace Unity.ProjectAuditor.Editor
         /// Clear and hide the progress object.
         /// </summary>
         void Clear();
+
+        /// <summary>
+        /// Checks if the progress operation has been cancelled.
+        /// </summary>
+        /// <returns>True if cancelled, otherwise false.</returns>
+        bool IsCancelled { get; }
     }
 }

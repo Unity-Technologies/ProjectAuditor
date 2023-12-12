@@ -1,15 +1,10 @@
-using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Modules;
-using Unity.ProjectAuditor.Editor.CodeAnalysis;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Tests.Common;
-using Unity.ProjectAuditor.Editor.Utils;
-using UnityEngine;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -219,13 +214,13 @@ class GenericInstantiation
     }
 }
 ");
+            AnalyzeTempAssetsFolder();
         }
 
         [Test]
         public void CodeAnalysis_Paths_CanBeResolved()
         {
-            var issues = Analyze(i => i.Category == IssueCategory.Code);
-            foreach (var issue in issues)
+            foreach (var issue in m_CodeDiagnostics)
             {
                 var relativePath = issue.RelativePath;
 
@@ -236,7 +231,7 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_Issue_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAsset);
+            var issues = FindTestAssetIssues(m_TestAsset);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -265,19 +260,19 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_ConditionalMethodCallSites_AreRemoved()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetClassWithConditionalAttribute);
+            var issues = FindTestAssetIssues(m_TestAssetClassWithConditionalAttribute);
             Assert.Positive(issues.Length);
             Assert.NotNull(issues[0]);
             Assert.NotNull(issues[0].Dependencies);
 
             // all call sites should be removed by the compiler
-            Assert.False(issues[0].Dependencies.HasChildren());
+            Assert.False(issues[0].Dependencies.HasChildren);
         }
 
         [Test]
         public void CodeAnalysis_DerivedClassMethodIssue_IsReported()
         {
-            var filteredIssues = AnalyzeAndFindAssetIssues(m_TestAssetDerivedClassMethod);
+            var filteredIssues = FindTestAssetIssues(m_TestAssetDerivedClassMethod);
 
             Assert.AreEqual(1, filteredIssues.Count());
 
@@ -300,7 +295,7 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_IssueInNestedClass_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInNestedClass);
+            var issues = FindTestAssetIssues(m_TestAssetIssueInNestedClass);
 
             Assert.AreEqual(1, issues.Count());
             Assert.AreEqual("System.Void MyClassWithNested/NestedClass::Dummy()", issues[0].GetContext());
@@ -309,7 +304,7 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_IssueInGenericClass_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInGenericClass);
+            var issues = FindTestAssetIssues(m_TestAssetIssueInGenericClass);
 
             Assert.AreEqual(1, issues.Count());
             Assert.AreEqual("System.Void GenericClass`1::Dummy()", issues[0].GetContext());
@@ -318,7 +313,7 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_IssueInVirtualMethod_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInVirtualMethod);
+            var issues = FindTestAssetIssues(m_TestAssetIssueInVirtualMethod);
 
             Assert.AreEqual(1, issues.Count());
             Assert.AreEqual("System.Void AbstractClass::Dummy()", issues[0].GetContext());
@@ -327,7 +322,7 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_IssueInOverrideMethod_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInOverrideMethod);
+            var issues = FindTestAssetIssues(m_TestAssetIssueInOverrideMethod);
 
             Assert.AreEqual(1, issues.Count());
             Assert.AreEqual("System.Void DerivedClass::Dummy()", issues[0].GetContext());
@@ -336,7 +331,7 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_IssueInMonoBehaviour_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInMonoBehaviour);
+            var issues = FindTestAssetIssues(m_TestAssetIssueInMonoBehaviour);
 
             Assert.AreEqual(1, issues.Count());
             Assert.AreEqual("System.Void MyMonoBehaviour::Start()", issues[0].GetContext());
@@ -345,7 +340,7 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_IssueInCoroutine_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInCoroutine);
+            var issues = FindTestAssetIssues(m_TestAssetIssueInCoroutine);
 
             Assert.AreEqual(1, issues.Count());
             Assert.AreEqual("System.Boolean MyMonoBehaviourWithCoroutine/<MyCoroutine>d__1::MoveNext()", issues[0].GetContext());
@@ -354,7 +349,7 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_IssueInDelegate_IsReported()
         {
-            var allScriptIssues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInDelegate);
+            var allScriptIssues = FindTestAssetIssues(m_TestAssetIssueInDelegate);
             var issue = allScriptIssues.FirstOrDefault(i => i.Description.Equals("'UnityEngine.Camera.allCameras' usage"));
             Assert.NotNull(issue);
             Assert.AreEqual("System.Int32 ClassWithDelegate/<>c::<Dummy>b__1_0()", issue.GetContext());
@@ -363,17 +358,17 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_IssueInProperty_IsReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetIssueInProperty, IssueCategory.Code);
+            var issues = FindTestAssetIssues(m_TestAssetIssueInProperty);
 
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("Conversion from value type 'Int32' to ref type", issues[0].Description);
-            Assert.AreEqual("IssueInProperty.get_property", issues[0].Dependencies.prettyName);
+            Assert.AreEqual("IssueInProperty.get_property", issues[0].Dependencies.PrettyName);
         }
 
         [Test]
         public void CodeAnalysis_IssueInNamespace_IsReported()
         {
-            var allScriptIssues = AnalyzeAndFindAssetIssues(m_TestAssetAnyApiInNamespace);
+            var allScriptIssues = FindTestAssetIssues(m_TestAssetAnyApiInNamespace);
             var issue = allScriptIssues.FirstOrDefault(i => i.Description.Equals("'System.Linq.Enumerable.Sum' usage"));
 
             Assert.NotNull(issue);
@@ -393,9 +388,7 @@ class GenericInstantiation
         [Test]
         public void CodeAnalysis_DefaultAssembly_IsOnlyReportedAssembly()
         {
-            var issues = Analyze(IssueCategory.Code);
-
-            Assert.True(issues.All(i => i.GetCustomProperty(CodeProperty.Assembly).Equals(AssemblyInfo.DefaultAssemblyName)));
+            Assert.True(m_CodeDiagnostics.All(i => i.GetCustomProperty(CodeProperty.Assembly).Equals(AssemblyInfo.DefaultAssemblyName)));
         }
     }
 }

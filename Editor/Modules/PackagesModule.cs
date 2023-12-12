@@ -19,25 +19,25 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         static readonly IssueLayout k_PackageLayout = new IssueLayout
         {
-            category = IssueCategory.Package,
-            properties = new[]
+            Category = IssueCategory.Package,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Package" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.Name), format = PropertyFormat.String, name = "Name", hidden = true },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.Version), format = PropertyFormat.String, name = "Version" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PackageProperty.Source), format = PropertyFormat.String, name = "Source", defaultGroup = true },
-                new PropertyDefinition { type = PropertyType.Path, format = PropertyFormat.String, name = "Path" }
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Package" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(PackageProperty.Name), Format = PropertyFormat.String, Name = "Name", IsHidden = true },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(PackageProperty.Version), Format = PropertyFormat.String, Name = "Version" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(PackageProperty.Source), Format = PropertyFormat.String, Name = "Source", IsDefaultGroup = true },
+                new PropertyDefinition { Type = PropertyType.Path, Format = PropertyFormat.String, Name = "Path" }
             }
         };
 
         static readonly IssueLayout k_PackageVersionLayout = new IssueLayout
         {
-            category = IssueCategory.PackageDiagnostic,
-            properties = new[]
+            Category = IssueCategory.PackageDiagnostic,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Package Issue"},
-                new PropertyDefinition { type = PropertyType.Severity, format = PropertyFormat.String, name = "Severity"},
-                new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true, hidden = true},
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Issue", LongName = "Package Issue"},
+                new PropertyDefinition { Type = PropertyType.Severity, Format = PropertyFormat.String, Name = "Severity"},
+                new PropertyDefinition { Type = PropertyType.Descriptor, Name = "Descriptor", IsDefaultGroup = true, IsHidden = true},
             }
         };
 
@@ -83,15 +83,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             RegisterDescriptor(k_RecommendPackagePreView);
         }
 
-        public override void Audit(AnalysisParams analysisParams, IProgress progress = null)
+        public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
             var request = Client.List();
             while (!request.IsCompleted)
                 System.Threading.Thread.Sleep(10);
             if (request.Status == StatusCode.Failure)
             {
-                analysisParams.OnModuleCompleted?.Invoke();
-                return;
+                return AnalysisResult.Failure;
             }
 
             var context = new AnalysisContext()
@@ -104,7 +103,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 analysisParams.OnIncomingIssues(EnumerateInstalledPackages(context, package));
                 analysisParams.OnIncomingIssues(EnumeratePackageDiagnostics(context, package));
             }
-            analysisParams.OnModuleCompleted?.Invoke();
+            return AnalysisResult.Success;
         }
 
         IEnumerable<ProjectIssue> EnumerateInstalledPackages(AnalysisContext context, UnityEditor.PackageManager.PackageInfo package)

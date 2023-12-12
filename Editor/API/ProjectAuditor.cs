@@ -130,7 +130,6 @@ namespace Unity.ProjectAuditor.Editor
             var categories = analysisParams.Categories != null
                 ? analysisParams.Categories
                 : m_Modules
-                    .Where(m => m.IsEnabledByDefault)
                     .SelectMany(m => m.Categories)
                     .ToArray();
             var report = analysisParams.ExistingReport;
@@ -142,6 +141,7 @@ namespace Unity.ProjectAuditor.Editor
                 var reportCategories = report.SessionInfo.Categories.ToList();
                 reportCategories.AddRange(categories);
                 report.SessionInfo.Categories = reportCategories.Distinct().ToArray();
+                report.SessionInfo.UseRoslynAnalyzers = UserPreferences.UseRoslynAnalyzers;
 
                 foreach (var category in categories)
                 {
@@ -197,6 +197,7 @@ namespace Unity.ProjectAuditor.Editor
 
             var logTimingsInfo = UserPreferences.LogTimingsInfo;
             var stopwatch = Stopwatch.StartNew();
+            var isCancelled = false;
             foreach (var module in supportedModules)
             {
                 var moduleStartTime = DateTime.Now;
@@ -208,25 +209,32 @@ namespace Unity.ProjectAuditor.Editor
                         report.AddIssues(resultsList);
                         analysisParams.OnIncomingIssues?.Invoke(resultsList);
                     },
-                    OnModuleCompleted = () =>
+                    OnModuleCompleted = (analysisResult) =>
                     {
                         var moduleEndTime = DateTime.Now;
+                        if (analysisResult == AnalysisResult.Cancelled)
+                            isCancelled = true;
+                        else if (analysisResult == AnalysisResult.Failure)
+                            Debug.Log($"[{ProjectAuditor.DisplayName}] Module {module.Name} failed.");
                         if (logTimingsInfo)
                             Debug.Log($"[{ProjectAuditor.DisplayName}] Module {module.Name} analysis took: " +
                                 (moduleEndTime - moduleStartTime).TotalMilliseconds / 1000.0 + " seconds.");
 
-                        report.RecordModuleInfo(module, moduleStartTime, moduleEndTime);
+                        report.RecordModuleInfo(module, moduleStartTime, moduleEndTime, analysisResult);
 
-                        analysisParams.OnModuleCompleted?.Invoke();
+                        analysisParams.OnModuleCompleted?.Invoke(analysisResult);
 
                         var finished = --numModules == 0;
                         if (finished)
                         {
                             stopwatch.Stop();
+                            if (isCancelled)
+                                Debug.Log($"[{ProjectAuditor.DisplayName}] Analysis was cancelled by the user.");
                             if (logTimingsInfo)
                                 Debug.Log($"[{ProjectAuditor.DisplayName}] Analysis took: " + stopwatch.ElapsedMilliseconds / 1000.0f +
                                     " seconds.");
 
+                            // finally, call the user's OnCompleted callback
                             analysisParams.OnCompleted?.Invoke(report);
                         }
                     }
@@ -234,12 +242,16 @@ namespace Unity.ProjectAuditor.Editor
 
                 try
                 {
-                    module.Audit(moduleParams, progress);
+                    var analysisResult = module.Audit(moduleParams, progress);
+                    if (analysisResult == AnalysisResult.Cancelled)
+                        progress.Clear();
+                    if (analysisResult != AnalysisResult.InProgress)
+                        moduleParams.OnModuleCompleted(analysisResult);
                 }
                 catch (Exception e)
                 {
                     Debug.LogError($"[{ProjectAuditor.DisplayName}] Module {module.Name} failed: " + e.Message + " " + e.StackTrace);
-                    moduleParams.OnModuleCompleted();
+                    moduleParams.OnModuleCompleted(AnalysisResult.Failure);
                 }
             }
 
@@ -318,7 +330,7 @@ namespace Unity.ProjectAuditor.Editor
 
         internal Module[] GetModules(IssueCategory category)
         {
-            return m_Modules.Where(a => a.IsSupported && a.SupportedLayouts.FirstOrDefault(l => l.category == category) != null).ToArray();
+            return m_Modules.Where(a => a.IsSupported && a.SupportedLayouts.FirstOrDefault(l => l.Category == category) != null).ToArray();
         }
 
         /// <summary>
@@ -369,7 +381,7 @@ namespace Unity.ProjectAuditor.Editor
         // Only used for testing
         internal bool IsModuleSupported(IssueCategory category)
         {
-            return m_Modules.Any(a => a.IsSupported && a.SupportedLayouts.FirstOrDefault(l => l.category == category) != null);
+            return m_Modules.Any(a => a.IsSupported && a.SupportedLayouts.FirstOrDefault(l => l.Category == category) != null);
         }
 
         // Only used for testing

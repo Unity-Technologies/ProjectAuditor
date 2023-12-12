@@ -20,9 +20,9 @@ namespace Unity.ProjectAuditor.EditorTests
 
             for (var i = 0; i < viewManager.NumViews; i++)
             {
-                if (viewManager.GetView(i).Desc.category == IssueCategory.Metadata)
+                if (viewManager.GetView(i).Desc.Category == IssueCategory.Metadata)
                     continue;
-                if (viewManager.GetView(i).Desc.category == IssueCategory.FirstCustomCategory)
+                if (viewManager.GetView(i).Desc.Category == IssueCategory.FirstCustomCategory)
                     continue;
 
                 var documentationUrl = viewManager.GetView(i).DocumentationUrl;
