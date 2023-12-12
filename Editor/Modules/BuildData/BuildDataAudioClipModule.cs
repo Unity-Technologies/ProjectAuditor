@@ -36,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        public override string Name => "AudioClipes";
+        public override string Name => "BuildDataAudioClipes";
 
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {

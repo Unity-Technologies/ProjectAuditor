@@ -67,7 +67,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         };
 
 
-        public override string Name => "Shaders";
+        public override string Name => "BuildDataShaders";
 
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {

@@ -44,7 +44,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        public override string Name => "Meshes";
+        public override string Name => "BuildDataMeshes";
 
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {

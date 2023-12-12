@@ -64,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             MessageFormat = "File '{0}' is a potential duplicate"
         };
 
-        public override string Name => "Summary";
+        public override string Name => "BuildDataSummary";
 
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {

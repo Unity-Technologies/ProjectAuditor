@@ -36,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        public override string Name => "Textures";
+        public override string Name => "BuildDataTextures";
 
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
