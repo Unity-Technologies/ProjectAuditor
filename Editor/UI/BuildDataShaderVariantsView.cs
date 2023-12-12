@@ -204,23 +204,23 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public override void DrawFilters()
         {
-            // if (m_Desc.category == IssueCategory.BuildDataShaderVariant)
-            // {
-            //     GUI.enabled = NumIssues > 0;
-            //
-            //     EditorGUILayout.BeginHorizontal();
-            //     EditorGUILayout.LabelField("Extra :", GUILayout.Width(80));
-            //     EditorGUI.BeginChangeCheck();
-            //     m_ShowCompiledVariants = EditorGUILayout.ToggleLeft("Compiled Variants", m_ShowCompiledVariants, GUILayout.Width(180));
-            //     m_ShowUncompiledVariants = EditorGUILayout.ToggleLeft("Uncompiled Variants", m_ShowUncompiledVariants, GUILayout.Width(180));
-            //     if (EditorGUI.EndChangeCheck())
-            //     {
-            //         MarkDirty();
-            //     }
-            //     EditorGUILayout.EndHorizontal();
-            //
-            //     GUI.enabled = true;
-            // }
+            if (m_Desc.Category == IssueCategory.BuildDataShaderVariant)
+            {
+                GUI.enabled = NumIssues > 0;
+
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("Extra :", GUILayout.Width(80));
+                EditorGUI.BeginChangeCheck();
+                m_ShowCompiledVariants = EditorGUILayout.ToggleLeft("Compiled Variants", m_ShowCompiledVariants, GUILayout.Width(180));
+                m_ShowUncompiledVariants = EditorGUILayout.ToggleLeft("Uncompiled Variants", m_ShowUncompiledVariants, GUILayout.Width(180));
+                if (EditorGUI.EndChangeCheck())
+                {
+                    MarkDirty();
+                }
+                EditorGUILayout.EndHorizontal();
+
+                GUI.enabled = true;
+            }
         }
 
         public override void DrawDetails(ProjectIssue[] selectedIssues)
@@ -344,7 +344,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (m_Desc.Category == IssueCategory.ComputeShaderVariant)
                 return true;
 
-            return true;
+            var compiled = issue.GetCustomPropertyBool(ShaderVariantProperty.Compiled);
+            if (compiled && m_ShowCompiledVariants)
+                return true;
+            if (!compiled && m_ShowUncompiledVariants)
+                return true;
+            return false;
         }
 
         public BuildDataShaderVariantsView(ViewManager viewManager) : base(viewManager)
