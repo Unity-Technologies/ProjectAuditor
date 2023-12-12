@@ -87,7 +87,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var location = new Location(assetPath);
             var dependencyNode = new AssetDependencyNode
             {
-                location = new Location(assetPath)
+                Location = new Location(assetPath)
             };
             if (parent != null)
                 dependencyNode.AddChild(parent);

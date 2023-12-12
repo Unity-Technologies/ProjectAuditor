@@ -15,14 +15,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
-            category = IssueCategory.ProjectSetting,
-            properties = new[]
+            Category = IssueCategory.ProjectSetting,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description", maxAutoWidth = 800 },
-                new PropertyDefinition { type = PropertyType.Severity, format = PropertyFormat.String, name = "Severity"},
-                new PropertyDefinition { type = PropertyType.Areas, name = "Areas", longName = "The areas the issue might have an impact on"},
-                new PropertyDefinition { type = PropertyType.Filename, name = "System", defaultGroup = true},
-                new PropertyDefinition { type = PropertyType.Platform, name = "Platform"}
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Issue", LongName = "Issue description", MaxAutoWidth = 800 },
+                new PropertyDefinition { Type = PropertyType.Severity, Format = PropertyFormat.String, Name = "Severity"},
+                new PropertyDefinition { Type = PropertyType.Areas, Name = "Areas", LongName = "The areas the issue might have an impact on"},
+                new PropertyDefinition { Type = PropertyType.Filename, Name = "System", IsDefaultGroup = true},
+                new PropertyDefinition { Type = PropertyType.Platform, Name = "Platform"}
             }
         };
 

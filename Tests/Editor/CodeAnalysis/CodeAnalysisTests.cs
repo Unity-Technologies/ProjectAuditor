@@ -266,7 +266,7 @@ class GenericInstantiation
             Assert.NotNull(issues[0].Dependencies);
 
             // all call sites should be removed by the compiler
-            Assert.False(issues[0].Dependencies.HasChildren());
+            Assert.False(issues[0].Dependencies.HasChildren);
         }
 
         [Test]
@@ -362,7 +362,7 @@ class GenericInstantiation
 
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("Conversion from value type 'Int32' to ref type", issues[0].Description);
-            Assert.AreEqual("IssueInProperty.get_property", issues[0].Dependencies.prettyName);
+            Assert.AreEqual("IssueInProperty.get_property", issues[0].Dependencies.PrettyName);
         }
 
         [Test]

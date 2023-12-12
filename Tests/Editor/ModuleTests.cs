@@ -18,10 +18,10 @@ namespace Unity.ProjectAuditor.EditorTests
 
         readonly IssueLayout m_Layout = new IssueLayout
         {
-            category = IssueCategory.Code,
-            properties = new[]
+            Category = IssueCategory.Code,
+            Properties = new[]
             {
-                new PropertyDefinition {type = PropertyType.Description }
+                new PropertyDefinition {Type = PropertyType.Description }
             }
         };
 

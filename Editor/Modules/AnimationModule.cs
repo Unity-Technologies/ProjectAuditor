@@ -67,73 +67,73 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         static readonly IssueLayout k_AnimatorControllerLayout = new IssueLayout
         {
-            category = IssueCategory.AnimatorController,
-            properties = new[]
+            Category = IssueCategory.AnimatorController,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Controller Name", maxAutoWidth = 500  },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimatorControllerProperty.NumLayers), format = PropertyFormat.Integer, name = "Layers", longName = "Number of Layers" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimatorControllerProperty.NumParameters), format = PropertyFormat.Integer, name = "Params", longName = "Number of Parameters" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimatorControllerProperty.NumClips), format = PropertyFormat.Integer, name = "Clips", longName = "Number of Animation Clips" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimatorControllerProperty.SizeOnDisk), format = PropertyFormat.Bytes, name = "Size", longName = "Controller Size" },
-                new PropertyDefinition { type = PropertyType.Path, name = "Path", maxAutoWidth = 500 }
+                new PropertyDefinition { Type = PropertyType.Description, Format = PropertyFormat.String, Name = "Name", LongName = "Controller Name", MaxAutoWidth = 500  },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AnimatorControllerProperty.NumLayers), Format = PropertyFormat.Integer, Name = "Layers", LongName = "Number of Layers" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AnimatorControllerProperty.NumParameters), Format = PropertyFormat.Integer, Name = "Params", LongName = "Number of Parameters" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AnimatorControllerProperty.NumClips), Format = PropertyFormat.Integer, Name = "Clips", LongName = "Number of Animation Clips" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AnimatorControllerProperty.SizeOnDisk), Format = PropertyFormat.Bytes, Name = "Size", LongName = "Controller Size" },
+                new PropertyDefinition { Type = PropertyType.Path, Name = "Path", MaxAutoWidth = 500 }
             }
         };
 
         static readonly IssueLayout k_AnimationClipLayout = new IssueLayout
         {
-            category = IssueCategory.AnimationClip,
-            properties = new[]
+            Category = IssueCategory.AnimationClip,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Clip Name", maxAutoWidth = 500 },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimationClipProperty.IsEmpty), format = PropertyFormat.Bool, name = "Empty?", longName = "Contains no curves and no events" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimationClipProperty.NumEvents), format = PropertyFormat.Integer, name = "Events", longName = "Number of Events" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimationClipProperty.Framerate), format = PropertyFormat.String, name = "Frame Rate" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimationClipProperty.Length), format = PropertyFormat.String, name = "Length" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimationClipProperty.WrapMode), format = PropertyFormat.String, name = "Wrap Mode" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimationClipProperty.IsLooping), format = PropertyFormat.Bool, name = "Looping?" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimationClipProperty.HasGenericRootTransform), format = PropertyFormat.Bool, name = "Generic Root Transform?", longName = "Has animation on the root transform" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimationClipProperty.HasMotionCurves), format = PropertyFormat.Bool, name = "Motion Curves?", longName = "Has root motion curves" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimationClipProperty.HasMotionFloatCurves), format = PropertyFormat.Bool, name = "Motion Float Curves?", longName = "Has editor curves for its root motion" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimationClipProperty.HasRootCurves), format = PropertyFormat.Bool, name = "Root Curves?" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimationClipProperty.HumanMotion), format = PropertyFormat.Bool, name = "Human Motion?", longName = "Contains curves that drive a humanoid rig" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimationClipProperty.IsLegacy), format = PropertyFormat.Bool, name = "Legacy?", longName = "Is this clip used with a Legacy Animation component?" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AnimationClipProperty.SizeOnDisk), format = PropertyFormat.Bytes, name = "Size", longName = "Clip Size" },
-                new PropertyDefinition { type = PropertyType.Path, name = "Path", maxAutoWidth = 500 }
+                new PropertyDefinition { Type = PropertyType.Description, Format = PropertyFormat.String, Name = "Name", LongName = "Clip Name", MaxAutoWidth = 500 },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AnimationClipProperty.IsEmpty), Format = PropertyFormat.Bool, Name = "Empty?", LongName = "Contains no curves and no events" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AnimationClipProperty.NumEvents), Format = PropertyFormat.Integer, Name = "Events", LongName = "Number of Events" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AnimationClipProperty.Framerate), Format = PropertyFormat.String, Name = "Frame Rate" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AnimationClipProperty.Length), Format = PropertyFormat.String, Name = "Length" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AnimationClipProperty.WrapMode), Format = PropertyFormat.String, Name = "Wrap Mode" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AnimationClipProperty.IsLooping), Format = PropertyFormat.Bool, Name = "Looping?" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AnimationClipProperty.HasGenericRootTransform), Format = PropertyFormat.Bool, Name = "Generic Root Transform?", LongName = "Has animation on the root transform" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AnimationClipProperty.HasMotionCurves), Format = PropertyFormat.Bool, Name = "Motion Curves?", LongName = "Has root motion curves" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AnimationClipProperty.HasMotionFloatCurves), Format = PropertyFormat.Bool, Name = "Motion Float Curves?", LongName = "Has editor curves for its root motion" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AnimationClipProperty.HasRootCurves), Format = PropertyFormat.Bool, Name = "Root Curves?" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AnimationClipProperty.HumanMotion), Format = PropertyFormat.Bool, Name = "Human Motion?", LongName = "Contains curves that drive a humanoid rig" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AnimationClipProperty.IsLegacy), Format = PropertyFormat.Bool, Name = "Legacy?", LongName = "Is this clip used with a Legacy Animation component?" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AnimationClipProperty.SizeOnDisk), Format = PropertyFormat.Bytes, Name = "Size", LongName = "Clip Size" },
+                new PropertyDefinition { Type = PropertyType.Path, Name = "Path", MaxAutoWidth = 500 }
             }
         };
 
         static readonly IssueLayout k_AvatarLayout = new IssueLayout
         {
-            category = IssueCategory.Avatar,
-            properties = new[]
+            Category = IssueCategory.Avatar,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Avatar Name", maxAutoWidth = 500 },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.IsValid), format = PropertyFormat.Bool, name = "Valid?" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.IsHuman), format = PropertyFormat.Bool, name = "Human?" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.NumHumanBones), format = PropertyFormat.Integer, name = "Human Bones", longName = "Number of bones mappings" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.NumSkeletonBones), format = PropertyFormat.Integer, name = "Skeleton Bones", longName = "Number of bone transforms to include" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.UpperArmTwist), format = PropertyFormat.String, name = "Upper Arm Twist" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.LowerArmTwist), format = PropertyFormat.String, name = "Lower Arm Twist" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.UpperLegTwist), format = PropertyFormat.String, name = "Upper Leg Twist" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.LowerLegTwist), format = PropertyFormat.String, name = "Lower Leg Twist" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.ArmStretch), format = PropertyFormat.String, name = "Arm Stretch" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.LegStretch), format = PropertyFormat.String, name = "Leg Stretch" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.FeetSpacing), format = PropertyFormat.String, name = "Feet Spacing" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.HasTranslationDoF), format = PropertyFormat.Bool, name = "Translation DoF?" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarProperty.SizeOnDisk), format = PropertyFormat.Bytes, name = "Size", longName = "Avatar Size" },
-                new PropertyDefinition { type = PropertyType.Path, name = "Path", maxAutoWidth = 500 }
+                new PropertyDefinition { Type = PropertyType.Description, Format = PropertyFormat.String, Name = "Name", LongName = "Avatar Name", MaxAutoWidth = 500 },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AvatarProperty.IsValid), Format = PropertyFormat.Bool, Name = "Valid?" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AvatarProperty.IsHuman), Format = PropertyFormat.Bool, Name = "Human?" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AvatarProperty.NumHumanBones), Format = PropertyFormat.Integer, Name = "Human Bones", LongName = "Number of bones mappings" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AvatarProperty.NumSkeletonBones), Format = PropertyFormat.Integer, Name = "Skeleton Bones", LongName = "Number of bone transforms to include" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AvatarProperty.UpperArmTwist), Format = PropertyFormat.String, Name = "Upper Arm Twist" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AvatarProperty.LowerArmTwist), Format = PropertyFormat.String, Name = "Lower Arm Twist" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AvatarProperty.UpperLegTwist), Format = PropertyFormat.String, Name = "Upper Leg Twist" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AvatarProperty.LowerLegTwist), Format = PropertyFormat.String, Name = "Lower Leg Twist" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AvatarProperty.ArmStretch), Format = PropertyFormat.String, Name = "Arm Stretch" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AvatarProperty.LegStretch), Format = PropertyFormat.String, Name = "Leg Stretch" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AvatarProperty.FeetSpacing), Format = PropertyFormat.String, Name = "Feet Spacing" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AvatarProperty.HasTranslationDoF), Format = PropertyFormat.Bool, Name = "Translation DoF?" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AvatarProperty.SizeOnDisk), Format = PropertyFormat.Bytes, Name = "Size", LongName = "Avatar Size" },
+                new PropertyDefinition { Type = PropertyType.Path, Name = "Path", MaxAutoWidth = 500 }
             }
         };
 
         static readonly IssueLayout k_AvatarMaskLayout = new IssueLayout
         {
-            category = IssueCategory.AvatarMask,
-            properties = new[]
+            Category = IssueCategory.AvatarMask,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Mask Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarMaskProperty.NumTransforms), format = PropertyFormat.Integer, name = "Transforms", longName = "Number of Transforms" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AvatarMaskProperty.SizeOnDisk), format = PropertyFormat.Bytes, name = "Size", longName = "Mask Size" },
-                new PropertyDefinition { type = PropertyType.Path, name = "Path" }
+                new PropertyDefinition { Type = PropertyType.Description, Format = PropertyFormat.String, Name = "Name", LongName = "Mask Name" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AvatarMaskProperty.NumTransforms), Format = PropertyFormat.Integer, Name = "Transforms", LongName = "Number of Transforms" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AvatarMaskProperty.SizeOnDisk), Format = PropertyFormat.Bytes, Name = "Size", LongName = "Mask Size" },
+                new PropertyDefinition { Type = PropertyType.Path, Name = "Path" }
             }
         };
 
@@ -195,7 +195,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler may not be the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(controller);
 
-                issues.Add(context.CreateInsight(k_AnimatorControllerLayout.category, controller.name)
+                issues.Add(context.CreateInsight(k_AnimatorControllerLayout.Category, controller.name)
                     .WithCustomProperties(new object[(int)AnimatorControllerProperty.Num]
                     {
                         controller.layers.Length,
@@ -238,7 +238,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler may not be the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(clip);
 
-                issues.Add(context.CreateInsight(k_AnimationClipLayout.category, clip.name)
+                issues.Add(context.CreateInsight(k_AnimationClipLayout.Category, clip.name)
                     .WithCustomProperties(new object[(int)AnimationClipProperty.Num]
                     {
                         clip.empty,
@@ -290,7 +290,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler may not be the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(avatar);
 
-                issues.Add(context.CreateInsight(k_AvatarLayout.category, avatar.name)
+                issues.Add(context.CreateInsight(k_AvatarLayout.Category, avatar.name)
                     .WithCustomProperties(new object[(int)AvatarProperty.Num]
                     {
                         avatar.isValid,
@@ -342,7 +342,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // TODO: the size returned by the profiler may not be the exact size on the target platform. Needs to be fixed.
                 var size = Profiler.GetRuntimeMemorySizeLong(mask);
 
-                issues.Add(context.CreateInsight(k_AvatarMaskLayout.category, mask.name)
+                issues.Add(context.CreateInsight(k_AvatarMaskLayout.Category, mask.name)
                     .WithCustomProperties(new object[(int)AvatarMaskProperty.Num]
                     {
                         mask.transformCount,

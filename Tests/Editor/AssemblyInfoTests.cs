@@ -103,9 +103,9 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
 
-            Assert.AreEqual($"Library/ScriptAssemblies/{AssemblyInfo.DefaultAssemblyFileName}", assemblyInfo.path);
-            Assert.AreEqual("Built-in", assemblyInfo.asmDefPath);
-            Assert.IsFalse(assemblyInfo.packageReadOnly);
+            Assert.AreEqual($"Library/ScriptAssemblies/{AssemblyInfo.DefaultAssemblyFileName}", assemblyInfo.Path);
+            Assert.AreEqual("Built-in", assemblyInfo.AsmDefPath);
+            Assert.IsFalse(assemblyInfo.IsPackageReadOnly);
         }
 
         [Test]
@@ -117,9 +117,9 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
 
-            Assert.AreEqual("Library/ScriptAssemblies/Unity.ProjectAuditor.Editor.dll", assemblyInfo.path);
-            Assert.AreEqual(Unity.ProjectAuditor.Editor.ProjectAuditor.PackagePath + "/Editor/Unity.ProjectAuditor.Editor.asmdef", assemblyInfo.asmDefPath);
-            Assert.AreEqual(Unity.ProjectAuditor.Editor.ProjectAuditor.PackagePath, assemblyInfo.relativePath);
+            Assert.AreEqual("Library/ScriptAssemblies/Unity.ProjectAuditor.Editor.dll", assemblyInfo.Path);
+            Assert.AreEqual(Unity.ProjectAuditor.Editor.ProjectAuditor.PackagePath + "/Editor/Unity.ProjectAuditor.Editor.asmdef", assemblyInfo.AsmDefPath);
+            Assert.AreEqual(Unity.ProjectAuditor.Editor.ProjectAuditor.PackagePath, assemblyInfo.RelativePath);
         }
 
         [Test]

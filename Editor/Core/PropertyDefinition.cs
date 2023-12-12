@@ -52,12 +52,12 @@ namespace Unity.ProjectAuditor.Editor.Core
     internal struct PropertyDefinition
     {
         [JsonIgnore]
-        public PropertyType type;
-        public PropertyFormat format;
-        public string name;
-        public string longName;
-        public int maxAutoWidth;
-        public bool defaultGroup;
-        public bool hidden;
+        public PropertyType Type;
+        public PropertyFormat Format;
+        public string Name;
+        public string LongName;
+        public int MaxAutoWidth;
+        public bool IsDefaultGroup;
+        public bool IsHidden;
     }
 }

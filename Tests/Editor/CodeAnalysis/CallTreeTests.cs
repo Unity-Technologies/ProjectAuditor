@@ -82,12 +82,12 @@ class HierarchyTest
             var root = issues[0].Dependencies as CallTreeNode;
 
             Assert.NotNull(root);
-            Assert.AreEqual("System.Object MyTestNamespace.SimpleTest::CallerMethod()", root.methodFullName);
-            Assert.AreEqual(AssemblyInfo.DefaultAssemblyFileName, root.assemblyName);
-            Assert.AreEqual("MyTestNamespace.SimpleTest", root.typeFullName);
-            Assert.AreEqual("CallerMethod", root.prettyMethodName);
-            Assert.AreEqual("SimpleTest", root.prettyTypeName);
-            Assert.AreEqual(0, root.GetNumChildren());
+            Assert.AreEqual("System.Object MyTestNamespace.SimpleTest::CallerMethod()", root.MethodFullName);
+            Assert.AreEqual(AssemblyInfo.DefaultAssemblyFileName, root.AssemblyName);
+            Assert.AreEqual("MyTestNamespace.SimpleTest", root.TypeFullName);
+            Assert.AreEqual("CallerMethod", root.PrettyMethodName);
+            Assert.AreEqual("SimpleTest", root.PrettyTypeName);
+            Assert.AreEqual(0, root.NumChildren);
         }
 
         [Test]
@@ -98,9 +98,9 @@ class HierarchyTest
             var root = issues[0].Dependencies as CallTreeNode;
 
             Assert.NotNull(root);
-            Assert.AreEqual("X", root.prettyMethodName);
-            Assert.AreEqual("RecursiveTest", root.prettyTypeName);
-            Assert.AreEqual(0, root.GetChild().GetNumChildren());
+            Assert.AreEqual("X", root.PrettyMethodName);
+            Assert.AreEqual("RecursiveTest", root.PrettyTypeName);
+            Assert.AreEqual(0, root.GetChild().NumChildren);
         }
 
         [Test]

@@ -11,7 +11,7 @@ namespace Unity.ProjectAuditor.Editor.Core
         {
             if (!type.CustomAttributes.Any())
                 return true;
-            return type.GetCustomAttributes<AnalysisPlatformAttribute>().Any(a => a.platform == platform);
+            return type.GetCustomAttributes<AnalysisPlatformAttribute>().Any(a => a.Platform == platform);
         }
     }
 }

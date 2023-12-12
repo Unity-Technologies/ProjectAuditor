@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         public IssueCategory[] Categories
         {
-            get { return SupportedLayouts.Select(l => l.category).ToArray(); }
+            get { return SupportedLayouts.Select(l => l.Category).ToArray(); }
         }
 
         public virtual bool IsSupported => true;

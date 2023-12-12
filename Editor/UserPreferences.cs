@@ -88,12 +88,6 @@ namespace Unity.ProjectAuditor.Editor
             set => EditorPrefs.SetBool(MakeKey(nameof(LogTimingsInfo)), value);
         }
 
-        public static string SettingsAsset
-        {
-            get => EditorPrefs.GetString(MakeKey(nameof(SettingsAsset)), "");
-            set => EditorPrefs.SetString(MakeKey(nameof(SettingsAsset)), value);
-        }
-
         [SettingsProvider]
         internal static SettingsProvider CreatePreferencesProvider()
         {

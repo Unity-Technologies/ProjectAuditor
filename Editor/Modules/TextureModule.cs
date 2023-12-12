@@ -26,20 +26,20 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         static readonly IssueLayout k_TextureLayout = new IssueLayout
         {
-            category = IssueCategory.Texture,
-            properties = new[]
+            Category = IssueCategory.Texture,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Texture Name", maxAutoWidth = 500 },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperty.Shape), format = PropertyFormat.String, name = "Shape", longName = "Texture Shape" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperty.ImporterType), format = PropertyFormat.String, name = "Importer Type", longName = "Texture Importer Type" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperty.Format), format = PropertyFormat.String, name = "Format", longName = "Texture Format" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperty.TextureCompression), format = PropertyFormat.String, name = "Compression", longName = "Texture Compression" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperty.MipMapEnabled), format = PropertyFormat.Bool, name = "MipMaps", longName = "Texture MipMaps Enabled" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperty.Readable), format = PropertyFormat.Bool, name = "Readable", longName = "Readable" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperty.Resolution), format = PropertyFormat.String, name = "Resolution", longName = "Texture Resolution" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperty.SizeOnDisk), format = PropertyFormat.Bytes, name = "Size", longName = "Texture Size" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(TextureProperty.StreamingMipMap), format = PropertyFormat.Bool, name = "Streaming", longName = "Mipmaps Streaming" },
-                new PropertyDefinition { type = PropertyType.Path, name = "Path", maxAutoWidth = 500 }
+                new PropertyDefinition { Type = PropertyType.Description, Format = PropertyFormat.String, Name = "Name", LongName = "Texture Name", MaxAutoWidth = 500 },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(TextureProperty.Shape), Format = PropertyFormat.String, Name = "Shape", LongName = "Texture Shape" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(TextureProperty.ImporterType), Format = PropertyFormat.String, Name = "Importer Type", LongName = "Texture Importer Type" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(TextureProperty.Format), Format = PropertyFormat.String, Name = "Format", LongName = "Texture Format" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(TextureProperty.TextureCompression), Format = PropertyFormat.String, Name = "Compression", LongName = "Texture Compression" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(TextureProperty.MipMapEnabled), Format = PropertyFormat.Bool, Name = "MipMaps", LongName = "Texture MipMaps Enabled" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(TextureProperty.Readable), Format = PropertyFormat.Bool, Name = "Readable", LongName = "Readable" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(TextureProperty.Resolution), Format = PropertyFormat.String, Name = "Resolution", LongName = "Texture Resolution" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(TextureProperty.SizeOnDisk), Format = PropertyFormat.Bytes, Name = "Size", LongName = "Texture Size" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(TextureProperty.StreamingMipMap), Format = PropertyFormat.Bool, Name = "Streaming", LongName = "Mipmaps Streaming" },
+                new PropertyDefinition { Type = PropertyType.Path, Name = "Path", MaxAutoWidth = 500 }
             }
         };
 

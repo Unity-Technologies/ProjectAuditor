@@ -11,9 +11,9 @@ namespace Unity.ProjectAuditor.Editor.Core
         {
             m_StreamWriter.Write(@"<html>" + m_StreamWriter.NewLine + @"<body>" + m_StreamWriter.NewLine);
             m_StreamWriter.Write(@"<table width='50%' cellpadding='10' style='margin-top:10px' cellspacing='3' border='1' rules='all'>" + m_StreamWriter.NewLine + @"<tr>" + m_StreamWriter.NewLine);
-            for (var i = 0; i < m_Layout.properties.Length; i++)
+            for (var i = 0; i < m_Layout.Properties.Length; i++)
             {
-                m_StreamWriter.WriteLine(@"<th>" + m_Layout.properties[i].name + @"</th>");
+                m_StreamWriter.WriteLine(@"<th>" + m_Layout.Properties[i].Name + @"</th>");
             }
             m_StreamWriter.WriteLine(@"</tr>");
         }
@@ -21,9 +21,9 @@ namespace Unity.ProjectAuditor.Editor.Core
         protected override void WriteIssue(ProjectIssue issue)
         {
             m_StreamWriter.WriteLine(@"<tr>");
-            for (var i = 0; i < m_Layout.properties.Length; i++)
+            for (var i = 0; i < m_Layout.Properties.Length; i++)
             {
-                var columnType = m_Layout.properties[i].type;
+                var columnType = m_Layout.Properties[i].Type;
                 var prop = issue.GetProperty(columnType);
                 m_StreamWriter.WriteLine(@"<td>" + prop + @"</td>");
             }

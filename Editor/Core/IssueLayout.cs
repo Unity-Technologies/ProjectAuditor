@@ -5,17 +5,17 @@ namespace Unity.ProjectAuditor.Editor.Core
 {
     internal class IssueLayout
     {
-        public IssueCategory category;
-        public PropertyDefinition[] properties;
-        public bool hierarchy = false;
+        public IssueCategory Category { get; set; }
+        public PropertyDefinition[] Properties { get; set; }
+        public bool IsHierarchy { get; set; } = false;
 
-        public int defaultGroupPropertyIndex
+        public int DefaultGroupPropertyIndex
         {
             get
             {
-                if (hierarchy)
+                if (IsHierarchy)
                     return -1;
-                return Array.FindIndex(properties, p => p.defaultGroup);
+                return Array.FindIndex(Properties, p => p.IsDefaultGroup);
             }
         }
 
@@ -27,7 +27,7 @@ namespace Unity.ProjectAuditor.Editor.Core
         public static IssueLayout GetLayout(IssueCategory category)
         {
             if (category == IssueCategory.Metadata)
-                return new IssueLayout {category = IssueCategory.Metadata, properties = new PropertyDefinition[] {}};
+                return new IssueLayout {Category = IssueCategory.Metadata, Properties = new PropertyDefinition[] {}};
 
             foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(Module)))
             {
@@ -38,7 +38,7 @@ namespace Unity.ProjectAuditor.Editor.Core
                 {
                     foreach (var layout in module.SupportedLayouts)
                     {
-                        if (layout.category == category)
+                        if (layout.Category == category)
                             return layout;
                     }
                 }

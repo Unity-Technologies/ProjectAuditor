@@ -323,7 +323,7 @@ namespace Unity.ProjectAuditor.Editor
         // and if they should, it means also exposing IssueLayout and the data types it uses, which opens a whole can of worms.
         internal void ExportToCsv(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
         {
-            var issues = m_Issues.Where(i => i.Category == layout.category && (predicate == null || predicate(i))).ToArray();
+            var issues = m_Issues.Where(i => i.Category == layout.Category && (predicate == null || predicate(i))).ToArray();
             using (var exporter = new CsvExporter(path, layout))
             {
                 exporter.WriteHeader();
@@ -335,7 +335,7 @@ namespace Unity.ProjectAuditor.Editor
         // and if they should, it means also exposing IssueLayout and the data types it uses, which opens a whole can of worms.
         internal void ExportToHtml(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
         {
-            var issues = m_Issues.Where(i => i.Category == layout.category && (predicate == null || predicate(i))).ToArray();
+            var issues = m_Issues.Where(i => i.Category == layout.Category && (predicate == null || predicate(i))).ToArray();
             using (var exporter = new HtmlExporter(path, layout))
             {
                 exporter.WriteHeader();

@@ -6,14 +6,14 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
     class AssemblyInfo
     {
         public const string DefaultAssemblyFileName = "Assembly-CSharp.dll";
-        public static string DefaultAssemblyName => Path.GetFileNameWithoutExtension(DefaultAssemblyFileName);
+        public static string DefaultAssemblyName => System.IO.Path.GetFileNameWithoutExtension(DefaultAssemblyFileName);
 
-        public string name;            // assembly name without extension
-        public string path;            // absolute path
-        public string asmDefPath;
-        public string relativePath;    // asmdef containing folder, relative to the project
+        public string Name;            // assembly name without extension
+        public string Path;            // absolute path
+        public string AsmDefPath;
+        public string RelativePath;    // asmdef containing folder, relative to the project
 
-        public bool packageReadOnly;
-        public string packageResolvedPath;
+        public bool IsPackageReadOnly;
+        public string PackageResolvedPath;
     }
 }

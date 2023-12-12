@@ -22,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 
         public long DurationInMs => StopWatch != null ? StopWatch.ElapsedMilliseconds : 0;
 
-        public CompilationStatus status => m_CompilationStatus;
+        public CompilationStatus Status => m_CompilationStatus;
 
         public bool IsDone()
         {

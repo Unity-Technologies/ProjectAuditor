@@ -169,7 +169,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
             PrepareAssemblyBuilders(assemblies, (assemblyPath, messages) =>
             {
                 var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assemblyPath);
-                var assemblyName = assemblyInfo.name;
+                var assemblyName = assemblyInfo.Name;
                 var compilationTask = m_AssemblyCompilationTasks[assemblyName];
 
                 compilationTask.Messages = messages;
@@ -192,7 +192,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                 progress.Clear();
 
             if (OnAssemblyCompilationFinished != null)
-                foreach (var compilationTask in m_AssemblyCompilationTasks.Where(pair => pair.Value.status == CompilationStatus.MissingDependency).Select(p => p.Value))
+                foreach (var compilationTask in m_AssemblyCompilationTasks.Where(pair => pair.Value.Status == CompilationStatus.MissingDependency).Select(p => p.Value))
                 {
                     OnAssemblyCompilationFinished(compilationTask, new CompilerMessage[] {});
                 }

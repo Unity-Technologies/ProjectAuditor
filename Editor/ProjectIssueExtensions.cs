@@ -22,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor
                 return issue.RelativePath;
 
             var root = issue.Dependencies;
-            return root.name;
+            return root.Name;
         }
 
         public static string GetProperty(this ProjectIssue issue, PropertyType propertyType)
@@ -65,7 +65,7 @@ namespace Unity.ProjectAuditor.Editor
 
         public static string GetPropertyGroup(this ProjectIssue issue, PropertyDefinition propertyDefinition)
         {
-            switch (propertyDefinition.type)
+            switch (propertyDefinition.Type)
             {
                 case PropertyType.Filename:
                     if (string.IsNullOrEmpty(issue.Filename))
@@ -76,9 +76,9 @@ namespace Unity.ProjectAuditor.Editor
                         return k_NotAvailable;
                     return issue.Location.Path;
                 default:
-                    if (propertyDefinition.format != PropertyFormat.String)
-                        return string.Format("{0}: {1}", propertyDefinition.name, issue.GetProperty(propertyDefinition.type));
-                    return issue.GetProperty(propertyDefinition.type);
+                    if (propertyDefinition.Format != PropertyFormat.String)
+                        return string.Format("{0}: {1}", propertyDefinition.Name, issue.GetProperty(propertyDefinition.Type));
+                    return issue.GetProperty(propertyDefinition.Type);
             }
         }
 

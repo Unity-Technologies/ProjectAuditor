@@ -290,7 +290,7 @@ namespace Unity.ProjectAuditor.Editor
 
         internal Module[] GetModules(IssueCategory category)
         {
-            return m_Modules.Where(a => a.IsSupported && a.SupportedLayouts.FirstOrDefault(l => l.category == category) != null).ToArray();
+            return m_Modules.Where(a => a.IsSupported && a.SupportedLayouts.FirstOrDefault(l => l.Category == category) != null).ToArray();
         }
 
         /// <summary>
@@ -341,7 +341,7 @@ namespace Unity.ProjectAuditor.Editor
         // Only used for testing
         internal bool IsModuleSupported(IssueCategory category)
         {
-            return m_Modules.Any(a => a.IsSupported && a.SupportedLayouts.FirstOrDefault(l => l.category == category) != null);
+            return m_Modules.Any(a => a.IsSupported && a.SupportedLayouts.FirstOrDefault(l => l.Category == category) != null);
         }
 
         // Only used for testing

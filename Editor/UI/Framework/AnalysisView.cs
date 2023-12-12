@@ -71,29 +71,29 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_BaseFilter = filter;
             m_Layout = layout;
 
-            if (layout.properties == null || layout.properties.Length == 0)
+            if (layout.Properties == null || layout.Properties.Length == 0)
                 return;
 
-            m_GroupDropdownItems = m_Layout.properties.Select(p => new Utility.DropdownItem
+            m_GroupDropdownItems = m_Layout.Properties.Select(p => new Utility.DropdownItem
             {
-                Content = new GUIContent(p.defaultGroup ? p.name + " (default)" : p.name),
-                SelectionContent = new GUIContent("Group By: " + p.name),
-                Enabled = p.format == PropertyFormat.String || p.format == PropertyFormat.Bool || p.format == PropertyFormat.Integer,
-                UserData = Array.IndexOf(m_Layout.properties, p)
+                Content = new GUIContent(p.IsDefaultGroup ? p.Name + " (default)" : p.Name),
+                SelectionContent = new GUIContent("Group By: " + p.Name),
+                Enabled = p.Format == PropertyFormat.String || p.Format == PropertyFormat.Bool || p.Format == PropertyFormat.Integer,
+                UserData = Array.IndexOf(m_Layout.Properties, p)
             }).ToArray();
 
             if (m_Table != null)
                 return;
 
             var state = new TreeViewState();
-            var columns = new MultiColumnHeaderState.Column[layout.properties.Length];
-            for (var i = 0; i < layout.properties.Length; i++)
+            var columns = new MultiColumnHeaderState.Column[layout.Properties.Length];
+            for (var i = 0; i < layout.Properties.Length; i++)
             {
-                var property = layout.properties[i];
+                var property = layout.Properties[i];
 
                 var minWidth = 20;
                 var width = 80;
-                switch (property.type)
+                switch (property.Type)
                 {
                     case PropertyType.Description:
                         width = 300;
@@ -110,12 +110,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         break;
                 }
 
-                if (property.hidden)
+                if (property.IsHidden)
                     minWidth = width = 0;
 
                 columns[i] = new MultiColumnHeaderState.Column
                 {
-                    headerContent = new GUIContent(property.name, layout.properties[i].longName),
+                    headerContent = new GUIContent(property.Name, layout.Properties[i].LongName),
                     width = width,
                     minWidth = minWidth,
                     autoResize = true
@@ -138,7 +138,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 m_DependencyView = new DependencyView(new TreeViewState(), m_Desc.onOpenIssue);
 
             if (m_TextFilter == null)
-                m_TextFilter = new TextFilter(layout.properties);
+                m_TextFilter = new TextFilter(layout.Properties);
 
             var helpButtonTooltip = string.Format("Open Reference for {0}", m_Desc.displayName);
             m_HelpButtonContent = Utility.GetIcon(Utility.IconType.Help, helpButtonTooltip);
@@ -179,19 +179,19 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             var header = m_Table.multiColumnHeader;
 
-            for (var columnIndex = 0; columnIndex < m_Layout.properties.Length; columnIndex++)
+            for (var columnIndex = 0; columnIndex < m_Layout.Properties.Length; columnIndex++)
             {
-                var property = m_Layout.properties[columnIndex];
-                if (property.hidden)
+                var property = m_Layout.Properties[columnIndex];
+                if (property.IsHidden)
                 {
                     header.GetColumn(columnIndex).width = 0;
                     continue;
                 }
 
-                var propertyType = property.type;
-                var propertyFormat = property.format;
+                var propertyType = property.Type;
+                var propertyFormat = property.Format;
 
-                string widestPropString = property.name;
+                string widestPropString = property.Name;
                 float widestPropWidth = Utility.EstimateWidth(widestPropString);
 
                 if (propertyFormat != PropertyFormat.Bool) // Just use the column header for bool columns
@@ -261,13 +261,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     width += LayoutSize.CellItemTreeIndent;
                 }
 
-                if (widestPropString != property.name && HasIcon(property))
+                if (widestPropString != property.Name && HasIcon(property))
                     width += LayoutSize.CellItemIconSize;
 
                 // CalcSize underestimates the width of text in cells. Why? No idea. This is a fudge.
                 width += LayoutSize.CellWidthPadding;
 
-                var clamp = property.maxAutoWidth;
+                var clamp = property.MaxAutoWidth;
                 if (clamp != 0 && width > clamp)
                     width = clamp;
 
@@ -286,7 +286,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         bool HasIcon(PropertyDefinition property)
         {
-            switch (property.type)
+            switch (property.Type)
             {
                 case PropertyType.LogLevel:
                 case PropertyType.Severity:
@@ -294,11 +294,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 case PropertyType.Description:
                     return m_Desc.descriptionWithIcon;
                 default:
-                    if (PropertyTypeUtil.IsCustom(property.type))
+                    if (PropertyTypeUtil.IsCustom(property.Type))
                     {
                         // ULong and Integer actually CAN have icons, but only when they also have empty strings, so the size
                         // of the column is likely to be dictated by some other cell.
-                        switch (property.format)
+                        switch (property.Format)
                         {
                             case PropertyFormat.Bool:
                                 return true;
@@ -353,12 +353,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         // TODO: remove this method when not used anymore
         public bool IsDiagnostic()
         {
-            return m_Layout.properties.Any(p => p.type == PropertyType.Severity);
+            return m_Layout.Properties.Any(p => p.Type == PropertyType.Severity);
         }
 
         public bool IsValid()
         {
-            return m_Layout.properties.Length == 0 || m_Table != null;
+            return m_Layout.Properties.Length == 0 || m_Table != null;
         }
 
         public virtual void DrawFilters()
@@ -499,7 +499,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             m_Table.SetFontSize(m_ViewStates.fontSize);
 
-            if (!m_Layout.hierarchy)
+            if (!m_Layout.IsHierarchy)
             {
                 EditorGUI.BeginChangeCheck();
                 m_Table.flatView = !GUILayout.Toggle(!m_Table.flatView, Contents.HierarchyButton, EditorStyles.toolbarButton, GUILayout.Width(LayoutSize.ToolbarIconSize));
@@ -695,13 +695,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 return;
 
             var columns = m_Table.multiColumnHeader.state.columns;
-            for (int i = 0; i < m_Layout.properties.Length; i++)
+            for (int i = 0; i < m_Layout.Properties.Length; i++)
             {
                 // when reloading we need to make sure visible columns have a width >= minWidth
-                columns[i].width = m_Layout.properties[i].hidden ? 0 : Math.Max(columns[i].minWidth, EditorPrefs.GetFloat(GetPrefKey(k_ColumnSizeKey + i), columns[i].width));
+                columns[i].width = m_Layout.Properties[i].IsHidden ? 0 : Math.Max(columns[i].minWidth, EditorPrefs.GetFloat(GetPrefKey(k_ColumnSizeKey + i), columns[i].width));
             }
 
-            var defaultGroupPropertyIndex = m_Layout.defaultGroupPropertyIndex;
+            var defaultGroupPropertyIndex = m_Layout.DefaultGroupPropertyIndex;
             m_Table.flatView = EditorPrefs.GetBool(GetPrefKey(k_FlatModeKey), defaultGroupPropertyIndex == -1);
             m_Table.showIgnoredIssues = EditorPrefs.GetBool(GetPrefKey(k_ShowIgnoredIssuesKey), false);
             m_Table.groupPropertyIndex = EditorPrefs.GetInt(GetPrefKey(k_GroupPropertyIndexKey), defaultGroupPropertyIndex);
@@ -720,7 +720,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 return;
 
             var columns = m_Table.multiColumnHeader.state.columns;
-            for (int i = 0; i < m_Layout.properties.Length; i++)
+            for (int i = 0; i < m_Layout.Properties.Length; i++)
             {
                 EditorPrefs.SetFloat(GetPrefKey(k_ColumnSizeKey + i), columns[i].width);
             }

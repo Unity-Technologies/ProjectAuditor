@@ -13,14 +13,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         internal static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
-            category = IssueCategory.AssetDiagnostic,
-            properties = new[]
+            Category = IssueCategory.AssetDiagnostic,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description", maxAutoWidth = 800 },
-                new PropertyDefinition { type = PropertyType.Severity, format = PropertyFormat.String, name = "Severity"},
-                new PropertyDefinition { type = PropertyType.Areas, format = PropertyFormat.String, name = "Areas", longName = "Impacted Areas" },
-                new PropertyDefinition { type = PropertyType.Path, name = "Path", maxAutoWidth = 500 },
-                new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true, hidden = true},
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Issue", LongName = "Issue description", MaxAutoWidth = 800 },
+                new PropertyDefinition { Type = PropertyType.Severity, Format = PropertyFormat.String, Name = "Severity"},
+                new PropertyDefinition { Type = PropertyType.Areas, Format = PropertyFormat.String, Name = "Areas", LongName = "Impacted Areas" },
+                new PropertyDefinition { Type = PropertyType.Path, Name = "Path", MaxAutoWidth = 500 },
+                new PropertyDefinition { Type = PropertyType.Descriptor, Name = "Descriptor", IsDefaultGroup = true, IsHidden = true},
             }
         };
 

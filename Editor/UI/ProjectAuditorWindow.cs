@@ -1004,8 +1004,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     var tabValue = tab;
 
                     var moduleCategories = module.SupportedLayouts
-                        .Where(l => tabValue.excludedModuleCategories == null || tabValue.excludedModuleCategories.Contains(l.category) == false)
-                        .Select(l => l.category);
+                        .Where(l => tabValue.excludedModuleCategories == null || tabValue.excludedModuleCategories.Contains(l.Category) == false)
+                        .Select(l => l.Category);
 
                     categories.AddRange(moduleCategories);
                 }

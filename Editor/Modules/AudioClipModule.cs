@@ -26,23 +26,23 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         static readonly IssueLayout k_AudioClipLayout = new IssueLayout
         {
-            category = IssueCategory.AudioClip,
-            properties = new[]
+            Category = IssueCategory.AudioClip,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Name", maxAutoWidth = 500 },
-                new PropertyDefinition { type = PropertyType.FileType, name = "Format", defaultGroup = true },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.Length), format = PropertyFormat.String, name = "Length"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.SourceFileSize), format = PropertyFormat.Bytes, name = "Source File Size"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.ImportedFileSize), format = PropertyFormat.Bytes, name = "Imported File Size"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.RuntimeSize), format = PropertyFormat.Bytes, name = "Runtime Size (Estimate)"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.CompressionRatio), format = PropertyFormat.String, name = "Compression Ratio"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.CompressionFormat), format = PropertyFormat.String, name = "Compression Format"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.SampleRate), format = PropertyFormat.String, name = "Sample Rate"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.ForceToMono), format = PropertyFormat.Bool, name = "Force To Mono"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.LoadInBackground), format = PropertyFormat.Bool, name = "Load In Background"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.PreloadAudioData), format = PropertyFormat.Bool, name = "Preload Audio Data" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AudioClipProperty.LoadType), format = PropertyFormat.String, name = "Load Type" },
-                new PropertyDefinition { type = PropertyType.Path, name = "Path", maxAutoWidth = 500 }
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Name", MaxAutoWidth = 500 },
+                new PropertyDefinition { Type = PropertyType.FileType, Name = "Format", IsDefaultGroup = true },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AudioClipProperty.Length), Format = PropertyFormat.String, Name = "Length"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AudioClipProperty.SourceFileSize), Format = PropertyFormat.Bytes, Name = "Source File Size"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AudioClipProperty.ImportedFileSize), Format = PropertyFormat.Bytes, Name = "Imported File Size"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AudioClipProperty.RuntimeSize), Format = PropertyFormat.Bytes, Name = "Runtime Size (Estimate)"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AudioClipProperty.CompressionRatio), Format = PropertyFormat.String, Name = "Compression Ratio"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AudioClipProperty.CompressionFormat), Format = PropertyFormat.String, Name = "Compression Format"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AudioClipProperty.SampleRate), Format = PropertyFormat.String, Name = "Sample Rate"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AudioClipProperty.ForceToMono), Format = PropertyFormat.Bool, Name = "Force To Mono"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AudioClipProperty.LoadInBackground), Format = PropertyFormat.Bool, Name = "Load In Background"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AudioClipProperty.PreloadAudioData), Format = PropertyFormat.Bool, Name = "Preload Audio Data" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AudioClipProperty.LoadType), Format = PropertyFormat.String, Name = "Load Type" },
+                new PropertyDefinition { Type = PropertyType.Path, Name = "Path", MaxAutoWidth = 500 }
             }
         };
 

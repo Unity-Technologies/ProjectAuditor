@@ -56,39 +56,39 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         static readonly IssueLayout k_MetaDataLayout = new IssueLayout
         {
-            category = IssueCategory.BuildSummary,
-            properties = new[]
+            Category = IssueCategory.BuildSummary,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Key" }
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Key" }
             }
         };
 
         static readonly IssueLayout k_FileLayout = new IssueLayout
         {
-            category = IssueCategory.BuildFile,
-            properties = new[]
+            Category = IssueCategory.BuildFile,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Source Asset", maxAutoWidth = 500},
-                new PropertyDefinition { type = PropertyType.FileType, name = "File Type", longName = "File Extension"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.ImporterType), format = PropertyFormat.String, name = "Importer Type"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.RuntimeType), format = PropertyFormat.String, name = "Runtime Type", defaultGroup = true},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size in the Build"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.SizePercent), format = PropertyFormat.Percentage, name = "Size % (of Data)", longName = "Percentage of the total data size"},
-                new PropertyDefinition { type = PropertyType.Path, name = "Path", hidden = true},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.BuildFile), format = PropertyFormat.String, name = "Build File", maxAutoWidth = 500 }
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Source Asset", MaxAutoWidth = 500},
+                new PropertyDefinition { Type = PropertyType.FileType, Name = "File Type", LongName = "File Extension"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.ImporterType), Format = PropertyFormat.String, Name = "Importer Type"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.RuntimeType), Format = PropertyFormat.String, Name = "Runtime Type", IsDefaultGroup = true},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.Size), Format = PropertyFormat.Bytes, Name = "Size", LongName = "Size in the Build"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.SizePercent), Format = PropertyFormat.Percentage, Name = "Size % (of Data)", LongName = "Percentage of the total data size"},
+                new PropertyDefinition { Type = PropertyType.Path, Name = "Path", IsHidden = true},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.BuildFile), Format = PropertyFormat.String, Name = "Build File", MaxAutoWidth = 500 }
             }
         };
 
         static readonly IssueLayout k_StepLayout = new IssueLayout
         {
-            category = IssueCategory.BuildStep,
-            properties = new[]
+            Category = IssueCategory.BuildStep,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.LogLevel},
-                new PropertyDefinition { type = PropertyType.Description, name = "Build Step", maxAutoWidth = 500 },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportStepProperty.Duration), format = PropertyFormat.String, name = "Duration"}
+                new PropertyDefinition { Type = PropertyType.LogLevel},
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Build Step", MaxAutoWidth = 500 },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildReportStepProperty.Duration), Format = PropertyFormat.String, Name = "Duration"}
             },
-            hierarchy = true
+            IsHierarchy = true
         };
 
         internal static LastBuildReportProvider BuildReportProvider = new LastBuildReportProvider();

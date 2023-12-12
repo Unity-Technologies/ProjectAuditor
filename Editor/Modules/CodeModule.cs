@@ -51,77 +51,77 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         static readonly IssueLayout k_AssemblyLayout = new IssueLayout
         {
-            category = IssueCategory.Assembly,
-            properties = new[]
+            Category = IssueCategory.Assembly,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.LogLevel},
-                new PropertyDefinition { type = PropertyType.Description, name = "Assembly Name", maxAutoWidth = 800},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AssemblyProperty.CompileTime), format = PropertyFormat.Time, name = "Compile Time (seconds)"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(AssemblyProperty.ReadOnly), format = PropertyFormat.Bool, name = "Read Only", defaultGroup = true},
-                new PropertyDefinition { type = PropertyType.Path, name = "asmdef Path"},
+                new PropertyDefinition { Type = PropertyType.LogLevel},
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Assembly Name", MaxAutoWidth = 800},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AssemblyProperty.CompileTime), Format = PropertyFormat.Time, Name = "Compile Time (seconds)"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AssemblyProperty.ReadOnly), Format = PropertyFormat.Bool, Name = "Read Only", IsDefaultGroup = true},
+                new PropertyDefinition { Type = PropertyType.Path, Name = "asmdef Path"},
             }
         };
 
         static readonly IssueLayout k_PrecompiledAssemblyLayout = new IssueLayout
         {
-            category = IssueCategory.PrecompiledAssembly,
-            properties = new[]
+            Category = IssueCategory.PrecompiledAssembly,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Assembly Name"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(PrecompiledAssemblyProperty.RoslynAnalyzer), format = PropertyFormat.Bool, name = "Roslyn Analyzer"},
-                new PropertyDefinition { type = PropertyType.Directory, name = "Path", defaultGroup = true},
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Assembly Name"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(PrecompiledAssemblyProperty.RoslynAnalyzer), Format = PropertyFormat.Bool, Name = "Roslyn Analyzer"},
+                new PropertyDefinition { Type = PropertyType.Directory, Name = "Path", IsDefaultGroup = true},
             }
         };
 
         static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
-            category = IssueCategory.Code,
-            properties = new[]
+            Category = IssueCategory.Code,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description", maxAutoWidth = 800 },
-                new PropertyDefinition { type = PropertyType.Severity, format = PropertyFormat.String, name = "Severity"},
-                new PropertyDefinition { type = PropertyType.Areas, name = "Areas", longName = "The areas the issue might have an impact on"},
-                new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CodeProperty.Assembly), format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" },
-                new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true, hidden = true},
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Issue", LongName = "Issue description", MaxAutoWidth = 800 },
+                new PropertyDefinition { Type = PropertyType.Severity, Format = PropertyFormat.String, Name = "Severity"},
+                new PropertyDefinition { Type = PropertyType.Areas, Name = "Areas", LongName = "The areas the issue might have an impact on"},
+                new PropertyDefinition { Type = PropertyType.Filename, Name = "Filename", LongName = "Filename and line number"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(CodeProperty.Assembly), Format = PropertyFormat.String, Name = "Assembly", LongName = "Managed Assembly name" },
+                new PropertyDefinition { Type = PropertyType.Descriptor, Name = "Descriptor", IsDefaultGroup = true, IsHidden = true},
             }
         };
 
         static readonly IssueLayout k_CompilerMessageLayout = new IssueLayout
         {
-            category = IssueCategory.CodeCompilerMessage,
-            properties = new[]
+            Category = IssueCategory.CodeCompilerMessage,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.LogLevel, name = "Log Level"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CompilerMessageProperty.Code), format = PropertyFormat.String, name = "Code", defaultGroup = true},
-                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Message", longName = "Compiler Message"},
-                new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CompilerMessageProperty.Assembly), format = PropertyFormat.String, name = "Target Assembly", longName = "Managed Assembly name" },
-                new PropertyDefinition { type = PropertyType.Path, name = "Full path"},
+                new PropertyDefinition { Type = PropertyType.LogLevel, Name = "Log Level"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(CompilerMessageProperty.Code), Format = PropertyFormat.String, Name = "Code", IsDefaultGroup = true},
+                new PropertyDefinition { Type = PropertyType.Description, Format = PropertyFormat.String, Name = "Message", LongName = "Compiler Message"},
+                new PropertyDefinition { Type = PropertyType.Filename, Name = "Filename", LongName = "Filename and line number"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(CompilerMessageProperty.Assembly), Format = PropertyFormat.String, Name = "Target Assembly", LongName = "Managed Assembly name" },
+                new PropertyDefinition { Type = PropertyType.Path, Name = "Full path"},
             }
         };
 
         static readonly IssueLayout k_GenericIssueLayout = new IssueLayout
         {
-            category = IssueCategory.GenericInstance,
-            properties = new[]
+            Category = IssueCategory.GenericInstance,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Generic Type"},
-                new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CodeProperty.Assembly), format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" }
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Generic Type"},
+                new PropertyDefinition { Type = PropertyType.Filename, Name = "Filename", LongName = "Filename and line number"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(CodeProperty.Assembly), Format = PropertyFormat.String, Name = "Assembly", LongName = "Managed Assembly name" }
             }
         };
 
         static readonly IssueLayout k_DomainReloadIssueLayout = new IssueLayout
         {
-            category = IssueCategory.DomainReload,
-            properties = new[]
+            Category = IssueCategory.DomainReload,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CompilerMessageProperty.Code), format = PropertyFormat.String, name = "Code", defaultGroup = true},
-                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description", maxAutoWidth = 800 },
-                new PropertyDefinition { type = PropertyType.Filename, name = "Filename", longName = "Filename and line number"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(CompilerMessageProperty.Assembly), format = PropertyFormat.String, name = "Assembly", longName = "Managed Assembly name" },
-                new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true, hidden = true},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(CompilerMessageProperty.Code), Format = PropertyFormat.String, Name = "Code", IsDefaultGroup = true},
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Issue", LongName = "Issue description", MaxAutoWidth = 800 },
+                new PropertyDefinition { Type = PropertyType.Filename, Name = "Filename", LongName = "Filename and line number"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(CompilerMessageProperty.Assembly), Format = PropertyFormat.String, Name = "Assembly", LongName = "Managed Assembly name" },
+                new PropertyDefinition { Type = PropertyType.Descriptor, Name = "Descriptor", IsDefaultGroup = true, IsHidden = true},
             }
         };
 
@@ -226,27 +226,27 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (analysisParams.AssemblyNames != null)
             {
-                assemblyInfos = assemblyInfos.Where(a => analysisParams.AssemblyNames.Contains(a.name)).ToArray();
+                assemblyInfos = assemblyInfos.Where(a => analysisParams.AssemblyNames.Contains(a.Name)).ToArray();
             }
 
             if (analysisParams.CompilationMode == CompilationMode.Editor ||
                 analysisParams.CompilationMode == CompilationMode.EditorPlayMode)
             {
-                var issues = assemblyInfos.Select(assemblyInfo => (ProjectIssue)context.CreateInsight(IssueCategory.Assembly, assemblyInfo.name)
+                var issues = assemblyInfos.Select(assemblyInfo => (ProjectIssue)context.CreateInsight(IssueCategory.Assembly, assemblyInfo.Name)
                     .WithCustomProperties(new object[(int)AssemblyProperty.Num]
                     {
-                        assemblyInfo.packageReadOnly,
+                        assemblyInfo.IsPackageReadOnly,
                         float.NaN
                     })
-                    .WithLocation(assemblyInfo.asmDefPath))
+                    .WithLocation(assemblyInfo.AsmDefPath))
                     .ToArray();
                 if (issues.Any())
                     analysisParams.OnIncomingIssues(issues);
             }
 
             // process successfully compiled assemblies
-            var localAssemblyInfos = assemblyInfos.Where(info => !info.packageReadOnly).ToArray();
-            var readOnlyAssemblyInfos = assemblyInfos.Where(info => info.packageReadOnly).ToArray();
+            var localAssemblyInfos = assemblyInfos.Where(info => !info.IsPackageReadOnly).ToArray();
+            var readOnlyAssemblyInfos = assemblyInfos.Where(info => info.IsPackageReadOnly).ToArray();
             var foundIssues = new List<ProjectIssue>();
             var callCrawler = new CallCrawler();
             var onCallFound = new Action<CallInfo>(pair =>
@@ -269,7 +269,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 foreach (var d in diagnostics)
                 {
                     // bump severity if issue is found in a hot-path
-                    if (!d.IsMajorOrCritical() && d.Dependencies != null && d.Dependencies.perfCriticalContext)
+                    if (!d.IsMajorOrCritical() && d.Dependencies != null && d.Dependencies.PerfCriticalContext)
                     {
                         switch (d.Severity)
                         {
@@ -331,7 +331,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 foreach (var path in assemblyDirectories)
                     assemblyResolver.AddSearchDirectory(path);
 
-                foreach (var dir in assemblyInfos.Select(info => Path.GetDirectoryName(info.path)).Distinct())
+                foreach (var dir in assemblyInfos.Select(info => Path.GetDirectoryName(info.Path)).Distinct())
                     assemblyResolver.AddSearchDirectory(dir);
 
                 if (progress != null)
@@ -344,15 +344,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         return;
 
                     if (progress != null)
-                        progress.Advance(assemblyInfo.name);
+                        progress.Advance(assemblyInfo.Name);
 
-                    if (!File.Exists(assemblyInfo.path))
+                    if (!File.Exists(assemblyInfo.Path))
                     {
-                        Debug.LogError(assemblyInfo.path + " not found.");
+                        Debug.LogError(assemblyInfo.Path + " not found.");
                         continue;
                     }
 
-                    AnalyzeAssembly(assemblyInfo, assemblyResolver, onCallFound, assemblyFilters == null || assemblyFilters.Contains(assemblyInfo.name) ? onIssueFound : null);
+                    AnalyzeAssembly(assemblyInfo, assemblyResolver, onCallFound, assemblyFilters == null || assemblyFilters.Contains(assemblyInfo.Name) ? onIssueFound : null);
                 }
             }
 
@@ -362,9 +362,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         void AnalyzeAssembly(AssemblyInfo assemblyInfo, IAssemblyResolver assemblyResolver, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound)
         {
-            Profiler.BeginSample("CodeModule.Analyze " + assemblyInfo.name);
+            Profiler.BeginSample("CodeModule.Analyze " + assemblyInfo.Name);
 
-            using (var assembly = AssemblyDefinition.ReadAssembly(assemblyInfo.path,
+            using (var assembly = AssemblyDefinition.ReadAssembly(assemblyInfo.Path,
                 new ReaderParameters {ReadSymbols = true, AssemblyResolver = assemblyResolver, MetadataResolver = new MetadataResolverWithCache(assemblyResolver)}))
             {
                 foreach (var methodDefinition in MonoCecilHelper.AggregateAllTypeDefinitions(assembly.MainModule.Types)
@@ -397,7 +397,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             var callerNode = new CallTreeNode(caller)
             {
-                perfCriticalContext = perfCriticalContext
+                PerfCriticalContext = perfCriticalContext
             };
 
             var instructions = caller.Body.Instructions.Where(i => m_OpCodes.Contains(i.OpCode));
@@ -415,7 +415,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 if (s != null)
                 {
                     location = new Location(AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, s.Document.Url), s.IsHidden ? 0 : s.StartLine);
-                    callerNode.location = location;
+                    callerNode.Location = location;
                 }
                 else
                 {
@@ -454,7 +454,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         {
                             issueBuilder.WithDependencies(callerNode); // set root
                             issueBuilder.WithLocation(location);
-                            issueBuilder.WithCustomProperties(new object[(int)CodeProperty.Num] {assemblyInfo.name});
+                            issueBuilder.WithCustomProperties(new object[(int)CodeProperty.Num] {assemblyInfo.Name});
 
                             onIssueFound(issueBuilder);
                         }
@@ -470,21 +470,21 @@ namespace Unity.ProjectAuditor.Editor.Modules
             Profiler.BeginSample("CodeModule.ProcessCompilerMessages");
 
             var severity = Severity.None;
-            if (compilationTask.status == CompilationStatus.MissingDependency)
+            if (compilationTask.Status == CompilationStatus.MissingDependency)
                 severity = Severity.Warning;
             else if (compilerMessages.Any(m => m.type == CompilerMessageType.Error))
                 severity = Severity.Error;
 
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(compilationTask.AssemblyPath);
-            yield return context.CreateInsight(IssueCategory.Assembly, assemblyInfo.name)
+            yield return context.CreateInsight(IssueCategory.Assembly, assemblyInfo.Name)
                 .WithCustomProperties(new object[(int)AssemblyProperty.Num]
                 {
-                    assemblyInfo.packageReadOnly,
+                    assemblyInfo.IsPackageReadOnly,
                     compilationTask.DurationInMs
                 })
-                .WithDependencies(new AssemblyDependencyNode(assemblyInfo.name,
+                .WithDependencies(new AssemblyDependencyNode(assemblyInfo.Name,
                     compilationTask.Dependencies.Select(d => d.AssemblyName).ToArray()))
-                .WithLocation(assemblyInfo.asmDefPath)
+                .WithLocation(assemblyInfo.AsmDefPath)
                 .WithSeverity(severity);
 
             foreach (var message in compilerMessages)
@@ -509,7 +509,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         .WithCustomProperties(new object[(int)CompilerMessageProperty.Num]
                         {
                             message.code,
-                            assemblyInfo.name
+                            assemblyInfo.Name
                         });
                 }
                 else
@@ -518,7 +518,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         .WithCustomProperties(new object[(int)CompilerMessageProperty.Num]
                         {
                             message.code,
-                            assemblyInfo.name
+                            assemblyInfo.Name
                         })
                         .WithLocation(relativePath, message.line)
                         .WithLogLevel(CompilerMessageTypeToLogLevel(message.type));
