@@ -59,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 simpleNode.OnEvaluate = null;
             }
 
-            for (int i = 0; i < node.GetNumChildren(); i++)
+            for (int i = 0; i < node.NumChildren; i++)
             {
                 EvaluateNodes(node.GetChild(i));
             }
