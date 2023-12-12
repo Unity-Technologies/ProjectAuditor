@@ -25,7 +25,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_DirtySorting = true;
             m_ExpandOnSelection = true;
 
-            m_Table.isForcedGroup = true;
+            if (m_Desc.Category == IssueCategory.BuildDataSummary)
+                m_Table.isForcedGroup = true;
         }
 
         public override void Clear()
