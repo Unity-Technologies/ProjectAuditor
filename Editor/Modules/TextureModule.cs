@@ -70,7 +70,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var textureStreamingMipmapsSizeLimit = diagnosticParams.GetParameter(k_TextureStreamingMipmapsSizeLimit);
             var textureSizeLimit = diagnosticParams.GetParameter(k_TextureSizeLimit);
             var spriteAtlasEmptySpaceLimit = diagnosticParams.GetParameter(k_SpriteAtlasEmptySpaceLimit);
-            var platformString = analysisParams.PlatformString;
+            var platformString = analysisParams.PlatformAsString;
 
             var context = new TextureAnalysisContext
             {

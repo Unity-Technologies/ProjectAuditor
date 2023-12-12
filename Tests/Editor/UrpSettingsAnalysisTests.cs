@@ -156,42 +156,42 @@ namespace Unity.ProjectAuditor.EditorTests
 
         void TestUrpHdrSetting(RenderPipelineAsset renderPipeline, int qualityLevel)
         {
-            bool initialHdrSetting = UniversalRenderPipelineAnalyzer.GetHdrSetting(renderPipeline);
+            bool initialHdrSetting = UrpAnalyzer.GetHdrSetting(renderPipeline);
 
             const string hdrTitle = "URP: HDR is enabled";
-            UniversalRenderPipelineAnalyzer.SetHdrSetting(renderPipeline, true);
+            UrpAnalyzer.SetHdrSetting(renderPipeline, true);
             var issues = Analyze(IssueCategory.ProjectSetting,
                 i => i.Id.GetDescriptor().Title.Equals(hdrTitle));
             Assert.IsTrue(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have enabled HDR.");
 
-            UniversalRenderPipelineAnalyzer.SetHdrSetting(renderPipeline, false);
+            UrpAnalyzer.SetHdrSetting(renderPipeline, false);
             issues = Analyze(IssueCategory.ProjectSetting,
                 i => i.Id.GetDescriptor().Title.Equals(hdrTitle));
             Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have disabled HDR.");
 
-            UniversalRenderPipelineAnalyzer.SetHdrSetting(renderPipeline, initialHdrSetting);
+            UrpAnalyzer.SetHdrSetting(renderPipeline, initialHdrSetting);
         }
 
         void TestUrpMsaaSetting(RenderPipelineAsset renderPipeline, int qualityLevel)
         {
-            int initialMsaaSetting = UniversalRenderPipelineAnalyzer.GetMsaaSampleCountSetting(renderPipeline);
+            int initialMsaaSetting = UrpAnalyzer.GetMsaaSampleCountSetting(renderPipeline);
 
             const string msaaTitle = "URP: MSAA is set to 4x or 8x";
-            UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(renderPipeline, 4);
+            UrpAnalyzer.SetMsaaSampleCountSetting(renderPipeline, 4);
             var issues = Analyze(IssueCategory.ProjectSetting,
                 i => i.Id.GetDescriptor().Title.Equals(msaaTitle));
             Assert.IsTrue(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have MSAA set to 4x.");
 
-            UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(renderPipeline, 2);
+            UrpAnalyzer.SetMsaaSampleCountSetting(renderPipeline, 2);
             issues = Analyze(IssueCategory.ProjectSetting,
                 i => i.Id.GetDescriptor().Title.Equals(msaaTitle));
             Assert.IsFalse(issues.Any(i => i.GetCustomPropertyInt32(0) == qualityLevel),
                 $"Render Pipeline with quality level {qualityLevel} should have MSAA set to 2x.");
 
-            UniversalRenderPipelineAnalyzer.SetMsaaSampleCountSetting(renderPipeline, initialMsaaSetting);
+            UrpAnalyzer.SetMsaaSampleCountSetting(renderPipeline, initialMsaaSetting);
         }
 
 #endif

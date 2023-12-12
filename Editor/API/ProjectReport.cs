@@ -206,11 +206,11 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Checks whether the ProjectReport includes analysis for a given IssueCategory.
         /// </summary>
-        /// <param name="Category">The IssuesCategory to check</param>
+        /// <param name="category">The IssuesCategory to check</param>
         /// <returns>True if ProjectAuditor ran one or more Modules that reports issues of the specified IssueCategory. Otherwise, returns false.</returns>
-        public bool HasCategory(IssueCategory Category)
+        public bool HasCategory(IssueCategory category)
         {
-            return Category == IssueCategory.Metadata || m_ModuleInfos.Any(m => m.categories.Contains(Category));
+            return category == IssueCategory.Metadata || m_ModuleInfos.Any(m => m.categories.Contains(category));
         }
 
         /// <summary>
@@ -256,7 +256,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="id"> Desired Descriptor ID</param>
         /// <returns> Array of project issues</returns>
-        public IReadOnlyCollection<ProjectIssue> FindByDescriptorID(string id)
+        public IReadOnlyCollection<ProjectIssue> FindByDescriptorId(string id)
         {
             s_Mutex.WaitOne();
             var result = m_Issues.Where(i => i.Id.IsValid() && i.Id.Equals(id)).ToArray();

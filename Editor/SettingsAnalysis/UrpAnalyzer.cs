@@ -10,7 +10,7 @@ using UnityEngine.Rendering.Universal;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class UniversalRenderPipelineAnalyzer : ISettingsModuleAnalyzer
+    class UrpAnalyzer : ISettingsModuleAnalyzer
     {
         internal const string PAS1009 = nameof(PAS1009);
         internal const string PAS1010 = nameof(PAS1010);

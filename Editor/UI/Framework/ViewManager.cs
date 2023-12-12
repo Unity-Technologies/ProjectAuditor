@@ -45,7 +45,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public Action OnViewExportCompleted;
 
         public ViewManager()
-            : this(ViewDescriptor.GetAll().Select(d => d.category).ToArray())
+            : this(ViewDescriptor.GetAll().Select(d => d.Category).ToArray())
         {
         }
 
@@ -88,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var views = new List<AnalysisView>();
             foreach (var category in m_Categories)
             {
-                var desc = ViewDescriptor.GetAll().FirstOrDefault(d => d.category == category);
+                var desc = ViewDescriptor.GetAll().FirstOrDefault(d => d.Category == category);
                 if (desc == null)
                 {
                     Debug.LogWarning($"[{ProjectAuditor.DisplayName}] Descriptor for " + ProjectAuditor.GetCategoryName(category) + " was not registered.");
@@ -106,7 +106,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     continue;
                 }
 
-                var view = desc.type != null ? (AnalysisView)Activator.CreateInstance(desc.type, this) : new AnalysisView(this);
+                var view = desc.Type != null ? (AnalysisView)Activator.CreateInstance(desc.Type, this) : new AnalysisView(this);
                 view.Create(desc, layout, rules, viewStates, filter);
                 view.OnEnable();
                 views.Add(view);
@@ -142,13 +142,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public AnalysisView GetView(IssueCategory category)
         {
-            return m_Views.FirstOrDefault(v => v.Desc.category == category);
+            return m_Views.FirstOrDefault(v => v.Desc.Category == category);
         }
 
         public void ChangeView(IssueCategory category)
         {
             var activeView = GetActiveView();
-            if (activeView.Desc.category == category)
+            if (activeView.Desc.Category == category)
             {
                 return;
             }

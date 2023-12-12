@@ -10,7 +10,7 @@ using Unity.ProjectAuditor.Editor.Modules;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class HDRenderPipelineAnalyzer : ISettingsModuleAnalyzer
+    class HdrpAnalyzer : ISettingsModuleAnalyzer
     {
         internal const string PAS1001 = nameof(PAS1001);
         internal const string PAS1002 = nameof(PAS1002);

@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             base.AddIssues(allIssues);
 
-            if (m_Desc.category == IssueCategory.Code)
+            if (m_Desc.Category == IssueCategory.Code)
             {
                 var compilerMessages = allIssues.Where(i => i.Category == IssueCategory.CodeCompilerMessage);
                 m_NumCompilerErrors += compilerMessages.Count(i => i.Severity == Severity.Error);
@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             base.DrawInfo();
 
-            if (m_Desc.category == IssueCategory.Code && m_NumCompilerErrors > 0)
+            if (m_Desc.Category == IssueCategory.Code && m_NumCompilerErrors > 0)
             {
                 EditorGUILayout.Space();
                 EditorGUILayout.BeginHorizontal();

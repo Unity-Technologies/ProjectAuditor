@@ -43,9 +43,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public ViewDescriptor Desc => m_Desc;
 
-        public virtual string Description => $"A list of {m_Desc.displayName} found in the project.";
+        public virtual string Description => $"A list of {m_Desc.DisplayName} found in the project.";
 
-        public string DocumentationUrl => Documentation.GetPageUrl(new string(m_Desc.displayName.Where(char.IsLetterOrDigit).ToArray()));
+        public string DocumentationUrl => Documentation.GetPageUrl(new string(m_Desc.DisplayName.Where(char.IsLetterOrDigit).ToArray()));
 
         public int NumIssues => m_Issues.Count();
 
@@ -134,19 +134,19 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 m_Rules,
                 this);
 
-            if (m_Desc.showDependencyView)
-                m_DependencyView = new DependencyView(new TreeViewState(), m_Desc.onOpenIssue);
+            if (m_Desc.ShowDependencyView)
+                m_DependencyView = new DependencyView(new TreeViewState(), m_Desc.OnOpenIssue);
 
             if (m_TextFilter == null)
                 m_TextFilter = new TextFilter(layout.Properties);
 
-            var helpButtonTooltip = string.Format("Open Reference for {0}", m_Desc.displayName);
+            var helpButtonTooltip = string.Format("Open Reference for {0}", m_Desc.DisplayName);
             m_HelpButtonContent = Utility.GetIcon(Utility.IconType.Help, helpButtonTooltip);
         }
 
         public virtual void AddIssues(IEnumerable<ProjectIssue> allIssues)
         {
-            var issues = allIssues.Where(i => i.Category == m_Desc.category).ToArray();
+            var issues = allIssues.Where(i => i.Category == m_Desc.Category).ToArray();
             if (issues.Length == 0)
                 return;
 
@@ -292,7 +292,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 case PropertyType.Severity:
                     return true;
                 case PropertyType.Description:
-                    return m_Desc.descriptionWithIcon;
+                    return m_Desc.DescriptionWithIcon;
                 default:
                     if (PropertyTypeUtil.IsCustom(property.Type))
                     {
@@ -387,7 +387,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
             }
 
-            if (m_Desc.showDependencyView)
+            if (m_Desc.ShowDependencyView)
             {
                 DrawDependencyView(selectedIssues);
             }
@@ -403,7 +403,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 // Add a bit of space to improve readability
                 EditorGUILayout.Space();
 
-                if (!m_Desc.showInfoPanel)
+                if (!m_Desc.ShowInfoPanel)
                     return;
 
                 m_ViewStates.info = Utility.BoldFoldout(m_ViewStates.info, Contents.InfoFoldout);
@@ -458,7 +458,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             EditorGUI.BeginChangeCheck();
 
-            if (UserPreferences.DeveloperMode && m_Desc.showDependencyView)
+            if (UserPreferences.DeveloperMode && m_Desc.ShowDependencyView)
             {
                 // this is only available in developer mode because it is still too slow at the moment
                 m_TextFilter.searchDependencies = EditorGUILayout.ToggleLeft("Dependencies (slow)",
@@ -495,7 +495,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public virtual void DrawViewOptions()
         {
             if (m_ViewManager.OnAnalysisRequested != null)
-                DrawToolbarButtonIcon(Contents.AnalyzeNowButton,  () => m_ViewManager.OnAnalysisRequested(m_Desc.category));
+                DrawToolbarButtonIcon(Contents.AnalyzeNowButton,  () => m_ViewManager.OnAnalysisRequested(m_Desc.Category));
 
             m_Table.SetFontSize(m_ViewStates.fontSize);
 
@@ -534,8 +534,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         void DrawDataOptions()
         {
-            if (m_Desc.onDrawToolbar != null)
-                m_Desc.onDrawToolbar(m_ViewManager);
+            if (m_Desc.OnDrawToolbar != null)
+                m_Desc.OnDrawToolbar(m_ViewManager);
 
             if (Utility.ToolbarButtonWithDropdownList(Contents.ExportButton, k_ExportModeStrings,
                 (data) =>
@@ -569,7 +569,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Height(LayoutSize.DependencyViewHeight));
 
-            m_ViewStates.dependencies = Utility.BoldFoldout(m_ViewStates.dependencies, m_Desc.dependencyViewGuiContent != null ? m_Desc.dependencyViewGuiContent : Contents.Dependencies);
+            m_ViewStates.dependencies = Utility.BoldFoldout(m_ViewStates.dependencies, m_Desc.DependencyViewGuiContent != null ? m_Desc.DependencyViewGuiContent : Contents.Dependencies);
             if (m_ViewStates.dependencies)
             {
                 if (issues.Length == 0)
@@ -658,7 +658,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         protected virtual void Export(Func<ProjectIssue, bool> predicate = null)
         {
-            var path = EditorUtility.SaveFilePanel("Save to CSV file", UserPreferences.LoadSavePath, string.Format("project-auditor-{0}.csv", m_Desc.category.ToString()).ToLower(),
+            var path = EditorUtility.SaveFilePanel("Save to CSV file", UserPreferences.LoadSavePath, string.Format("project-auditor-{0}.csv", m_Desc.Category.ToString()).ToLower(),
                 "csv");
             if (path.Length != 0)
             {
@@ -738,7 +738,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         string GetPrefKey(string key)
         {
-            return $"{k_PrefKeyPrefix}.{m_Desc.displayName}.{key}";
+            return $"{k_PrefKeyPrefix}.{m_Desc.DisplayName}.{key}";
         }
 
         public static void DrawActionButton(GUIContent guiContent, Action onClick)

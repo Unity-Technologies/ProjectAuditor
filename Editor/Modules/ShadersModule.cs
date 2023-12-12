@@ -79,33 +79,33 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
     class ShaderVariantData
     {
-        public PassType passType;
-        public string passName;
-        public ShaderType shaderType;
-        public string[] keywords;
-        public string[] platformKeywords;
-        public ShaderRequirements[] requirements;
-        public GraphicsTier graphicsTier;
-        public BuildTarget buildTarget;
-        public ShaderCompilerPlatform compilerPlatform;
+        public PassType PassType;
+        public string PassName;
+        public ShaderType ShaderType;
+        public string[] Keywords;
+        public string[] PlatformKeywords;
+        public ShaderRequirements[] Requirements;
+        public GraphicsTier GraphicsTier;
+        public BuildTarget BuildTarget;
+        public ShaderCompilerPlatform CompilerPlatform;
     }
 
     class ComputeShaderVariantData
     {
-        public string kernelName;
-        public string kernelThreadCount;
-        public string[] keywords;
-        public string[] platformKeywords;
-        public GraphicsTier graphicsTier;
-        public BuildTarget buildTarget;
-        public ShaderCompilerPlatform compilerPlatform;
+        public string KernelName;
+        public string KernelThreadCount;
+        public string[] Keywords;
+        public string[] PlatformKeywords;
+        public GraphicsTier GraphicsTier;
+        public BuildTarget BuildTarget;
+        public ShaderCompilerPlatform CompilerPlatform;
     }
 
     class CompiledVariantData
     {
-        public string pass;
-        public string stage;
-        public string[] keywords;
+        public string Pass;
+        public string Stage;
+        public string[] Keywords;
     }
 
     class ShadersModule : ModuleWithAnalyzers<IShaderModuleAnalyzer>
@@ -444,18 +444,18 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var computeShaderName = shaderCompilerData.Key.name;
                 foreach (var shaderVariantData in shaderCompilerData.Value)
                 {
-                    if (shaderVariantData.buildTarget != BuildTarget.NoTarget && shaderVariantData.buildTarget != analysisParams.Platform)
+                    if (shaderVariantData.BuildTarget != BuildTarget.NoTarget && shaderVariantData.BuildTarget != analysisParams.Platform)
                         continue;
 
                     issues.Add(context.CreateInsight(k_ComputeShaderVariantLayout.Category, computeShaderName)
                         .WithCustomProperties(new object[(int)ComputeShaderVariantProperty.Num]
                         {
-                            shaderVariantData.compilerPlatform,
-                            shaderVariantData.graphicsTier,
-                            shaderVariantData.kernelName,
-                            shaderVariantData.kernelThreadCount,
-                            CombineKeywords(shaderVariantData.keywords),
-                            CombineKeywords(shaderVariantData.platformKeywords)
+                            shaderVariantData.CompilerPlatform,
+                            shaderVariantData.GraphicsTier,
+                            shaderVariantData.KernelName,
+                            shaderVariantData.KernelThreadCount,
+                            CombineKeywords(shaderVariantData.Keywords),
+                            CombineKeywords(shaderVariantData.PlatformKeywords)
                         }));
                 }
             }
@@ -492,8 +492,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (s_ShaderVariantData.ContainsKey(context.Shader))
             {
                 var variants = s_ShaderVariantData[context.Shader];
-                var numCompilerPlatforms = variants.Select(v => v.compilerPlatform).Distinct().Count();
-                variantCountPerCompilerPlatform = variants.Count(v => ShaderTypeIsFragment(v.shaderType, v.compilerPlatform)) / numCompilerPlatforms;
+                var numCompilerPlatforms = variants.Select(v => v.CompilerPlatform).Distinct().Count();
+                variantCountPerCompilerPlatform = variants.Count(v => ShaderTypeIsFragment(v.ShaderType, v.CompilerPlatform)) / numCompilerPlatforms;
             }
 
             var shaderName = context.Shader.name;
@@ -579,7 +579,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 foreach (var shaderVariantData in shaderVariants)
                 {
-                    if (shaderVariantData.buildTarget != BuildTarget.NoTarget && shaderVariantData.buildTarget != context.Params.Platform)
+                    if (shaderVariantData.BuildTarget != BuildTarget.NoTarget && shaderVariantData.BuildTarget != context.Params.Platform)
                         continue;
 
                     yield return context.CreateInsight(IssueCategory.ShaderVariant, context.Shader.name)
@@ -587,14 +587,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         .WithCustomProperties(new object[(int)ShaderVariantProperty.Num]
                         {
                             k_NoRuntimeData,
-                            shaderVariantData.compilerPlatform,
-                            shaderVariantData.graphicsTier,
-                            shaderVariantData.shaderType,
-                            shaderVariantData.passType,
-                            shaderVariantData.passName,
-                            CombineKeywords(shaderVariantData.keywords),
-                            CombineKeywords(shaderVariantData.platformKeywords),
-                            CombineKeywords(shaderVariantData.requirements.Select(r => r.ToString()).ToArray())
+                            shaderVariantData.CompilerPlatform,
+                            shaderVariantData.GraphicsTier,
+                            shaderVariantData.ShaderType,
+                            shaderVariantData.PassType,
+                            shaderVariantData.PassName,
+                            CombineKeywords(shaderVariantData.Keywords),
+                            CombineKeywords(shaderVariantData.PlatformKeywords),
+                            CombineKeywords(shaderVariantData.Requirements.Select(r => r.ToString()).ToArray())
                         });
                 }
             }
@@ -663,13 +663,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 s_ComputeShaderVariantData[shader].Add(new ComputeShaderVariantData
                 {
-                    kernelName = kernelName,
-                    kernelThreadCount = kernelThreadCount == 0 ? k_ComputeShaderMayHaveBadVariants : kernelThreadCount.ToString(),
-                    keywords = GetShaderKeywords(shader, shaderCompilerData.shaderKeywordSet.GetShaderKeywords()),
-                    platformKeywords = PlatformKeywordSetToStrings(shaderCompilerData.platformKeywordSet),
-                    graphicsTier = shaderCompilerData.graphicsTier,
-                    buildTarget = (buildTargetPropertyInfo != null) ? (BuildTarget)buildTargetPropertyInfo.GetValue(shaderCompilerData) : BuildTarget.NoTarget,
-                    compilerPlatform = shaderCompilerData.shaderCompilerPlatform
+                    KernelName = kernelName,
+                    KernelThreadCount = kernelThreadCount == 0 ? k_ComputeShaderMayHaveBadVariants : kernelThreadCount.ToString(),
+                    Keywords = GetShaderKeywords(shader, shaderCompilerData.shaderKeywordSet.GetShaderKeywords()),
+                    PlatformKeywords = PlatformKeywordSetToStrings(shaderCompilerData.platformKeywordSet),
+                    GraphicsTier = shaderCompilerData.graphicsTier,
+                    BuildTarget = (buildTargetPropertyInfo != null) ? (BuildTarget)buildTargetPropertyInfo.GetValue(shaderCompilerData) : BuildTarget.NoTarget,
+                    CompilerPlatform = shaderCompilerData.shaderCompilerPlatform
                 });
             }
         }
@@ -699,15 +699,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 s_ShaderVariantData[shader].Add(new ShaderVariantData
                 {
-                    passType = snippet.passType,
-                    passName =  snippet.passName,
-                    shaderType = snippet.shaderType,
-                    keywords = GetShaderKeywords(shader, shaderCompilerData.shaderKeywordSet.GetShaderKeywords()),
-                    platformKeywords = PlatformKeywordSetToStrings(shaderCompilerData.platformKeywordSet),
-                    requirements = shaderRequirementsList.ToArray(),
-                    graphicsTier = shaderCompilerData.graphicsTier,
-                    buildTarget = (buildTargetPropertyInfo != null) ? (BuildTarget)buildTargetPropertyInfo.GetValue(shaderCompilerData) : BuildTarget.NoTarget,
-                    compilerPlatform = shaderCompilerData.shaderCompilerPlatform
+                    PassType = snippet.passType,
+                    PassName =  snippet.passName,
+                    ShaderType = snippet.shaderType,
+                    Keywords = GetShaderKeywords(shader, shaderCompilerData.shaderKeywordSet.GetShaderKeywords()),
+                    PlatformKeywords = PlatformKeywordSetToStrings(shaderCompilerData.platformKeywordSet),
+                    Requirements = shaderRequirementsList.ToArray(),
+                    GraphicsTier = shaderCompilerData.graphicsTier,
+                    BuildTarget = (buildTargetPropertyInfo != null) ? (BuildTarget)buildTargetPropertyInfo.GetValue(shaderCompilerData) : BuildTarget.NoTarget,
+                    CompilerPlatform = shaderCompilerData.shaderCompilerPlatform
                 });
             }
         }
@@ -767,9 +767,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
                 compiledVariants[shaderName].Add(new CompiledVariantData
                 {
-                    pass = pass,
-                    stage = stage,
-                    keywords = keywords
+                    Pass = pass,
+                    Stage = stage,
+                    Keywords = keywords
                 });
             }
 
@@ -838,13 +838,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         static bool ShaderVariantsMatch(CompiledVariantData cv, string stage, string passName, string[] secondSet)
         {
-            if (!cv.stage.Equals(stage, StringComparison.InvariantCultureIgnoreCase))
+            if (!cv.Stage.Equals(stage, StringComparison.InvariantCultureIgnoreCase))
                 return false;
 
-            var passMatch = cv.pass.Equals(passName);
+            var passMatch = cv.Pass.Equals(passName);
             if (!passMatch)
             {
-                var isUnnamed = k_NoPassNames.Contains(cv.pass) || cv.pass.StartsWith("<Unnamed Pass ");
+                var isUnnamed = k_NoPassNames.Contains(cv.Pass) || cv.Pass.StartsWith("<Unnamed Pass ");
 #if UNITY_2021_3_OR_NEWER || UNITY_2021_2_14 || UNITY_2021_2_15 || UNITY_2021_2_16 || UNITY_2021_2_17 || UNITY_2021_2_18 || UNITY_2021_2_19
                 passMatch = isUnnamed && string.IsNullOrEmpty(passName);
 #else
@@ -855,7 +855,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             if (!passMatch)
                 return false;
-            return cv.keywords.OrderBy(e => e).SequenceEqual(secondSet.OrderBy(e => e));
+            return cv.Keywords.OrderBy(e => e).SequenceEqual(secondSet.OrderBy(e => e));
         }
 
         static string[] GetShaderKeywords(Shader shader, ShaderKeyword[] shaderKeywords)

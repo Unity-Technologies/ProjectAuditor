@@ -31,7 +31,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public DescriptorId Id;
 
         [JsonProperty("id")]
-        private string idString
+        private string idAsString
         {
             get => Id.AsString();
             set => Id = value;

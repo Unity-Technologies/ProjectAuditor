@@ -30,23 +30,23 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
         /// <summary>
         ///   <para>Message code.</para>
         /// </summary>
-        public string code;
+        public string Code;
         /// <summary>
         ///   <para>Message type.</para>
         /// </summary>
-        public CompilerMessageType type;
+        public CompilerMessageType Type;
         /// <summary>
         ///   <para>Message body.</para>
         /// </summary>
-        public string message;
+        public string Message;
         /// <summary>
         ///   <para>File for the message.</para>
         /// </summary>
-        public string file;
+        public string File;
         /// <summary>
         ///   <para>File line for the message.</para>
         /// </summary>
-        public int line;
+        public int Line;
     }
 
     enum CompilationStatus
@@ -239,23 +239,23 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                             var messageBody = messageWithCode.Substring(messageWithCode.IndexOf(": ", StringComparison.Ordinal) + 2);
                             messages[i] = new CompilerMessage
                             {
-                                message = messageBody,
-                                file = originalMessages[i].file,
-                                line = originalMessages[i].line,
-                                code = messageParts[0]
+                                Message = messageBody,
+                                File = originalMessages[i].file,
+                                Line = originalMessages[i].line,
+                                Code = messageParts[0]
                             };
 
                             // disregard originalMessages[i].type because it does not support CompilerMessageType.Info in 2020.x
                             switch (messageType)
                             {
                                 case "error":
-                                    messages[i].type = CompilerMessageType.Error;
+                                    messages[i].Type = CompilerMessageType.Error;
                                     break;
                                 case "warning":
-                                    messages[i].type = CompilerMessageType.Warning;
+                                    messages[i].Type = CompilerMessageType.Warning;
                                     break;
                                 case "info":
-                                    messages[i].type = CompilerMessageType.Info;
+                                    messages[i].Type = CompilerMessageType.Info;
                                     break;
                             }
                         }
@@ -264,23 +264,23 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                             // Copy messages that don't have the standard format. We can't extract a code string from these.
                             messages[i] = new CompilerMessage
                             {
-                                message = originalMessages[i].message,
-                                file = String.IsNullOrEmpty(originalMessages[i].file) ? PathUtils.GetDirectoryName(Application.dataPath) : originalMessages[i].file,
-                                line = originalMessages[i].line,
-                                code = "<Unity>"
+                                Message = originalMessages[i].message,
+                                File = String.IsNullOrEmpty(originalMessages[i].file) ? PathUtils.GetDirectoryName(Application.dataPath) : originalMessages[i].file,
+                                Line = originalMessages[i].line,
+                                Code = "<Unity>"
                             };
 
                             switch (originalMessages[i].type)
                             {
                                 case UnityEditor.Compilation.CompilerMessageType.Error:
-                                    messages[i].type = CompilerMessageType.Error;
+                                    messages[i].Type = CompilerMessageType.Error;
                                     break;
                                 case UnityEditor.Compilation.CompilerMessageType.Warning:
-                                    messages[i].type = CompilerMessageType.Warning;
+                                    messages[i].Type = CompilerMessageType.Warning;
                                     break;
 #if UNITY_2021_1_OR_NEWER
                                 case UnityEditor.Compilation.CompilerMessageType.Info:
-                                    messages[i].type = CompilerMessageType.Info;
+                                    messages[i].Type = CompilerMessageType.Info;
                                     break;
 #endif
                             }

@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var category = Unity.ProjectAuditor.Editor.ProjectAuditor.GetOrRegisterCategory(testCategoryName);
             var viewDesc = new ViewDescriptor
             {
-                category = category
+                Category = category
             };
             Assert.True(ViewDescriptor.Register(viewDesc));
 

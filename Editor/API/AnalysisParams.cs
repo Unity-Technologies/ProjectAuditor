@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor
         [SerializeField]
         BuildTarget m_Platform;
 
-        string m_PlatformString;
+        string m_PlatformAsString;
 
         /// <summary>
         /// Analysis platform. The default platform is the currently active build target.
@@ -44,7 +44,7 @@ namespace Unity.ProjectAuditor.Editor
             set
             {
                 m_Platform = value;
-                m_PlatformString = m_Platform.ToString();
+                m_PlatformAsString = m_Platform.ToString();
                 DiagnosticParams?.SetAnalysisPlatform(Platform);
             }
         }
@@ -101,7 +101,7 @@ namespace Unity.ProjectAuditor.Editor
         [NonSerialized]
         internal Predicate<string> AssetPathFilter;
 
-        internal string PlatformString => m_PlatformString;
+        internal string PlatformAsString => m_PlatformAsString;
 
         /// <summary>
         /// AnalysisParams constructor.

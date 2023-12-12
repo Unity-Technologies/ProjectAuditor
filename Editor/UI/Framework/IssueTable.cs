@@ -106,7 +106,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 var depth = 1;
                 if (m_Layout.IsHierarchy)
                 {
-                    if (m_Desc.category == IssueCategory.BuildStep)
+                    if (m_Desc.Category == IssueCategory.BuildStep)
                     {
                         depth = issue.GetCustomPropertyInt32(BuildReportStepProperty.Depth);
                     }
@@ -362,7 +362,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         break;
                     case PropertyType.Description:
                         GUIContent guiContent = null;
-                        if (issue.Location != null && m_Desc.descriptionWithIcon)
+                        if (issue.Location != null && m_Desc.DescriptionWithIcon)
                         {
                             guiContent =
                                 Utility.GetTextContentWithAssetIcon(item.GetDisplayName(), issue.Location.Path);
@@ -453,7 +453,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         protected override void DoubleClickedItem(int id)
         {
-            if (m_Desc.onOpenIssue == null)
+            if (m_Desc.OnOpenIssue == null)
                 return;
 
             var rows = FindRows(new[] {id});
@@ -470,7 +470,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var issue = tableItem.ProjectIssue;
             if (issue != null && issue.Location != null && issue.Location.IsValid())
             {
-                m_Desc.onOpenIssue(issue.Location);
+                m_Desc.OnOpenIssue(issue.Location);
             }
         }
 
@@ -545,11 +545,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 if (item.ProjectIssue != null)
                 {
-                    if (m_Desc.onOpenIssue != null && item.ProjectIssue.Location != null)
+                    if (m_Desc.OnOpenIssue != null && item.ProjectIssue.Location != null)
                     {
                         menu.AddItem(Utility.OpenIssue, false, () =>
                         {
-                            m_Desc.onOpenIssue(item.ProjectIssue.Location);
+                            m_Desc.OnOpenIssue(item.ProjectIssue.Location);
                         });
                     }
                     menu.AddItem(new GUIContent($"Filter by '{item.ProjectIssue.Description.Replace("/", "\u2215")}'") , false, () =>
@@ -558,27 +558,27 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     });
                 }
 
-                if (m_Desc.onOpenIssue != null && item.ProjectIssue != null && item.ProjectIssue.Location != null)
+                if (m_Desc.OnOpenIssue != null && item.ProjectIssue != null && item.ProjectIssue.Location != null)
                 {
                     menu.AddItem(Utility.OpenIssue, false, () =>
                     {
-                        m_Desc.onOpenIssue(item.ProjectIssue.Location);
+                        m_Desc.OnOpenIssue(item.ProjectIssue.Location);
                     });
                 }
 
                 var desc = item.ProjectIssue != null && item.ProjectIssue.Id.IsValid() ? item.ProjectIssue.Id.GetDescriptor() : null;
-                if (m_Desc.onOpenManual != null && desc != null && desc.Type.StartsWith("UnityEngine."))
+                if (m_Desc.OnOpenManual != null && desc != null && desc.Type.StartsWith("UnityEngine."))
                 {
                     menu.AddItem(Utility.OpenScriptReference, false, () =>
                     {
-                        m_Desc.onOpenManual(desc);
+                        m_Desc.OnOpenManual(desc);
                     });
                 }
 
-                if (m_Desc.onContextMenu != null)
+                if (m_Desc.OnContextMenu != null)
                 {
                     menu.AddSeparator("");
-                    m_Desc.onContextMenu(menu, m_View.ViewManager, item.ProjectIssue);
+                    m_Desc.OnContextMenu(menu, m_View.ViewManager, item.ProjectIssue);
                 }
 
                 menu.AddSeparator("");

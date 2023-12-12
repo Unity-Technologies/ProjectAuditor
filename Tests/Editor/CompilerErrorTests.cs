@@ -88,9 +88,9 @@ class ScriptWithError {
 
             Assert.NotNull(compilerMessages);
             Assert.AreEqual(1, compilerMessages.Length);
-            Assert.AreEqual(k_ExpectedCode, compilerMessages[0].code);
-            Assert.AreEqual(k_ExpectedDescription, compilerMessages[0].message);
-            Assert.AreEqual(CompilerMessageType.Error, compilerMessages[0].type);
+            Assert.AreEqual(k_ExpectedCode, compilerMessages[0].Code);
+            Assert.AreEqual(k_ExpectedDescription, compilerMessages[0].Message);
+            Assert.AreEqual(CompilerMessageType.Error, compilerMessages[0].Type);
         }
 
         [Test]

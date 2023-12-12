@@ -65,18 +65,18 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             propertyFoldouts.Add(new PropertyFoldout
             {
-                id = descriptor.category == IssueCategory.ShaderVariant ? (int)ShaderVariantProperty.Keywords : (int)ComputeShaderVariantProperty.Keywords,
+                id = descriptor.Category == IssueCategory.ShaderVariant ? (int)ShaderVariantProperty.Keywords : (int)ComputeShaderVariantProperty.Keywords,
                 enabled = true,
                 content = new GUIContent("Keywords")
             });
             propertyFoldouts.Add(new PropertyFoldout
             {
-                id = descriptor.category == IssueCategory.ShaderVariant ? (int)ShaderVariantProperty.PlatformKeywords : (int)ComputeShaderVariantProperty.PlatformKeywords,
+                id = descriptor.Category == IssueCategory.ShaderVariant ? (int)ShaderVariantProperty.PlatformKeywords : (int)ComputeShaderVariantProperty.PlatformKeywords,
                 enabled = true,
                 content = new GUIContent("Platform Keywords")
             });
 
-            if (descriptor.category == IssueCategory.ShaderVariant)
+            if (descriptor.Category == IssueCategory.ShaderVariant)
                 propertyFoldouts.Add(new PropertyFoldout
                 {
                     id = (int)ShaderVariantProperty.Requirements,
@@ -122,7 +122,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public override void DrawFilters()
         {
-            if (m_Desc.category == IssueCategory.ShaderVariant)
+            if (m_Desc.Category == IssueCategory.ShaderVariant)
             {
                 GUI.enabled = NumIssues > 0;
 
@@ -194,7 +194,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.HelpBox(k_ClearInstructions, MessageType.Warning);
             }
 
-            if (NumIssues > 0 && m_Desc.category == IssueCategory.ShaderVariant)
+            if (NumIssues > 0 && m_Desc.Category == IssueCategory.ShaderVariant)
             {
                 EditorGUILayout.LabelField(k_PlayerLogInstructions, SharedStyles.TextArea);
                 if (!GraphicsSettingsProxy.logShaderCompilationSupported)
@@ -270,7 +270,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             if (!base.Match(issue))
                 return false;
-            if (m_Desc.category == IssueCategory.ComputeShaderVariant)
+            if (m_Desc.Category == IssueCategory.ComputeShaderVariant)
                 return true;
 
             var compiled = issue.GetCustomPropertyBool(ShaderVariantProperty.Compiled);

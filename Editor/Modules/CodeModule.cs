@@ -472,7 +472,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var severity = Severity.None;
             if (compilationTask.Status == CompilationStatus.MissingDependency)
                 severity = Severity.Warning;
-            else if (compilerMessages.Any(m => m.type == CompilerMessageType.Error))
+            else if (compilerMessages.Any(m => m.Type == CompilerMessageType.Error))
                 severity = Severity.Error;
 
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(compilationTask.AssemblyPath);
@@ -489,39 +489,39 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             foreach (var message in compilerMessages)
             {
-                var relativePath = AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, message.file);
+                var relativePath = AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, message.File);
 
                 // stephenm TODO - A more data-driven way to specify which view Roslyn messages should be sent to, depending on their code.
-                if (s_RegEx.IsMatch(message.code))
+                if (s_RegEx.IsMatch(message.Code))
                 {
                     var descriptor = new Descriptor(
-                        message.code,
-                        message.message,
+                        message.Code,
+                        message.Message,
                         Areas.IterationTime,
-                        RoslynTextLookup.GetDescription(message.code),
-                        RoslynTextLookup.GetRecommendation(message.code));
+                        RoslynTextLookup.GetDescription(message.Code),
+                        RoslynTextLookup.GetRecommendation(message.Code));
 
                     DescriptorLibrary.RegisterDescriptor(descriptor.Id, descriptor);
 
                     yield return context.CreateIssue(IssueCategory.DomainReload, descriptor.Id)
-                        .WithLocation(relativePath, message.line)
-                        .WithLogLevel(CompilerMessageTypeToLogLevel(message.type))
+                        .WithLocation(relativePath, message.Line)
+                        .WithLogLevel(CompilerMessageTypeToLogLevel(message.Type))
                         .WithCustomProperties(new object[(int)CompilerMessageProperty.Num]
                         {
-                            message.code,
+                            message.Code,
                             assemblyInfo.Name
                         });
                 }
                 else
                 {
-                    yield return context.CreateInsight(IssueCategory.CodeCompilerMessage, message.message)
+                    yield return context.CreateInsight(IssueCategory.CodeCompilerMessage, message.Message)
                         .WithCustomProperties(new object[(int)CompilerMessageProperty.Num]
                         {
-                            message.code,
+                            message.Code,
                             assemblyInfo.Name
                         })
-                        .WithLocation(relativePath, message.line)
-                        .WithLogLevel(CompilerMessageTypeToLogLevel(message.type));
+                        .WithLocation(relativePath, message.Line)
+                        .WithLogLevel(CompilerMessageTypeToLogLevel(message.Type));
                 }
             }
 

@@ -178,7 +178,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         [JsonProperty("severity")]
-        internal string SeverityString
+        internal string SeverityAsString
         {
             get => IsDiagnostic() ? m_Severity.ToString() : null;
             set => m_Severity = (Severity)Enum.Parse(typeof(Severity), value);
