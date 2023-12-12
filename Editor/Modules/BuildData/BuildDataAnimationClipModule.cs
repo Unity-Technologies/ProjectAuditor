@@ -19,27 +19,25 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         static readonly IssueLayout k_AnimationClipLayout = new IssueLayout
         {
-            category = IssueCategory.BuildDataAnimationClip,
-            properties = new[]
+            Category = IssueCategory.BuildDataAnimationClip,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "AnimationClip Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataAnimationClipProperty.AssetBundle), format = PropertyFormat.String, name = "File", longName = "File Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataAnimationClipProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataAnimationClipProperty.Legacy), format = PropertyFormat.Bool, name = "Legacy", longName = "Legacy" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataAnimationClipProperty.Events), format = PropertyFormat.Integer, name = "Events", longName = "Events" },
+                new PropertyDefinition { Type = PropertyType.Description, Format = PropertyFormat.String, Name = "Name", LongName = "AnimationClip Name" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAnimationClipProperty.AssetBundle), Format = PropertyFormat.String, Name = "File", LongName = "File Name" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAnimationClipProperty.Size), Format = PropertyFormat.Bytes, Name = "Size", LongName = "Size" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAnimationClipProperty.Legacy), Format = PropertyFormat.Bool, Name = "Legacy", LongName = "Legacy" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAnimationClipProperty.Events), Format = PropertyFormat.Integer, Name = "Events", LongName = "Events" },
             }
         };
 
         public override string Name => "AnimationClips";
-
-        public override bool IsEnabledByDefault => false;
 
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_AnimationClipLayout
         };
 
-        public override void Audit(AnalysisParams projectAuditorParams, IProgress progress = null)
+        public override AnalysisResult Audit(AnalysisParams projectAuditorParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
 
@@ -68,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 progress?.Clear();
             }
 
-            projectAuditorParams.OnModuleCompleted?.Invoke();
+            return AnalysisResult.Success;
         }
     }
 }

@@ -35,41 +35,39 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         static readonly IssueLayout k_ShaderLayout = new IssueLayout
         {
-            category = IssueCategory.BuildDataShader,
-            properties = new[]
+            Category = IssueCategory.BuildDataShader,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Shader Name", longName = "Shader Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.AssetBundle), format = PropertyFormat.String, name = "File", longName = "File Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.DecompressedSize), format = PropertyFormat.Bytes, name = "Decompressed Size", longName = "Decompressed Size" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.SubShaders), format = PropertyFormat.Integer, name = "Sub Shaders", longName = "Number Of Sub Shaders" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.SubPrograms), format = PropertyFormat.Integer, name = "Sub Programs", longName = "Number Of Sub Programs In Sub Shaders" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.Keywords), format = PropertyFormat.String, name = "Keywords", longName = "Keywords" },
+                new PropertyDefinition { Type = PropertyType.Description, Format = PropertyFormat.String, Name = "Shader Name", LongName = "Shader Name" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.AssetBundle), Format = PropertyFormat.String, Name = "File", LongName = "File Name" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.DecompressedSize), Format = PropertyFormat.Bytes, Name = "Decompressed Size", LongName = "Decompressed Size" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.SubShaders), Format = PropertyFormat.Integer, Name = "Sub Shaders", LongName = "Number Of Sub Shaders" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.SubPrograms), Format = PropertyFormat.Integer, Name = "Sub Programs", LongName = "Number Of Sub Programs In Sub Shaders" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.Keywords), Format = PropertyFormat.String, Name = "Keywords", LongName = "Keywords" },
             }
         };
 
         static readonly IssueLayout k_ShaderVariantLayout = new IssueLayout
         {
-            category = IssueCategory.BuildDataShaderVariant,
-            properties = new[]
+            Category = IssueCategory.BuildDataShaderVariant,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Shader Name", longName = "Shader Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.Compiled), format = PropertyFormat.Bool, name = "Compiled", longName = "Compiled During Runtime" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.GraphicsAPI), format = PropertyFormat.String, name = "Graphics API", longName = "Graphics API" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.Tier), format = PropertyFormat.String, name = "Tier", longName = "Tier" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.Stage), format = PropertyFormat.String, name = "Stage", longName = "Stage" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.PassType), format = PropertyFormat.String, name = "Pass Type", longName = "Pass Type" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.PassName), format = PropertyFormat.String, name = "Pass Name", longName = "Pass Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.Keywords), format = PropertyFormat.String, name = "Keywords", longName = "Keywords" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.PlatformKeywords), format = PropertyFormat.String, name = "Platform Keywords", longName = "Platform Keywords" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.PlatformKeywords), format = PropertyFormat.String, name = "Requirements", longName = "Requirements" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.AssetBundle), format = PropertyFormat.String, name = "File", longName = "File Name" },
+                new PropertyDefinition { Type = PropertyType.Description, Format = PropertyFormat.String, Name = "Shader Name", LongName = "Shader Name" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.Compiled), Format = PropertyFormat.Bool, Name = "Compiled", LongName = "Compiled During Runtime" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.GraphicsAPI), Format = PropertyFormat.String, Name = "Graphics API", LongName = "Graphics API" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.Tier), Format = PropertyFormat.String, Name = "Tier", LongName = "Tier" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.Stage), Format = PropertyFormat.String, Name = "Stage", LongName = "Stage" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.PassType), Format = PropertyFormat.String, Name = "Pass Type", LongName = "Pass Type" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.PassName), Format = PropertyFormat.String, Name = "Pass Name", LongName = "Pass Name" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.Keywords), Format = PropertyFormat.String, Name = "Keywords", LongName = "Keywords" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.PlatformKeywords), Format = PropertyFormat.String, Name = "Platform Keywords", LongName = "Platform Keywords" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.PlatformKeywords), Format = PropertyFormat.String, Name = "Requirements", LongName = "Requirements" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderVariantProperty.AssetBundle), Format = PropertyFormat.String, Name = "File", LongName = "File Name" },
             }
         };
 
 
         public override string Name => "Shaders";
-
-        public override bool IsEnabledByDefault => false;
 
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
@@ -77,7 +75,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             k_ShaderVariantLayout
         };
 
-        public override void Audit(AnalysisParams projectAuditorParams, IProgress progress = null)
+        public override AnalysisResult Audit(AnalysisParams projectAuditorParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
 
@@ -106,7 +104,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             progress?.Clear();
 
-            projectAuditorParams.OnModuleCompleted?.Invoke();
+            return AnalysisResult.Success;
         }
     }
 }

@@ -22,30 +22,28 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         static readonly IssueLayout k_TextureLayout = new IssueLayout
         {
-            category = IssueCategory.BuildDataTexture2D,
-            properties = new[]
+            Category = IssueCategory.BuildDataTexture2D,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Texture Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.AssetBundle), format = PropertyFormat.String, name = "File", longName = "File Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.Width), format = PropertyFormat.Integer, name = "Width", longName = "Width" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.Height), format = PropertyFormat.Integer, name = "Height", longName = "Height" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.Format), format = PropertyFormat.String, name = "Format", longName = "Format" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.MipCount), format = PropertyFormat.Integer, name = "MipCount", longName = "Number Of MipMap Levels" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.RwEnabled), format = PropertyFormat.Bool, name = "RwEnabled", longName = "Read/Write Is Enabled" },
+                new PropertyDefinition { Type = PropertyType.Description, Format = PropertyFormat.String, Name = "Name", LongName = "Texture Name" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.AssetBundle), Format = PropertyFormat.String, Name = "File", LongName = "File Name" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.Size), Format = PropertyFormat.Bytes, Name = "Size", LongName = "Size" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.Width), Format = PropertyFormat.Integer, Name = "Width", LongName = "Width" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.Height), Format = PropertyFormat.Integer, Name = "Height", LongName = "Height" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.Format), Format = PropertyFormat.String, Name = "Format", LongName = "Format" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.MipCount), Format = PropertyFormat.Integer, Name = "MipCount", LongName = "Number Of MipMap Levels" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.RwEnabled), Format = PropertyFormat.Bool, Name = "RwEnabled", LongName = "Read/Write Is Enabled" },
             }
         };
 
         public override string Name => "Textures";
-
-        public override bool IsEnabledByDefault => false;
 
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_TextureLayout
         };
 
-        public override void Audit(AnalysisParams projectAuditorParams, IProgress progress = null)
+        public override AnalysisResult Audit(AnalysisParams projectAuditorParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
 
@@ -74,7 +72,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 progress?.Clear();
             }
 
-            projectAuditorParams.OnModuleCompleted?.Invoke();
+            return AnalysisResult.Success;
         }
     }
 }

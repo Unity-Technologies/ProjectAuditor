@@ -27,27 +27,27 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         static readonly IssueLayout k_SummaryLayout = new IssueLayout
         {
-            category = IssueCategory.BuildDataSummary,
-            properties = new[]
+            Category = IssueCategory.BuildDataSummary,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataSummaryProperty.Type), format = PropertyFormat.String, name = "Type", longName = "Asset Type", defaultGroup = true },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataSummaryProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size In Bytes" },
+                new PropertyDefinition { Type = PropertyType.Description, Format = PropertyFormat.String, Name = "Name", LongName = "Name" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataSummaryProperty.Type), Format = PropertyFormat.String, Name = "Type", LongName = "Asset Type", IsDefaultGroup = true },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataSummaryProperty.Size), Format = PropertyFormat.Bytes, Name = "Size", LongName = "Size In Bytes" },
             },
         };
 
         internal static readonly IssueLayout k_DiagnosticIssueLayout = new IssueLayout
         {
-            category = IssueCategory.BuildDataDiagnostic,
-            properties = new[]
+            Category = IssueCategory.BuildDataDiagnostic,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataDiagnosticsProperty.Name), format = PropertyFormat.String, name = "Name", longName = "Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataDiagnosticsProperty.Type), format = PropertyFormat.String, name = "Type", longName = "Type" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataDiagnosticsProperty.Duplicates), format = PropertyFormat.Integer, name = "Instances", longName = "Count Of Instances Of Object" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataDiagnosticsProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataDiagnosticsProperty.TotalSize), format = PropertyFormat.Bytes, name = "Total Size", longName = "Total Size" },
-                new PropertyDefinition { type = PropertyType.Descriptor, name = "Descriptor", defaultGroup = true, hidden = true},
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Issue", LongName = "Issue description"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataDiagnosticsProperty.Name), Format = PropertyFormat.String, Name = "Name", LongName = "Name" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataDiagnosticsProperty.Type), Format = PropertyFormat.String, Name = "Type", LongName = "Type" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataDiagnosticsProperty.Duplicates), Format = PropertyFormat.Integer, Name = "Instances", LongName = "Count Of Instances Of Object" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataDiagnosticsProperty.Size), Format = PropertyFormat.Bytes, Name = "Size", LongName = "Size" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataDiagnosticsProperty.TotalSize), Format = PropertyFormat.Bytes, Name = "Total Size", LongName = "Total Size" },
+                new PropertyDefinition { Type = PropertyType.Descriptor, Name = "Descriptor", IsDefaultGroup = true, IsHidden = true},
             }
         };
 
@@ -65,8 +65,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         };
 
         public override string Name => "Summary";
-
-        public override bool IsEnabledByDefault => false;
 
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
@@ -106,7 +104,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             RegisterDescriptor(k_DuplicateDiagnosticDescriptor);
         }
 
-        public override void Audit(AnalysisParams projectAuditorParams, IProgress progress = null)
+        public override AnalysisResult Audit(AnalysisParams projectAuditorParams, IProgress progress = null)
         {
             if (projectAuditorParams.BuildObjects != null)
             {
@@ -220,7 +218,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             progress?.Clear();
 
-            projectAuditorParams.OnModuleCompleted?.Invoke();
+            return AnalysisResult.Success;
         }
 
         private bool AddChildDependencyNodes(SerializedObject serializedObject,

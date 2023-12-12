@@ -64,18 +64,18 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             propertyFoldouts.Add(new PropertyFoldout
             {
-                id = descriptor.category == IssueCategory.BuildDataShaderVariant ? (int)BuildDataShaderVariantProperty.Keywords : (int)ComputeShaderVariantProperty.Keywords,
+                id = descriptor.Category == IssueCategory.BuildDataShaderVariant ? (int)BuildDataShaderVariantProperty.Keywords : (int)ComputeShaderVariantProperty.Keywords,
                 enabled = true,
                 content = new GUIContent("Keywords")
             });
             propertyFoldouts.Add(new PropertyFoldout
             {
-                id = descriptor.category == IssueCategory.BuildDataShaderVariant ? (int)BuildDataShaderVariantProperty.PlatformKeywords : (int)ComputeShaderVariantProperty.PlatformKeywords,
+                id = descriptor.Category == IssueCategory.BuildDataShaderVariant ? (int)BuildDataShaderVariantProperty.PlatformKeywords : (int)ComputeShaderVariantProperty.PlatformKeywords,
                 enabled = true,
                 content = new GUIContent("Platform Keywords")
             });
 
-            if (descriptor.category == IssueCategory.BuildDataShaderVariant)
+            if (descriptor.Category == IssueCategory.BuildDataShaderVariant)
                 propertyFoldouts.Add(new PropertyFoldout
                 {
                     id = (int)BuildDataShaderVariantProperty.Requirements,
@@ -151,9 +151,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
                 compiledVariants[shaderName].Add(new CompiledVariantData
                 {
-                    pass = pass,
-                    stage = stage,
-                    keywords = keywords
+                    Pass = pass,
+                    Stage = stage,
+                    Keywords = keywords
                 });
             }
 
@@ -264,7 +264,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             EditorGUILayout.BeginVertical();
 
-            if (NumIssues > 0 && m_Desc.category == IssueCategory.BuildDataShaderVariant)
+            if (NumIssues > 0 && m_Desc.Category == IssueCategory.BuildDataShaderVariant)
             {
                 EditorGUILayout.LabelField(k_PlayerLogInstructions, SharedStyles.TextArea);
                 if (!GraphicsSettingsProxy.logShaderCompilationSupported)
@@ -341,7 +341,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (!base.Match(issue))
                 return false;
 
-            if (m_Desc.category == IssueCategory.ComputeShaderVariant)
+            if (m_Desc.Category == IssueCategory.ComputeShaderVariant)
                 return true;
 
             return true;

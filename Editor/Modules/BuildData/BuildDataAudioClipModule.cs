@@ -22,30 +22,28 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         static readonly IssueLayout k_AudioClipLayout = new IssueLayout
         {
-            category = IssueCategory.BuildDataAudioClip,
-            properties = new[]
+            Category = IssueCategory.BuildDataAudioClip,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "AudioClip Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataAudioClipProperty.AssetBundle), format = PropertyFormat.String, name = "File", longName = "File Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataAudioClipProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataAudioClipProperty.BitsPerSample), format = PropertyFormat.Integer, name = "BitsPerSample", longName = "Bits Per Sample" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataAudioClipProperty.Frequency), format = PropertyFormat.Integer, name = "Frequency", longName = "Frequency" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataAudioClipProperty.Channels), format = PropertyFormat.Integer, name = "Channels", longName = "Number Of Channels" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataAudioClipProperty.LoadType), format = PropertyFormat.String, name = "LoadType", longName = "Load Type" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataAudioClipProperty.Format), format = PropertyFormat.String, name = "Format", longName = "Format" },
+                new PropertyDefinition { Type = PropertyType.Description, Format = PropertyFormat.String, Name = "Name", LongName = "AudioClip Name" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAudioClipProperty.AssetBundle), Format = PropertyFormat.String, Name = "File", LongName = "File Name" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAudioClipProperty.Size), Format = PropertyFormat.Bytes, Name = "Size", LongName = "Size" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAudioClipProperty.BitsPerSample), Format = PropertyFormat.Integer, Name = "BitsPerSample", LongName = "Bits Per Sample" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAudioClipProperty.Frequency), Format = PropertyFormat.Integer, Name = "Frequency", LongName = "Frequency" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAudioClipProperty.Channels), Format = PropertyFormat.Integer, Name = "Channels", LongName = "Number Of Channels" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAudioClipProperty.LoadType), Format = PropertyFormat.String, Name = "LoadType", LongName = "Load Type" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAudioClipProperty.Format), Format = PropertyFormat.String, Name = "Format", LongName = "Format" },
             }
         };
 
         public override string Name => "AudioClipes";
-
-        public override bool IsEnabledByDefault => false;
 
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_AudioClipLayout
         };
 
-        public override void Audit(AnalysisParams projectAuditorParams, IProgress progress = null)
+        public override AnalysisResult Audit(AnalysisParams projectAuditorParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
 
@@ -74,7 +72,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 progress?.Clear();
             }
 
-            projectAuditorParams.OnModuleCompleted?.Invoke();
+            return AnalysisResult.Success;
         }
     }
 }

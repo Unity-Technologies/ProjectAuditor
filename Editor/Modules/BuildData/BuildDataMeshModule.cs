@@ -26,34 +26,32 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         static readonly IssueLayout k_MeshLayout = new IssueLayout
         {
-            category = IssueCategory.BuildDataMesh,
-            properties = new[]
+            Category = IssueCategory.BuildDataMesh,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Mesh Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.AssetBundle), format = PropertyFormat.String, name = "File", longName = "File Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.SubMeshes), format = PropertyFormat.Integer, name = "Sub Meshes", longName = "Number Of Sub Meshes" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.BlendShapes), format = PropertyFormat.Integer, name = "Blend Shapes", longName = "Number Of Blend Shapes" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.Bones), format = PropertyFormat.Integer, name = "Bones", longName = "Number Of Bones" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.Indices), format = PropertyFormat.Integer, name = "Indices", longName = "Number Of Indices" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.Vertices), format = PropertyFormat.Integer, name = "Vertices", longName = "Number Of Vertices" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.Compression), format = PropertyFormat.String, name = "Compression", longName = "Compression" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.RwEnabled), format = PropertyFormat.Bool, name = "Rw Enabled", longName = "Read/Write Is Enabled" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.VertexSize), format = PropertyFormat.Integer, name = "Vertex Size", longName = "Vertex Size In Bytes" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.Channels), format = PropertyFormat.String, name = "Channels", longName = "Used Vertex Channels" },
+                new PropertyDefinition { Type = PropertyType.Description, Format = PropertyFormat.String, Name = "Name", LongName = "Mesh Name" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.AssetBundle), Format = PropertyFormat.String, Name = "File", LongName = "File Name" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.Size), Format = PropertyFormat.Bytes, Name = "Size", LongName = "Size" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.SubMeshes), Format = PropertyFormat.Integer, Name = "Sub Meshes", LongName = "Number Of Sub Meshes" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.BlendShapes), Format = PropertyFormat.Integer, Name = "Blend Shapes", LongName = "Number Of Blend Shapes" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.Bones), Format = PropertyFormat.Integer, Name = "Bones", LongName = "Number Of Bones" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.Indices), Format = PropertyFormat.Integer, Name = "Indices", LongName = "Number Of Indices" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.Vertices), Format = PropertyFormat.Integer, Name = "Vertices", LongName = "Number Of Vertices" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.Compression), Format = PropertyFormat.String, Name = "Compression", LongName = "Compression" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.RwEnabled), Format = PropertyFormat.Bool, Name = "Rw Enabled", LongName = "Read/Write Is Enabled" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.VertexSize), Format = PropertyFormat.Integer, Name = "Vertex Size", LongName = "Vertex Size In Bytes" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.Channels), Format = PropertyFormat.String, Name = "Channels", LongName = "Used Vertex Channels" },
             }
         };
 
         public override string Name => "Meshes";
-
-        public override bool IsEnabledByDefault => false;
 
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_MeshLayout
         };
 
-        public override void Audit(AnalysisParams projectAuditorParams, IProgress progress = null)
+        public override AnalysisResult Audit(AnalysisParams projectAuditorParams, IProgress progress = null)
         {
             var analyzers = GetPlatformAnalyzers(projectAuditorParams.Platform);
 
@@ -82,7 +80,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 progress?.Clear();
             }
 
-            projectAuditorParams.OnModuleCompleted?.Invoke();
+            return AnalysisResult.Success;
         }
     }
 }

@@ -10,9 +10,9 @@ namespace Unity.ProjectAuditor.Editor.UI
         private bool m_DirtySorting;
         private bool m_ExpandOnSelection;
 
-        public override string Description => m_Desc.category == IssueCategory.BuildDataSummary ?
+        public override string Description => m_Desc.Category == IssueCategory.BuildDataSummary ?
         "Summary of asset types found in build data." :
-        $"A list of {m_Desc.displayName} found in build data.";
+        $"A list of {m_Desc.DisplayName} found in build data.";
 
         public BuildDataView(ViewManager viewManager) : base(viewManager)
         {
@@ -55,30 +55,30 @@ namespace Unity.ProjectAuditor.Editor.UI
         private void InitSorting()
         {
             // Only for summary view, sort by size in descending order
-            if (m_Desc.category == IssueCategory.BuildDataSummary)
+            if (m_Desc.Category == IssueCategory.BuildDataSummary)
             {
                 var sizePropertyType = PropertyTypeUtil.FromCustom(BuildDataSummaryProperty.Size);
                 var typePropertyType = PropertyTypeUtil.FromCustom(BuildDataSummaryProperty.Type);
 
-                for (int i = 0; i < m_Layout.properties.Length; ++i)
+                for (int i = 0; i < m_Layout.Properties.Length; ++i)
                 {
-                    var layoutProperty = m_Layout.properties[i];
-                    if (layoutProperty.type == sizePropertyType)
+                    var layoutProperty = m_Layout.Properties[i];
+                    if (layoutProperty.Type == sizePropertyType)
                     {
                         m_Table.multiColumnHeader.SetSorting(i, false);
                     }
-                    else if (layoutProperty.type == typePropertyType)
+                    else if (layoutProperty.Type == typePropertyType)
                     {
                         m_Table.groupPropertyIndex = i;
                     }
                 }
             }
-            else if (m_Desc.category == IssueCategory.BuildDataShader)
+            else if (m_Desc.Category == IssueCategory.BuildDataShader)
             {
-                for (int i = 0; i < m_Layout.properties.Length; ++i)
+                for (int i = 0; i < m_Layout.Properties.Length; ++i)
                 {
-                    var layoutProperty = m_Layout.properties[i];
-                    if (layoutProperty.name == "Decompressed Size")
+                    var layoutProperty = m_Layout.Properties[i];
+                    if (layoutProperty.Name == "Decompressed Size")
                     {
                         m_Table.multiColumnHeader.SetSorting(i, false);
                         break;
