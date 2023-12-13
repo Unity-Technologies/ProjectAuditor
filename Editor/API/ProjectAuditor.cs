@@ -59,6 +59,8 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
+        internal static string ProjectPath => PathUtils.GetDirectoryName(UnityEngine.Application.dataPath);
+
         static string s_CachedPackagePath;
         static string s_CachedPackageVersion;
         static readonly Dictionary<string, IssueCategory> s_CustomCategories = new Dictionary<string, IssueCategory>();

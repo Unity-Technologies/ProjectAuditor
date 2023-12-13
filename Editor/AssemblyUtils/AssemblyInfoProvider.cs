@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Utils;
-using UnityEditor;
 using UnityEditor.Compilation;
 using UnityEngine;
 using UnityEditor.PackageManager;
@@ -39,13 +38,6 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
     static class AssemblyInfoProvider
     {
         const string k_VirtualPackagesRoot = "Packages";
-
-        internal static string s_ProjectPath;
-
-        static AssemblyInfoProvider()
-        {
-            s_ProjectPath = PathUtils.GetDirectoryName(Application.dataPath);
-        }
 
         internal static IEnumerable<string> GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes flags)
         {
@@ -134,7 +126,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                 return fullPath.Replace(assemblyInfo.PackageResolvedPath, assemblyInfo.RelativePath);
 
             // if it lives in Assets/... convert to relative path
-            return fullPath.Replace(s_ProjectPath + PathUtils.Separator, "");
+            return fullPath.Replace(ProjectAuditor.ProjectPath + PathUtils.Separator, "");
         }
     }
 }
