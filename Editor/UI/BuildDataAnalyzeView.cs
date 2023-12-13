@@ -30,7 +30,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static string InfoText = "Analyze Build Data now? Check the Settings below before starting the analysis.";
         }
 
+        const int k_MaxLabelWidth = 500;
+
         string m_LastBuildDataPath;
+        string m_ShortenedPath;
+
         Analyzer m_BuildDataAnalyzer;
         ProjectAuditorWindow m_ProjectAuditorWindow;
 
@@ -100,20 +104,22 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     GUILayout.FlexibleSpace();
 
-                    using (new EditorGUILayout.VerticalScope(GUILayout.Width(600)))
+                    using (new EditorGUILayout.VerticalScope(GUILayout.Width(k_MaxLabelWidth)))
                     {
                         EditorGUILayout.LabelField(Contents.SettingsContent, SharedStyles.BoldLabel);
 
                         GUILayout.Space(5);
 
                         EditorGUILayout.LabelField(Contents.BuildDataFolderContent, SharedStyles.BoldLabel);
-                        EditorGUILayout.LabelField(m_LastBuildDataPath);
+                        EditorGUILayout.LabelField(new GUIContent(m_ShortenedPath, m_LastBuildDataPath));
                         var changeFolder = GUILayout.Button(Contents.ChangeFolderContent, GUILayout.Width(200));
 
                         if (changeFolder)
                         {
                             m_LastBuildDataPath = EditorUtility.OpenFolderPanel(Contents.ChoseFolderText,
                                 m_LastBuildDataPath, "");
+
+                            m_ShortenedPath = ShortenPath(m_LastBuildDataPath, GUI.skin.label, k_MaxLabelWidth - 10);
                         }
                     }
 
@@ -140,7 +146,46 @@ namespace Unity.ProjectAuditor.Editor.UI
                 ? Path.GetDirectoryName(buildReport.summary.outputPath)
                 : "";
 
+            m_ShortenedPath = ShortenPath(m_LastBuildDataPath, GUI.skin.label, k_MaxLabelWidth - 10);
+
             m_Initialized = true;
+        }
+
+        public string ShortenPath(string path, GUIStyle style, float maxWidth)
+        {
+            if (style.CalcSize(new GUIContent(path)).x <= maxWidth) return path;
+
+            string[] parts = path.Split('/', '\\');
+            float totalWidth = style.CalcSize(new GUIContent(path)).x;
+            float ellipsisWidth = style.CalcSize(new GUIContent("...")).x;
+
+            if ((totalWidth - parts.Length + 1 + ellipsisWidth) <= maxWidth) return path;
+
+            int middleIndex = parts.Length / 2;
+
+            // Keep removing folders from the middle, then continue to the left, until the path is short enough
+            while (totalWidth > maxWidth && middleIndex > 0)
+            {
+                if (parts[middleIndex] != "...")
+                {
+                    totalWidth = totalWidth - style.CalcSize(new GUIContent(parts[middleIndex])).x + ellipsisWidth;
+                    parts[middleIndex] = "...";
+                }
+                else if (parts[middleIndex - 1] != "...")
+                {
+                    totalWidth -= style.CalcSize(new GUIContent(parts[middleIndex - 1])).x;
+                    parts[middleIndex - 1] = "...";
+                }
+                else if (parts[middleIndex + 1] != "...")
+                {
+                    totalWidth -= style.CalcSize(new GUIContent(parts[middleIndex + 1])).x;
+                    parts[middleIndex + 1] = "...";
+                }
+
+                middleIndex--;
+            }
+
+            return string.Join("/", parts);
         }
     }
 }
