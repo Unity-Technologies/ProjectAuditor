@@ -907,8 +907,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 ShowFilters = true,
                 DependencyViewGuiContent = new GUIContent("Build Data Diagnostics"),
                 AnalyticsEventId = (int)AnalyticsReporter.UIButton.BuildDataDiagnostics,
-                Type = typeof(BuildDataView),
-                HideViewSelection = true
+                Type = typeof(BuildDataView)
             });
 
             ViewDescriptor.Register(new ViewDescriptor
@@ -932,7 +931,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 ShowFilters = false,
                 ShowInfoPanel = false,
                 Type = typeof(BuildDataAnalyzeView),
-                AnalyticsEventId = (int)AnalyticsReporter.UIButton.BuildDataAnalyze
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.BuildDataAnalyze,
+                HideViewSelection = true
             });
         }
 
@@ -1488,7 +1488,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 GUILayout.Label(activeView.Description, GUILayout.MinWidth(360), GUILayout.ExpandWidth(true));
 
-                if (activeView.Desc.HideViewSelection)
+                if (!activeView.Desc.HideViewSelection)
                     DrawViewSelection();
 
                 GUILayout.FlexibleSpace();
