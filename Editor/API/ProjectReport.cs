@@ -228,12 +228,12 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Get total number of issues for a specific IssueCategory.
         /// </summary>
-        /// <param name="Category"> Desired IssueCategory</param>
+        /// <param name="category"> Desired IssueCategory</param>
         /// <returns> Number of project issues</returns>
-        public int GetNumIssues(IssueCategory Category)
+        public int GetNumIssues(IssueCategory category)
         {
             s_Mutex.WaitOne();
-            var result = m_Issues.Count(i => i.Category == Category);
+            var result = m_Issues.Count(i => i.Category == category);
             s_Mutex.ReleaseMutex();
             return result;
         }
@@ -241,12 +241,12 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// find all issues for a specific IssueCategory.
         /// </summary>
-        /// <param name="Category"> Desired IssueCategory</param>
+        /// <param name="category"> Desired IssueCategory</param>
         /// <returns> Array of project issues</returns>
-        public IReadOnlyCollection<ProjectIssue> FindByCategory(IssueCategory Category)
+        public IReadOnlyCollection<ProjectIssue> FindByCategory(IssueCategory category)
         {
             s_Mutex.WaitOne();
-            var result = m_Issues.Where(i => i.Category == Category).ToArray();
+            var result = m_Issues.Where(i => i.Category == category).ToArray();
             s_Mutex.ReleaseMutex();
             return result;
         }
