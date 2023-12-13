@@ -662,12 +662,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 "csv");
             if (path.Length != 0)
             {
-                using (var exporter = new CsvExporter(path, m_Layout))
+                using (var exporter = new CsvExporter(m_ViewManager.Report))
                 {
-                    exporter.WriteHeader();
-
-                    var matchingIssues = m_Issues.Where(issue => predicate == null || predicate(issue));
-                    exporter.WriteIssues(matchingIssues.ToArray());
+                    exporter.Export(path, m_Layout.Category, predicate);
                 }
 
                 EditorUtility.RevealInFinder(path);

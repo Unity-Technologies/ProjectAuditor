@@ -238,6 +238,11 @@ namespace Unity.ProjectAuditor.Editor
             return result;
         }
 
+        internal IssueLayout GetLayout(IssueCategory category)
+        {
+            return m_ModuleInfos.SelectMany(m => m.layouts).FirstOrDefault(l => l.Category == category);
+        }
+
         /// <summary>
         /// find all issues for a specific IssueCategory.
         /// </summary>
@@ -317,31 +322,6 @@ namespace Unity.ProjectAuditor.Editor
             {
                 ObjectCreationHandling = ObjectCreationHandling.Replace
             });
-        }
-
-        // stephenm TODO: I'm keeping these specialist export methods internal for now. I don't know if they should be accessible/included in PA 1.0,
-        // and if they should, it means also exposing IssueLayout and the data types it uses, which opens a whole can of worms.
-        internal void ExportToCsv(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
-        {
-            var issues = m_Issues.Where(i => i.Category == layout.Category && (predicate == null || predicate(i))).ToArray();
-            using (var exporter = new CsvExporter(path, layout))
-            {
-                exporter.WriteHeader();
-                exporter.WriteIssues(issues);
-            }
-        }
-
-        // stephenm TODO: I'm keeping these specialist export methods internal for now. I don't know if they should be accessible/included in PA 1.0,
-        // and if they should, it means also exposing IssueLayout and the data types it uses, which opens a whole can of worms.
-        internal void ExportToHtml(string path, IssueLayout layout, Func<ProjectIssue, bool> predicate = null)
-        {
-            var issues = m_Issues.Where(i => i.Category == layout.Category && (predicate == null || predicate(i))).ToArray();
-            using (var exporter = new HtmlExporter(path, layout))
-            {
-                exporter.WriteHeader();
-                exporter.WriteIssues(issues);
-                exporter.WriteFooter();
-            }
         }
 
         // Internal only: Data written by ProjectAuditor during analysis
