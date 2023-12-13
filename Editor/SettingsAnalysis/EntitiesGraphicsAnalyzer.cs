@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
-using UnityEditor;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
-using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
@@ -13,8 +10,6 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
     {
         internal const string PAS1000 = nameof(PAS1000);
         internal const string PAS1013 = nameof(PAS1013);
-
-        static BuildTarget s_Platform = BuildTarget.NoTarget;
 
         // Legacy: The Hybrid Renderer was replaced by Entities Graphics when Entities 0.51 was released in mid-2022.
         static readonly Descriptor k_HybridDescriptor = new Descriptor(
@@ -26,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
             fixer = (issue, analysisParams) =>
             {
-                PlayerSettingsUtil.SetStaticBatchingEnabled(s_Platform, false);
+                PlayerSettingsUtil.SetStaticBatchingEnabled(analysisParams.Platform, false);
             }
         };
 
@@ -39,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
             fixer = (issue, analysisParams) =>
             {
-                PlayerSettingsUtil.SetStaticBatchingEnabled(s_Platform, false);
+                PlayerSettingsUtil.SetStaticBatchingEnabled(analysisParams.Platform, false);
             }
         };
 
@@ -51,8 +46,6 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
         {
-            s_Platform = context.Params.Platform;
-
 #if PACKAGE_ENTITIES_GRAPHICS
             if (PlayerSettingsUtil.IsStaticBatchingEnabled(context.Params.Platform))
             {
