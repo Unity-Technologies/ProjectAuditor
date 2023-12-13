@@ -28,6 +28,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public Action<Location> OnOpenIssue;
         public Action<Descriptor> OnOpenManual;
         public int AnalyticsEventId;
+        public bool HideViewSelection;
 
         static readonly Dictionary<int, ViewDescriptor> s_ViewDescriptorsRegistry = new Dictionary<int, ViewDescriptor>();
 

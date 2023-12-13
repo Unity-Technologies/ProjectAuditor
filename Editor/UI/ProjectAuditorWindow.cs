@@ -5,6 +5,7 @@ using System.Linq;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
+using Unity.ProjectAuditor.Editor.BuildData;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
@@ -177,9 +178,17 @@ namespace Unity.ProjectAuditor.Editor.UI
         };
 
         AnalysisView activeView => m_ViewManager.GetActiveView();
+        internal BuildTarget Platform => m_Platform;
 
         [SerializeField] int m_ActiveTabIndex = 0;
         int m_TabButtonControlID;
+
+        BuildObjects m_BuildObjects;
+
+        internal BuildObjects BuildObjects
+        {
+            set => m_BuildObjects = value;
+        }
 
         public bool Match(ProjectIssue issue)
         {
@@ -341,6 +350,15 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             InitializeTabs(!initialize);
 
+            for (int i = 0; i < m_ViewManager.NumViews; ++i)
+            {
+                if (m_ViewManager.GetView(i) is BuildDataAnalyzeView view)
+                {
+                    view.ProjectAuditorWindow = this;
+                    break;
+                }
+            }
+
             Profiler.EndSample();
         }
 
@@ -430,6 +448,15 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 if (IsAnalysisValid())
                 {
+                    // Set Build Data tab to first view once build data data exists
+                    if (m_Tabs[m_ActiveTabIndex].id == TabId.BuildData && activeView is BuildDataAnalyzeView)
+                    {
+                        if (m_ProjectReport.HasCategory(IssueCategory.BuildDataSummary))
+                        {
+                            m_ViewManager.ChangeView(m_Tabs[m_ActiveTabIndex].availableCategories[0]);
+                        }
+                    }
+
                     DrawPanels();
 
                     if (m_ViewManager.GetActiveView().Desc.Category != IssueCategory.Metadata)
@@ -881,6 +908,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 DependencyViewGuiContent = new GUIContent("Build Data Diagnostics"),
                 AnalyticsEventId = (int)AnalyticsReporter.UIButton.BuildDataDiagnostics,
                 Type = typeof(BuildDataView),
+                HideViewSelection = true
             });
 
             ViewDescriptor.Register(new ViewDescriptor
@@ -893,6 +921,18 @@ namespace Unity.ProjectAuditor.Editor.UI
                 ShowInfoPanel = true,
                 Type = typeof(BuildDataShaderVariantsView),
                 AnalyticsEventId = (int)AnalyticsReporter.UIButton.BuildDataShaderVariants
+            });
+
+            ViewDescriptor.Register(new ViewDescriptor
+            {
+                Category = IssueCategory.BuildDataAnalyze,
+                DisplayName = "Analyze Build Data",
+                MenuOrder = 3,
+                MenuLabel = "BuildData/Analyze",
+                ShowFilters = false,
+                ShowInfoPanel = false,
+                Type = typeof(BuildDataAnalyzeView),
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.BuildDataAnalyze
             });
         }
 
@@ -960,7 +1000,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             GUIUtility.ExitGUI();
         }
 
-        void AuditCategories(IssueCategory[] categories)
+        internal void AuditCategories(IssueCategory[] categories)
         {
             // a module might report more categories than requested so we need to make sure we clean up the views accordingly
             var modules = categories.SelectMany(m_ProjectAuditor.GetModules).ToArray();
@@ -1000,7 +1040,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     m_ShouldRefresh = true;
                     m_AnalysisState = AnalysisState.Completed;
-                }
+                },
+                BuildObjects = m_BuildObjects
             };
 
             m_ProjectAuditor.Audit(analysisParams, new ProgressBar());
@@ -1088,6 +1129,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                 var categories = GetTabCategories(tab);
                 allTabCategories.AddRange(categories);
             }
+
+            allTabCategories.Add(IssueCategory.BuildDataAnalyze);
 
             return allTabCategories.Distinct().ToArray();
         }
@@ -1444,7 +1487,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             using (new GUILayout.HorizontalScope(GUI.skin.box))
             {
                 GUILayout.Label(activeView.Description, GUILayout.MinWidth(360), GUILayout.ExpandWidth(true));
-                DrawViewSelection();
+
+                if (activeView.Desc.HideViewSelection)
+                    DrawViewSelection();
 
                 GUILayout.FlexibleSpace();
             }
@@ -1639,7 +1684,13 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                         if (!hasAnyCategories)
                         {
-                            tabToAudit = i;
+                            if (tab.id == TabId.BuildData)
+                            {
+                                m_ViewManager.ChangeView(IssueCategory.BuildDataAnalyze);
+                                m_ActiveTabIndex = i;
+                            }
+                            else
+                                tabToAudit = i;
                         }
                         else
                         {

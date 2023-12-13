@@ -51,6 +51,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
+        static readonly IssueLayout k_AnalyzeViewLayout = new IssueLayout
+        {
+            Category = IssueCategory.BuildDataAnalyze,
+            Properties = new PropertyDefinition[]
+            {
+                new PropertyDefinition { Type = PropertyType.Description, Format = PropertyFormat.String, Name = "Unused", LongName = "Unused" }
+            }
+        };
+
         internal const string PBD0000 = nameof(PBD0000);
 
         internal static readonly Descriptor k_DuplicateDiagnosticDescriptor = new Descriptor(
@@ -69,7 +78,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_SummaryLayout,
-            k_DiagnosticIssueLayout
+            k_DiagnosticIssueLayout,
+            k_AnalyzeViewLayout
         };
 
         class SerializedObjectInfo
@@ -94,9 +104,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         }
 
-        Dictionary<string, SerializedObjectInfo> m_SerializedObjectInfos = new Dictionary<string, SerializedObjectInfo>();
-        Dictionary<SerializedObjectKey, List<SerializedObject>> m_PotentialDuplicates = new Dictionary<SerializedObjectKey, List<SerializedObject>>();
-
         SimpleDependencyNode k_CycleNode = new SimpleDependencyNode("(cycle)");
 
         public override void Initialize()
@@ -120,6 +127,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 List<List<SerializedObject>> duplicatesList = new List<List<SerializedObject>>();
 
+                var serializedObjectInfos = new Dictionary<string, SerializedObjectInfo>();
+                var potentialDuplicates = new Dictionary<SerializedObjectKey, List<SerializedObject>>();
+
                 progress?.Start($"Summarizing {objects.Count} objects from Build Data", "Search in Progress...", objects.Count);
 
                 foreach (var obj in objects)
@@ -138,19 +148,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     });
                     issues.Add(issue);
 
-                    if (m_SerializedObjectInfos.TryGetValue(obj.Type, out var info))
+                    if (serializedObjectInfos.TryGetValue(obj.Type, out var info))
                     {
                         info.Count++;
                         info.Size += size;
                     }
                     else
                     {
-                        m_SerializedObjectInfos.Add(obj.Type, new SerializedObjectInfo { Count = 1, Size = size });
+                        serializedObjectInfos.Add(obj.Type, new SerializedObjectInfo { Count = 1, Size = size });
                     }
 
                     SerializedObjectKey key = new SerializedObjectKey(obj.Name, obj.Type, obj.Size, obj.Crc32);
 
-                    if (m_PotentialDuplicates.TryGetValue(key, out var objList))
+                    if (potentialDuplicates.TryGetValue(key, out var objList))
                     {
                         objList.Add(obj);
 
@@ -161,7 +171,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     {
                         var newList = new List<SerializedObject>(1);
                         newList.Add(obj);
-                        m_PotentialDuplicates.Add(key, newList);
+                        potentialDuplicates.Add(key, newList);
                     }
 
                     progress?.Advance();

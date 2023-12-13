@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading;
-using Unity.ProjectAuditor.Editor.Build;
 using Unity.ProjectAuditor.Editor.BuildData;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.UnityFileSystemApi;
 using Unity.ProjectAuditor.Editor.Utils; // Required for TypeCache in Unity 2018
 using UnityEditor;
 using Debug = UnityEngine.Debug;
@@ -68,16 +65,6 @@ namespace Unity.ProjectAuditor.Editor
         static readonly Dictionary<string, IssueCategory> s_CustomCategories = new Dictionary<string, IssueCategory>();
 
         readonly List<Module> m_Modules = new List<Module>();
-
-        string m_LastBuildDataPath;
-        Analyzer m_BuildDataAnalyzer;
-
-        internal static readonly IssueCategory[] k_BuildDataCategories = new IssueCategory[]
-        {
-            IssueCategory.BuildDataTexture2D, IssueCategory.BuildDataMesh,
-            IssueCategory.BuildDataShader, IssueCategory.BuildDataShaderVariant,
-            IssueCategory.BuildDataAnimationClip, IssueCategory.BuildDataAudioClip, IssueCategory.BuildDataSummary
-        };
 
         /// <summary>
         /// ProjectAuditor default constructor
@@ -167,32 +154,6 @@ namespace Unity.ProjectAuditor.Editor
                 // early out if, for any reason, there are no registered Modules
                 analysisParams.OnCompleted(report);
                 return;
-            }
-
-            var needsBuildData = supportedModules.Any(m => m.Categories.Any(
-                c => k_BuildDataCategories.Contains(c)));
-
-            if (needsBuildData && m_BuildDataAnalyzer == null)
-            {
-                if (string.IsNullOrEmpty(m_LastBuildDataPath))
-                {
-                    var provider = new LastBuildReportProvider();
-                    var buildReport = provider.GetBuildReport(analysisParams.Platform);
-                    var lastBuildFolder = buildReport != null ? Path.GetDirectoryName(buildReport.summary.outputPath) : "";
-                    m_LastBuildDataPath = EditorUtility.OpenFolderPanel("Choose folder with built player data", lastBuildFolder, "");
-                }
-
-                if (!string.IsNullOrEmpty(m_LastBuildDataPath))
-                {
-                    progress?.Start("Scanning Build Data", "In Progress...", 1);
-
-                    UnityFileSystem.Init();
-
-                    m_BuildDataAnalyzer = new Analyzer();
-                    analysisParams.BuildObjects = m_BuildDataAnalyzer.Analyze(m_LastBuildDataPath, "*");
-
-                    progress?.Clear();
-                }
             }
 
             var logTimingsInfo = UserPreferences.LogTimingsInfo;

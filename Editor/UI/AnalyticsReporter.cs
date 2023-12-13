@@ -78,6 +78,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             BuildDataSummary,
             BuildDataDiagnostics,
             BuildDataShaderVariants,
+            BuildDataAnalyze,
 
             // Build report
             BuildFiles,
