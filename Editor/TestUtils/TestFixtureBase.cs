@@ -248,7 +248,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
             postBuildAction?.Invoke();
 
-            Assert.True(buildReport.summary.result == BuildResult.Succeeded);
+            Assert.True(buildReport.summary.result == BuildResult.Succeeded, "Build failed. Check the console for details.");
         }
 
         protected void CleanupBuild()
