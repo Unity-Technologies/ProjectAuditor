@@ -37,7 +37,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                                         subprog.Api.ToString(),
                                         subprog.HwTier.ToString(),
                                         program.Key, // Stage
-                                        "TODO-PassType",
                                         string.IsNullOrEmpty(pass.Name) ? "Pass " + passCount.ToString() : pass.Name,
                                         keywordString,
                                         context.Shader.BuildFile.DisplayName,
