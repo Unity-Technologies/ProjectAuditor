@@ -76,6 +76,12 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
+        /// Checks whether the location is valid
+        /// </summary>
+        /// <value>True if the location is valid</value>
+        public bool IsValid => !string.IsNullOrEmpty(m_Path);
+
+        /// <summary>
         /// Line number
         /// </summary>
         [JsonProperty("line", DefaultValueHandling = DefaultValueHandling.Ignore)]
@@ -131,15 +137,6 @@ namespace Unity.ProjectAuditor.Editor
         {
             m_Path = path;
             m_Line = line;
-        }
-
-        /// <summary>
-        /// Checks whether the location is valid
-        /// </summary>
-        /// <returns>True if the location is valid</returns>
-        public bool IsValid()
-        {
-            return !string.IsNullOrEmpty(m_Path);
         }
 
         string GetFormattedPath(string path)

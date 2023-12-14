@@ -468,7 +468,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 return;
 
             var issue = tableItem.ProjectIssue;
-            if (issue != null && issue.Location != null && issue.Location.IsValid())
+            if (issue != null && issue.Location != null && issue.Location.IsValid)
             {
                 m_Desc.OnOpenIssue(issue.Location);
             }

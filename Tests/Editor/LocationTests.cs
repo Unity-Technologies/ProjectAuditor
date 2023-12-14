@@ -22,7 +22,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void Location_AssetPath_IsValid()
         {
             var location = new Location("some/path/texture.png");
-            Assert.IsTrue(location.IsValid());
+            Assert.IsTrue(location.IsValid);
             Assert.AreEqual("texture.png", location.Filename);
             Assert.AreEqual("texture.png", location.FormattedFilename);
             Assert.AreEqual("some/path/texture.png", location.Path);
@@ -36,7 +36,7 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             const int lineNumber = 6;
             var location = new Location("some/path/script.cs", lineNumber);
-            Assert.IsTrue(location.IsValid());
+            Assert.IsTrue(location.IsValid);
             Assert.AreEqual("script.cs:6", location.FormattedFilename);
             Assert.AreEqual("some/path/script.cs:6", location.FormattedPath);
             Assert.AreEqual("some/path/script.cs", location.Path);
@@ -48,7 +48,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void Location_SettingPath_IsValid()
         {
             var location = new Location("Project/Player");
-            Assert.IsTrue(location.IsValid());
+            Assert.IsTrue(location.IsValid);
             Assert.AreEqual("Project/Player", location.Path);
         }
 
