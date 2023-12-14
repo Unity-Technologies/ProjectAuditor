@@ -37,7 +37,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             View,
             WhiteCheckMark,
             GreenCheckMark,
-            CopyToClipboard
+            CopyToClipboard,
+
+            LoadFolder,
+            Add,
+            Remove,
         }
 
         // Log level
@@ -69,6 +73,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static readonly string k_HiddenIgnoredIssuesIconName = "animationvisibilitytoggleoff";
         static readonly string k_IgnoredIssuesLabel = " Ignored Issues";
         static readonly string k_CopyToClipboardIconName = "CopyToClipboard";
+        static readonly string k_LoadFolderIconName = "Icon-Load-Folder";
+        static readonly string k_AddIconName = "Icon-Add";
+        static readonly string k_RemoveIconName = "Icon-Remove";
 
         static Texture2D s_CriticalIcon;
         static Texture2D s_MajorIcon;
@@ -76,6 +83,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static Texture2D s_CopyToClipboardIcon;
 
         static Texture2D s_MinorIcon;
+
+        static Texture2D s_LoadFolderIcon;
+        static Texture2D s_AddIcon;
+        static Texture2D s_RemoveIcon;
 
         static GUIContent[] s_StatusWheel;
 
@@ -258,6 +269,19 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     if (s_CopyToClipboardIcon == null)
                         s_CopyToClipboardIcon = LoadIcon(k_CopyToClipboardIconName);
                     return EditorGUIUtility.TrIconContent(s_CopyToClipboardIcon, tooltip);
+
+                case IconType.LoadFolder:
+                    if (s_LoadFolderIcon == null)
+                        s_LoadFolderIcon = LoadIcon(k_LoadFolderIconName);
+                    return EditorGUIUtility.TrIconContent(s_LoadFolderIcon, tooltip);
+                case IconType.Add:
+                    if (s_AddIcon == null)
+                        s_AddIcon = LoadIcon(k_AddIconName);
+                    return EditorGUIUtility.TrIconContent(s_AddIcon, tooltip);
+                case IconType.Remove:
+                    if (s_RemoveIcon == null)
+                        s_RemoveIcon = LoadIcon(k_RemoveIconName);
+                    return EditorGUIUtility.TrIconContent(s_RemoveIcon, tooltip);
 
                 case IconType.Hierarchy:
                     return EditorGUIUtility.TrIconContent(k_HierarchyIconName, tooltip);

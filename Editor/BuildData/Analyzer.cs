@@ -3,6 +3,12 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Unity.ProjectAuditor.Editor.BuildData.SerializedObjects;
 using Unity.ProjectAuditor.Editor.UnityFileSystemApi;
+using UnityEngine;
+using AnimationClip = Unity.ProjectAuditor.Editor.BuildData.SerializedObjects.AnimationClip;
+using AudioClip = Unity.ProjectAuditor.Editor.BuildData.SerializedObjects.AudioClip;
+using Mesh = Unity.ProjectAuditor.Editor.BuildData.SerializedObjects.Mesh;
+using Shader = Unity.ProjectAuditor.Editor.BuildData.SerializedObjects.Shader;
+using Texture2D = Unity.ProjectAuditor.Editor.BuildData.SerializedObjects.Texture2D;
 
 namespace Unity.ProjectAuditor.Editor.BuildData
 {
@@ -10,11 +16,13 @@ namespace Unity.ProjectAuditor.Editor.BuildData
     {
         PPtrResolver m_PPtrResolver = new PPtrResolver();
         Regex m_RegexSceneFile = new Regex(@"BuildPlayer-([^\.]+)(?:\.sharedAssets)?");
+        bool m_AnyDuplicateObjects;
 
         public BuildObjects Analyze(string path, string searchPattern, BuildObjects buildObjects)
         {
             var files = Directory.GetFiles(path, searchPattern, SearchOption.AllDirectories);
             int lastLength = 0;
+            m_AnyDuplicateObjects = false;
 
             BuildFileInfo.BaseFolder = path;
 
@@ -114,7 +122,24 @@ namespace Unity.ProjectAuditor.Editor.BuildData
 
                 var serializedObject = ReadSerializedObject(obj, fileInfo, typeTreeReader, crc32);
 
-                buildObjects.AddObject(serializedObject);
+                try
+                {
+                    buildObjects.AddObject(serializedObject);
+                }
+                catch (ArgumentException e)
+                {
+                    // TODO: report once per Analyze call what specific path probably contains duplicate data
+                    if (e.Message.Contains("An item with the same key has already been added."))
+                    {
+                        if (m_AnyDuplicateObjects == false)
+                        {
+                            Debug.LogWarning("BuildData.Analyzer.Analyze: At least one built object was scanned twice. There are potential duplicate folders/asset bundles in provided path(s).");
+                            m_AnyDuplicateObjects = true;
+                        }
+                    }
+                    else
+                        throw;
+                }
             }
 
             m_PPtrResolver.EndSerializedFile();

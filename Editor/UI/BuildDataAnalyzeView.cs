@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor.Build;
@@ -22,21 +23,20 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         static internal class Contents
         {
-            public static GUIContent BuildDataFolderContent = new GUIContent("Build Data Folder:");
+            public static string BuildDataFolderText = "Build Data Folders";
             public static GUIContent StartAnalysisButtonContent = new GUIContent("Start Build Data Analysis");
-            public static GUIContent ChangeFolderContent = new GUIContent("Change Build Data Folder");
             public static GUIContent SettingsContent = new GUIContent("Settings");
             public static string ChoseFolderText = "Choose folder with built player data";
             public static string InfoText = "Analyze Build Data now? Check the Settings below before starting the analysis.";
         }
 
-        const int k_MaxLabelWidth = 500;
-
-        string m_LastBuildDataPath;
-        string m_ShortenedPath;
+        const int k_MaxLabelWidth = 600;
 
         Analyzer m_BuildDataAnalyzer;
         ProjectAuditorWindow m_ProjectAuditorWindow;
+
+        FolderList m_FolderList;
+        List<string> m_Folders = new List<string>();
 
         bool m_Initialized;
 
@@ -72,7 +72,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     {
                         GUILayout.Space(10);
 
-                        GUI.enabled = !string.IsNullOrEmpty(m_LastBuildDataPath);
+                        GUI.enabled = m_Folders.Count > 0;
                         bool doRun = GUILayout.Button(Contents.StartAnalysisButtonContent, GUILayout.Width(200));
                         GUI.enabled = true;
 
@@ -85,7 +85,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                             UnityFileSystem.Init();
 
                             m_BuildDataAnalyzer = new Analyzer();
-                            m_BuildDataAnalyzer.Analyze(m_LastBuildDataPath, "*", m_ProjectAuditorWindow.BuildObjects);
+                            foreach (var f in m_Folders)
+                            {
+                                Debug.Log("Scanning folder: " + f);
+                                m_BuildDataAnalyzer.Analyze(f, "*", m_ProjectAuditorWindow.BuildObjects);
+                            }
+
                             m_BuildDataAnalyzer.Cleanup();
 
                             progress.Start("Starting Build Data Analysis", "In Progress...", 0);
@@ -109,19 +114,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                     {
                         EditorGUILayout.LabelField(Contents.SettingsContent, SharedStyles.BoldLabel);
 
-                        GUILayout.Space(5);
+                        GUILayout.Space(10);
 
-                        EditorGUILayout.LabelField(Contents.BuildDataFolderContent, SharedStyles.BoldLabel);
-                        EditorGUILayout.LabelField(new GUIContent(m_ShortenedPath, m_LastBuildDataPath));
-                        var changeFolder = GUILayout.Button(Contents.ChangeFolderContent, GUILayout.Width(200));
-
-                        if (changeFolder)
-                        {
-                            m_LastBuildDataPath = EditorUtility.OpenFolderPanel(Contents.ChoseFolderText,
-                                m_LastBuildDataPath, "");
-
-                            m_ShortenedPath = ShortenPath(m_LastBuildDataPath, GUI.skin.label, k_MaxLabelWidth - 10);
-                        }
+                        m_FolderList.Draw(OnFolderListChanged);
                     }
 
                     GUILayout.FlexibleSpace();
@@ -130,6 +125,19 @@ namespace Unity.ProjectAuditor.Editor.UI
                 GUILayout.Space(20);
 
                 GUILayout.FlexibleSpace();
+            }
+        }
+
+        private void OnFolderListChanged()
+        {
+            var folders = m_FolderList.Folders;
+            m_Folders.Clear();
+            foreach (var f in folders)
+            {
+                if (f.m_Status == FolderList.Folder.FolderStatus.IsValidFolder)
+                {
+                    m_Folders.Add(f.FullPathString);
+                }
             }
         }
 
@@ -143,11 +151,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             var provider = new LastBuildReportProvider();
             var buildReport = provider.GetBuildReport(m_ProjectAuditorWindow.Platform);
-            m_LastBuildDataPath = buildReport != null
+            var lastBuildDataPath = buildReport != null
                 ? Path.GetDirectoryName(buildReport.summary.outputPath)
                 : "";
 
-            m_ShortenedPath = ShortenPath(m_LastBuildDataPath, GUI.skin.label, k_MaxLabelWidth - 10);
+            m_FolderList = new FolderList(m_ProjectAuditorWindow, Contents.BuildDataFolderText);
+            m_FolderList.AddFolder(lastBuildDataPath);
+
+            OnFolderListChanged();
 
             m_Initialized = true;
         }
