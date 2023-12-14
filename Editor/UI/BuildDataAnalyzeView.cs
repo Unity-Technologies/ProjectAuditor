@@ -85,7 +85,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                             UnityFileSystem.Init();
 
                             m_BuildDataAnalyzer = new Analyzer();
-                            m_ProjectAuditorWindow.BuildObjects = m_BuildDataAnalyzer.Analyze(m_LastBuildDataPath, "*");
+                            m_BuildDataAnalyzer.Analyze(m_LastBuildDataPath, "*", m_ProjectAuditorWindow.BuildObjects);
+                            m_BuildDataAnalyzer.Cleanup();
 
                             progress.Start("Starting Build Data Analysis", "In Progress...", 0);
 

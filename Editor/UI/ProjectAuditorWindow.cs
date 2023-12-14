@@ -183,12 +183,9 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] int m_ActiveTabIndex = 0;
         int m_TabButtonControlID;
 
-        BuildObjects m_BuildObjects;
+        BuildObjects m_BuildObjects = new BuildObjects();
 
-        internal BuildObjects BuildObjects
-        {
-            set => m_BuildObjects = value;
-        }
+        internal BuildObjects BuildObjects => m_BuildObjects;
 
         public bool Match(ProjectIssue issue)
         {

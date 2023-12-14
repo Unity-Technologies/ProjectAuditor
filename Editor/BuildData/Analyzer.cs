@@ -11,15 +11,12 @@ namespace Unity.ProjectAuditor.Editor.BuildData
         PPtrResolver m_PPtrResolver = new PPtrResolver();
         Regex m_RegexSceneFile = new Regex(@"BuildPlayer-([^\.]+)(?:\.sharedAssets)?");
 
-        public BuildObjects Analyze(string path, string searchPattern)
+        public BuildObjects Analyze(string path, string searchPattern, BuildObjects buildObjects)
         {
-            var buildObjects = new BuildObjects();
             var files = Directory.GetFiles(path, searchPattern, SearchOption.AllDirectories);
             int lastLength = 0;
 
             BuildFileInfo.BaseFolder = path;
-
-            m_PPtrResolver.Reset();
 
             foreach (var file in files)
             {
@@ -68,9 +65,14 @@ namespace Unity.ProjectAuditor.Editor.BuildData
                 }
             }
 
-            UnityFileReader.ClearBufferPool();
-
             return buildObjects;
+        }
+
+        public void Cleanup()
+        {
+            m_PPtrResolver.Reset();
+
+            UnityFileReader.ClearBufferPool();
         }
 
         void AnalyzeSerializedFile(BuildFileInfo fileInfo, BuildObjects buildObjects)
