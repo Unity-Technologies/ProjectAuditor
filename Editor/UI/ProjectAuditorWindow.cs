@@ -987,7 +987,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         IssueCategory[] GetTabCategories(Tab tab)
         {
-            if (tab.allCategories != null)
+            if (tab.allCategories != null && tab.allCategories.Length > 0)
                 return tab.allCategories;
 
             if (tab.modules != null && tab.modules.Length > 0)
