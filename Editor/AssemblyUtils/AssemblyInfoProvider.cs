@@ -82,6 +82,12 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                 IsPackageReadOnly = false
             };
 
+            if (assemblyInfo.Name.Equals(AssemblyInfo.DefaultAssemblyName))
+            {
+                assemblyInfo.AsmDefPath = "Built-in";
+                return assemblyInfo;
+            }
+
             var asmDefPath = CompilationPipeline.GetAssemblyDefinitionFilePathFromAssemblyName(assemblyInfo.Name);
             if (asmDefPath != null)
             {
@@ -103,10 +109,6 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                     // non-package user-defined assembly
                     return assemblyInfo;
                 }
-            }
-            else if (assemblyInfo.Name.Equals(AssemblyInfo.DefaultAssemblyName))
-            {
-                assemblyInfo.AsmDefPath = "Built-in";
             }
             else
             {
