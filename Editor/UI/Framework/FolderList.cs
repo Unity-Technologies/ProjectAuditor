@@ -259,14 +259,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             public void SelectionPopup(Action onChangedCallback)
             {
-                if (FullPathString.Contains("*"))
-                {
-                    FullPathString = FullPathString.Substring(0, FullPathString.IndexOf('*'));
-                }
-                if (string.IsNullOrEmpty(FullPathString) || FullPathString.Equals("/"))
-                {
-                    FullPathString = ".";
-                }
                 var absolutePath = Path.GetFullPath(FullPathString);
                 var folder = EditorUtility.OpenFolderPanel("Filter path", absolutePath, "");
 
@@ -281,37 +273,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             private void SetPath(string folder)
             {
-                var oldPath = FullPathString;
-
                 if (!string.IsNullOrEmpty(folder))
                 {
-                    var projectFullPath = Path.GetFullPath("./");
-                    if (projectFullPath[projectFullPath.Length - 1] == '\\')
-                    {
-                        // kill the trailing backslash, the folder path doesnt have it
-                        projectFullPath = projectFullPath.Substring(0, projectFullPath.Length - 1);
-                    }
-                    var folderFullPath = Path.GetFullPath(folder);
-
-                    // TODO-borisb: For now keep absolute paths
-                    FullPathString = folderFullPath; //.Replace(projectFullPath, "").Replace('\\', '/');
-                }
-                if (FullPathString.Equals("."))
-                {
-                    FullPathString = "*";
-                }
-                else
-                {
-                    // there is a subtle behavior difference between 'Assets/FolderName' and 'Assets/FolderName/*'
-                    // the former will match anything with the name 'Assets/FolderName' while the latter will only match anything inside that folder
-                    // while a rare case, better to be explicit
-
-                    // TODO-borisb: For now don't add a trailing slash
-                    // if (FullPathString.Length != 0 && FullPathString[FullPathString.Length - 1] != '/')
-                    // {
-                    //     FullPathString += '/';
-                    // }
-                    // FullPathString += '*';
+                    FullPathString = Path.GetFullPath(folder);
                 }
 
                 ValidateCurrentPath();
