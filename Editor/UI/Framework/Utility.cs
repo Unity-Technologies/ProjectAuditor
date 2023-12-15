@@ -462,5 +462,42 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             return width;
         }
+
+        public static string ShortenPathToWidth(string path, GUIStyle style, float maxWidth)
+        {
+            if (style.CalcSize(new GUIContent(path)).x <= maxWidth) return path;
+
+            string[] parts = path.Split('/', '\\');
+            float totalWidth = style.CalcSize(new GUIContent(path)).x;
+            float ellipsisWidth = style.CalcSize(new GUIContent("...")).x;
+
+            if ((totalWidth - parts.Length + 1 + ellipsisWidth) <= maxWidth) return path;
+
+            int middleIndex = parts.Length / 2;
+
+            // Keep removing folders from the middle, then continue to the left, until the path is short enough
+            while (totalWidth > maxWidth && middleIndex > 0)
+            {
+                if (parts[middleIndex] != "...")
+                {
+                    totalWidth = totalWidth - style.CalcSize(new GUIContent(parts[middleIndex])).x + ellipsisWidth;
+                    parts[middleIndex] = "...";
+                }
+                else if (parts[middleIndex - 1] != "...")
+                {
+                    totalWidth -= style.CalcSize(new GUIContent(parts[middleIndex - 1])).x;
+                    parts[middleIndex - 1] = "...";
+                }
+                else if (parts[middleIndex + 1] != "...")
+                {
+                    totalWidth -= style.CalcSize(new GUIContent(parts[middleIndex + 1])).x;
+                    parts[middleIndex + 1] = "...";
+                }
+
+                middleIndex--;
+            }
+
+            return string.Join("/", parts);
+        }
     }
 }

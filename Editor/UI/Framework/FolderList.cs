@@ -53,13 +53,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_IncludeList.Add(new Folder(fullPath));
         }
 
-        public void Draw(Action changeCallback)
+        public void Draw(Action changeCallback, bool drawEditableFolder)
         {
             m_OnChangedCallback = changeCallback;
 
             if (m_IncludeReorderableList == null)
             {
-                m_IncludeReorderableList = SetupReorderableList(m_TitleLabel, m_IncludeList, m_ToRemoveFromInclude, DrawElement);
+                m_IncludeReorderableList = SetupReorderableList(m_TitleLabel, m_IncludeList, m_ToRemoveFromInclude, (list, toRemoveList, fullRect, index) => DrawElement(list, toRemoveList, fullRect, index, drawEditableFolder));
             }
 
             EditorGUILayout.BeginHorizontal();
@@ -127,7 +127,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return newList;
         }
 
-        void DrawElement(List<Folder> list, List<Folder> toRemoveList, Rect fullRect, int index)
+        void DrawElement(List<Folder> list, List<Folder> toRemoveList, Rect fullRect, int index,
+            bool showEditableFolder)
         {
             fullRect.height = k_ElementHeight;
 
@@ -160,7 +161,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             if (list.Count != 0)
             {
                 element = list[index];
-                element.Draw(filterPathRect, m_OnChangedCallback);
+                element.Draw(filterPathRect, m_OnChangedCallback, showEditableFolder);
             }
             else
             {
@@ -232,7 +233,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 SetPath(defaultPath);
             }
 
-            public void Draw(Rect rect, Action changedCallback)
+            public void Draw(Rect rect, Action changedCallback, bool showEditableFolder)
             {
                 if (m_ControlName == null)
                 {
@@ -240,11 +241,19 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
                 // TODO: tokenized stuffs here
                 GUI.SetNextControlName(m_ControlName);
-                var newPath = EditorGUI.TextField(rect, FullPathString);
-                if (newPath != FullPathString)
+
+                if (showEditableFolder)
                 {
-                    SetPath(newPath);
-                    changedCallback?.Invoke();
+                    var newPath = EditorGUI.TextField(rect, FullPathString);
+                    if (newPath != FullPathString)
+                    {
+                        SetPath(newPath);
+                        changedCallback?.Invoke();
+                    }
+                }
+                else
+                {
+                    EditorGUI.LabelField(rect, Utility.ShortenPathToWidth(FullPathString, GUI.skin.label, rect.width));
                 }
             }
 

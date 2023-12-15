@@ -14,14 +14,14 @@ namespace Unity.ProjectAuditor.Editor.UI
     {
         public override string Description => "Build Data Analysis";
 
-        internal static readonly IssueCategory[] k_BuildDataCategories = new IssueCategory[]
+        static readonly IssueCategory[] k_BuildDataCategories = new IssueCategory[]
         {
             IssueCategory.BuildDataTexture2D, IssueCategory.BuildDataMesh,
             IssueCategory.BuildDataShader, IssueCategory.BuildDataShaderVariant,
             IssueCategory.BuildDataAnimationClip, IssueCategory.BuildDataAudioClip, IssueCategory.BuildDataSummary
         };
 
-        static internal class Contents
+        static class Contents
         {
             public static string BuildDataFolderText = "Build Data Folders";
             public static GUIContent StartAnalysisButtonContent = new GUIContent("Start Build Data Analysis");
@@ -116,7 +116,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                         GUILayout.Space(10);
 
-                        m_FolderList.Draw(OnFolderListChanged);
+                        m_FolderList.Draw(OnFolderListChanged, false);
                     }
 
                     GUILayout.FlexibleSpace();
@@ -128,8 +128,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        private void OnFolderListChanged()
+        void OnFolderListChanged()
         {
+            // Collect only valid folders from folder selection UI
             var folders = m_FolderList.Folders;
             m_Folders.Clear();
             foreach (var f in folders)
@@ -139,9 +140,31 @@ namespace Unity.ProjectAuditor.Editor.UI
                     m_Folders.Add(f.FullPathString);
                 }
             }
+
+            // Remove any folders that are already included by other folders
+            for (int i = 0; i < m_Folders.Count; i++)
+            {
+                for (int j = 0; j < m_Folders.Count; j++)
+                {
+                    if (i != j && IsSubfolder(m_Folders[j], m_Folders[i]))
+                    {
+                        m_Folders.RemoveAt(i);
+                        i--;
+                        break;
+                    }
+                }
+            }
         }
 
-        private void Initialize()
+        bool IsSubfolder(string parentFolderPath, string possibleSubfolderPath)
+        {
+            string fullParentPath = Path.GetFullPath(parentFolderPath);
+            string fullSubfolderPath = Path.GetFullPath(possibleSubfolderPath);
+
+            return fullSubfolderPath.StartsWith(fullParentPath);
+        }
+
+        void Initialize()
         {
             if (m_Initialized)
                 return;
@@ -161,43 +184,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             OnFolderListChanged();
 
             m_Initialized = true;
-        }
-
-        public string ShortenPath(string path, GUIStyle style, float maxWidth)
-        {
-            if (style.CalcSize(new GUIContent(path)).x <= maxWidth) return path;
-
-            string[] parts = path.Split('/', '\\');
-            float totalWidth = style.CalcSize(new GUIContent(path)).x;
-            float ellipsisWidth = style.CalcSize(new GUIContent("...")).x;
-
-            if ((totalWidth - parts.Length + 1 + ellipsisWidth) <= maxWidth) return path;
-
-            int middleIndex = parts.Length / 2;
-
-            // Keep removing folders from the middle, then continue to the left, until the path is short enough
-            while (totalWidth > maxWidth && middleIndex > 0)
-            {
-                if (parts[middleIndex] != "...")
-                {
-                    totalWidth = totalWidth - style.CalcSize(new GUIContent(parts[middleIndex])).x + ellipsisWidth;
-                    parts[middleIndex] = "...";
-                }
-                else if (parts[middleIndex - 1] != "...")
-                {
-                    totalWidth -= style.CalcSize(new GUIContent(parts[middleIndex - 1])).x;
-                    parts[middleIndex - 1] = "...";
-                }
-                else if (parts[middleIndex + 1] != "...")
-                {
-                    totalWidth -= style.CalcSize(new GUIContent(parts[middleIndex + 1])).x;
-                    parts[middleIndex + 1] = "...";
-                }
-
-                middleIndex--;
-            }
-
-            return string.Join("/", parts);
         }
     }
 }
