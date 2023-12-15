@@ -1,6 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
+using System.IO;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
@@ -497,7 +495,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 middleIndex--;
             }
 
-            return string.Join("/", parts);
+            var finalPath = string.Join(Path.DirectorySeparatorChar.ToString(), parts);
+            finalPath = Path.GetFullPath(finalPath);
+            return finalPath;
         }
     }
 }
