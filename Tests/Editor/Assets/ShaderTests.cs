@@ -8,7 +8,7 @@ using UnityEditor.Rendering;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class ShadersAnalysisTests : TestFixtureBase
+    class ShaderTests : TestFixtureBase
     {
         const string k_ShaderName = "Custom/MyTestShader,1"; // comma in the name for testing purposes
 
