@@ -313,10 +313,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     // }
                     // FullPathString += '*';
                 }
-                if (FullPathString.Length != 0 && FullPathString[0] == '/')
-                {
-                    FullPathString = FullPathString.Substring(1);
-                }
 
                 ValidateCurrentPath();
             }
