@@ -118,15 +118,15 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.IsTrue(PackageUtils.IsClientPackage(packageName), $"Package {packageName} is not installed");
         }
 
-        [Test]
-        public void PackageUtils_PackageVersions_AreCompared()
+        [TestCase(-1, "1.0.1", "1.0.2")]
+        [TestCase(0, "1.0.3-pre", "1.0.3")]
+        [TestCase(1, "1.0.2", "1.0.1")]
+        [TestCase(1, "1.1.0", "1.0.8")]
+        [TestCase(1, "2.0.2", "1.1.0")]
+        [TestCase(1, "1.8.0-pre.20", "1.8.0-pre.1")]
+        public void PackageUtils_PackageVersions_AreCompared(int expected, string version1, string version2)
         {
-            Assert.AreEqual(-1, PackageUtils.CompareVersions("1.0.1", "1.0.2"));
-            Assert.AreEqual(0, PackageUtils.CompareVersions("1.0.3-pre", "1.0.3"));
-            Assert.AreEqual(1, PackageUtils.CompareVersions("1.0.2", "1.0.1"));
-            Assert.AreEqual(1, PackageUtils.CompareVersions("1.1.0", "1.0.8"));
-            Assert.AreEqual(1, PackageUtils.CompareVersions("2.0.2", "1.1.0"));
-            Assert.AreEqual(1, PackageUtils.CompareVersions("1.8.0-pre.20", "1.8.0-pre.1"));
+            Assert.AreEqual(expected, PackageUtils.CompareVersions(version1, version2));
         }
     }
 }
