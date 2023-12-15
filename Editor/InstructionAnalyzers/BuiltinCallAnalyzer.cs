@@ -84,14 +84,16 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 if (descriptor == null)
                     return null;
 
-                // by default use descriptor issue description
-                description = string.Format("'{0}' usage", descriptor.Title);
-
                 var genericInstanceMethod = callee as GenericInstanceMethod;
                 if (genericInstanceMethod != null && genericInstanceMethod.HasGenericArguments)
                 {
                     var genericTypeNames = genericInstanceMethod.GenericArguments.Select(a => a.FullName).ToArray();
-                    description = string.Format("'{0}' usage (with generic argument '{1}')", descriptor.Title, string.Join(", ", genericTypeNames));
+                    description = $"'{descriptor.Title}<{string.Join(", ", genericTypeNames)}>' usage";
+                }
+                else
+                {
+                    // by default use descriptor issue description
+                    description = $"'{descriptor.Title}' usage";
                 }
             }
 

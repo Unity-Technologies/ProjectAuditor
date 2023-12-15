@@ -59,7 +59,7 @@ class AddComponentGeneric : MonoBehaviour
 
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("System.Void InstantiateObject::Test()", issues[0].GetContext());
-            Assert.AreEqual("'UnityEngine.Object.Instantiate' usage (with generic argument 'UnityEngine.GameObject')", issues[0].Description);
+            Assert.AreEqual("'UnityEngine.Object.Instantiate<UnityEngine.GameObject>' usage", issues[0].Description);
         }
 
         [Test]
@@ -79,7 +79,7 @@ class AddComponentGeneric : MonoBehaviour
 
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("System.Void AddComponentGeneric::Test()", issues[0].GetContext());
-            Assert.AreEqual("'UnityEngine.GameObject.AddComponent' usage (with generic argument 'UnityEngine.Rigidbody')", issues[0].Description);
+            Assert.AreEqual("'UnityEngine.GameObject.AddComponent<UnityEngine.Rigidbody>' usage", issues[0].Description);
         }
     }
 }

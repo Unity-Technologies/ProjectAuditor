@@ -40,13 +40,26 @@ class FindObjectsOfTypeClass
         [Test]
         public void CodeAnalysis_FindObjectsOfType_IsReported()
         {
-            Assert.AreEqual(4, m_CodeDiagnostics.Count(i => i.Id == "PAC0129"));
+            var issues = m_CodeDiagnostics.Where(i => i.Id == "PAC0129").ToArray();
+
+            Assert.AreEqual(4, issues.Length);
+            Assert.AreEqual(issues[0].Description, "'UnityEngine.Object.FindObjectsOfType<UnityEngine.Collider>' usage");
+            Assert.AreEqual(issues[1].Description, "'UnityEngine.Object.FindObjectsOfType<UnityEngine.Collider>' usage");
+            Assert.AreEqual(issues[2].Description, "'UnityEngine.Object.FindObjectsOfType' usage");
+            Assert.AreEqual(issues[3].Description, "'UnityEngine.Object.FindObjectsOfType' usage");
         }
 
         [Test]
         public void CodeAnalysis_FindObjectOfType_IsReported()
         {
-            Assert.AreEqual(4, m_CodeDiagnostics.Count(i => i.Id == "PAC0234"));
+            var issues = m_CodeDiagnostics.Where(i => i.Id == "PAC0234").ToArray();
+
+            Assert.AreEqual(4, issues.Length);
+            Assert.AreEqual(issues[0].Description, "'UnityEngine.Object.FindObjectOfType<UnityEngine.Collider>' usage");
+            Assert.AreEqual(issues[1].Description, "'UnityEngine.Object.FindObjectOfType<UnityEngine.Collider>' usage");
+            Assert.AreEqual(issues[2].Description, "'UnityEngine.Object.FindObjectOfType' usage");
+            Assert.AreEqual(issues[3].Description, "'UnityEngine.Object.FindObjectOfType' usage");
+
         }
     }
 }
