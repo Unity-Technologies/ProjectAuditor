@@ -8,13 +8,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
 {
     enum BuildDataAudioClipProperty
     {
-        AssetBundle,
         Size,
         BitsPerSample,
         Frequency,
         Channels,
         LoadType,
         Format,
+        AssetBundle,
         Num,
     }
 
@@ -26,13 +26,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             Properties = new[]
             {
                 new PropertyDefinition { Type = PropertyType.Description, Format = PropertyFormat.String, Name = "Name", LongName = "AudioClip Name" },
-                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAudioClipProperty.AssetBundle), Format = PropertyFormat.String, Name = "File", LongName = "File Name" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAudioClipProperty.Size), Format = PropertyFormat.Bytes, Name = "Size", LongName = "Size" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAudioClipProperty.BitsPerSample), Format = PropertyFormat.Integer, Name = "BitsPerSample", LongName = "Bits Per Sample" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAudioClipProperty.Frequency), Format = PropertyFormat.Integer, Name = "Frequency", LongName = "Frequency" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAudioClipProperty.Channels), Format = PropertyFormat.Integer, Name = "Channels", LongName = "Number Of Channels" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAudioClipProperty.LoadType), Format = PropertyFormat.String, Name = "LoadType", LongName = "Load Type" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAudioClipProperty.Format), Format = PropertyFormat.String, Name = "Format", LongName = "Format" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAudioClipProperty.AssetBundle), Format = PropertyFormat.String, Name = "File", LongName = "File Name" },
             }
         };
 

@@ -16,13 +16,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 .WithCustomProperties(
                     new object[((int)BuildDataAudioClipProperty.Num)]
                     {
-                        context.AudioClip.BuildFile.DisplayName,
                         context.AudioClip.Size,
                         context.AudioClip.BitsPerSample,
                         context.AudioClip.Frequency,
                         context.AudioClip.Channels,
                         context.AudioClip.LoadType,
                         context.AudioClip.Format,
+                        context.AudioClip.BuildFile.DisplayName,
                     });
         }
     }

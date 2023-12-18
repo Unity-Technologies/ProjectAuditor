@@ -25,7 +25,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 .WithCustomProperties(
                     new object[((int)BuildDataMeshProperty.Num)]
                     {
-                        context.Mesh.BuildFile.DisplayName,
                         context.Mesh.Size,
                         context.Mesh.SubMeshes,
                         context.Mesh.BlendShapes,
@@ -36,6 +35,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         context.Mesh.RwEnabled,
                         context.Mesh.VertexSize,
                         channelsAsString,
+                        context.Mesh.BuildFile.DisplayName,
                     });
         }
     }

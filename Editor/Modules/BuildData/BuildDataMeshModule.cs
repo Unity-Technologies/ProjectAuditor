@@ -8,7 +8,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
 {
     enum BuildDataMeshProperty
     {
-        AssetBundle,
         Size,
         SubMeshes,
         BlendShapes,
@@ -19,6 +18,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         RwEnabled,
         VertexSize,
         Channels,
+        AssetBundle,
         Num,
     }
 
@@ -30,7 +30,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             Properties = new[]
             {
                 new PropertyDefinition { Type = PropertyType.Description, Format = PropertyFormat.String, Name = "Name", LongName = "Mesh Name" },
-                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.AssetBundle), Format = PropertyFormat.String, Name = "File", LongName = "File Name" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.Size), Format = PropertyFormat.Bytes, Name = "Size", LongName = "Size" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.SubMeshes), Format = PropertyFormat.Integer, Name = "Sub Meshes", LongName = "Number Of Sub Meshes" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.BlendShapes), Format = PropertyFormat.Integer, Name = "Blend Shapes", LongName = "Number Of Blend Shapes" },
@@ -41,6 +40,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.RwEnabled), Format = PropertyFormat.Bool, Name = "Rw Enabled", LongName = "Read/Write Is Enabled" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.VertexSize), Format = PropertyFormat.Integer, Name = "Vertex Size", LongName = "Vertex Size In Bytes" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.Channels), Format = PropertyFormat.String, Name = "Channels", LongName = "Used Vertex Channels" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataMeshProperty.AssetBundle), Format = PropertyFormat.String, Name = "File", LongName = "File Name" },
             }
         };
 

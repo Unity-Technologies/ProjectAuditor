@@ -8,13 +8,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
 {
     enum BuildDataTextureProperty
     {
-        AssetBundle,
         Size,
         Width,
         Height,
         Format,
         MipCount,
         RwEnabled,
+        AssetBundle,
         Num,
     }
 
@@ -26,13 +26,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             Properties = new[]
             {
                 new PropertyDefinition { Type = PropertyType.Description, Format = PropertyFormat.String, Name = "Name", LongName = "Texture Name" },
-                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.AssetBundle), Format = PropertyFormat.String, Name = "File", LongName = "File Name" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.Size), Format = PropertyFormat.Bytes, Name = "Size", LongName = "Size" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.Width), Format = PropertyFormat.Integer, Name = "Width", LongName = "Width" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.Height), Format = PropertyFormat.Integer, Name = "Height", LongName = "Height" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.Format), Format = PropertyFormat.String, Name = "Format", LongName = "Format" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.MipCount), Format = PropertyFormat.Integer, Name = "MipCount", LongName = "Number Of MipMap Levels" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.RwEnabled), Format = PropertyFormat.Bool, Name = "RwEnabled", LongName = "Read/Write Is Enabled" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataTextureProperty.AssetBundle), Format = PropertyFormat.String, Name = "File", LongName = "File Name" },
             }
         };
 

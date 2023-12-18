@@ -60,11 +60,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 .WithCustomProperties(
                     new object[((int)BuildDataShaderProperty.Num)]
                     {
-                        context.Shader.BuildFile.DisplayName,
                         context.Shader.DecompressedSize,
                         context.Shader.SubShaders.Count,
                         subProgramCount,
-                        string.Join(", ", context.Shader.Keywords)
+                        string.Join(", ", context.Shader.Keywords),
+                        context.Shader.BuildFile.DisplayName,
                     })
                 .WithDependencies(dependencyNode);
         }

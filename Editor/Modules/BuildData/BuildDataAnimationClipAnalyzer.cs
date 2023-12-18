@@ -16,10 +16,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 .WithCustomProperties(
                     new object[((int)BuildDataAnimationClipProperty.Num)]
                     {
-                        context.AnimationClip.BuildFile.DisplayName,
                         context.AnimationClip.Size,
                         context.AnimationClip.Legacy,
                         context.AnimationClip.Events,
+                        context.AnimationClip.BuildFile.DisplayName,
                     });
         }
     }

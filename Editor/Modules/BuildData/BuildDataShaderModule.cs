@@ -8,11 +8,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
 {
     enum BuildDataShaderProperty
     {
-        AssetBundle,
         DecompressedSize,
         SubShaders,
         SubPrograms,
         Keywords,
+        AssetBundle,
         Num,
     }
 
@@ -36,11 +36,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
             Properties = new[]
             {
                 new PropertyDefinition { Type = PropertyType.Description, Format = PropertyFormat.String, Name = "Shader Name", LongName = "Shader Name" },
-                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.AssetBundle), Format = PropertyFormat.String, Name = "File", LongName = "File Name" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.DecompressedSize), Format = PropertyFormat.Bytes, Name = "Decompressed Size", LongName = "Decompressed Size" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.SubShaders), Format = PropertyFormat.Integer, Name = "Sub Shaders", LongName = "Number Of Sub Shaders" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.SubPrograms), Format = PropertyFormat.Integer, Name = "Sub Programs", LongName = "Number Of Sub Programs In Sub Shaders" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.Keywords), Format = PropertyFormat.String, Name = "Keywords", LongName = "Keywords" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataShaderProperty.AssetBundle), Format = PropertyFormat.String, Name = "File", LongName = "File Name" },
             }
         };
 

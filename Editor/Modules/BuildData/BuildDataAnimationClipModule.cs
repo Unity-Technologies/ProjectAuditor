@@ -8,10 +8,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
 {
     enum BuildDataAnimationClipProperty
     {
-        AssetBundle,
         Size,
         Legacy,
         Events,
+        AssetBundle,
         Num,
     }
 
@@ -23,10 +23,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             Properties = new[]
             {
                 new PropertyDefinition { Type = PropertyType.Description, Format = PropertyFormat.String, Name = "Name", LongName = "AnimationClip Name" },
-                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAnimationClipProperty.AssetBundle), Format = PropertyFormat.String, Name = "File", LongName = "File Name" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAnimationClipProperty.Size), Format = PropertyFormat.Bytes, Name = "Size", LongName = "Size" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAnimationClipProperty.Legacy), Format = PropertyFormat.Bool, Name = "Legacy", LongName = "Legacy" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAnimationClipProperty.Events), Format = PropertyFormat.Integer, Name = "Events", LongName = "Events" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildDataAnimationClipProperty.AssetBundle), Format = PropertyFormat.String, Name = "File", LongName = "File Name" },
             }
         };
 
