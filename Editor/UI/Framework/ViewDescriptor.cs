@@ -14,6 +14,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public Type Type;
         public IssueCategory Category;
         public string DisplayName;
+        public string PreferencesName;
         public string MenuLabel;
         public int MenuOrder;
         public bool DescriptionWithIcon;

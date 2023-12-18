@@ -745,6 +745,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         string GetPrefKey(string key)
         {
+            if (!string.IsNullOrEmpty(m_Desc.PreferencesName))
+                return $"{k_PrefKeyPrefix}.{m_Desc.PreferencesName}.{key}";
+
             return $"{k_PrefKeyPrefix}.{m_Desc.DisplayName}.{key}";
         }
 

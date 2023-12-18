@@ -823,6 +823,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 Category = IssueCategory.BuildDataTexture2D,
                 DisplayName = "Texture2D",
+                PreferencesName = "BuildData.Texture2D",
                 MenuLabel = "BuildData/Texture2D in build data",
                 MenuOrder = 6,
                 DescriptionWithIcon = true,
@@ -835,6 +836,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 Category = IssueCategory.BuildDataMesh,
                 DisplayName = "Meshes",
+                PreferencesName = "BuildData.Meshes",
                 MenuLabel = "BuildData/Meshes in build data",
                 MenuOrder = 6,
                 DescriptionWithIcon = true,
@@ -847,6 +849,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 Category = IssueCategory.BuildDataShader,
                 DisplayName = "Shaders",
+                PreferencesName = "BuildData.Shaders",
                 MenuLabel = "BuildData/Shaders in build data",
                 MenuOrder = 6,
                 DescriptionWithIcon = true,
@@ -861,6 +864,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 Category = IssueCategory.BuildDataAnimationClip,
                 DisplayName = "AnimationClips",
+                PreferencesName = "BuildData.AnimationClips",
                 MenuLabel = "BuildData/AnimationClips in build data",
                 MenuOrder = 6,
                 DescriptionWithIcon = true,
@@ -873,6 +877,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 Category = IssueCategory.BuildDataAudioClip,
                 DisplayName = "AudioClips",
+                PreferencesName = "BuildData.AudioClips",
                 MenuLabel = "BuildData/AudioClips in build data",
                 MenuOrder = 6,
                 DescriptionWithIcon = true,
@@ -885,6 +890,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 Category = IssueCategory.BuildDataSummary,
                 DisplayName = "Summary",
+                PreferencesName = "BuildData.Summary",
                 MenuLabel = "BuildData/Summary of build data",
                 MenuOrder = 6,
                 DescriptionWithIcon = true,
@@ -911,6 +917,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 Category = IssueCategory.BuildDataShaderVariant,
                 DisplayName = "Shader Variants",
+                PreferencesName = "BuildData.Shader Variants",
                 MenuOrder = 3,
                 MenuLabel = "BuildData/Shaders Variants in build data",
                 ShowFilters = true,
