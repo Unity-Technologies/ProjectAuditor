@@ -26,14 +26,12 @@ namespace Unity.ProjectAuditor.EditorTests
         const string k_ExpectedCode = "CS1519";
 
         const string k_TempAssemblyFileName = "Unity.ProjectAuditor.Temp.asmdef";
-        static string k_TempAssemblyName
-        {
-            get { return Path.GetFileNameWithoutExtension(k_TempAssemblyFileName); }
-        }
+        static string k_TempAssemblyName => Path.GetFileNameWithoutExtension(k_TempAssemblyFileName);
 
         [OneTimeSetUp]
         public void SetUp()
         {
+            m_AssemblyName = k_TempAssemblyName;
             m_ScriptWithError = new TestAsset("ScriptWithError.cs", @"
 class ScriptWithError {
 #if !UNITY_EDITOR
@@ -62,7 +60,6 @@ class ScriptWithError {
         }
 
         [Test]
-        [Explicit]
         public void CompilerError_IsReported()
         {
             LogAssert.ignoreFailingMessages = true;
@@ -94,7 +91,6 @@ class ScriptWithError {
         }
 
         [Test]
-        [Explicit]
         public void CompilerError_Message_IsReported()
         {
             LogAssert.ignoreFailingMessages = true;
@@ -123,7 +119,6 @@ class ScriptWithError {
         }
 
         [Test]
-        [Explicit]
         public void CompilerError_Assembly_IsReported()
         {
             LogAssert.ignoreFailingMessages = true;
@@ -146,7 +141,6 @@ class ScriptWithError {
         }
 
         [Test]
-        [Explicit]
         public void CompilerError_AssemblyDependency_IsReported()
         {
             LogAssert.ignoreFailingMessages = true;

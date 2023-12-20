@@ -23,6 +23,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         protected string m_BuildPath;
         protected ProjectAuditor m_ProjectAuditor;
         protected AnalysisParams m_AnalysisParams;
+        protected string m_AssemblyName = AssemblyInfo.DefaultAssemblyName;
         protected AndroidArchitecture m_OriginalTargetArchitecture;
         protected List<Diagnostic.Rule> m_AdditionalRules = new List<Diagnostic.Rule>();
         protected string m_OriginalCompanyName;
@@ -125,7 +126,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             var projectAuditor = new ProjectAuditor();
             var projectAuditorParams = new AnalysisParams()
             {
-                AssemblyNames = new[] { AssemblyInfo.DefaultAssemblyName },
+                AssemblyNames = new[] { m_AssemblyName },
                 Categories = categories,
                 OnIncomingIssues = issues =>
                 {
@@ -170,7 +171,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             var projectAuditor = new ProjectAuditor();
             m_AnalysisParams = new AnalysisParams
             {
-                AssemblyNames = new[] { AssemblyInfo.DefaultAssemblyName },
+                AssemblyNames = new[] { m_AssemblyName },
                 Categories = new[] { category},
                 OnIncomingIssues = issues =>
                 {
