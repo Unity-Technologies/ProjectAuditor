@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
@@ -58,7 +58,7 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_SrpBatchCompatibleShaderResource;
 #pragma warning restore 0414
 
-                [OneTimeSetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
             m_ShaderResource = new TestAsset("Resources/MyTestShader.shader", @"

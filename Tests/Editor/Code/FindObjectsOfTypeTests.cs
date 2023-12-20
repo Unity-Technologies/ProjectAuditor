@@ -59,7 +59,6 @@ class FindObjectsOfTypeClass
             Assert.AreEqual(issues[1].Description, "'UnityEngine.Object.FindObjectOfType<UnityEngine.Collider>' usage");
             Assert.AreEqual(issues[2].Description, "'UnityEngine.Object.FindObjectOfType' usage");
             Assert.AreEqual(issues[3].Description, "'UnityEngine.Object.FindObjectOfType' usage");
-
         }
     }
 }
