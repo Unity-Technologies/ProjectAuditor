@@ -63,6 +63,7 @@ test_trigger:
     - .yamato/test.yml#validate_{{ platform.name }}_{{editor.version }}
 {% endfor -%}
 {% endfor -%}
+    - .yamato/coverage.yml#test_coverage_mac_2023.2
 
 # This lightweight trigger runs tests only on LTS versions and only on Mac. It excludes the 'master' branch.
 test_trigger_lightweight:
