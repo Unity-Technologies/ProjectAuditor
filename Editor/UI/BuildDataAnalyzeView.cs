@@ -178,6 +178,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                 ? Path.GetDirectoryName(buildReport.summary.outputPath)
                 : "";
 
+            if (!Directory.Exists(lastBuildDataPath))
+                lastBuildDataPath = "";
+
             m_FolderList = new FolderList(m_ProjectAuditorWindow, Contents.BuildDataFolderText);
             m_FolderList.AddFolder(lastBuildDataPath);
 

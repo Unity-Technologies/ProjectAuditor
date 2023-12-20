@@ -259,7 +259,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             public void SelectionPopup(Action onChangedCallback)
             {
-                var absolutePath = Path.GetFullPath(FullPathString);
+                var absolutePath = Directory.Exists(FullPathString) ? Path.GetFullPath(FullPathString) : FullPathString;
                 var folder = EditorUtility.OpenFolderPanel("Filter path", absolutePath, "");
 
                 SetPath(folder);
@@ -273,9 +273,16 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             private void SetPath(string folder)
             {
-                if (!string.IsNullOrEmpty(folder))
+                if (folder != null)
                 {
-                    FullPathString = Path.GetFullPath(folder);
+                    if (Directory.Exists(folder))
+                    {
+                        FullPathString = Path.GetFullPath(folder);
+                    }
+                    else
+                    {
+                        FullPathString = folder;
+                    }
                 }
 
                 ValidateCurrentPath();

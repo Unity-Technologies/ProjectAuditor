@@ -463,13 +463,18 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public static string ShortenPathToWidth(string path, GUIStyle style, float maxWidth)
         {
-            if (style.CalcSize(new GUIContent(path)).x <= maxWidth) return path;
+            if (string.IsNullOrEmpty(path))
+                return path;
+
+            if (style.CalcSize(new GUIContent(path)).x <= maxWidth)
+                return path;
 
             string[] parts = path.Split('/', '\\');
             float totalWidth = style.CalcSize(new GUIContent(path)).x;
             float ellipsisWidth = style.CalcSize(new GUIContent("...")).x;
 
-            if ((totalWidth - parts.Length + 1 + ellipsisWidth) <= maxWidth) return path;
+            if ((totalWidth - parts.Length + 1 + ellipsisWidth) <= maxWidth)
+                return path;
 
             int middleIndex = parts.Length / 2;
 
