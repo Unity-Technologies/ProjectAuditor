@@ -100,9 +100,6 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-#if UNITY_EDITOR_LINUX
-        [Ignore("On Dec 20th 2023 this started failing on Linux for some reason")]
-#endif
         [TestCase("com.unity.services.vivox")]
         public void Package_Preview_IsReported(string packageName)
         {

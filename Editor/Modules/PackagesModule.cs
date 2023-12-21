@@ -124,19 +124,24 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         IEnumerable<ProjectIssue> EnumeratePackageDiagnostics(AnalysisContext context, UnityEditor.PackageManager.PackageInfo package)
         {
-            var recommendedVersionString = PackageUtils.GetPackageRecommendedVersion(package);
-            if (!string.IsNullOrEmpty(package.version) && !string.IsNullOrEmpty(recommendedVersionString))
-            {
-                if (!recommendedVersionString.Equals(package.version))
-                {
-                    yield return context.CreateIssue(IssueCategory.PackageDiagnostic, k_RecommendPackageUpgrade.Id, package.name, package.version, recommendedVersionString)
-                        .WithLocation(package.assetPath);
-                }
-            }
-            else if (package.version.Contains("pre") || package.version.Contains("exp"))
+            // first check if any package is preview or experimental
+            if (package.version.Contains("pre") || package.version.Contains("exp"))
             {
                 yield return context.CreateIssue(IssueCategory.PackageDiagnostic, k_RecommendPackagePreView.Id, package.name, package.version)
                     .WithLocation(package.assetPath);
+            }
+            else
+            {
+                // if not preview or experimental, check anyway if there is a recommended version available
+                var recommendedVersionString = PackageUtils.GetPackageRecommendedVersion(package);
+                if (!string.IsNullOrEmpty(package.version) && !string.IsNullOrEmpty(recommendedVersionString))
+                {
+                    if (!recommendedVersionString.Equals(package.version))
+                    {
+                        yield return context.CreateIssue(IssueCategory.PackageDiagnostic, k_RecommendPackageUpgrade.Id, package.name, package.version, recommendedVersionString)
+                            .WithLocation(package.assetPath);
+                    }
+                }
             }
         }
     }
