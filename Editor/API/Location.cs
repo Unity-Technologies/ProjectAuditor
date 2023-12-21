@@ -124,7 +124,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="path">File path</param>
         public Location(string path)
         {
-            m_Path = path;
+            m_Path = path.Replace($"{ProjectAuditor.ProjectPath}/", string.Empty);
         }
 
         /// <summary>
@@ -135,7 +135,8 @@ namespace Unity.ProjectAuditor.Editor
         [JsonConstructor]
         public Location(string path, int line)
         {
-            m_Path = path;
+            if (path != null)
+                m_Path = path.Replace($"{ProjectAuditor.ProjectPath}/", string.Empty);
             m_Line = line;
         }
 

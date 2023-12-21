@@ -17,6 +17,8 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProjectReportSerialization_Report_CanSaveAndLoad()
         {
+            Build();
+
             var report = m_ProjectAuditor.Audit();
 
             report.Save(k_ReportPath);

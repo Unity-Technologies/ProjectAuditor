@@ -89,6 +89,8 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
             TestAsset.Cleanup();
 
+            CleanupBuild();
+
             UserPreferences.AnalyzeInBackground = m_SavedAnalyzeInBackground;
             UserPreferences.AnalyzeAfterBuild = m_SavedAnalyzeAfterBuild;
         }
@@ -204,8 +206,6 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
             var res = Analyze(predicate);
 
-            CleanupBuild();
-
             return res;
         }
 
@@ -215,13 +215,13 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
             var res = Analyze(category, predicate);
 
-            CleanupBuild();
-
             return res;
         }
 
         protected void Build(bool isDevelopment = true, string buildFileName = "test", Action preBuildAction = null, Action postBuildAction = null)
         {
+            CleanupBuild();
+
             ValidateTargetPlatform();
 
             // We must save the scene or the build will fail https://unity.slack.com/archives/C3F85MBDL/p1615991512002200
@@ -254,9 +254,11 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
         protected void CleanupBuild()
         {
-            Directory.Delete(m_BuildPath, true);
+            if (Directory.Exists(m_BuildPath))
+                Directory.Delete(m_BuildPath, true);
 
-            AssetDatabase.DeleteAsset(s_TempSceneFilename);
+            if (File.Exists(s_TempSceneFilename))
+                AssetDatabase.DeleteAsset(s_TempSceneFilename);
         }
 
         protected void ValidateTargetPlatform()

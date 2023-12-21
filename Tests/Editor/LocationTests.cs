@@ -69,5 +69,15 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(path, location.Path);
             Assert.IsTrue(location.PathForJson.StartsWith("UNITY_PATH/Data"));
         }
+
+        [Test]
+        public void Location_ProjectPath_IsRemoved()
+        {
+            var relativePath = "OutsideAssetsFolder/Dummy.cs";
+            var path = PathUtils.Combine(ProjectAuditor.Editor.ProjectAuditor.ProjectPath, relativePath);
+            var location = new Location(path);
+
+            Assert.AreEqual(relativePath, location.Path);
+        }
     }
 }
