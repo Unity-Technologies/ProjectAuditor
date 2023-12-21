@@ -205,9 +205,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var assemblyDirectories = new List<string>();
             var compilationPipeline = new AssemblyCompilation
             {
-                OnAssemblyCompilationFinished = (compilationTask, compilerMessages) =>
+                OnAssemblyCompilationFinished = (compilationResult) =>
                 {
-                    analysisParams.OnIncomingIssues(ProcessCompilerMessages(context, compilationTask, compilerMessages));
+                    analysisParams.OnIncomingIssues(ProcessCompilerMessages(context, compilationResult));
                 },
                 CodeOptimization = analysisParams.CodeOptimization,
                 CompilationMode = analysisParams.CompilationMode,
@@ -465,25 +465,24 @@ namespace Unity.ProjectAuditor.Editor.Modules
             Profiler.EndSample();
         }
 
-        IEnumerable<ProjectIssue> ProcessCompilerMessages(AnalysisContext context, AssemblyCompilationTask compilationTask, CompilerMessage[] compilerMessages)
+        IEnumerable<ProjectIssue> ProcessCompilerMessages(AnalysisContext context, AssemblyCompilationResult compilationResult)
         {
             Profiler.BeginSample("CodeModule.ProcessCompilerMessages");
-
+            var compilerMessages = compilationResult.Messages;
             var severity = Severity.None;
-            if (compilationTask.Status == CompilationStatus.MissingDependency)
+            if (compilationResult.Status == CompilationStatus.MissingDependency)
                 severity = Severity.Warning;
             else if (compilerMessages.Any(m => m.Type == CompilerMessageType.Error))
                 severity = Severity.Error;
 
-            var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(compilationTask.AssemblyPath);
+            var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(compilationResult.AssemblyPath);
             yield return context.CreateInsight(IssueCategory.Assembly, assemblyInfo.Name)
                 .WithCustomProperties(new object[(int)AssemblyProperty.Num]
                 {
                     assemblyInfo.IsPackageReadOnly,
-                    compilationTask.DurationInMs
+                    compilationResult.DurationInMs
                 })
-                .WithDependencies(new AssemblyDependencyNode(assemblyInfo.Name,
-                    compilationTask.Dependencies.Select(d => d.AssemblyName).ToArray()))
+                .WithDependencies(new AssemblyDependencyNode(assemblyInfo.Name, compilationResult.DependentAssemblyNames))
                 .WithLocation(assemblyInfo.AsmDefPath)
                 .WithSeverity(severity);
 

@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -8,7 +7,6 @@ using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Tests.Common;
 using Unity.ProjectAuditor.Editor.Utils;
-using UnityEngine;
 using UnityEngine.TestTools;
 
 namespace Unity.ProjectAuditor.EditorTests
@@ -71,11 +69,11 @@ class ScriptWithError {
             CompilerMessage[] compilerMessages = null;
             using (var compilationPipeline = new AssemblyCompilation
                {
-                   OnAssemblyCompilationFinished = (compilationTask, messages) =>
+                   OnAssemblyCompilationFinished = (assemblyCompilationResult) =>
                    {
-                       if (compilationTask.AssemblyName.Equals(k_TempAssemblyName))
+                       if (assemblyCompilationResult.AssemblyName.Equals(k_TempAssemblyName))
                        {
-                           compilerMessages = messages;
+                           compilerMessages = assemblyCompilationResult.Messages;
                        }
                    }
                })
@@ -103,7 +101,7 @@ class ScriptWithError {
 
             LogAssert.ignoreFailingMessages = false;
 
-            Assert.AreEqual(1, issues.Count());
+            Assert.AreEqual(1, issues.Length);
 
             var issue = issues.First();
 

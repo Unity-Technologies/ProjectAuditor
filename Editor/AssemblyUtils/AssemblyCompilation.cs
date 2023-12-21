@@ -68,13 +68,13 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
         public BuildTarget Platform = EditorUserBuildSettings.activeBuildTarget;
         public string[] RoslynAnalyzers;
 
-        public Action<AssemblyCompilationTask, CompilerMessage[]> OnAssemblyCompilationFinished;
+        public Action<AssemblyCompilationResult> OnAssemblyCompilationFinished;
 
         public void Dispose()
         {
             if (!string.IsNullOrEmpty(m_OutputFolder) && Directory.Exists(m_OutputFolder))
             {
-                foreach (var task in m_AssemblyCompilationTasks.Select(pair => pair.Value).Where(u => u.Success()))
+                foreach (var task in m_AssemblyCompilationTasks.Select(pair => pair.Value).Where(u => u.IsCompletedSuccessfully))
                 {
                     File.Delete(task.AssemblyPath);
                     File.Delete(Path.ChangeExtension(task.AssemblyPath, ".pdb"));
@@ -166,41 +166,20 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
             if (!Directory.Exists(m_OutputFolder))
                 Directory.CreateDirectory(m_OutputFolder);
 
-            PrepareAssemblyBuilders(assemblies, (assemblyPath, messages) =>
-            {
-                var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assemblyPath);
-                var assemblyName = assemblyInfo.Name;
-                var compilationTask = m_AssemblyCompilationTasks[assemblyName];
+            PrepareAssemblyBuilders(assemblies, progress);
 
-                compilationTask.Messages = messages;
-
-                if (progress != null)
-                    progress.Advance(assemblyName);
-
-                var stopWatch = compilationTask.StopWatch;
-                if (stopWatch != null)
-                    stopWatch.Stop();
-
-                if (OnAssemblyCompilationFinished != null)
-                    OnAssemblyCompilationFinished(compilationTask, messages);
-            });
             UpdateAssemblyBuilders(progress);
+
             if (progress?.IsCancelled ?? false)
                 return Array.Empty<string>();
 
             if (progress != null)
                 progress.Clear();
 
-            if (OnAssemblyCompilationFinished != null)
-                foreach (var compilationTask in m_AssemblyCompilationTasks.Where(pair => pair.Value.Status == CompilationStatus.MissingDependency).Select(p => p.Value))
-                {
-                    OnAssemblyCompilationFinished(compilationTask, new CompilerMessage[] {});
-                }
-
-            return m_AssemblyCompilationTasks.Where(pair => pair.Value.Success()).Select(task => task.Value.AssemblyPath);
+            return m_AssemblyCompilationTasks.Where(pair => pair.Value.IsCompletedSuccessfully).Select(task => task.Value.AssemblyPath);
         }
 
-        void PrepareAssemblyBuilders(Assembly[] assemblies, Action<string, CompilerMessage[]> assemblyCompilationFinished)
+        void PrepareAssemblyBuilders(Assembly[] assemblies, IProgress progress = null)
         {
             m_AssemblyCompilationTasks = new Dictionary<string, AssemblyCompilationTask>();
             // first pass: create all compilation tasks
@@ -214,81 +193,6 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 #pragma warning restore 618
                 assemblyBuilder.buildTarget = Platform;
                 assemblyBuilder.buildTargetGroup = BuildPipeline.GetBuildTargetGroup(Platform);
-                assemblyBuilder.buildFinished += (path, originalMessages) =>
-                {
-                    var messages = new CompilerMessage[originalMessages.Length];
-                    for (int i = 0; i < originalMessages.Length; i++)
-                    {
-                        var messageStartIndex = originalMessages[i].message.LastIndexOf("):");
-                        if (messageStartIndex != -1)
-                        {
-                            var messageWithCode = originalMessages[i].message.Substring(messageStartIndex + 2);
-                            var messageParts = messageWithCode.Split(new[] {' ', ':'}, 2,
-                                StringSplitOptions.RemoveEmptyEntries);
-                            if (messageParts.Length < 2)
-                                continue;
-
-                            var messageType = messageParts[0];
-                            if (messageParts[1].IndexOf(':') == -1)
-                                continue;
-
-                            messageParts = messageParts[1].Split(':');
-                            if (messageParts.Length < 2)
-                                continue;
-
-                            var messageBody = messageWithCode.Substring(messageWithCode.IndexOf(": ", StringComparison.Ordinal) + 2);
-                            messages[i] = new CompilerMessage
-                            {
-                                Message = messageBody,
-                                File = originalMessages[i].file,
-                                Line = originalMessages[i].line,
-                                Code = messageParts[0]
-                            };
-
-                            // disregard originalMessages[i].type because it does not support CompilerMessageType.Info in 2020.x
-                            switch (messageType)
-                            {
-                                case "error":
-                                    messages[i].Type = CompilerMessageType.Error;
-                                    break;
-                                case "warning":
-                                    messages[i].Type = CompilerMessageType.Warning;
-                                    break;
-                                case "info":
-                                    messages[i].Type = CompilerMessageType.Info;
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            // Copy messages that don't have the standard format. We can't extract a code string from these.
-                            messages[i] = new CompilerMessage
-                            {
-                                Message = originalMessages[i].message,
-                                File = String.IsNullOrEmpty(originalMessages[i].file) ? PathUtils.GetDirectoryName(Application.dataPath) : originalMessages[i].file,
-                                Line = originalMessages[i].line,
-                                Code = "<Unity>"
-                            };
-
-                            switch (originalMessages[i].type)
-                            {
-                                case UnityEditor.Compilation.CompilerMessageType.Error:
-                                    messages[i].Type = CompilerMessageType.Error;
-                                    break;
-                                case UnityEditor.Compilation.CompilerMessageType.Warning:
-                                    messages[i].Type = CompilerMessageType.Warning;
-                                    break;
-#if UNITY_2021_1_OR_NEWER
-                                case UnityEditor.Compilation.CompilerMessageType.Info:
-                                    messages[i].Type = CompilerMessageType.Info;
-                                    break;
-#endif
-                            }
-                        }
-                    }
-
-                    assemblyCompilationFinished(path, messages);
-                };
                 assemblyBuilder.compilerOptions = new ScriptCompilerOptions
                 {
                     AdditionalCompilerArguments = assembly.compilerOptions.AdditionalCompilerArguments,
@@ -330,7 +234,15 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 
                 assemblyBuilder.referencesOptions = ReferencesOptions.UseEngineModules;
 
-                m_AssemblyCompilationTasks.Add(assemblyName, new AssemblyCompilationTask { Builder = assemblyBuilder });
+                m_AssemblyCompilationTasks.Add(assemblyName, new AssemblyCompilationTask(assemblyBuilder)
+                {
+                    OnCompilationFinished = (result =>
+                    {
+                        progress?.Advance(assemblyName);
+
+                        OnAssemblyCompilationFinished?.Invoke(result);
+                    })
+                });
             }
 
             // second pass: find all assembly reference builders
@@ -342,8 +254,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                     dependencies.Add(m_AssemblyCompilationTasks[referenceName]);
                 }
 
-                m_AssemblyCompilationTasks[Path.GetFileName(assembly.name)].Dependencies =
-                    dependencies.ToArray();
+                m_AssemblyCompilationTasks[assembly.name].AddDependencies(dependencies.ToArray());
             }
         }
 
@@ -354,7 +265,7 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                 if (progress?.IsCancelled ?? false)
                     return; // compilation of assemblies will continue but we won't wait for it
 
-                var pendingTasks = m_AssemblyCompilationTasks.Select(pair => pair.Value).Where(task => !task.IsDone());
+                var pendingTasks = m_AssemblyCompilationTasks.Select(pair => pair.Value).Where(task => !task.IsCompleted).ToArray();
                 if (!pendingTasks.Any())
                     break;
                 foreach (var task in pendingTasks)
