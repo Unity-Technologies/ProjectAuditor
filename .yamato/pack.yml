@@ -2,7 +2,7 @@ pack:
   name: Pack
   agent:
     type: Unity::VM
-    image: package-ci/win10:stable
+    image: package-ci/win10:v4
     flavor: b1.large
   commands:
     - unity-downloader-cli -u 2018.4 -c editor --path .Editor --wait --fast

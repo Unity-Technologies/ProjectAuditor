@@ -2,7 +2,7 @@ build:
   name: Build
   agent:
     type: Unity::VM
-    image: package-ci/win10:stable
+    image: package-ci/win10:v4
     flavor: b1.large
   commands:
     - git clone git@github.cds.internal.unity3d.com:unity/DomainReloadAnalyzer.git
