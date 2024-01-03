@@ -59,11 +59,14 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
 
         public Action<AssemblyCompilationResult> OnCompilationFinished;
 
+#pragma warning disable 618 // disable warning for obsolete AssemblyBuilder
         public AssemblyCompilationTask(AssemblyBuilder assemblyBuilder)
         {
             m_Builder = assemblyBuilder;
             m_Builder.buildFinished += OnAssemblyBuilderFinished;
         }
+
+#pragma warning restore 618
 
         public void AddDependencies(AssemblyCompilationTask[] dependencies)
         {
