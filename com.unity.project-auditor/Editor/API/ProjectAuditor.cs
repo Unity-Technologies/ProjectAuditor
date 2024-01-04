@@ -59,10 +59,19 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        internal static string ProjectPath => PathUtils.GetDirectoryName(UnityEngine.Application.dataPath);
+        internal static string ProjectPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(s_CachedProjectPath))
+                    s_CachedProjectPath = PathUtils.GetDirectoryName(UnityEngine.Application.dataPath);
+                return s_CachedProjectPath;
+            }
+        }
 
         static string s_CachedPackagePath;
         static string s_CachedPackageVersion;
+        static string s_CachedProjectPath;
         static readonly Dictionary<string, IssueCategory> s_CustomCategories = new Dictionary<string, IssueCategory>();
 
         readonly List<Module> m_Modules = new List<Module>();
