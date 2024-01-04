@@ -8,8 +8,6 @@ using Unity.ProjectAuditor.Editor.Utils;
 using Unity.ProjectAuditor.Editor.Build;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
-using UnityEditor.Callbacks;
-using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
@@ -94,7 +92,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal static LastBuildReportProvider BuildReportProvider = new LastBuildReportProvider();
 
         public override string Name => "Build Report";
-
 
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {

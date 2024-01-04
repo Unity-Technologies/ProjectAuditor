@@ -11,11 +11,9 @@ using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
-using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Profiling;
-using Object = System.Object;
 using PropertyDefinition = Unity.ProjectAuditor.Editor.Core.PropertyDefinition;
 using ThreadPriority = System.Threading.ThreadPriority;
 
