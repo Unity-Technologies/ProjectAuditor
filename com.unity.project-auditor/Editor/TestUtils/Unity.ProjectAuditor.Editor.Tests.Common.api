@@ -20,8 +20,11 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
     public abstract class TestFixtureBase
     {
         protected System.Collections.Generic.List<Unity.ProjectAuditor.Editor.Diagnostic.Rule> m_AdditionalRules;
+        protected AnalysisParams m_AnalysisParams;
+        protected string m_AssemblyName;
         protected string m_BuildPath;
-        protected Unity.ProjectAuditor.Editor.AssemblyUtils.CodeOptimization m_CodeOptimization = Unity.ProjectAuditor.Editor.AssemblyUtils.CodeOptimization.Release;
+        protected ProjectIssue[] m_CodeDiagnostics;
+        protected CodeOptimization m_CodeOptimization = CodeOptimization.Release;
         protected string m_OriginalCompanyName;
         protected string m_OriginalProductName;
         protected UnityEditor.AndroidArchitecture m_OriginalTargetArchitecture;
@@ -33,8 +36,13 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         protected ProjectIssue[] AnalyzeAndFindAssetIssues(TestAsset testAsset, IssueCategory category = IssueCategory.Code);
         protected ProjectIssue[] AnalyzeBuild(System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>), bool isDevelopment = true, string buildFileName = @"test", System.Action preBuildAction = default(System.Action), System.Action postBuildAction = default(System.Action));
         protected ProjectIssue[] AnalyzeBuild(IssueCategory category, System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>), bool isDevelopment = true, string buildFileName = @"test", System.Action preBuildAction = default(System.Action), System.Action postBuildAction = default(System.Action));
+        protected ProjectIssue[] AnalyzeFiltered(System.Predicate<string> filterPredicate);
+        protected ProjectIssue[] AnalyzeFiltered(System.Predicate<string> filterPredicate, IssueCategory category);
+        protected ProjectIssue[] AnalyzeFiltered(System.Predicate<string> filterPredicate, IssueCategory[] categories);
+        protected void AnalyzeTempAssetsFolder();
         protected void Build(bool isDevelopment = true, string buildFileName = @"test", System.Action preBuildAction = default(System.Action), System.Action postBuildAction = default(System.Action));
         protected void CleanupBuild();
+        protected ProjectIssue[] FindTestAssetIssues(TestAsset testAsset);
         [NUnit.Framework.OneTimeSetUp] public void FixtureSetUp();
         [NUnit.Framework.OneTimeTearDown] public void FixtureTearDown();
         public static UnityEditor.BuildTarget GetStandaloneBuildTarget();
