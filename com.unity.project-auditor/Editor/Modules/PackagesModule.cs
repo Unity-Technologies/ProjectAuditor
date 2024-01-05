@@ -30,17 +30,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        static readonly IssueLayout k_PackageVersionLayout = new IssueLayout
-        {
-            Category = IssueCategory.PackageDiagnostic,
-            Properties = new[]
-            {
-                new PropertyDefinition { Type = PropertyType.Description, Name = "Issue", LongName = "Package Issue"},
-                new PropertyDefinition { Type = PropertyType.Severity, Format = PropertyFormat.String, Name = "Severity"},
-                new PropertyDefinition { Type = PropertyType.Descriptor, Name = "Descriptor", IsDefaultGroup = true, IsHidden = true},
-            }
-        };
-
         internal const string PAP0001 = nameof(PAP0001);
         internal const string PAP0002 = nameof(PAP0002);
 
@@ -52,7 +41,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Update the package via Package Manager."
         )
         {
-            MessageFormat = "'{0}' could be updated from version '{1}' to '{2}'",
+            MessageFormat = "Package '{0}' could be updated from version '{1}' to '{2}'",
             DefaultSeverity = Severity.Minor
         };
 
@@ -64,7 +53,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             "Experimental packages should only be used for testing purposes and to give feedback to Unity."
         )
         {
-            MessageFormat = "'{0}' version '{1}' is a preview/experimental version"
+            MessageFormat = "Package '{0}' version '{1}' is a preview/experimental version"
         };
 
         public override string Name => "Packages";
@@ -72,7 +61,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_PackageLayout,
-            k_PackageVersionLayout
+            SettingsModule.k_IssueLayout
         };
 
         public override void Initialize()
@@ -127,7 +116,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             // first check if any package is preview or experimental
             if (package.version.Contains("pre") || package.version.Contains("exp"))
             {
-                yield return context.CreateIssue(IssueCategory.PackageDiagnostic, k_RecommendPackagePreView.Id, package.name, package.version)
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_RecommendPackagePreView.Id, package.name, package.version)
                     .WithLocation(package.assetPath);
             }
             else
@@ -138,7 +127,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 {
                     if (!recommendedVersionString.Equals(package.version))
                     {
-                        yield return context.CreateIssue(IssueCategory.PackageDiagnostic, k_RecommendPackageUpgrade.Id, package.name, package.version, recommendedVersionString)
+                        yield return context.CreateIssue(IssueCategory.ProjectSetting, k_RecommendPackageUpgrade.Id, package.name, package.version, recommendedVersionString)
                             .WithLocation(package.assetPath);
                     }
                 }

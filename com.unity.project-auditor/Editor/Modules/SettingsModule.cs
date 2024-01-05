@@ -7,7 +7,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 {
     class SettingsModule : ModuleWithAnalyzers<ISettingsModuleAnalyzer>
     {
-        static readonly IssueLayout k_IssueLayout = new IssueLayout
+        internal static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
             Category = IssueCategory.ProjectSetting,
             Properties = new[]

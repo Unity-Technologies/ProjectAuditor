@@ -145,10 +145,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             new Tab
             {
                 id = TabId.Settings, name = "Project",
-                modules = new[]
-                {
-                    typeof(SettingsModule)
-                }
+                categories = new []{IssueCategory.ProjectSetting, IssueCategory.Package}
             },
             new Tab
             {
@@ -343,7 +340,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        private void RefreshTabCategories(Tab tab, bool reload)
+        void RefreshTabCategories(Tab tab, bool reload)
         {
             List<IssueCategory> availableCategories = new List<IssueCategory>();
             var dropDownItems = new List<Utility.DropdownItem>();
@@ -547,24 +544,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 Category = IssueCategory.Package,
-                DisplayName = "Installed Packages",
+                DisplayName = "Packages",
                 MenuLabel = "Project/Packages/Installed",
                 MenuOrder = 105,
                 OnOpenIssue = EditorInterop.OpenPackage,
                 ShowDependencyView = true,
                 DependencyViewGuiContent = new GUIContent("Package Dependencies"),
                 AnalyticsEventId = (int)AnalyticsReporter.UIButton.Packages
-            });
-
-            ViewDescriptor.Register(new ViewDescriptor
-            {
-                Category = IssueCategory.PackageDiagnostic,
-                DisplayName = "Package Diagnostics",
-                MenuLabel = "Project/Packages/Diagnostics",
-                MenuOrder = 106,
-                OnOpenIssue = EditorInterop.OpenPackage,
-                Type = typeof(DiagnosticView),
-                AnalyticsEventId = (int)AnalyticsReporter.UIButton.PackageDiagnostics
             });
 
             ViewDescriptor.Register(new ViewDescriptor
@@ -730,15 +716,20 @@ namespace Unity.ProjectAuditor.Editor.UI
                 ShowInfoPanel = true,
                 OnOpenIssue = (location) =>
                 {
+                    if (location.Path.StartsWith("Packages/"))
+                    {
+                        EditorInterop.OpenPackage(location);
+                        return;
+                    }
+
                     var guid = AssetDatabase.AssetPathToGUID(location.Path);
                     if (string.IsNullOrEmpty(guid))
                     {
                         EditorInterop.OpenProjectSettings(location);
+                        return;
                     }
-                    else
-                    {
-                        EditorInterop.FocusOnAssetInProjectWindow(location);
-                    }
+
+                    EditorInterop.FocusOnAssetInProjectWindow(location);
                 },
                 Type = typeof(DiagnosticView),
                 AnalyticsEventId = (int)AnalyticsReporter.UIButton.ProjectSettings
@@ -1761,9 +1752,6 @@ A view allows the user to browse through the listed items and filter by string o
             public static readonly GUIContent Refresh = new GUIContent("Refresh");
 
             public static readonly GUIContent ShaderVariants = new GUIContent("Variants", "Inspect Shader Variants");
-
-            public static readonly GUIContent Packages = new GUIContent("Packages", "Installed Packages");
-            public static readonly GUIContent PackageDiagnostics = new GUIContent("Diagnostics", "Package Diagnostics");
         }
     }
 }

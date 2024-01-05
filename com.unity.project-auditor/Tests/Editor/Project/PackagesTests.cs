@@ -91,24 +91,24 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase("com.unity.2d.pixel-perfect")]
         public void Package_Upgrade_IsRecommended(string packageName)
         {
-            var packageDiagnostics = Analyze(IssueCategory.PackageDiagnostic);
-            var diagnostic = packageDiagnostics.FirstOrDefault(issue => issue.Description.Contains(packageName));
+            var issues = Analyze(IssueCategory.ProjectSetting);
+            var packageIssue = issues.FirstOrDefault(issue => issue.Description.Contains(packageName));
 
-            Assert.IsNotNull(diagnostic, $"Cannot find package diagnostic for: {packageName}");
-            Assert.IsTrue(diagnostic.Description.StartsWith($"'{packageName}' could be updated from version '3.0.2' to "), "Description: " + diagnostic.Description);
-            Assert.AreEqual(Severity.Minor, diagnostic.Severity);
+            Assert.IsNotNull(packageIssue, $"Cannot find package diagnostic for: {packageName}");
+            Assert.IsTrue(packageIssue.Description.StartsWith($"Package '{packageName}' could be updated from version '3.0.2' to "), "Description: " + packageIssue.Description);
+            Assert.AreEqual(Severity.Minor, packageIssue.Severity);
         }
 
         [Test]
         [TestCase("com.unity.services.vivox")]
         public void Package_Preview_IsReported(string packageName)
         {
-            var packageDiagnostics = Analyze(IssueCategory.PackageDiagnostic);
-            var diagnostic = packageDiagnostics.FirstOrDefault(issue => issue.Description.Contains(packageName));
+            var issues = Analyze(IssueCategory.ProjectSetting);
+            var packageIssue = issues.FirstOrDefault(issue => issue.Description.Contains(packageName));
 
-            Assert.IsNotNull(diagnostic, $"Cannot find package diagnostic for: {packageName}");
-            Assert.IsTrue(diagnostic.Description.StartsWith($"'{packageName}' version "), "Description: " + diagnostic.Description);
-            Assert.AreEqual(Severity.Moderate, diagnostic.Severity);
+            Assert.IsNotNull(packageIssue, $"Cannot find package diagnostic for: {packageName}");
+            Assert.IsTrue(packageIssue.Description.StartsWith($"Package '{packageName}' version "), "Description: " + packageIssue.Description);
+            Assert.AreEqual(Severity.Moderate, packageIssue.Severity);
         }
 
         [Test]

@@ -22,7 +22,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             public int numAssetIssues;
             public int numShaders;
             public int numPackages;
-            public int numPackageDiagnostics;
         }
 
         Stats m_Stats;
@@ -43,7 +42,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Stats.numAssetIssues += allIssues.Count(i => i.Category == IssueCategory.AssetDiagnostic);
             m_Stats.numShaders += allIssues.Count(i => i.Category == IssueCategory.Shader);
             m_Stats.numPackages += allIssues.Count(i => i.Category == IssueCategory.Package);
-            m_Stats.numPackageDiagnostics += allIssues.Count(i => i.Category == IssueCategory.PackageDiagnostic);
 
             var compilerMessages = allIssues.Where(i => i.Category == IssueCategory.CodeCompilerMessage);
             m_Stats.numCompilerErrors += compilerMessages.Count(i => i.Severity == Severity.Error);
@@ -76,8 +74,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     DrawSummaryItem("Settings:", m_Stats.numSettingIssues, IssueCategory.ProjectSetting);
                 if (m_Stats.numAssetIssues > 0)
                     DrawSummaryItem("Assets:", m_Stats.numAssetIssues, IssueCategory.AssetDiagnostic);
-                if (m_Stats.numPackages > 0)
-                    DrawSummaryItem("Packages:", m_Stats.numPackageDiagnostics, IssueCategory.PackageDiagnostic);
 
                 DrawLine();
                 EditorGUI.indentLevel--;

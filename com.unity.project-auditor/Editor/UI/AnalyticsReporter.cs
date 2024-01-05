@@ -77,8 +77,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             // Assemblies
             Assemblies,
             PrecompiledAssemblies,
-            Packages,
-            PackageDiagnostics
+            Packages
         }
 
         // -------------------------------------------------------------------------------------------------------------
@@ -260,8 +259,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return "precompiled_assemblies_tab";
                 case UIButton.Packages:
                     return "packages_tab";
-                case UIButton.PackageDiagnostics:
-                    return "package_diagnostics_tab";
 
                 default:
                     Debug.LogFormat("SendUIButtonEvent: Unsupported button type : {0}", uiButton);

@@ -92,11 +92,6 @@ namespace Unity.ProjectAuditor.Editor
         Package,
 
         /// <summary>
-        /// Category for package diagnostic information
-        /// </summary>
-        PackageDiagnostic,
-
-        /// <summary>
         /// Issues relating to texture assets and texture import settings
         /// </summary>
         Texture,

@@ -103,7 +103,8 @@ namespace Unity.ProjectAuditor.EditorTests
                 CompilationMode = CompilationMode.Player
             });
 
-            Assert.AreEqual(1, numModules);
+            // we have 2 modules reporting ProjectSetting issues
+            Assert.AreEqual(2, numModules);
             Assert.NotNull(projectReport);
         }
 
