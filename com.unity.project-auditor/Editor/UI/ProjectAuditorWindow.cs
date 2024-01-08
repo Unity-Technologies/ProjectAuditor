@@ -10,12 +10,13 @@ using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
+using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
-    class ProjectAuditorWindow : EditorWindow, IHasCustomMenu, IIssueFilter
+    internal class ProjectAuditorWindow : EditorWindow, IHasCustomMenu, IIssueFilter
     {
         enum AnalysisState
         {
@@ -81,32 +82,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] ViewStates m_ViewStates = new ViewStates();
         [SerializeField] ViewManager m_ViewManager;
 
-        enum TabId
-        {
-            Summary,
-            Code,
-            Assets,
-            Shaders,
-            Settings,
-            Build,
-        }
-
-        [Serializable]
-        class Tab
-        {
-            public TabId id;
-            public string name;
-
-            public IssueCategory[] categories;
-            public Type[] modules;
-            public IssueCategory[] excludedModuleCategories;
-
-            public IssueCategory[] allCategories;
-            public IssueCategory[] availableCategories;
-            public int currentCategoryIndex;
-            public Utility.DropdownItem[] dropdown;
-        }
-
         [SerializeField]
         Tab[] m_Tabs =
         {
@@ -145,7 +120,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             new Tab
             {
                 id = TabId.Settings, name = "Project",
-                categories = new []{IssueCategory.ProjectSetting, IssueCategory.Package}
+                categories = new[] {IssueCategory.ProjectSetting, IssueCategory.Package}
             },
             new Tab
             {
@@ -165,6 +140,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         [SerializeField] int m_ActiveTabIndex = 0;
         int m_TabButtonControlID;
+
+        [SerializeField] TreeViewState m_ViewSelectionTreeState;
+        ViewSelectionTreeView m_ViewSelectionTreeView;
+
+        [SerializeField] bool m_IsNonAnalyzedViewSelected;
+        [SerializeField] Tab m_SelectedNonAnalyzedTab;
 
         public bool Match(ProjectIssue issue)
         {
@@ -278,6 +259,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                     AnalyticsReporter.BeginAnalytic());
 
                 SyncTabOnViewChange(viewDesc.Category);
+
+                m_IsNonAnalyzedViewSelected = false;
+
+                Repaint();
             };
 
             m_ViewManager.OnIgnoredIssuesVisibilityChanged += showIgnoredIssues =>
@@ -325,6 +310,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_ViewManager.Create(rules, m_ViewStates, null, this);
 
             InitializeTabs(!initialize);
+            InitializeViewSelection(!initialize);
 
             Profiler.EndSample();
         }
@@ -394,6 +380,36 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
+        public void OnSelectedNonAnalyzedTab(Tab selectedTab)
+        {
+            foreach (var tab in m_Tabs)
+            {
+                // If this tab's categories haven't been analyzed, override view with analyze info/button
+                if (tab == selectedTab)
+                {
+                    bool hasAnyAnalyzedCategory = false;
+                    foreach (var cat in tab.availableCategories)
+                    {
+                        if (m_ProjectReport.HasCategory(cat))
+                        {
+                            hasAnyAnalyzedCategory = true;
+                            break;
+                        }
+                    }
+
+                    if (!hasAnyAnalyzedCategory)
+                    {
+                        // Change view anyway, even if overridden, to get into a proper view state, not the previous view
+                        m_ViewManager.ChangeView(tab.availableCategories[0]);
+
+                        // Override view to show info and analyze button
+                        m_IsNonAnalyzedViewSelected = true;
+                        m_SelectedNonAnalyzedTab = selectedTab;
+                    }
+                }
+            }
+        }
+
         void OnDisable()
         {
             // Make sure 'dirty' scriptable objects are saved to their corresponding assets
@@ -410,16 +426,38 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     DrawToolbar();
 
+#if !PA_DRAW_TABS_VERTICALLY
                     DrawTabs();
+#endif
                 }
 
                 if (IsAnalysisValid())
                 {
-                    DrawPanels();
-
-                    if (m_ViewManager.GetActiveView().Desc.Category != IssueCategory.Metadata)
+                    using (new EditorGUILayout.HorizontalScope())
                     {
-                        DrawStatusBar();
+#if PA_DRAW_TABS_VERTICALLY
+                        using (new EditorGUILayout.VerticalScope())
+                        {
+                            DrawViewSelection();
+                        }
+#endif
+
+                        if (!m_IsNonAnalyzedViewSelected)
+                        {
+                            using (new EditorGUILayout.VerticalScope())
+                            {
+                                DrawPanels();
+
+                                if (m_ViewManager.GetActiveView().Desc.Category != IssueCategory.Metadata)
+                                {
+                                    DrawStatusBar();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            DrawAnalysisPanel();
+                        }
                     }
                 }
                 else
@@ -427,6 +465,72 @@ namespace Unity.ProjectAuditor.Editor.UI
                     DrawHome();
                 }
             }
+        }
+
+        private void DrawAnalysisPanel()
+        {
+            using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandHeight(true)))
+            {
+                var tabName = m_SelectedNonAnalyzedTab.name;
+
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    var info = string.Format(Contents.AnalyzeInfoText, tabName);
+
+                    GUILayout.FlexibleSpace();
+                    EditorGUILayout.HelpBox(info, MessageType.Info);
+                    GUILayout.FlexibleSpace();
+                }
+
+                GUILayout.Space(10);
+
+                using (new EditorGUILayout.HorizontalScope())
+                {
+                    GUILayout.FlexibleSpace();
+                    if (GUILayout.Button(string.Format(Contents.AnalyzeButtonText, tabName), GUILayout.Width(200)))
+                    {
+                        var categories = GetTabCategories(m_SelectedNonAnalyzedTab);
+                        AuditCategories(categories.ToArray());
+
+#if PA_DRAW_TABS_VERTICALLY
+                        m_ViewSelectionTreeView.Reload();
+                        m_ViewSelectionTreeView.SelectItemByCategory(categories[0]);
+#endif
+
+                        m_IsNonAnalyzedViewSelected = false;
+                    }
+
+                    GUILayout.FlexibleSpace();
+                }
+            }
+        }
+
+        void InitializeViewSelection(bool reload)
+        {
+            if (!reload)
+                m_ViewSelectionTreeState = null;
+
+            m_ViewSelectionTreeView = null;
+            m_IsNonAnalyzedViewSelected = false;
+        }
+
+        void DrawViewSelection()
+        {
+            if (m_ViewSelectionTreeState == null)
+            {
+                m_ViewSelectionTreeState = new TreeViewState();
+            }
+            if (m_ViewSelectionTreeView == null)
+            {
+                m_ViewSelectionTreeView = new ViewSelectionTreeView(m_ViewSelectionTreeState, m_Tabs, m_ViewManager,
+                    m_ProjectReport);
+
+                m_ViewSelectionTreeView.OnSelectedNonAnalyzedTab += OnSelectedNonAnalyzedTab;
+            }
+
+            var rect = EditorGUILayout.GetControlRect(GUILayout.Width(180), GUILayout.ExpandHeight(true));
+
+            m_ViewSelectionTreeView.OnGUI(rect);
         }
 
         [InitializeOnLoadMethod]
@@ -1255,7 +1359,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        void DrawViewSelection()
+        void DrawTabViewSelection()
         {
             // Sub categories dropdown, if there's more than one view
             if (m_ViewManager != null && m_Tabs[m_ActiveTabIndex].dropdown != null)
@@ -1323,7 +1427,10 @@ namespace Unity.ProjectAuditor.Editor.UI
             using (new GUILayout.HorizontalScope(GUI.skin.box))
             {
                 GUILayout.Label(activeView.Description, GUILayout.MinWidth(360), GUILayout.ExpandWidth(true));
-                DrawViewSelection();
+
+#if !PA_DRAW_TABS_VERTICALLY
+                DrawTabViewSelection();
+#endif
 
                 GUILayout.FlexibleSpace();
             }
@@ -1538,18 +1645,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 var tab = m_Tabs[tabToAudit];
 
-                if (EditorUtility.DisplayDialog(ProjectAuditor.DisplayName,
-                    $"'{tab.name}' analysis will now begin.", "Ok", "Cancel"))
-                {
-                    AuditCategories(tab.allCategories);
+                // Change view anyway, even if overridden, to get into a proper view state, not the previous view
+                m_ViewManager.ChangeView(tab.availableCategories[0]);
 
-                    RefreshTabCategories(tab, false);
-
-                    if (tab.availableCategories.Length > 0)
-                        m_ViewManager.ChangeView(tab.availableCategories[0]);
-
-                    GUIUtility.ExitGUI();
-                }
+                // Override view to show info and analyze button
+                m_IsNonAnalyzedViewSelected = true;
+                m_SelectedNonAnalyzedTab = tab;
             }
         }
 
@@ -1752,6 +1853,9 @@ A view allows the user to browse through the listed items and filter by string o
             public static readonly GUIContent Refresh = new GUIContent("Refresh");
 
             public static readonly GUIContent ShaderVariants = new GUIContent("Variants", "Inspect Shader Variants");
+
+            public static readonly string AnalyzeInfoText = "{0} analysis is not yet included in this report. Run analysis now?";
+            public static readonly string AnalyzeButtonText = "Start {0} Analysis";
         }
     }
 }

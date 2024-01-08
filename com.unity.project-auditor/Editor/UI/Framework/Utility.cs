@@ -37,7 +37,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             View,
             WhiteCheckMark,
             GreenCheckMark,
-            CopyToClipboard
+            CopyToClipboard,
+            AdditionalAnalysis
         }
 
         // Log level
@@ -69,11 +70,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static readonly string k_HiddenIgnoredIssuesIconName = "animationvisibilitytoggleoff";
         static readonly string k_IgnoredIssuesLabel = " Ignored Issues";
         static readonly string k_CopyToClipboardIconName = "CopyToClipboard";
+        static readonly string k_AdditionalAnalysisIconName = "AdditionalAnalysis";
 
         static Texture2D s_CriticalIcon;
         static Texture2D s_MajorIcon;
         static Texture2D s_ModerateIcon;
         static Texture2D s_CopyToClipboardIcon;
+        static Texture2D s_AdditionalAnalysisIcon;
 
         static Texture2D s_MinorIcon;
 
@@ -258,6 +261,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     if (s_CopyToClipboardIcon == null)
                         s_CopyToClipboardIcon = LoadIcon(k_CopyToClipboardIconName);
                     return EditorGUIUtility.TrIconContent(s_CopyToClipboardIcon, tooltip);
+                case IconType.AdditionalAnalysis:
+                    if (string.IsNullOrEmpty(tooltip))
+                        tooltip = "Not Analyzed";
+                    if (s_AdditionalAnalysisIcon == null)
+                        s_AdditionalAnalysisIcon = LoadIcon(k_AdditionalAnalysisIconName);
+                    return EditorGUIUtility.TrIconContent(s_AdditionalAnalysisIcon, tooltip);
 
                 case IconType.Hierarchy:
                     return EditorGUIUtility.TrIconContent(k_HierarchyIconName, tooltip);
