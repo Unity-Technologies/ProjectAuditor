@@ -599,6 +599,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 MenuOrder = 4,
                 DescriptionWithIcon = true,
                 OnOpenIssue = EditorInterop.OpenTextFile<Shader>,
+                Type = typeof(ShaderCompilerMessagesView),
                 AnalyticsEventId = (int)AnalyticsReporter.UIButton.ShaderCompilerMessages
             });
 

@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
-using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
+using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
@@ -67,7 +67,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         internal static bool IsFogModeEnabled(FogMode fogMode)
         {
-            var graphicsSettings = GraphicsSettingsProxy.GetGraphicsSettings();
+            var graphicsSettings = GraphicsSettings.GetGraphicsSettings();
             var serializedObject = new SerializedObject(graphicsSettings);
 
             if (FogStripping.Automatic == (FogStripping)serializedObject.FindProperty("m_FogStripping").enumValueIndex)
@@ -90,7 +90,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         internal static void RemoveFogStripping()
         {
-            var graphicsSettings = GraphicsSettingsProxy.GetGraphicsSettings();
+            var graphicsSettings = GraphicsSettings.GetGraphicsSettings();
             var serializedObject = new SerializedObject(graphicsSettings);
 
             serializedObject.FindProperty("m_FogStripping").enumValueIndex = (int)FogStripping.Automatic;

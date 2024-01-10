@@ -119,7 +119,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             Category = IssueCategory.Shader,
             Properties = new[]
             {
-//                new PropertyDefinition { type = PropertyType.LogLevel},
                 new PropertyDefinition { Type = PropertyType.Description, Name = "Shader Name"},
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ShaderProperty.Size), Format = PropertyFormat.Bytes, Name = "Size", LongName = "Size of the variants in the build" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ShaderProperty.NumVariants), Format = PropertyFormat.ULong, Name = "Num Variants", LongName = "Number of potential shader variants for a single stage (e.g. fragment), per shader platform (e.g. GLES30)" },
@@ -132,8 +131,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ShaderProperty.Instancing), Format = PropertyFormat.Bool, Name = "Instancing", LongName = "GPU Instancing Support" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ShaderProperty.SrpBatcher), Format = PropertyFormat.Bool, Name = "SRP Batcher", LongName = "SRP Batcher Compatible" },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ShaderProperty.AlwaysIncluded), Format = PropertyFormat.Bool, Name = "Always Included", LongName = "Always Included in Build" },
-                new PropertyDefinition { Type = PropertyType.Path, Name = "Source Asset", MaxAutoWidth = 500 },
-                new PropertyDefinition { Type = PropertyType.Directory, Name = "Directory", IsDefaultGroup = true, MaxAutoWidth = 500 }
+                new PropertyDefinition { Type = PropertyType.Path, Name = "Path", MaxAutoWidth = 500 }
             }
         };
 
@@ -226,7 +224,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             Category = IssueCategory.ShaderCompilerMessage,
             Properties = new[]
             {
-                new PropertyDefinition { Type = PropertyType.LogLevel},
+                new PropertyDefinition { Type = PropertyType.LogLevel, Name = "Log Level"},
                 new PropertyDefinition { Type = PropertyType.Description, Name = "Message", MaxAutoWidth = 500 },
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ShaderMessageProperty.ShaderName), Format = PropertyFormat.String, Name = "Shader Name", IsDefaultGroup = true},
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(ShaderMessageProperty.Platform), Format = PropertyFormat.String, Name = "Platform"},

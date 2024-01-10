@@ -412,7 +412,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase(FogMode.Linear)]
         public void SettingsAnalysis_FogStripping_IsReported(FogMode fogMode)
         {
-            var graphicsSettings = GraphicsSettingsProxy.GetGraphicsSettings();
+            var graphicsSettings = GraphicsSettings.GetGraphicsSettings();
             var serializedObject = new SerializedObject(graphicsSettings);
 
             var fogStrippingProperty = serializedObject.FindProperty("m_FogStripping");
@@ -471,7 +471,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [TestCase(FogStripping.Custom)]
         public void SettingsAnalysis_FogStripping_IsNotReported(FogStripping fogModeStripping)
         {
-            var graphicsSettings = GraphicsSettingsProxy.GetGraphicsSettings();
+            var graphicsSettings = GraphicsSettings.GetGraphicsSettings();
             var serializedObject = new SerializedObject(graphicsSettings);
 
             var fogStrippingProperty = serializedObject.FindProperty("m_FogStripping");
