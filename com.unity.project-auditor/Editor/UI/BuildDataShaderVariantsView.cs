@@ -311,7 +311,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 var variants = m_Issues.Where(issue => predicate == null || predicate(issue));
 
-                ShadersModule.ExportVariantsToSvc(svcName, path, variants.ToArray());
+                ShadersModule.ExportBuildDataVariantsToSvc(svcName, path, variants.ToArray());
 
                 EditorUtility.RevealInFinder(path);
             }

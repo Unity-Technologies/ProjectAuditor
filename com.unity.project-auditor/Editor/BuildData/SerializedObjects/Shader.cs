@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.UnityFileSystemApi;
+using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
 {
@@ -85,6 +86,8 @@ namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
             public class Pass
             {
                 public string Name { get; }
+                public UnityEngine.Rendering.PassType Type { get; }
+
                 // The key is the program type (vertex, fragment...)
                 public IReadOnlyDictionary<string, IReadOnlyList<SubProgram>> Programs { get; }
 
@@ -109,6 +112,8 @@ namespace Unity.ProjectAuditor.Editor.BuildData.SerializedObjects
                     {
                         Name = reader["m_State"]["m_Name"].GetValue<string>();
                     }
+
+                    Type = (PassType)reader["m_Type"].GetValue<int>();
 
                     foreach (var progType in s_progTypes)
                     {

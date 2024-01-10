@@ -733,6 +733,29 @@ namespace Unity.ProjectAuditor.Editor.Modules
             AssetDatabase.CreateAsset(svc, path);
         }
 
+        public static void ExportBuildDataVariantsToSvc(string svcName, string path, ProjectIssue[] variants)
+        {
+            var svc = new ShaderVariantCollection();
+            svc.name = svcName;
+
+            foreach (var issue in variants)
+            {
+                var shader = Shader.Find(issue.GetProperty(PropertyType.Description));
+                var passType = issue.GetCustomProperty(BuildDataShaderVariantProperty.PassType);
+                var keywords = SplitKeywords(issue.GetCustomProperty(BuildDataShaderVariantProperty.Keywords));
+
+                if (shader != null && !passType.Equals(string.Empty))
+                {
+                    var shaderVariant = new ShaderVariantCollection.ShaderVariant();
+                    shaderVariant.shader = shader;
+                    shaderVariant.passType = (UnityEngine.Rendering.PassType)Enum.Parse(typeof(UnityEngine.Rendering.PassType), passType);
+                    shaderVariant.keywords = keywords;
+                    svc.Add(shaderVariant);
+                }
+            }
+            AssetDatabase.CreateAsset(svc, path);
+        }
+
         public static ParseLogResult ParsePlayerLog(string logFile, ProjectIssue[] builtVariants, IProgress progress = null)
         {
             var compiledVariants = new Dictionary<string, List<CompiledVariantData>>();

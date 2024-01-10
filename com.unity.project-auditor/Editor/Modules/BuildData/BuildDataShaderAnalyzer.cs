@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Interfaces;
+using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
@@ -37,6 +38,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                                         subprog.Api.ToString(),
                                         subprog.HwTier.ToString(),
                                         program.Key, // Stage
+                                        pass.Type.ToString(),
                                         string.IsNullOrEmpty(pass.Name) ? "Pass " + passCount.ToString() : pass.Name,
                                         keywordString,
                                         context.Shader.BuildFile.DisplayName,
