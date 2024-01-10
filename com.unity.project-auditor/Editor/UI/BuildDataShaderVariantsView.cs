@@ -9,6 +9,7 @@ using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
@@ -18,15 +19,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         static readonly string k_Description = $@"This view shows the built Shader Variants.";
 
-        static readonly string k_PlayerLogInstructions = $@"The number of Variants contributes to the build size, however, there might be Variants that are not required (compiled) at runtime on the target platform. To find out which of these variants are not compiled at runtime, follow these steps:
-{k_BulletPointUnicode} Enable the <b>Log Shader Compilation</b> option
-{k_BulletPointUnicode} Make a Development build
+        static readonly string k_PlayerLogInstructions = $@"To find out which of these variants are compiled at runtime:
+{k_BulletPointUnicode} Enable <b>Settings > Graphics > Shader Preloading > Log Shader Compilation</b> or click the checkbox below.
 {k_BulletPointUnicode} Run the build on the target platform. Make sure to go through all scenes.
 {k_BulletPointUnicode} Drag & Drop the Player.log file on this window";
 
         const string k_PlayerLogParsingDialogTitle = "Shader Variants";
-
-        const string k_PlayerLogParsingUnsupported = "To find out which of these variants are not compiled at runtime, update to the latest Unity 2018+ LTS.";
 
         const string k_NoCompiledVariantWarning = "No compiled shader variants found in player log. Perhaps, Log Shader Compilation was not enabled when the project was built.";
         const string k_NoCompiledVariantWarningLogDisabled = "No compiled shader variants found in player log. Shader compilation logging is disabled. Would you like to enable it? (Shader compilation will not appear in the log until the project is rebuilt)";
@@ -88,16 +86,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                     MarkDirty();
                     break;
                 case ParseLogResult.NoCompiledVariants:
-                    if (GraphicsSettingsProxy.logShaderCompilationSupported)
+                    if (GraphicsSettings.logWhenShaderIsCompiled)
                     {
-                        if (GraphicsSettingsProxy.logWhenShaderIsCompiled)
-                        {
-                            EditorUtility.DisplayDialog(k_PlayerLogParsingDialogTitle, k_NoCompiledVariantWarning, k_Ok);
-                        }
-                        else
-                        {
-                            GraphicsSettingsProxy.logWhenShaderIsCompiled = EditorUtility.DisplayDialog(k_PlayerLogParsingDialogTitle, k_NoCompiledVariantWarningLogDisabled, k_Yes, k_No);
-                        }
+                        EditorUtility.DisplayDialog(k_PlayerLogParsingDialogTitle, k_NoCompiledVariantWarning, k_Ok);
+                    }
+                    else
+                    {
+                        GraphicsSettings.logWhenShaderIsCompiled = EditorUtility.DisplayDialog(k_PlayerLogParsingDialogTitle, k_NoCompiledVariantWarningLogDisabled, k_Yes, k_No);
                     }
                     break;
                 case ParseLogResult.ReadError:
@@ -251,22 +246,21 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             EditorGUILayout.BeginVertical();
 
-            if (NumIssues > 0 && m_Desc.Category == IssueCategory.BuildDataShaderVariant)
-            {
+            EditorGUILayout.LabelField(k_Description, SharedStyles.TextArea);
+            bool isVisualShaderView = m_Desc.Category == IssueCategory.BuildDataShaderVariant;
+
+            if (isVisualShaderView)
                 EditorGUILayout.LabelField(k_PlayerLogInstructions, SharedStyles.TextArea);
-                if (!GraphicsSettingsProxy.logShaderCompilationSupported)
-                    EditorGUILayout.HelpBox(k_PlayerLogParsingUnsupported, MessageType.Warning);
 
-                if (GraphicsSettingsProxy.logShaderCompilationSupported)
-                {
-                    EditorGUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField(k_LogShaderCompilation, GUILayout.Width(270));
-                    GraphicsSettingsProxy.logWhenShaderIsCompiled = EditorGUILayout.Toggle(GraphicsSettingsProxy.logWhenShaderIsCompiled);
-                    EditorGUILayout.EndHorizontal();
-                }
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField(k_LogShaderCompilation, GUILayout.Width(290));
+            GraphicsSettings.logWhenShaderIsCompiled = EditorGUILayout.Toggle(GraphicsSettings.logWhenShaderIsCompiled);
+            EditorGUILayout.EndHorizontal();
 
+            if (NumIssues > 0 && isVisualShaderView)
+            {
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField(k_ExportAsVariantCollection, GUILayout.Width(270));
+                EditorGUILayout.LabelField(k_ExportAsVariantCollection, GUILayout.Width(290));
                 m_ExportAsVariantCollection = EditorGUILayout.Toggle(m_ExportAsVariantCollection);
                 EditorGUILayout.EndHorizontal();
 
