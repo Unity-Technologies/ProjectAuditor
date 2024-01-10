@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Issues relating to asset data or asset import settings
         /// </summary>
-        AssetDiagnostic,
+        AssetIssue,
 
         /// <summary>
         /// Category for reporting shaders in the project

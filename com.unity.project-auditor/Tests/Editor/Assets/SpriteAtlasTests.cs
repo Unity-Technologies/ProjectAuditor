@@ -84,7 +84,7 @@ namespace Unity.ProjectAuditor.EditorTests
             m_AdditionalRules.Clear();
 
             var diagnostic =
-                AnalyzeAndFindAssetIssues(m_TestSpriteAtlasEmpty, IssueCategory.AssetDiagnostic)
+                AnalyzeAndFindAssetIssues(m_TestSpriteAtlasEmpty, IssueCategory.AssetIssue)
                     .FirstOrDefault(i => i.Id.Equals(SpriteAtlasAnalyzer.k_PoorUtilizationDescriptor.Id));
 
             Assert.IsNull(diagnostic);
@@ -104,7 +104,7 @@ namespace Unity.ProjectAuditor.EditorTests
             });
 
             var diagnostic =
-                AnalyzeAndFindAssetIssues(m_TestSpriteAtlasFull, IssueCategory.AssetDiagnostic)
+                AnalyzeAndFindAssetIssues(m_TestSpriteAtlasFull, IssueCategory.AssetIssue)
                     .FirstOrDefault(i => i.Id.Equals(SpriteAtlasAnalyzer.k_PoorUtilizationDescriptor.Id));
 
             Assert.Null(diagnostic);
@@ -124,7 +124,7 @@ namespace Unity.ProjectAuditor.EditorTests
             });
 
             var diagnostic =
-                AnalyzeAndFindAssetIssues(m_TestSpriteAtlasEmpty, IssueCategory.AssetDiagnostic)
+                AnalyzeAndFindAssetIssues(m_TestSpriteAtlasEmpty, IssueCategory.AssetIssue)
                     .FirstOrDefault(i => i.Id.Equals(SpriteAtlasAnalyzer.k_PoorUtilizationDescriptor.Id));
 
             Assert.IsNotNull(diagnostic);

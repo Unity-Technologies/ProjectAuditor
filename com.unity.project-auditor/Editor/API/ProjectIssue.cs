@@ -45,10 +45,10 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <remarks>
         /// Project Reports can contain two different types of ProjectIssue:
-        /// - Diagnostic issues, which indicate a potential problem which should be investigated and possibly fixed: for example, a texture with its Read/Write Enabled checkbox ticked.
-        /// - Non-diagnostic issues, for informational purposes: for example, general information about a texture in the project.
+        /// - Issues, which indicate a potential problem which should be investigated and possibly fixed: for example, a texture with its Read/Write Enabled checkbox ticked.
+        /// - Insights, for informational purposes: for example, general information about a texture in the project.
         ///
-        /// Diagnostic issues can be identified by having a valid <seealso cref="DescriptorId"/>. See also: the <seealso cref="ProjectIssue.IsDiagnostic"/> method.
+        /// Issues can be identified by having a valid <seealso cref="DescriptorId"/>. See also: the <seealso cref="IsIssue"/> method.
         /// </remarks>
         [JsonIgnore]
         public DescriptorId Id
@@ -180,7 +180,7 @@ namespace Unity.ProjectAuditor.Editor
         [JsonProperty("severity")]
         internal string SeverityAsString
         {
-            get => IsDiagnostic() ? m_Severity.ToString() : null;
+            get => IsIssue() ? m_Severity.ToString() : null;
             set => m_Severity = (Severity)Enum.Parse(typeof(Severity), value);
         }
 
@@ -195,7 +195,7 @@ namespace Unity.ProjectAuditor.Editor
         /// Constructs and returns an instance of ProjectIssue.
         /// </summary>
         /// <param name="category">Issue category</param>
-        /// <param name="id">Diagnostic descriptor ID</param>
+        /// <param name="id">Descriptor ID</param>
         /// <param name="args">Arguments to be used in the message formatting</param>
         internal ProjectIssue(IssueCategory category, string id, params object[] args)
         {
@@ -233,7 +233,7 @@ namespace Unity.ProjectAuditor.Editor
         /// Checks whether this issue is a diagnostic.
         /// </summary>
         /// <returns>True if the issue's descriptor ID is valid. Otherwise, returns false.</returns>
-        public bool IsDiagnostic()
+        public bool IsIssue()
         {
             return Id.IsValid();
         }

@@ -28,7 +28,7 @@ namespace Unity.ProjectAuditor.Editor
 
         internal const string k_PackageName = "com.unity.project-auditor";
 
-        public const string DisplayName = "Project Auditor";
+        internal const string DisplayName = "Project Auditor";
 
         internal static string PackagePath
         {

@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (context.IsDescriptorEnabled(dimensionAppropriateDescriptor) &&
                 TextureUtils.IsTextureSolidColorTooBig(context.Importer, context.Texture))
             {
-                yield return context.CreateIssue(IssueCategory.AssetDiagnostic, dimensionAppropriateDescriptor.Id, context.Name)
+                yield return context.CreateIssue(IssueCategory.AssetIssue, dimensionAppropriateDescriptor.Id, context.Name)
                     .WithLocation(context.Importer.assetPath);
             }
 
@@ -76,7 +76,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 var emptyPercent = TextureUtils.GetEmptyPixelsPercent(texture2D);
                 if (emptyPercent > context.SpriteAtlasEmptySpaceLimit)
                 {
-                    yield return context.CreateIssue(IssueCategory.AssetDiagnostic, k_TextureAtlasEmptyDescriptor.Id, context.Name, Formatting.FormatPercentage(emptyPercent / 100.0f))
+                    yield return context.CreateIssue(IssueCategory.AssetIssue, k_TextureAtlasEmptyDescriptor.Id, context.Name, Formatting.FormatPercentage(emptyPercent / 100.0f))
                         .WithLocation(context.Importer.assetPath);
                 }
             }

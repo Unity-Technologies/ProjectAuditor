@@ -79,14 +79,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 if (mesh.isReadable)
                 {
-                    yield return context.CreateIssue(IssueCategory.AssetDiagnostic, k_MeshReadWriteEnabledDescriptor.Id, meshName)
+                    yield return context.CreateIssue(IssueCategory.AssetIssue, k_MeshReadWriteEnabledDescriptor.Id, meshName)
                         .WithLocation(assetPath);
                 }
 
                 if (mesh.indexFormat == IndexFormat.UInt32 &&
                     mesh.vertexCount <= 65535)
                 {
-                    yield return context.CreateIssue(IssueCategory.AssetDiagnostic,
+                    yield return context.CreateIssue(IssueCategory.AssetIssue,
                         k_Mesh32BitIndexFormatUsedDescriptor.Id, meshName)
                         .WithLocation(assetPath);
                 }

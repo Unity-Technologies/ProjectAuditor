@@ -11,7 +11,7 @@ namespace Unity.ProjectAuditor.Editor.Core
         /// Create an IssueBuilder for a diagnostic issue
         /// </summary>
         /// <param name="category">Issue category</param>
-        /// <param name="id">Diagnostic descriptor ID</param>
+        /// <param name="id">Descriptor ID</param>
         /// <param name="messageArgs">Arguments to be used in the message formatting</param>
         /// <returns>The IssueBuilder, constructed with the specified category, descriptor ID and message arguments</returns>
         internal IssueBuilder CreateIssue(IssueCategory category, string id, params object[] messageArgs)

@@ -76,7 +76,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var analysisParams = new AnalysisParams
             {
-                Categories = new[] { IssueCategory.AssetDiagnostic },
+                Categories = new[] { IssueCategory.AssetIssue },
                 DiagnosticParams = m_DiagnosticParams
             };
 

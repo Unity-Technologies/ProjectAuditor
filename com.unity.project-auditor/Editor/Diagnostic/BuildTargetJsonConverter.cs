@@ -6,7 +6,7 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
-    public class BuildTargetJsonConverter : JsonConverter
+    class BuildTargetJsonConverter : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {

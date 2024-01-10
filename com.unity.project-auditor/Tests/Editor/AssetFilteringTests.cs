@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
         readonly IssueCategory[] m_AllCategoriesTested = new[]
         {
-            IssueCategory.AssetDiagnostic,
+            IssueCategory.AssetIssue,
             IssueCategory.Code,
         };
 
@@ -143,7 +143,7 @@ namespace Unity.ProjectAuditor.EditorTests
             // if this asset had dependencies, this wouldn't work as the dependencies would get reported too
             //
             // given that the filtering is done in a generic way, testing just the asset diagnostic behavior should be good enough
-            TestFiltering(m_SmallMeshAsset, IssueCategory.AssetDiagnostic);
+            TestFiltering(m_SmallMeshAsset, IssueCategory.AssetIssue);
         }
     }
 }

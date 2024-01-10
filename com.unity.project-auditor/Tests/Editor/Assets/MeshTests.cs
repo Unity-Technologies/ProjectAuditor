@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Mesh_Using32bitIndexFormat_IsReported()
         {
-            var foundIssues = AnalyzeAndFindAssetIssues(m_TestSmallMeshAsset, IssueCategory.AssetDiagnostic);
+            var foundIssues = AnalyzeAndFindAssetIssues(m_TestSmallMeshAsset, IssueCategory.AssetIssue);
 
             Assert.IsNotEmpty(foundIssues);
             Assert.IsTrue(foundIssues.Any(issue => issue.Id == MeshAnalyzer.PAA1001), "Small mesh should be reported");
@@ -41,7 +41,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Mesh_ReadWrite_IsReported()
         {
-            var foundIssues = AnalyzeAndFindAssetIssues(m_TestSmallMeshAsset, IssueCategory.AssetDiagnostic);
+            var foundIssues = AnalyzeAndFindAssetIssues(m_TestSmallMeshAsset, IssueCategory.AssetIssue);
 
             Assert.IsNotEmpty(foundIssues);
             Assert.IsTrue(foundIssues.Any(issue => issue.Id == MeshAnalyzer.PAA1000), "Read/Write mesh should be reported");
@@ -50,7 +50,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Mesh_ReadWrite_IsNotReported()
         {
-            var foundIssues = AnalyzeAndFindAssetIssues(m_TestLargeMeshAsset, IssueCategory.AssetDiagnostic);
+            var foundIssues = AnalyzeAndFindAssetIssues(m_TestLargeMeshAsset, IssueCategory.AssetIssue);
 
             Assert.IsFalse(foundIssues.Any(issue => issue.Id == MeshAnalyzer.PAA1000), "Read/Write mesh should no be reported");
         }

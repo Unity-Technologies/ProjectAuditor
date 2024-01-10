@@ -102,7 +102,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 id = TabId.Assets, name = "Assets",
                 categories = new[]
                 {
-                    IssueCategory.AssetDiagnostic, IssueCategory.Texture, IssueCategory.Mesh, IssueCategory.AudioClip, IssueCategory.AnimatorController, IssueCategory.AnimationClip, IssueCategory.Avatar, IssueCategory.AvatarMask
+                    IssueCategory.AssetIssue, IssueCategory.Texture, IssueCategory.Mesh, IssueCategory.AudioClip, IssueCategory.AnimatorController, IssueCategory.AnimationClip, IssueCategory.Avatar, IssueCategory.AvatarMask
                 }
             },
             new Tab
@@ -114,7 +114,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 },
                 excludedModuleCategories = new[]
                 {
-                    IssueCategory.AssetDiagnostic
+                    IssueCategory.AssetIssue
                 }
             },
             new Tab
@@ -166,7 +166,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (!matchAssembly)
                 return false;
 
-            var isDiagnostic = issue.IsDiagnostic();
+            var isDiagnostic = issue.IsIssue();
             if (!isDiagnostic)
                 return true;
 
@@ -340,7 +340,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 if (view == null)
                     continue;
 
-                var displayName = view.IsDiagnostic() ? "Diagnostics" : view.Desc.DisplayName;
+                var displayName = view.IsDiagnostic() ? "Issues" : view.Desc.DisplayName;
 
                 dropDownItems.Add(new Utility.DropdownItem
                 {
@@ -547,9 +547,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             });
             ViewDescriptor.Register(new ViewDescriptor
             {
-                Category = IssueCategory.AssetDiagnostic,
-                DisplayName = "Asset Diagnostics",
-                MenuLabel = "Assets/Diagnostics",
+                Category = IssueCategory.AssetIssue,
+                DisplayName = "Asset Issues",
+                MenuLabel = "Assets/Issues",
                 MenuOrder = 1,
                 DescriptionWithIcon = true,
                 ShowDependencyView = true,
@@ -784,7 +784,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 Category = IssueCategory.Code,
                 DisplayName = "Code",
-                MenuLabel = "Code/Diagnostics",
+                MenuLabel = "Code/Issues",
                 MenuOrder = 0,
                 ShowAssemblySelection = true,
                 ShowDependencyView = true,

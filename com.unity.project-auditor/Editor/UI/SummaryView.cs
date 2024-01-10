@@ -39,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_Stats.numBuildSteps += allIssues.Count(i => i.Category == IssueCategory.BuildStep);
             m_Stats.numCodeIssues += allIssues.Count(i => i.Category == IssueCategory.Code);
             m_Stats.numSettingIssues += allIssues.Count(i => i.Category == IssueCategory.ProjectSetting);
-            m_Stats.numAssetIssues += allIssues.Count(i => i.Category == IssueCategory.AssetDiagnostic);
+            m_Stats.numAssetIssues += allIssues.Count(i => i.Category == IssueCategory.AssetIssue);
             m_Stats.numShaders += allIssues.Count(i => i.Category == IssueCategory.Shader);
             m_Stats.numPackages += allIssues.Count(i => i.Category == IssueCategory.Package);
 
@@ -64,7 +64,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.Space();
 
                 EditorGUILayout.BeginVertical(GUILayout.Width(300));
-                EditorGUILayout.LabelField("Diagnostics", SharedStyles.BoldLabel);
+                EditorGUILayout.LabelField("Issues", SharedStyles.BoldLabel);
 
                 EditorGUI.indentLevel++;
 
@@ -73,7 +73,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 if (m_Stats.numSettingIssues > 0)
                     DrawSummaryItem("Settings:", m_Stats.numSettingIssues, IssueCategory.ProjectSetting);
                 if (m_Stats.numAssetIssues > 0)
-                    DrawSummaryItem("Assets:", m_Stats.numAssetIssues, IssueCategory.AssetDiagnostic);
+                    DrawSummaryItem("Assets:", m_Stats.numAssetIssues, IssueCategory.AssetIssue);
 
                 DrawLine();
                 EditorGUI.indentLevel--;
@@ -82,7 +82,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.Space();
 
                 EditorGUILayout.BeginVertical(GUILayout.Width(300));
-                EditorGUILayout.LabelField("Statistics", SharedStyles.BoldLabel);
+                EditorGUILayout.LabelField("Insights", SharedStyles.BoldLabel);
 
                 EditorGUI.indentLevel++;
                 if (m_Stats.numCompilerErrors > 0)

@@ -13,7 +13,7 @@ using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    public class ShaderVariantTests : TestFixtureBase
+    class ShaderVariantTests : TestFixtureBase
     {
         const string k_KeywordName = "DIRECTIONAL";
 

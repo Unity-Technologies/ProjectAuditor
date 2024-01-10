@@ -5,7 +5,7 @@ using UnityEditor;
 namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
     /// <summary>
-    /// Represents a rule which modifies the <seealso cref="Diagnostic.Severity"/> of a Diagnostic <seealso cref="ProjectIssue"/>
+    /// Represents a rule which modifies the <seealso cref="Diagnostic.Severity"/> of an Issue <seealso cref="ProjectIssue"/>
     /// or all of the ProjectIssues that share a <seealso cref="Descriptor"/>.
     /// </summary>
     [Serializable]

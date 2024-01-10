@@ -11,27 +11,27 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
     public sealed class Descriptor : IEquatable<Descriptor>
     {
         /// <summary>
-        /// An unique identifier for the diagnostic. IDs must have exactly 3 upper case characters, followed by 4 digits.
+        /// An unique identifier for the issue. IDs must have exactly 3 upper case characters, followed by 4 digits.
         /// </summary>
         public string Id;
 
         /// <summary>
-        /// Diagnostic title
+        /// Issue title
         /// </summary>
         public string Title;
 
         /// <summary>
-        /// Message used to describe a specific instance of the diagnostic.
+        /// Message used to describe a specific instance of the issue.
         /// </summary>
         public string MessageFormat;
 
         /// <summary>
-        /// Default Severity of the diagnostic.
+        /// Default Severity of the issue.
         /// </summary>
         public Severity DefaultSeverity;
 
         /// <summary>
-        /// Returns true if the diagnostic is enabled by default.
+        /// Returns true if the issue is enabled by default.
         /// </summary>
         public bool IsEnabledByDefault = true;
 
@@ -41,18 +41,18 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public Areas Areas;
 
         /// <summary>
-        /// Affected platforms. If null, the diagnostic applies to all platforms.
+        /// Affected platforms. If null, the issue applies to all platforms.
         /// </summary>
         [JsonConverter(typeof(BuildTargetJsonConverter))]
         public BuildTarget[] Platforms;
 
         /// <summary>
-        /// Description of the diagnostic.
+        /// Description of the issue.
         /// </summary>
         public string Description;
 
         /// <summary>
-        /// Recommendation to fix the diagnostic.
+        /// Recommendation to fix the issue.
         /// </summary>
         public string Solution;
 
@@ -62,12 +62,12 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public string DocumentationUrl;
 
         /// <summary>
-        /// Minimum Unity version this diagnostic applies to. If not specified, the diagnostic applies to all versions.
+        /// Minimum Unity version this issue applies to. If not specified, the issue applies to all versions.
         /// </summary>
         public string MinimumVersion;
 
         /// <summary>
-        /// Maximum Unity version this diagnostic applies to. If not specified, the diagnostic applies to all versions.
+        /// Maximum Unity version this issue applies to. If not specified, the issue applies to all versions.
         /// </summary>
         public string MaximumVersion;
 

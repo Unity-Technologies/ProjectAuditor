@@ -79,7 +79,7 @@ namespace Unity.ProjectAuditor.EditorTests
             viewManager.ChangeView(IssueCategory.BuildStep);
             Assert.AreEqual(buildView.Description, m_BuildSizeMsg);
 
-            viewManager.ChangeView(IssueCategory.AssetDiagnostic);
+            viewManager.ChangeView(IssueCategory.AssetIssue);
             viewManager.ChangeView(IssueCategory.Shader);
 
             Assert.NotNull(viewManager);

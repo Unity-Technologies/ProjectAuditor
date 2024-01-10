@@ -14,7 +14,7 @@ using UnityEngine.Rendering.Universal;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    public class UrpSettingsAnalysisTests : TestFixtureBase
+    class UrpSettingsAnalysisTests : TestFixtureBase
     {
         [OneTimeSetUp]
         public void SetUp()

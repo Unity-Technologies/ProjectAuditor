@@ -142,7 +142,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
-                return m_Issues.Where(i => !i.IsDiagnostic()).ToArray();
+                return m_Issues.Where(i => !i.IsIssue()).ToArray();
             }
             set => m_Issues.AddRange(value);
         }
@@ -152,7 +152,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             get
             {
-                return m_Issues.Where(i => i.IsDiagnostic() && !i.WasFixed).ToArray();
+                return m_Issues.Where(i => i.IsIssue() && !i.WasFixed).ToArray();
             }
             set => m_Issues.AddRange(value);
         }
@@ -257,7 +257,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Find all diagnostics that match a specific ID.
+        /// Find all Issues that match a specific ID.
         /// </summary>
         /// <param name="id"> Desired Descriptor ID</param>
         /// <returns> Array of project issues</returns>

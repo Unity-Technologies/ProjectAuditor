@@ -106,7 +106,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 {
                     IssueCategory.Code,
                     IssueCategory.ProjectSetting,
-                    IssueCategory.AssetDiagnostic,
+                    IssueCategory.AssetIssue,
                 }
             });
 

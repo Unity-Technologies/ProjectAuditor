@@ -1,21 +1,12 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEditor;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    public enum AnalysisResult
-    {
-        InProgress,
-        Success,
-        Failure,
-        Cancelled
-    }
-
     /// <summary>
     /// Represents an object which can be passed to an instance of <see cref="ProjectAuditor"/> to specify how analysis should be performed and to provide delegates to be called when analysis steps have completed.
     /// AnalysisParams defaults to values which instruct ProjectAuditor to analyse everything in the project for the current build target, but instances can be populated with custom data in an object initializer to provide additional constraints.

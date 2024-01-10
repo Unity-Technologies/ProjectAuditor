@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
-    public class DescriptorJsonConverter : JsonConverter
+    class DescriptorJsonConverter : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {

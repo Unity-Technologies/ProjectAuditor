@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         internal static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
-            Category = IssueCategory.AssetDiagnostic,
+            Category = IssueCategory.AssetIssue,
             Properties = new[]
             {
                 new PropertyDefinition { Type = PropertyType.Description, Name = "Issue", LongName = "Issue description", MaxAutoWidth = 800 },
@@ -126,7 +126,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (totalBytes <= folderSizeLimitMB * 1024 * 1024)
                 return null;
 
-            return context.CreateIssue(IssueCategory.AssetDiagnostic, k_StreamingAssetsFolderDescriptor.Id,
+            return context.CreateIssue(IssueCategory.AssetIssue, k_StreamingAssetsFolderDescriptor.Id,
                 Formatting.FormatSize((ulong)totalBytes));
         }
     }

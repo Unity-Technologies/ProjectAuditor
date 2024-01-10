@@ -96,7 +96,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             issues.Add(context.CreateIssue
                 (
-                    IssueCategory.AssetDiagnostic,
+                    IssueCategory.AssetIssue,
                     isInResources ? k_AssetInResourcesFolderDescriptor.Id : k_AssetInResourcesFolderDependencyDescriptor.Id,
                     Path.GetFileName(assetPath)
                 )
