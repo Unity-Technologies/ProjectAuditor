@@ -36,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
             Platforms = new[] { BuildTarget.Android, BuildTarget.iOS, BuildTarget.Switch},
             MessageFormat = "URP: HDR is enabled in {0}.asset in {1}",
-            fixer = FixHdrSetting
+            Fixer = FixHdrSetting
         };
 
         static readonly Descriptor k_MsaaSampleCountSettingDescriptor = new Descriptor(
@@ -48,7 +48,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         {
             Platforms = new[] { BuildTarget.Android, BuildTarget.iOS, BuildTarget.Switch},
             MessageFormat = "URP: MSAA is set to 4x or 8x in {0}.asset in {1}",
-            fixer = FixMsaaSampleCountSetting
+            Fixer = FixMsaaSampleCountSetting
         };
 
         static readonly Descriptor k_CameraStopNanDescriptor = new Descriptor(

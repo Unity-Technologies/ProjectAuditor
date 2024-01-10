@@ -72,10 +72,10 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public string MaximumVersion;
 
         /// <summary>
-        /// Optional Auto-fixer
+        /// Optional Auto-Fixer
         /// </summary>
         [JsonIgnore]
-        public Action<ProjectIssue, AnalysisParams> fixer;
+        public Action<ProjectIssue, AnalysisParams> Fixer;
 
         /// <summary>
         /// Name of the type (namespace and class/struct) of a known code API issue.
@@ -142,11 +142,11 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
 
         internal void Fix(ProjectIssue issue, AnalysisParams analysisParams)
         {
-            // Temp workaround for lost 'fixer' after domain reload
-            if (fixer == null)
+            // Temp workaround for lost 'Fixer' after domain reload
+            if (Fixer == null)
                 return;
 
-            fixer(issue, analysisParams);
+            Fixer(issue, analysisParams);
             issue.WasFixed = true;
         }
 

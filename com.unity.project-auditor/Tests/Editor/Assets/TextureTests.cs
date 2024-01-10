@@ -239,7 +239,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotNull(textureDiagnostic);
             var descriptor = textureDiagnostic.Id.GetDescriptor();
             Assert.NotNull(descriptor);
-            Assert.NotNull(descriptor.fixer);
+            Assert.NotNull(descriptor.Fixer);
 
             descriptor.Fix(textureDiagnostic, m_AnalysisParams);
 
@@ -258,7 +258,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotNull(textureDiagnostic);
             var descriptor = textureDiagnostic.Id.GetDescriptor();
             Assert.NotNull(descriptor);
-            Assert.NotNull(descriptor.fixer);
+            Assert.NotNull(descriptor.Fixer);
 
             descriptor.Fix(textureDiagnostic, m_AnalysisParams);
 
@@ -278,7 +278,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotNull(textureDiagnostic);
             var descriptor = textureDiagnostic.Id.GetDescriptor();
             Assert.NotNull(descriptor);
-            Assert.NotNull(descriptor.fixer);
+            Assert.NotNull(descriptor.Fixer);
 
             descriptor.Fix(textureDiagnostic, m_AnalysisParams);
 
@@ -309,7 +309,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotNull(textureDiagnostic);
             var descriptor = textureDiagnostic.Id.GetDescriptor();
             Assert.NotNull(descriptor);
-            Assert.NotNull(descriptor.fixer);
+            Assert.NotNull(descriptor.Fixer);
 
             descriptor.Fix(textureDiagnostic, m_AnalysisParams);
 
@@ -346,7 +346,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotNull(textureDiagnostic);
             var descriptor = textureDiagnostic.Id.GetDescriptor();
             Assert.NotNull(descriptor);
-            Assert.NotNull(descriptor.fixer);
+            Assert.NotNull(descriptor.Fixer);
 
             descriptor.Fix(textureDiagnostic, m_AnalysisParams);
 

@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             None = 0,
             Code = 1 << 0,
-            Settings = 1 << 1,
+            ProjectSettings = 1 << 1,
             Assets = 1 << 2,
             Shaders = 1 << 3,
             Build = 1 << 4,
@@ -41,7 +41,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             All = ~None
         }
 
-        const ProjectAreaFlags k_ProjectAreaDefaultFlags = ProjectAreaFlags.Code | ProjectAreaFlags.Settings | ProjectAreaFlags.Assets | ProjectAreaFlags.Shaders | ProjectAreaFlags.Build;
+        const ProjectAreaFlags k_ProjectAreaDefaultFlags = ProjectAreaFlags.Code | ProjectAreaFlags.ProjectSettings | ProjectAreaFlags.Assets | ProjectAreaFlags.Shaders | ProjectAreaFlags.Build;
 
         static readonly string[] AreaNames = Enum.GetNames(typeof(Areas)).Where(a => a != "None" && a != "All").ToArray();
         static ProjectAuditorWindow s_Instance;
@@ -813,8 +813,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             ViewDescriptor.Register(new ViewDescriptor
             {
                 Category = IssueCategory.ProjectSetting,
-                DisplayName = "Settings",
-                MenuLabel = "Project/Settings/Diagnostics",
+                DisplayName = "Project Settings",
+                MenuLabel = "Project/Settings/Issues",
                 MenuOrder = 1,
                 ShowFilters = true,
                 ShowInfoPanel = true,
@@ -1051,7 +1051,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             var requestedCategories = new List<IssueCategory>(new[] {IssueCategory.Metadata});
             if (m_SelectedProjectAreas.HasFlag(ProjectAreaFlags.Code))
                 requestedCategories.AddRange(GetTabCategories(TabId.Code));
-            if (m_SelectedProjectAreas.HasFlag(ProjectAreaFlags.Settings))
+            if (m_SelectedProjectAreas.HasFlag(ProjectAreaFlags.ProjectSettings))
                 requestedCategories.AddRange(GetTabCategories(TabId.Settings));
             if (m_SelectedProjectAreas.HasFlag(ProjectAreaFlags.Assets))
                 requestedCategories.AddRange(GetTabCategories(TabId.Assets));
@@ -1805,9 +1805,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent CompilationModeSelection =
                 new GUIContent("Compilation Mode", "Select the compilation mode.");
 
-            public static readonly GUIContent SettingsTitle = new GUIContent("Settings");
-            public static readonly GUIContent NewSettingsButton = new GUIContent("Create New Settings");
-
             public static readonly GUIContent SaveButton = Utility.GetIcon(Utility.IconType.Save, "Save current report to json file");
             public static readonly GUIContent LoadButton = Utility.GetIcon(Utility.IconType.Load, "Load report from json file");
             public static readonly GUIContent DiscardButton = Utility.GetIcon(Utility.IconType.Trash, "Discard the current report.");
@@ -1833,17 +1830,16 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             public static readonly GUIContent WelcomeText = new GUIContent(
                 $@"
-{ProjectAuditor.DisplayName} is a static analysis tool that analyzes assets, settings, and scripts of the Unity project and produces a report that contains the following:
+{ProjectAuditor.DisplayName} is a suite of static analysis tools that analyzes scripts, assets, settings, and build reports of your Unity project and produces a report that includes:
 
- •  <b>Diagnostics</b>: a list of possible problems that might affect performance, memory and other areas.
- •  <b>BuildReport</b>: timing and size information of the last build.
- •  <b>Assets information</b>
+• <b>Code Issues</b>: a list of possible problems that might affect performance, memory usage, Editor iteration times, and other areas.
+• <b>Asset Issues</b>: Assets with import settings or file organization that may impact startup times, runtime memory usage or performance.
+• <b>Project Settings Issues</b>: a list of possible problems that might affect performance, memory and other areas.
+• <b>Build Report Insights</b>: How long each step of the last clean build took, and what assets were included in it.
 
 To Analyze the project, click on <b>Analyze</b>.
 
-Once the project is analyzed, {ProjectAuditor.DisplayName} displays a summary with high-level information. Then, it is possible to dive into a specific section of the report from the View menu.
-
-A view allows the user to browse through the listed items and filter by string or other search criteria.
+Once the project is analyzed, {ProjectAuditor.DisplayName} displays a summary with high-level information. From here, click on a tab representing an area you're interested in, and then select a View from the drop-down menu to see a list of issues or insights.
 "
             );
 

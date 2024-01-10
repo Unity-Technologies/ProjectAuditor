@@ -25,10 +25,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             IsEnabledByDefault = false,
             MessageFormat = "Texture '{0}' is a solid color and not 1x1 size",
-            fixer = (issue, analysisParams) => { ShrinkSolidTexture(issue.RelativePath); }
+            Fixer = (issue, analysisParams) => { ShrinkSolidTexture(issue.RelativePath); }
         };
 
-        // NOTE:  This is only here to run the same analysis without a quick fix button.  Clean up when we either have appropriate quick fix for other dimensions or improved fixer support.
+        // NOTE:  This is only here to run the same analysis without a quick fix button.  Clean up when we either have appropriate quick fix for other dimensions or improved Fixer support.
         internal static readonly Descriptor k_TextureSolidColorNoFixerDescriptor = new Descriptor(
             PAA0006,
             "Texture: Solid color is not 1x1 size",

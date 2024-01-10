@@ -114,7 +114,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     });
                 }
 
-                if (descriptor.fixer != null)
+                if (descriptor.Fixer != null)
                 {
                     GUI.enabled = selectedIssues.Any(i => !i.WasFixed);
 

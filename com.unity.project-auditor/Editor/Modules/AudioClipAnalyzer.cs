@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string PAA4004 = nameof(PAA4004);    // Decompress on Load used with long clips
         internal const string PAA4005 = nameof(PAA4005);    // Compressed In Memory used with compression formats that are not trivial to decompress (e.g. everything other than PCM or ADPCM)
         internal const string PAA4006 = nameof(PAA4006);    // Large compressed samples on mobile: Decrease quality or downsample
-        internal const string PAA4007 = nameof(PAA4007);    // Bitrates > 48KHz
+        internal const string PAA4007 = nameof(PAA4007);    // Bitrates > 48kHz
         internal const string PAA4008 = nameof(PAA4008);    // Preload Audio Data ticked (increases load times and is only needed for audio that must start IMMEDIATELY upon scene load)
         internal const string PAA4009 = nameof(PAA4009);    // If Load In Background isn’t enabled on ACs over (TUNEABLE) size/length (if it’s not ticked, loading will block the main thread)
         internal const string PAA4010 = nameof(PAA4010);    // If MP3 is used. Vorbis is better
@@ -39,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         )
         {
             MessageFormat = "AudioClip '{0}' Load Type is not set to Streaming",
-            fixer = (issue, analysisParams) =>
+            Fixer = (issue, analysisParams) =>
             {
                 var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
@@ -72,7 +72,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         )
         {
             MessageFormat = "AudioClip '{0}' is stereo",
-            fixer = (issue, analysisParams) =>
+            Fixer = (issue, analysisParams) =>
             {
                 var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
@@ -93,7 +93,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         )
         {
             MessageFormat = "AudioClip '{0}' is stereo",
-            fixer = (issue, analysisParams) =>
+            Fixer = (issue, analysisParams) =>
             {
                 var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
@@ -139,16 +139,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
             Platforms = new[] {BuildTarget.Android, BuildTarget.iOS}
         };
 
-        internal static readonly Descriptor k_Audio48KHzDescriptor = new Descriptor(
+        internal static readonly Descriptor k_Audio48kHzDescriptor = new Descriptor(
             PAA4007,
-            "Audio: Sample Rate is over 48 KHz",
+            "Audio: Sample Rate is over 48 kHz",
             Areas.Memory | Areas.BuildSize | Areas.LoadTime,
-            "The AudioClip's source sample rate is higher than 48 KHz, and the <b>Sample Rate Setting</b> does not override it. Most Blu-Rays are at 48KHz, and higher sample rates are generally only used during the recording process or for scientific data. If compression is applied during the import process the sample rate gets capped at 48KHz. If compression isn't applied, the runtime memory footprint for this clip will be excessive. In both cases, the source file size is excessive.",
+            "The AudioClip's source sample rate is higher than 48 kHz, and the <b>Sample Rate Setting</b> does not override it. Most Blu-Rays are at 48kHz, and higher sample rates are generally only used during the recording process or for scientific data. If compression is applied during the import process the sample rate gets capped at 48kHz. If compression isn't applied, the runtime memory footprint for this clip will be excessive. In both cases, the source file size is excessive.",
             "Set the <b>Sample Rate Setting</b> to <b>Override</b> and the <b>Sample Rate</b> to <b>48000</b> Hz or lower."
         )
         {
-            MessageFormat = "AudioClip '{0}' Sample Rate is over 48KHz",
-            fixer = (issue, analysisParams) =>
+            MessageFormat = "AudioClip '{0}' Sample Rate is over 48kHz",
+            Fixer = (issue, analysisParams) =>
             {
                 var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
@@ -171,7 +171,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         )
         {
             MessageFormat = "AudioClip '{0}' is set to Preload Audio Data",
-            fixer = (issue, analysisParams) =>
+            Fixer = (issue, analysisParams) =>
             {
                 var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
@@ -197,7 +197,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         )
         {
             MessageFormat = "AudioClip '{0}' Load In Background is not enabled",
-            fixer = (issue, analysisParams) =>
+            Fixer = (issue, analysisParams) =>
             {
                 var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
@@ -217,7 +217,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         )
         {
             MessageFormat = "AudioClip '{0}' Compression Format is MP3",
-            fixer = (issue, analysisParams) =>
+            Fixer = (issue, analysisParams) =>
             {
                 var audioImporter = AssetImporter.GetAtPath(issue.RelativePath) as AudioImporter;
                 if (audioImporter != null)
@@ -251,7 +251,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_AudioLongDecompressedClipDescriptor);
             module.RegisterDescriptor(k_AudioCompressedInMemoryDescriptor);
             module.RegisterDescriptor(k_AudioLargeCompressedMobileDescriptor);
-            module.RegisterDescriptor(k_Audio48KHzDescriptor);
+            module.RegisterDescriptor(k_Audio48kHzDescriptor);
             module.RegisterDescriptor(k_AudioPreloadDescriptor);
             module.RegisterDescriptor(k_AudioLoadInBackgroundDisabledDescriptor);
             module.RegisterDescriptor(k_AudioMP3Descriptor);
@@ -406,13 +406,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithLocation(assetPath);
             }
 
-            // Annoyingly, if a clip is compressed, it can't go higher than 48KHz: The frequency gets clamped when it's
+            // Annoyingly, if a clip is compressed, it can't go higher than 48kHz: The frequency gets clamped when it's
             // passed to FMOD and it's not trivial to get the sample rate of the original source audio file. If we find
             // a workaround for that, we should change this. In the meantime, it's useful for uncompressed samples at least.
             if (audioClip.frequency > 48000)
             {
                 yield return context.CreateIssue(
-                    IssueCategory.AssetDiagnostic, k_Audio48KHzDescriptor.Id, clipName)
+                    IssueCategory.AssetDiagnostic, k_Audio48kHzDescriptor.Id, clipName)
                     .WithLocation(assetPath);
             }
 

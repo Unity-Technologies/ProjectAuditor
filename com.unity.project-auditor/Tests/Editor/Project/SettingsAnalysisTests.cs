@@ -188,7 +188,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(id));
             Assert.True(issues.Length == 1);
 
-            // Test fixer
+            // Test Fixer
             issues[0].Id.GetDescriptor().Fix(issues[0], m_AnalysisParams);
             var issuesAfterFix = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(id));
 

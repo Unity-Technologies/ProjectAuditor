@@ -49,7 +49,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "<b>Texture Streaming</b> is disabled in Quality Settings. As a result, all mip levels for all loaded textures are loaded into GPU memory, potentially resulting in excessive texture memory usage.",
             "If your project contains many high resolution mipmapped textures, enable <b>Texture Streaming</b> in Quality Settings.")
         {
-            fixer = (issue, analysisParams) =>
+            Fixer = (issue, analysisParams) =>
             {
                 EnableStreamingMipmap(issue.GetCustomPropertyInt32(0));
             },

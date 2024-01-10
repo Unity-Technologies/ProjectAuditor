@@ -69,9 +69,9 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [TestCase(440, "440 Hz")]
-        [TestCase(22050, "22.05 KHz")]
-        [TestCase(44100, "44.1 KHz")]
-        [TestCase(96000, "96 KHz")]
+        [TestCase(22050, "22.05 kHz")]
+        [TestCase(44100, "44.1 kHz")]
+        [TestCase(96000, "96 kHz")]
         public void Formatting_Hz_IsFormatted(int number, string expectedResult)
         {
             Assert.AreEqual(expectedResult, Formatting.FormatHz(number));

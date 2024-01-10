@@ -113,7 +113,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.NotNull(issue);
             var descriptor = issue.Id.GetDescriptor();
-            Assert.NotNull(descriptor.fixer);
+            Assert.NotNull(descriptor.Fixer);
             Assert.AreEqual(AudioClipAnalyzer.PAA4000, issue.Id.ToString());
 
             descriptor.Fix(issue, m_AnalysisParams);
@@ -232,17 +232,17 @@ namespace Unity.ProjectAuditor.EditorTests
             m_Platform = platform;
         }
 
-        // PAA4007 Bitrates > 48KHz
+        // PAA4007 Bitrates > 48kHz
         [Test]
         public void AudioClip_HighBitrate_IsReportedAndFixed()
         {
-            // m_ShortWavData is 96KHz when not compressed
+            // m_ShortWavData is 96kHz when not compressed
             var asset = CreateTestAudioClip(
                 "PAA4007.wav", m_ShortWavData, m_BuildTargetString,
                 AudioCompressionFormat.PCM, AudioClipLoadType.DecompressOnLoad, true);
 
             var issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_Audio48KHzDescriptor.Id));
+                .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_Audio48kHzDescriptor.Id));
 
             Assert.NotNull(issue);
             Assert.IsTrue(issue.Id.IsValid());
@@ -252,7 +252,7 @@ namespace Unity.ProjectAuditor.EditorTests
             descriptor.Fix(issue, m_AnalysisParams);
 
             issue = AnalyzeAndFindAssetIssues(asset, IssueCategory.AssetDiagnostic)
-                .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_Audio48KHzDescriptor.Id));
+                .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_Audio48kHzDescriptor.Id));
 
             Assert.Null(issue);
         }
@@ -377,7 +377,7 @@ namespace Unity.ProjectAuditor.EditorTests
         // PAA4004 Decompress on Load used with long clips
         // PAA4005 Compressed In Memory used with compression formats that are not trivial to decompress (e.g. everything other than PCM or ADPCM)
         // PAA4006 Large compressed samples on mobile: Decrease quality or downsample
-        // PAA4007 Bitrates > 48KHz
+        // PAA4007 Bitrates > 48kHz
         // PAA4009 If Load In Background isn’t enabled on ACs over (TUNEABLE) size/length (if it’s not ticked, loading will block the main thread)
         // PAA4010 If MP3 is used. Vorbis is better
         // PAA4011 Source assets that aren’t .WAV or .AIFF. Other formats (.MP3, .OGG, etc.) are lossy
@@ -390,7 +390,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4004));
             Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4005));
             Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4006));
-            Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4007)); // Compression clamps bitrate to 48KHz
+            Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4007)); // Compression clamps bitrate to 48kHz
             Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4010));
             Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4011));
 

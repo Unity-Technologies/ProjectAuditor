@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <remarks>
         /// Analysis will be performed on the assemblies which are used in Play Mode. Because these assemblies are cached by the Editor, Project Auditor skips the compilation step which speeds up analysis.
-        /// The analysed code may not be completely representative of the code that would appear in a Player build, but may be a reasonable approximation for many purposes.
+        /// The analyzed code may not be completely representative of the code that would appear in a Player build, but may be a reasonable approximation for many purposes.
         /// </remarks>
         EditorPlayMode,
 

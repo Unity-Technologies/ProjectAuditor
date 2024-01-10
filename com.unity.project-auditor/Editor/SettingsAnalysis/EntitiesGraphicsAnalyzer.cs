@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "<b>Static Batching</b> is enabled in Player Settings and the package com.unity.rendering.hybrid is installed. Static batching is incompatible with the batching techniques used in the Hybrid Renderer and Scriptable Render Pipeline, and will result in poor rendering performance and excessive memory use.",
             "Disable static batching in Player Settings.")
         {
-            fixer = (issue, analysisParams) =>
+            Fixer = (issue, analysisParams) =>
             {
                 PlayerSettingsUtil.SetStaticBatchingEnabled(analysisParams.Platform, false);
             }
@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "<b>Static Batching</b> is enabled in Player Settings and the package com.unity.entities.graphics is installed. Static batching is incompatible with the batching techniques used in Entities Graphics and the Scriptable Render Pipeline, and will result in poor rendering performance and excessive memory use.",
             "Disable static batching in Player Settings.")
         {
-            fixer = (issue, analysisParams) =>
+            Fixer = (issue, analysisParams) =>
             {
                 PlayerSettingsUtil.SetStaticBatchingEnabled(analysisParams.Platform, false);
             }
