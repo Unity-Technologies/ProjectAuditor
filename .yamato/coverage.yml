@@ -10,7 +10,7 @@ test_coverage_{{ platform.name }}_{{ editor.version }}:
     flavor: {{ platform.flavor}}
   commands:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    - {% if platform.name == "centos" %}DISPLAY=:0 {% endif %}upm-ci package test -u {{ editor.version }} --type package-tests --enable-code-coverage --code-coverage-options 'generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+{{ package-assembly }}*'
+    - upm-ci package test --package-path com.unity.project-auditor -u {{ editor.version }} --type package-tests --enable-code-coverage --code-coverage-options 'generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.ProjectAuditor*' --extra-utr-arg="--coverage-upload-options=\"hostUrl:https://codecov.unity3d.com;reports:upm-ci~/test-results/**/*.xml;name:{{ platform.name }}_{{ editor.version }};flags:{{ platform.name }}\""
   artifacts:
     logs:
       paths:
