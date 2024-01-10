@@ -95,8 +95,6 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
             if (s_MethodGetSRPBatcherCompatibilityCode == null)
                 return -1;
-            if (RenderPipelineManager.currentPipeline == null)
-                return -1;
             return (int)s_MethodGetSRPBatcherCompatibilityCode.Invoke(null, new object[] { shader, subShaderIdx});
         }
 

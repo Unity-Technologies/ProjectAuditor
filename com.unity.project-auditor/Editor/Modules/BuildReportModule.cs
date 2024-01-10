@@ -159,7 +159,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         IEnumerable<ProjectIssue> AnalyzePackedAssets(BuildAnalysisContext context)
         {
-            var dataSize = context.Report.packedAssets.SelectMany(p => p.contents).Sum(c => (long)c.packedSize);
+            ulong dataSize = 0;
+            foreach (var packedAsset in context.Report.packedAssets)
+            {
+                foreach (var assetInfo in packedAsset.contents)
+                    dataSize += assetInfo.packedSize;
+            }
 
             foreach (var packedAsset in context.Report.packedAssets)
             {
@@ -175,8 +180,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         .WithLocation(assetPath)
                         .WithCustomProperties(new object[(int)BuildReportFileProperty.Num]
                         {
-                            assetImporter != null ? assetImporter.GetType().FullName : k_Unknown,
-                            content.type,
+                            assetImporter != null ? assetImporter.GetType().Name : k_Unknown,
+                            content.type.Name,
                             content.packedSize,
                             Math.Round((double)content.packedSize / dataSize, 4),
                             packedAsset.shortPath

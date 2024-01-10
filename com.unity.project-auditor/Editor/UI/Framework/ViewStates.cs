@@ -13,6 +13,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         // foldout preferences
         public bool info = true;
+        public bool info2 = true;
         public bool filters = true;
         public bool dependencies = true;
 

@@ -41,7 +41,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             All = ~None
         }
 
-        const ProjectAreaFlags k_ProjectAreaDefaultFlags = ProjectAreaFlags.Code | ProjectAreaFlags.ProjectSettings | ProjectAreaFlags.Assets | ProjectAreaFlags.Shaders | ProjectAreaFlags.Build;
+        const ProjectAreaFlags k_ProjectAreaDefaultFlags = ProjectAreaFlags.All;
 
         static readonly string[] AreaNames = Enum.GetNames(typeof(Areas)).Where(a => a != "None" && a != "All").ToArray();
         static ProjectAuditorWindow s_Instance;
@@ -554,6 +554,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 DescriptionWithIcon = true,
                 ShowDependencyView = true,
                 ShowFilters = true,
+                ShowInfoPanel = true,
                 DependencyViewGuiContent = new GUIContent("Asset Dependencies"),
                 OnOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
                 AnalyticsEventId = (int)AnalyticsReporter.UIButton.Assets,
@@ -858,6 +859,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 DescriptionWithIcon = true,
                 ShowFilters = true,
                 ShowInfoPanel = true,
+                ShowInfo2Panel = true,
                 OnOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
                 Type = typeof(BuildSizeView),
                 AnalyticsEventId = (int)AnalyticsReporter.UIButton.BuildFiles

@@ -416,9 +416,21 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     EditorGUI.indentLevel--;
                 }
             }
+
+            if (m_Desc.ShowInfo2Panel)
+            {
+                using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
+                {
+                    DrawInfo2();
+                }
+            }
         }
 
         protected virtual void DrawInfo()
+        {
+        }
+
+        protected virtual void DrawInfo2()
         {
         }
 

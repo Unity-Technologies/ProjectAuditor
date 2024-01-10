@@ -21,6 +21,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool ShowDependencyView;
         public bool ShowFilters;
         public bool ShowInfoPanel;
+        public bool ShowInfo2Panel;
         public GUIContent DependencyViewGuiContent;
         public Func<ProjectIssue, string> GetAssemblyName;
         public Action<GenericMenu, ViewManager, ProjectIssue> OnContextMenu;
