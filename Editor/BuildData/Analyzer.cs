@@ -21,7 +21,6 @@ namespace Unity.ProjectAuditor.Editor.BuildData
         public BuildObjects Analyze(string path, string searchPattern, BuildObjects buildObjects)
         {
             var files = Directory.GetFiles(path, searchPattern, SearchOption.AllDirectories);
-            int lastLength = 0;
             m_AnyDuplicateObjects = false;
 
             BuildFileInfo.BaseFolder = path;
@@ -62,7 +61,7 @@ namespace Unity.ProjectAuditor.Editor.BuildData
                     {
                         AnalyzeSerializedFile(fileInfo, buildObjects);
                     }
-                    catch (NotSupportedException e)
+                    catch (NotSupportedException)
                     {
                     }
                     catch (Exception e)
@@ -89,8 +88,8 @@ namespace Unity.ProjectAuditor.Editor.BuildData
             using var reader = new UnityFileReader(fileInfo.AbsolutePath, 64 * 1024 * 1024);
             var folder = fileInfo.IsInArchive ? "archive:" : Path.GetDirectoryName(fileInfo.AbsolutePath);
             using var processor = new PPtrAndCrcProcessor(sf, reader, folder, m_PPtrResolver, buildObjects);
-            int sceneId = -1;
 
+            //int sceneId = -1;
             /*var match = m_RegexSceneFile.Match(filename);
 
             if (match.Success)
