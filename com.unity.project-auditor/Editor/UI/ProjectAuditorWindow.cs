@@ -860,7 +860,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 DescriptionWithIcon = true,
                 ShowFilters = true,
                 ShowInfoPanel = true,
-                ShowInfo2Panel = true,
+                ShowAdditionalInfoPanel = true,
                 OnOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
                 Type = typeof(BuildSizeView),
                 AnalyticsEventId = (int)AnalyticsReporter.UIButton.BuildFiles

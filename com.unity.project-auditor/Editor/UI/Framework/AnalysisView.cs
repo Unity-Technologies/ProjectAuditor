@@ -417,11 +417,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
             }
 
-            if (m_Desc.ShowInfo2Panel)
+            if (m_Desc.ShowAdditionalInfoPanel)
             {
                 using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
                 {
-                    DrawInfo2();
+                    DrawAdditionalInfo();
                 }
             }
         }
@@ -430,7 +430,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
         }
 
-        protected virtual void DrawInfo2()
+        protected virtual void DrawAdditionalInfo()
         {
         }
 

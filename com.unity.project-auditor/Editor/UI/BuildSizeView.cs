@@ -54,7 +54,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_GroupStats = null;
         }
 
-        protected override void DrawInfo2()
+        protected override void DrawAdditionalInfo()
         {
             if (m_GroupStats != null && m_GroupStats.Length > 0)
             {
