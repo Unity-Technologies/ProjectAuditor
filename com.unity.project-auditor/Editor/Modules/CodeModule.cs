@@ -52,11 +52,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
             Category = IssueCategory.Assembly,
             Properties = new[]
             {
-                new PropertyDefinition { Type = PropertyType.LogLevel},
+                new PropertyDefinition { Type = PropertyType.LogLevel, Name = "Log Level"},
                 new PropertyDefinition { Type = PropertyType.Description, Name = "Assembly Name", MaxAutoWidth = 800},
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AssemblyProperty.CompileTime), Format = PropertyFormat.Time, Name = "Compile Time (seconds)"},
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(AssemblyProperty.ReadOnly), Format = PropertyFormat.Bool, Name = "Read Only", IsDefaultGroup = true},
-                new PropertyDefinition { Type = PropertyType.Path, Name = "asmdef Path"},
+                new PropertyDefinition { Type = PropertyType.Path, Name = "Asmdef Path"},
             }
         };
 
@@ -95,7 +95,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 new PropertyDefinition { Type = PropertyType.Description, Format = PropertyFormat.String, Name = "Message", LongName = "Compiler Message"},
                 new PropertyDefinition { Type = PropertyType.Filename, Name = "Filename", LongName = "Filename and line number"},
                 new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(CompilerMessageProperty.Assembly), Format = PropertyFormat.String, Name = "Target Assembly", LongName = "Managed Assembly name" },
-                new PropertyDefinition { Type = PropertyType.Path, Name = "Full path"},
+                new PropertyDefinition { Type = PropertyType.Path, Name = "Full Path"},
             }
         };
 
