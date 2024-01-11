@@ -30,19 +30,19 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public int NumViews => m_Views != null ? m_Views.Length : 0;
 
         // user interactions
-        public Action<int> OnActiveViewChanged;
-        public Action<bool> OnMajorOrCriticalIssuesVisibilityChanged;
-        public Action<bool> OnIgnoredIssuesVisibilityChanged;
+        public Action<int> OnActiveViewChanged { get; set; }
+        public Action<bool> OnMajorOrCriticalIssuesVisibilityChanged { get; set; }
+        public Action<bool> OnIgnoredIssuesVisibilityChanged { get; set; }
 
         // events that trigger future operations
-        public Action<IssueCategory> OnAnalysisRequested;
-        public Action<ProjectIssue[]>  OnSelectedIssuesIgnoreRequested;
-        public Action<ProjectIssue[]>  OnSelectedIssuesDisplayRequested;
-        public Action<ProjectIssue[]>  OnSelectedIssuesQuickFixRequested;
-        public Action<ProjectIssue[]>  OnSelectedIssuesDocumentationRequested;
+        public Action<IssueCategory> OnAnalysisRequested { get; set; }
+        public Action<ProjectIssue[]>  OnSelectedIssuesIgnoreRequested { get; set; }
+        public Action<ProjectIssue[]>  OnSelectedIssuesDisplayRequested { get; set; }
+        public Action<ProjectIssue[]>  OnSelectedIssuesQuickFixRequested { get; set; }
+        public Action<ProjectIssue[]>  OnSelectedIssuesDocumentationRequested { get; set; }
 
         // events based on past operations
-        public Action OnViewExportCompleted;
+        public Action OnViewExportCompleted { get; set; }
 
         public ViewManager()
             : this(ViewDescriptor.GetAll().Select(d => d.Category).ToArray())
