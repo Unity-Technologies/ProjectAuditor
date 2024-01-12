@@ -754,7 +754,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     ShowAssemblySelection = true,
                     ShowDependencyView = true,
                     ShowFilters = true,
-                    DependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
+                    DependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy", "Expand the tree to see all of the methods which lead to the call site of a selected issue."),
                     GetAssemblyName = issue => issue.GetCustomProperty(CodeProperty.Assembly),
                     OnOpenIssue = EditorInterop.OpenTextFile<TextAsset>,
                     AnalyticsEventId = (int)AnalyticsReporter.UIButton.Generics
@@ -792,7 +792,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 ShowDependencyView = true,
                 ShowFilters = true,
                 ShowInfoPanel = true,
-                DependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy"),
+                DependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy", "Expand the tree to see all of the methods which lead to the call site of a selected issue."),
                 GetAssemblyName = issue => issue.GetCustomProperty(CodeProperty.Assembly),
                 OnOpenIssue = EditorInterop.OpenTextFile<TextAsset>,
                 OnOpenManual = EditorInterop.OpenCodeDescriptor,
