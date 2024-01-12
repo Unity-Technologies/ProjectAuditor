@@ -17,13 +17,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public static void OpenCodeDescriptor(Descriptor descriptor)
         {
-            var unityVersion = InternalEditorUtility.GetUnityVersion();
-            if (unityVersion.Major < 2017)
-                return;
-
             const string prefix = "UnityEngine.";
             if (descriptor.Type.StartsWith(prefix))
             {
+                var unityVersion = InternalEditorUtility.GetUnityVersion();
                 var type = descriptor.Type.Substring(prefix.Length);
                 var method = descriptor.Method;
                 var url = string.Format("https://docs.unity3d.com/{0}.{1}/Documentation/ScriptReference/{2}{3}{4}.html",

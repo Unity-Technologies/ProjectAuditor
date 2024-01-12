@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
