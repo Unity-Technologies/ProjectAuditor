@@ -26,9 +26,10 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         protected string m_AssemblyName = AssemblyInfo.DefaultAssemblyName;
         protected AndroidArchitecture m_OriginalTargetArchitecture;
         protected List<Diagnostic.Rule> m_AdditionalRules = new List<Diagnostic.Rule>();
-        protected string m_OriginalCompanyName;
-        protected string m_OriginalProductName;
 
+        protected string m_SavedCompanyName;
+        protected string m_SavedProductName;
+        bool m_SavedBakeCollisionMeshes;
         bool m_SavedAnalyzeInBackground;
         bool m_SavedAnalyzeAfterBuild;
 
@@ -67,11 +68,15 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
                     PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARMv7;
             }
 
-            m_OriginalCompanyName = PlayerSettings.companyName;
-            m_OriginalProductName = PlayerSettings.productName;
+            m_SavedCompanyName = PlayerSettings.companyName;
+            m_SavedProductName = PlayerSettings.productName;
 
             PlayerSettings.companyName = "DefaultCompany";
             PlayerSettings.productName = "ProjectName";
+
+            m_SavedBakeCollisionMeshes = PlayerSettings.bakeCollisionMeshes;
+
+            PlayerSettings.bakeCollisionMeshes = false;
 
             TestAsset.CreateTempFolder();
         }
@@ -84,8 +89,10 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
                 PlayerSettings.Android.targetArchitectures = m_OriginalTargetArchitecture;
             }
 
-            PlayerSettings.companyName = m_OriginalCompanyName;
-            PlayerSettings.productName = m_OriginalProductName;
+            // restore player settings
+            PlayerSettings.companyName = m_SavedCompanyName;
+            PlayerSettings.productName = m_SavedProductName;
+            PlayerSettings.bakeCollisionMeshes = m_SavedBakeCollisionMeshes;
 
             TestAsset.Cleanup();
 

@@ -17,7 +17,6 @@ namespace Unity.ProjectAuditor.EditorTests
 #pragma warning disable 0414
         TestAsset m_TestAsset;
 #pragma warning restore 0414
-        bool m_BakeCollisionMeshes;
 
         [OneTimeSetUp]
         public void SetUp()
@@ -32,16 +31,6 @@ class MyClass : MonoBehaviour
     }
 }
 ");
-
-            m_BakeCollisionMeshes = PlayerSettings.bakeCollisionMeshes;
-
-            PlayerSettings.bakeCollisionMeshes = false;
-        }
-
-        [OneTimeTearDown]
-        public void TearDown()
-        {
-            PlayerSettings.bakeCollisionMeshes = m_BakeCollisionMeshes;
         }
 
         [Test]

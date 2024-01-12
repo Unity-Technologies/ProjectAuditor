@@ -17,11 +17,6 @@ namespace Unity.ProjectAuditor.EditorTests
     [Serializable]
     class RuleTests : TestFixtureBase
     {
-        private const string k_RulesAssetName = "TestRules";
-        private const string k_TestParamName = "TestParameter";
-        const string k_TextureName = "RuleTestTexture";
-        const int k_TestTextureResolution = 64;
-
         TestAsset m_TestScriptAsset;
 
         [SerializeField]

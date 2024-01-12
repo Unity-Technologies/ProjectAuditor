@@ -17,8 +17,6 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_TestAsset;
 #pragma warning restore 0414
 
-        bool m_PrevBakeCollisionMeshes;
-
         [OneTimeSetUp]
         public void SetUp()
         {
@@ -42,16 +40,6 @@ class InternalClass
     }
 }
 ");
-            // disabling bakeCollisionMeshes will be reported an issue
-            m_PrevBakeCollisionMeshes = PlayerSettings.bakeCollisionMeshes;
-            PlayerSettings.bakeCollisionMeshes = false;
-        }
-
-        [OneTimeTearDown]
-        public void TearDown()
-        {
-            // restore bakeCollisionMeshes
-            PlayerSettings.bakeCollisionMeshes = m_PrevBakeCollisionMeshes;
         }
 
         [Test]
