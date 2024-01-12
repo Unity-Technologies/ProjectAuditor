@@ -120,7 +120,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     {
                         GraphicsSettings.logWhenShaderIsCompiled = EditorUtility.DisplayDialog(k_PlayerLogParsingDialogTitle, k_NoCompiledVariantWarningLogDisabled, k_Yes, k_No);
                     }
-                break;
+                    break;
                 case ParseLogResult.ReadError:
                     EditorUtility.DisplayDialog(k_PlayerLogParsingDialogTitle, k_PlayerLogReadError, k_Ok);
                     break;
@@ -213,7 +213,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     EditorGUILayout.LabelField(k_BuildInstructions, SharedStyles.TextArea);
                 }
 
-                if(isVisualShaderView)
+                if (isVisualShaderView)
                     EditorGUILayout.LabelField(k_PlayerLogInstructions, SharedStyles.TextArea);
                 EditorGUILayout.HelpBox(k_ClearInstructions, MessageType.Warning);
             }
