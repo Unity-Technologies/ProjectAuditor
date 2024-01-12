@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_DefaultLayerCollisionMatrixDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
+        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             if (IsDefaultLayerCollisionMatrix())
             {

@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         bool m_SavedAnalyzeInBackground;
         bool m_SavedAnalyzeAfterBuild;
 
-        protected ProjectIssue[] m_CodeDiagnostics;
+        protected ReportItem[] m_CodeDiagnostics;
         public static BuildTarget GetStandaloneBuildTarget()
         {
 #if UNITY_EDITOR_WIN
@@ -101,9 +101,9 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
                 PathUtils.GetDirectoryName(i.RelativePath).Equals(TestAsset.TempAssetsFolder));
         }
 
-        protected ProjectIssue[] AnalyzeFiltered(Predicate<string> filterPredicate)
+        protected ReportItem[] AnalyzeFiltered(Predicate<string> filterPredicate)
         {
-            var foundIssues = new List<ProjectIssue>();
+            var foundIssues = new List<ReportItem>();
 
             var projectAuditorParams = new AnalysisParams()
             {
@@ -117,14 +117,14 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             return foundIssues.ToArray();
         }
 
-        protected ProjectIssue[] AnalyzeFiltered(Predicate<string> filterPredicate, IssueCategory category)
+        protected ReportItem[] AnalyzeFiltered(Predicate<string> filterPredicate, IssueCategory category)
         {
             return AnalyzeFiltered(filterPredicate, new[] { category });
         }
 
-        protected ProjectIssue[] AnalyzeFiltered(Predicate<string> filterPredicate, IssueCategory[] categories)
+        protected ReportItem[] AnalyzeFiltered(Predicate<string> filterPredicate, IssueCategory[] categories)
         {
-            var foundIssues = new List<ProjectIssue>();
+            var foundIssues = new List<ReportItem>();
             var projectAuditor = new ProjectAuditor();
             var projectAuditorParams = new AnalysisParams()
             {
@@ -144,11 +144,11 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             return foundIssues.ToArray();
         }
 
-        protected ProjectIssue[] Analyze(Func<ProjectIssue, bool> predicate = null)
+        protected ReportItem[] Analyze(Func<ReportItem, bool> predicate = null)
         {
             ValidateTargetPlatform();
 
-            var foundIssues = new List<ProjectIssue>();
+            var foundIssues = new List<ReportItem>();
 
             m_AnalysisParams = new AnalysisParams
             {
@@ -165,11 +165,11 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             return foundIssues.ToArray();
         }
 
-        protected ProjectIssue[] Analyze(IssueCategory category, Func<ProjectIssue, bool> predicate = null)
+        protected ReportItem[] Analyze(IssueCategory category, Func<ReportItem, bool> predicate = null)
         {
             ValidateTargetPlatform();
 
-            var foundIssues = new List<ProjectIssue>();
+            var foundIssues = new List<ReportItem>();
             var projectAuditor = new ProjectAuditor();
             m_AnalysisParams = new AnalysisParams
             {
@@ -189,18 +189,18 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             return foundIssues.ToArray();
         }
 
-        protected ProjectIssue[] FindTestAssetIssues(TestAsset testAsset)
+        protected ReportItem[] FindTestAssetIssues(TestAsset testAsset)
         {
             return m_CodeDiagnostics.Where(x => x.RelativePath == testAsset.relativePath).ToArray();
         }
 
-        protected ProjectIssue[] AnalyzeAndFindAssetIssues(TestAsset testAsset,
+        protected ReportItem[] AnalyzeAndFindAssetIssues(TestAsset testAsset,
             IssueCategory category = IssueCategory.Code)
         {
             return Analyze(category, i => i.RelativePath.Equals(testAsset.relativePath));
         }
 
-        protected ProjectIssue[] AnalyzeBuild(Func<ProjectIssue, bool> predicate = null, bool isDevelopment = true, string buildFileName = "test", Action preBuildAction = null, Action postBuildAction = null)
+        protected ReportItem[] AnalyzeBuild(Func<ReportItem, bool> predicate = null, bool isDevelopment = true, string buildFileName = "test", Action preBuildAction = null, Action postBuildAction = null)
         {
             Build(isDevelopment, buildFileName, preBuildAction, postBuildAction);
 
@@ -209,7 +209,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             return res;
         }
 
-        protected ProjectIssue[] AnalyzeBuild(IssueCategory category, Func<ProjectIssue, bool> predicate = null, bool isDevelopment = true, string buildFileName = "test", Action preBuildAction = null, Action postBuildAction = null)
+        protected ReportItem[] AnalyzeBuild(IssueCategory category, Func<ReportItem, bool> predicate = null, bool isDevelopment = true, string buildFileName = "test", Action preBuildAction = null, Action postBuildAction = null)
         {
             Build(isDevelopment, buildFileName, preBuildAction, postBuildAction);
 

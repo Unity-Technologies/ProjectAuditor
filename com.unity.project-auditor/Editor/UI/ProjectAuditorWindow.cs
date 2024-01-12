@@ -147,7 +147,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] bool m_IsNonAnalyzedViewSelected;
         [SerializeField] Tab m_SelectedNonAnalyzedTab;
 
-        public bool Match(ProjectIssue issue)
+        public bool Match(ReportItem issue)
         {
             // return false if the issue does not match one of these criteria:
             // - assembly name, if applicable

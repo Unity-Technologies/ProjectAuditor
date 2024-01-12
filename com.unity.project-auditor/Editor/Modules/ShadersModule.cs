@@ -435,7 +435,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 Params = analysisParams
             };
-            var issues = new List<ProjectIssue>();
+            var issues = new List<ReportItem>();
 
             foreach (var shaderCompilerData in s_ComputeShaderVariantData)
             {
@@ -463,7 +463,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         void ProcessMaterials(AnalysisContext context)
         {
-            var issues = new List<ProjectIssue>();
+            var issues = new List<ReportItem>();
 
             var materialPathMap = CollectMaterials(context);
             foreach (var material in materialPathMap)
@@ -481,7 +481,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 context.Params.OnIncomingIssues(issues);
         }
 
-        IEnumerable<ProjectIssue> ProcessShader(ShaderAnalysisContext context, string assetSize, bool isAlwaysIncluded)
+        IEnumerable<ReportItem> ProcessShader(ShaderAnalysisContext context, string assetSize, bool isAlwaysIncluded)
         {
             // set initial state (-1: info not available)
             var variantCountPerCompilerPlatform = s_ShaderVariantData.Count > 0 ? 0 : -1;
@@ -569,7 +569,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         }
 
-        IEnumerable<ProjectIssue> ProcessVariants(ShaderAnalysisContext context)
+        IEnumerable<ReportItem> ProcessVariants(ShaderAnalysisContext context)
         {
             if (s_ShaderVariantData.ContainsKey(context.Shader))
             {
@@ -710,7 +710,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         }
 
-        public static void ExportVariantsToSvc(string svcName, string path, ProjectIssue[] variants)
+        public static void ExportVariantsToSvc(string svcName, string path, ReportItem[] variants)
         {
             var svc = new ShaderVariantCollection();
             svc.name = svcName;
@@ -733,7 +733,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             AssetDatabase.CreateAsset(svc, path);
         }
 
-        public static ParseLogResult ParsePlayerLog(string logFile, ProjectIssue[] builtVariants, IProgress progress = null)
+        public static ParseLogResult ParsePlayerLog(string logFile, ReportItem[] builtVariants, IProgress progress = null)
         {
             var compiledVariants = new Dictionary<string, List<CompiledVariantData>>();
             var lines = GetCompiledShaderLines(logFile);

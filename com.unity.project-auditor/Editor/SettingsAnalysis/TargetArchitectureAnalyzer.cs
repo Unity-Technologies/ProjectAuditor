@@ -40,7 +40,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_DescriptorAndroid);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
+        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             // PlayerSettings.GetArchitecture returns an integer value associated with the architecture of a BuildTargetPlatformGroup. 0 - None, 1 - ARM64, 2 - Universal.
             if (k_DescriptorIOS.IsApplicable(context.Params) && PlayerSettingsUtil.GetArchitecture(BuildTargetGroup.iOS) == 2)

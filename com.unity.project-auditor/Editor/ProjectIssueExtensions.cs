@@ -16,7 +16,7 @@ namespace Unity.ProjectAuditor.Editor
         // -2 because we're not interested in "None" or "All"
         static readonly int s_NumAreaEnumValues = Enum.GetNames(typeof(Areas)).Length - 2;
 
-        public static string GetContext(this ProjectIssue issue)
+        public static string GetContext(this ReportItem issue)
         {
             if (issue.Dependencies == null)
                 return issue.RelativePath;
@@ -25,7 +25,7 @@ namespace Unity.ProjectAuditor.Editor
             return root.Name;
         }
 
-        public static string GetProperty(this ProjectIssue issue, PropertyType propertyType)
+        public static string GetProperty(this ReportItem issue, PropertyType propertyType)
         {
             switch (propertyType)
             {
@@ -63,7 +63,7 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        public static string GetPropertyGroup(this ProjectIssue issue, PropertyDefinition propertyDefinition)
+        public static string GetPropertyGroup(this ReportItem issue, PropertyDefinition propertyDefinition)
         {
             switch (propertyDefinition.Type)
             {
@@ -82,7 +82,7 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        internal static int CompareTo(this ProjectIssue issueA, ProjectIssue issueB, PropertyType propertyType)
+        internal static int CompareTo(this ReportItem issueA, ReportItem issueB, PropertyType propertyType)
         {
             if (issueA == null && issueB == null)
                 return 0;

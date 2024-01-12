@@ -11,6 +11,6 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
 
     internal interface ISpriteAtlasModuleAnalyzer : IModuleAnalyzer
     {
-        IEnumerable<ProjectIssue> Analyze(SpriteAtlasAnalysisContext context);
+        IEnumerable<ReportItem> Analyze(SpriteAtlasAnalysisContext context);
     }
 }

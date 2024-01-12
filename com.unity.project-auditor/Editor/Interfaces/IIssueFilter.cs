@@ -2,6 +2,6 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
 {
     internal interface IIssueFilter
     {
-        bool Match(ProjectIssue issue);
+        bool Match(ReportItem issue);
     }
 }

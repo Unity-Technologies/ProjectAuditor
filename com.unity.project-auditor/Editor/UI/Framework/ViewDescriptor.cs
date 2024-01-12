@@ -23,8 +23,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public bool ShowInfoPanel;
         public bool ShowAdditionalInfoPanel;
         public GUIContent DependencyViewGuiContent;
-        public Func<ProjectIssue, string> GetAssemblyName;
-        public Action<GenericMenu, ViewManager, ProjectIssue> OnContextMenu;
+        public Func<ReportItem, string> GetAssemblyName;
+        public Action<GenericMenu, ViewManager, ReportItem> OnContextMenu;
         public Action<ViewManager> OnDrawToolbar;
         public Action<Location> OnOpenIssue;
         public Action<Descriptor> OnOpenManual;

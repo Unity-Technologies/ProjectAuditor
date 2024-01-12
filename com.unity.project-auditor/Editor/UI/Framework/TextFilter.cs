@@ -31,7 +31,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             searchablePropertyIndices = indices.ToArray();
         }
 
-        public bool Match(ProjectIssue issue)
+        public bool Match(ReportItem issue)
         {
             if (string.IsNullOrEmpty(searchString))
                 return true;

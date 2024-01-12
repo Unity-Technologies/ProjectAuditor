@@ -8,9 +8,9 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
     /// An unique identifier for a diagnostic descriptor. IDs must have exactly 3 upper case characters, followed by 4 digits.
     /// </summary>
     /// <remarks>
-    /// <seealso cref="ProjectIssue"/>s representing Issues (as opposed to Insights: purely informational ProjectIssues) all contain a DescriptorId.
+    /// <seealso cref="ReportItem"/>s representing Issues (as opposed to Insights: purely informational ProjectIssues) all contain a DescriptorId.
     /// The DescriptorId is used to reference the information about a particular issue (for example, "PAC2002" is the code for "Object allocation"),
-    /// and the ProjectIssue simply contains the file:line location in code where the allocation occurs and a "PAC2002" DescriptorId.
+    /// and the ReportItem simply contains the file:line location in code where the allocation occurs and a "PAC2002" DescriptorId.
     /// The descriptor can generally be treated as a string, but for efficient descriptor lookups the string is converted to an int in the struct's constructor.
     /// </remarks>
     [Serializable]

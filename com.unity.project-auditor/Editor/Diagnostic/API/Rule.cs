@@ -5,7 +5,7 @@ using UnityEditor;
 namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
     /// <summary>
-    /// Represents a rule which modifies the <seealso cref="Diagnostic.Severity"/> of an Issue <seealso cref="ProjectIssue"/>
+    /// Represents a rule which modifies the <seealso cref="Diagnostic.Severity"/> of an Issue <seealso cref="ReportItem"/>
     /// or all of the ProjectIssues that share a <seealso cref="Descriptor"/>.
     /// </summary>
     [Serializable]
@@ -18,8 +18,8 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public Severity Severity;
 
         /// <summary>
-        /// An optional location filter representing a ProjectIssue's location.
-        /// If specified, this Rule applies to a single ProjectIssue. If the string is null or empty, this Rule applies to every ProjectIssue matching the Id.
+        /// An optional location filter representing a ReportItem's location.
+        /// If specified, this Rule applies to a single ReportItem. If the string is null or empty, this Rule applies to every ReportItem matching the Id.
         /// </summary>
         [JsonProperty("filter")]
         public string Filter;

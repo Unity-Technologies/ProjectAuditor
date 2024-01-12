@@ -46,7 +46,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_DeferredRenderingDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
+        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             // Only check for Built-In Rendering Pipeline
             if (!IsUsingBuiltinRenderPipeline())

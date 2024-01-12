@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
             calls.Add(callInfo);
         }
 
-        public void BuildCallHierarchies(List<ProjectIssue> issues, IProgress progress = null)
+        public void BuildCallHierarchies(List<ReportItem> issues, IProgress progress = null)
         {
             if (issues.Count > 0)
             {

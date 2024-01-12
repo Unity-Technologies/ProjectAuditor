@@ -34,17 +34,17 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_SRPBatcherSettingDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
+        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             return RenderPipelineUtils.AnalyzeAssets(context, Analyze);
         }
 
-        static void FixSrpBatcherSetting(ProjectIssue issue, AnalysisParams analysisParams)
+        static void FixSrpBatcherSetting(ReportItem issue, AnalysisParams analysisParams)
         {
             RenderPipelineUtils.FixAssetSetting(issue, p => SetSrpBatcherSetting(p, true));
         }
 
-        IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context, RenderPipelineAsset renderPipeline, int qualityLevel)
+        IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context, RenderPipelineAsset renderPipeline, int qualityLevel)
         {
             bool? srpBatcherSetting = GetSrpBatcherSetting(renderPipeline);
             if (srpBatcherSetting != null && !srpBatcherSetting.Value)
@@ -53,7 +53,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             }
         }
 
-        static ProjectIssue CreateSrpBatcherIssue(AnalysisContext context, int qualityLevel, string name)
+        static ReportItem CreateSrpBatcherIssue(AnalysisContext context, int qualityLevel, string name)
         {
             return RenderPipelineUtils.CreateAssetSettingIssue(context, qualityLevel, name, k_SRPBatcherSettingDescriptor.Id);
         }

@@ -11,7 +11,7 @@ namespace Unity.ProjectAuditor.Editor
         public CompilationMode CompilationMode = CompilationMode.Player;
         public DiagnosticParams DiagnosticParams;
         [Newtonsoft.Json.JsonIgnore] public System.Action<ProjectReport> OnCompleted;
-        [Newtonsoft.Json.JsonIgnore] public System.Action<System.Collections.Generic.IEnumerable<ProjectIssue>> OnIncomingIssues;
+        [Newtonsoft.Json.JsonIgnore] public System.Action<System.Collections.Generic.IEnumerable<ReportItem>> OnIncomingIssues;
         [Newtonsoft.Json.JsonIgnore] public System.Action<AnalysisResult> OnModuleCompleted;
         [Newtonsoft.Json.JsonConverter(typeof(Diagnostic.BuildTargetJsonConverter))] public UnityEditor.BuildTarget Platform { get; set; }
         public AnalysisParams(bool copyParamsFromGlobal = true) {}
@@ -129,7 +129,7 @@ namespace Unity.ProjectAuditor.Editor
         public void Save();
     }
 
-    public class ProjectIssue
+    public class ReportItem
     {
         [Newtonsoft.Json.JsonProperty(@"category")] public IssueCategory Category { get; }
         [Newtonsoft.Json.JsonProperty(@"properties")] public string[] CustomProperties { get; }
@@ -161,9 +161,9 @@ namespace Unity.ProjectAuditor.Editor
         [Newtonsoft.Json.JsonIgnore] public int NumTotalIssues { get; }
         [Newtonsoft.Json.JsonIgnore] public string Version { get; }
         public void ClearIssues(IssueCategory Category);
-        public System.Collections.Generic.IReadOnlyCollection<ProjectIssue> FindByCategory(IssueCategory category);
-        public System.Collections.Generic.IReadOnlyCollection<ProjectIssue> FindByDescriptorId(string id);
-        public System.Collections.Generic.IReadOnlyCollection<ProjectIssue> GetAllIssues();
+        public System.Collections.Generic.IReadOnlyCollection<ReportItem> FindByCategory(IssueCategory category);
+        public System.Collections.Generic.IReadOnlyCollection<ReportItem> FindByDescriptorId(string id);
+        public System.Collections.Generic.IReadOnlyCollection<ReportItem> GetAllIssues();
         public int GetNumIssues(IssueCategory category);
         public bool HasCategory(IssueCategory category);
         public bool IsValid();
@@ -220,7 +220,7 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public Severity DefaultSeverity;
         public string Description;
         public string DocumentationUrl;
-        [Newtonsoft.Json.JsonIgnore] public System.Action<ProjectIssue, AnalysisParams> fixer;
+        [Newtonsoft.Json.JsonIgnore] public System.Action<ReportItem, AnalysisParams> fixer;
         public string Id;
         public bool IsEnabledByDefault = true;
         public string MaximumVersion;

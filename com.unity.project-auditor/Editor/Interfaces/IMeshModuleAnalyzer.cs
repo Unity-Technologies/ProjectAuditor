@@ -13,6 +13,6 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
 
     internal interface IMeshModuleAnalyzer : IModuleAnalyzer
     {
-        IEnumerable<ProjectIssue> Analyze(MeshAnalysisContext context);
+        IEnumerable<ReportItem> Analyze(MeshAnalysisContext context);
     }
 }

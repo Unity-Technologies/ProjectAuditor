@@ -45,7 +45,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_Mesh32BitIndexFormatUsedDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(MeshAnalysisContext context)
+        public IEnumerable<ReportItem> Analyze(MeshAnalysisContext context)
         {
             var assetPath = context.Importer.assetPath;
             var modelImporter = context.Importer as ModelImporter;

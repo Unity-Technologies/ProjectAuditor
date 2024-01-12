@@ -128,7 +128,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_TextureAnisotropicLevelDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(TextureAnalysisContext context)
+        public IEnumerable<ReportItem> Analyze(TextureAnalysisContext context)
         {
             var assetPath = context.Importer.assetPath;
 

@@ -59,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor
         /// Reports a batch of new issues. Note that this be called multiple times per analysis.
         /// </summary>
         [JsonIgnore]
-        public Action<IEnumerable<ProjectIssue>> OnIncomingIssues;
+        public Action<IEnumerable<ReportItem>> OnIncomingIssues;
 
         /// <summary>
         /// Notifies that all Modules completed their analysis.

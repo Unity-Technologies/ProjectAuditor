@@ -163,7 +163,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             };
 
             var precompiledAssemblies = AssemblyInfoProvider.GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.All)
-                .Select(assemblyPath => (ProjectIssue)context.CreateInsight(IssueCategory.PrecompiledAssembly, Path.GetFileNameWithoutExtension(assemblyPath))
+                .Select(assemblyPath => (ReportItem)context.CreateInsight(IssueCategory.PrecompiledAssembly, Path.GetFileNameWithoutExtension(assemblyPath))
                     .WithCustomProperties(new object[(int)PrecompiledAssemblyProperty.Num]
                     {
                         false
@@ -189,7 +189,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             // report all roslyn analyzers as PrecompiledAssembly issues
             var roslynAnalyzerIssues = roslynAnalyzerAssets
-                .Select(roslynAnalyzerDllPath => (ProjectIssue)context.CreateInsight(
+                .Select(roslynAnalyzerDllPath => (ReportItem)context.CreateInsight(
                 IssueCategory.PrecompiledAssembly,
                 Path.GetFileNameWithoutExtension(roslynAnalyzerDllPath))
                 .WithCustomProperties(new object[(int)PrecompiledAssemblyProperty.Num]
@@ -230,7 +230,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (analysisParams.CompilationMode == CompilationMode.Editor ||
                 analysisParams.CompilationMode == CompilationMode.EditorPlayMode)
             {
-                var issues = assemblyInfos.Select(assemblyInfo => (ProjectIssue)context.CreateInsight(IssueCategory.Assembly, assemblyInfo.Name)
+                var issues = assemblyInfos.Select(assemblyInfo => (ReportItem)context.CreateInsight(IssueCategory.Assembly, assemblyInfo.Name)
                     .WithCustomProperties(new object[(int)AssemblyProperty.Num]
                     {
                         assemblyInfo.IsPackageReadOnly,
@@ -245,13 +245,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             // process successfully compiled assemblies
             var localAssemblyInfos = assemblyInfos.Where(info => !info.IsPackageReadOnly).ToArray();
             var readOnlyAssemblyInfos = assemblyInfos.Where(info => info.IsPackageReadOnly).ToArray();
-            var foundIssues = new List<ProjectIssue>();
+            var foundIssues = new List<ReportItem>();
             var callCrawler = new CallCrawler();
             var onCallFound = new Action<CallInfo>(pair =>
             {
                 callCrawler.Add(pair);
             });
-            var onIssueFoundInternal = new Action<ProjectIssue>(foundIssues.Add);
+            var onIssueFoundInternal = new Action<ReportItem>(foundIssues.Add);
             var onCompleteInternal = new Action<IProgress>(bar =>
             {
                 // remove issues if platform does not match
@@ -322,7 +322,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return AnalysisResult.InProgress;
         }
 
-        void AnalyzeAssemblies(IReadOnlyCollection<AssemblyInfo> assemblyInfos, IReadOnlyCollection<string> assemblyFilters, IReadOnlyCollection<string> assemblyDirectories, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound, Action<IProgress> onComplete, IProgress progress = null)
+        void AnalyzeAssemblies(IReadOnlyCollection<AssemblyInfo> assemblyInfos, IReadOnlyCollection<string> assemblyFilters, IReadOnlyCollection<string> assemblyDirectories, Action<CallInfo> onCallFound, Action<ReportItem> onIssueFound, Action<IProgress> onComplete, IProgress progress = null)
         {
             using (var assemblyResolver = new DefaultAssemblyResolver())
             {
@@ -358,7 +358,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             onComplete?.Invoke(progress);
         }
 
-        void AnalyzeAssembly(AssemblyInfo assemblyInfo, IAssemblyResolver assemblyResolver, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound)
+        void AnalyzeAssembly(AssemblyInfo assemblyInfo, IAssemblyResolver assemblyResolver, Action<CallInfo> onCallFound, Action<ReportItem> onIssueFound)
         {
             Profiler.BeginSample("CodeModule.Analyze " + assemblyInfo.Name);
 
@@ -382,7 +382,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             Profiler.EndSample();
         }
 
-        void AnalyzeMethodBody(AssemblyInfo assemblyInfo, MethodDefinition caller, Action<CallInfo> onCallFound, Action<ProjectIssue> onIssueFound)
+        void AnalyzeMethodBody(AssemblyInfo assemblyInfo, MethodDefinition caller, Action<CallInfo> onCallFound, Action<ReportItem> onIssueFound)
         {
             if (!caller.DebugInformation.HasSequencePoints)
                 return;
@@ -463,7 +463,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             Profiler.EndSample();
         }
 
-        IEnumerable<ProjectIssue> ProcessCompilerMessages(AnalysisContext context, AssemblyCompilationResult compilationResult)
+        IEnumerable<ReportItem> ProcessCompilerMessages(AnalysisContext context, AssemblyCompilationResult compilationResult)
         {
             Profiler.BeginSample("CodeModule.ProcessCompilerMessages");
             var compilerMessages = compilationResult.Messages;

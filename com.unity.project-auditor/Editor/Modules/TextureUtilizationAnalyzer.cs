@@ -60,7 +60,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_TextureAtlasEmptyDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(TextureAnalysisContext context)
+        public IEnumerable<ReportItem> Analyze(TextureAnalysisContext context)
         {
             var dimensionAppropriateDescriptor = context.Texture.dimension == UnityEngine.Rendering.TextureDimension.Tex2D ? k_TextureSolidColorDescriptor : k_TextureSolidColorNoFixerDescriptor;
             if (context.IsDescriptorEnabled(dimensionAppropriateDescriptor) &&

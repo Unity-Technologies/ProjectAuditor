@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     {
         class NullFilter : IIssueFilter
         {
-            public bool Match(ProjectIssue issue)
+            public bool Match(ReportItem issue)
             {
                 return true;
             }
@@ -36,10 +36,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         // events that trigger future operations
         public Action<IssueCategory> OnAnalysisRequested { get; set; }
-        public Action<ProjectIssue[]>  OnSelectedIssuesIgnoreRequested { get; set; }
-        public Action<ProjectIssue[]>  OnSelectedIssuesDisplayRequested { get; set; }
-        public Action<ProjectIssue[]>  OnSelectedIssuesQuickFixRequested { get; set; }
-        public Action<ProjectIssue[]>  OnSelectedIssuesDocumentationRequested { get; set; }
+        public Action<ReportItem[]>  OnSelectedIssuesIgnoreRequested { get; set; }
+        public Action<ReportItem[]>  OnSelectedIssuesDisplayRequested { get; set; }
+        public Action<ReportItem[]>  OnSelectedIssuesQuickFixRequested { get; set; }
+        public Action<ReportItem[]>  OnSelectedIssuesDocumentationRequested { get; set; }
 
         // events based on past operations
         public Action OnViewExportCompleted { get; set; }
@@ -60,7 +60,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return m_Views != null && m_Views.Length > 0;
         }
 
-        public void AddIssues(IReadOnlyCollection<ProjectIssue> issues)
+        public void AddIssues(IReadOnlyCollection<ReportItem> issues)
         {
             Profiler.BeginSample("ViewManager.AddIssues");
             foreach (var view in m_Views)

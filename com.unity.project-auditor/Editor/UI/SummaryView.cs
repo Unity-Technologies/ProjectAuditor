@@ -32,7 +32,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
         }
 
-        public override void AddIssues(IEnumerable<ProjectIssue> allIssues)
+        public override void AddIssues(IEnumerable<ReportItem> allIssues)
         {
             base.AddIssues(allIssues);
 

@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
         }
 
-        public override string GetIssueDescription(ProjectIssue issue)
+        public override string GetIssueDescription(ReportItem issue)
         {
             return issue.GetCustomProperty(BuildReportStepProperty.Message);
         }

@@ -44,7 +44,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_FogModeDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
+        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             if (IsFogModeEnabled(FogMode.Linear))
             {

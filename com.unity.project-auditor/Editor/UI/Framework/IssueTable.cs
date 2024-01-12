@@ -81,7 +81,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Clear();
         }
 
-        public void AddIssues(IReadOnlyCollection<ProjectIssue> issues)
+        public void AddIssues(IReadOnlyCollection<ReportItem> issues)
         {
             // update groups
             var groupNames = issues.Select(i => i.GetPropertyGroup(m_Layout.Properties[m_GroupPropertyIndex])).Distinct().ToArray();
@@ -149,7 +149,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             // find all issues matching the filters and make an array out of them
             Profiler.BeginSample("IssueTable.Match");
-            var filteredItems = m_TreeViewItemIssues.Where(item => m_View.Match(item.Value.ProjectIssue)).ToArray();
+            var filteredItems = m_TreeViewItemIssues.Where(item => m_View.Match(item.Value.ReportItem)).ToArray();
             Profiler.EndSample();
 
             m_NumMatchingIssues = filteredItems.Length;
@@ -168,7 +168,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Profiler.BeginSample("IssueTable.BuildRows");
             if (!hasSearch && !m_FlatView)
             {
-                var groupedItemQuery = filteredItems.GroupBy(i => i.Value.ProjectIssue.GetPropertyGroup(m_Layout.Properties[m_GroupPropertyIndex]));
+                var groupedItemQuery = filteredItems.GroupBy(i => i.Value.ReportItem.GetPropertyGroup(m_Layout.Properties[m_GroupPropertyIndex]));
                 foreach (var groupedItems in groupedItemQuery)
                 {
                     var groupName = groupedItems.Key;
@@ -243,7 +243,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     foreach (var childItem in item.children)
                     {
                         var issueTableItem = childItem as IssueTableItem;
-                        var value = issueTableItem.ProjectIssue.GetCustomPropertyUInt64(customPropertyIndex);
+                        var value = issueTableItem.ReportItem.GetCustomPropertyUInt64(customPropertyIndex);
                         sum += value;
                     }
 
@@ -255,7 +255,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     foreach (var childItem in item.children)
                     {
                         var issueTableItem = childItem as IssueTableItem;
-                        var value = issueTableItem.ProjectIssue.GetCustomPropertyFloat(customPropertyIndex);
+                        var value = issueTableItem.ReportItem.GetCustomPropertyFloat(customPropertyIndex);
                         sum += value;
                     }
                     label = property.Format == PropertyFormat.Time ? Formatting.FormatTime(sum) : Formatting.FormatPercentage(sum, 1);
@@ -325,7 +325,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             else
             {
                 Rule rule = null;
-                var issue = item.ProjectIssue;
+                var issue = item.ReportItem;
                 if (issue.WasFixed)
                     GUI.enabled = false;
                 else if (issue.Id.IsValid())
@@ -467,7 +467,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             if (tableItem == null)
                 return;
 
-            var issue = tableItem.ProjectIssue;
+            var issue = tableItem.ReportItem;
             if (issue != null && issue.Location != null && issue.Location.IsValid)
             {
                 m_Desc.OnOpenIssue(issue.Location);
@@ -543,30 +543,30 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 menu.AddItem(Utility.ClearSelection, false, ClearSelection);
 
-                if (item.ProjectIssue != null)
+                if (item.ReportItem != null)
                 {
-                    if (m_Desc.OnOpenIssue != null && item.ProjectIssue.Location != null)
+                    if (m_Desc.OnOpenIssue != null && item.ReportItem.Location != null)
                     {
                         menu.AddItem(Utility.OpenIssue, false, () =>
                         {
-                            m_Desc.OnOpenIssue(item.ProjectIssue.Location);
+                            m_Desc.OnOpenIssue(item.ReportItem.Location);
                         });
                     }
-                    menu.AddItem(new GUIContent($"Filter by '{item.ProjectIssue.Description.Replace("/", "\u2215")}'") , false, () =>
+                    menu.AddItem(new GUIContent($"Filter by '{item.ReportItem.Description.Replace("/", "\u2215")}'") , false, () =>
                     {
-                        m_View.SetSearch(item.ProjectIssue.Description);
+                        m_View.SetSearch(item.ReportItem.Description);
                     });
                 }
 
-                if (m_Desc.OnOpenIssue != null && item.ProjectIssue != null && item.ProjectIssue.Location != null)
+                if (m_Desc.OnOpenIssue != null && item.ReportItem != null && item.ReportItem.Location != null)
                 {
                     menu.AddItem(Utility.OpenIssue, false, () =>
                     {
-                        m_Desc.OnOpenIssue(item.ProjectIssue.Location);
+                        m_Desc.OnOpenIssue(item.ReportItem.Location);
                     });
                 }
 
-                var desc = item.ProjectIssue != null && item.ProjectIssue.Id.IsValid() ? item.ProjectIssue.Id.GetDescriptor() : null;
+                var desc = item.ReportItem != null && item.ReportItem.Id.IsValid() ? item.ReportItem.Id.GetDescriptor() : null;
                 if (m_Desc.OnOpenManual != null && desc != null && desc.Type.StartsWith("UnityEngine."))
                 {
                     menu.AddItem(Utility.OpenScriptReference, false, () =>
@@ -578,14 +578,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 if (m_Desc.OnContextMenu != null)
                 {
                     menu.AddSeparator("");
-                    m_Desc.OnContextMenu(menu, m_View.ViewManager, item.ProjectIssue);
+                    m_Desc.OnContextMenu(menu, m_View.ViewManager, item.ReportItem);
                 }
 
                 menu.AddSeparator("");
                 menu.AddItem(Utility.CopyToClipboard, false, () =>
                 {
                     EditorInterop.CopyToClipboard(
-                        item.IsGroup() ? item.GetDisplayName() : item.ProjectIssue.GetProperty(propertyType));
+                        item.IsGroup() ? item.GetDisplayName() : item.ReportItem.GetProperty(propertyType));
                 });
 
                 menu.ShowAsContext();
@@ -694,7 +694,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         if (a.m_Item.IsGroup() && b.m_Item.IsGroup())
                             rtn = order * CompareGroupItemTo(a.m_Item, b.m_Item, columnSortOrder[i]);
                         else
-                            rtn = order * ProjectIssueExtensions.CompareTo(a.m_Item.ProjectIssue != null ? a.m_Item.ProjectIssue : null, b.m_Item.ProjectIssue != null ? b.m_Item.ProjectIssue : null, m_Layout.Properties[columnSortOrder[i]].Type);
+                            rtn = order * ProjectIssueExtensions.CompareTo(a.m_Item.ReportItem != null ? a.m_Item.ReportItem : null, b.m_Item.ReportItem != null ? b.m_Item.ReportItem : null, m_Layout.Properties[columnSortOrder[i]].Type);
 
                         if (rtn == 0)
                             continue;
@@ -757,7 +757,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     return string.Empty;
 
                 var issueTableItem = item.children[0] as IssueTableItem;
-                return issueTableItem.ProjectIssue.GetCustomProperty(customPropertyIndex);
+                return issueTableItem.ReportItem.GetCustomProperty(customPropertyIndex);
             }
 
             string GetGroupFirstChildProperty(IssueTableItem item, PropertyType propertyType)
@@ -766,7 +766,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     return string.Empty;
 
                 var issueTableItem = item.children[0] as IssueTableItem;
-                return issueTableItem.ProjectIssue.GetProperty(propertyType);
+                return issueTableItem.ReportItem.GetProperty(propertyType);
             }
 
             ulong GetGroupColumnSumUlong(IssueTableItem item, int customPropertyIndex)
@@ -775,7 +775,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 foreach (var childItem in item.children)
                 {
                     var issueTableItem = childItem as IssueTableItem;
-                    var value = issueTableItem.ProjectIssue.GetCustomPropertyUInt64(customPropertyIndex);
+                    var value = issueTableItem.ReportItem.GetCustomPropertyUInt64(customPropertyIndex);
                     sum += value;
                 }
 
@@ -788,7 +788,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 foreach (var childItem in item.children)
                 {
                     var issueTableItem = childItem as IssueTableItem;
-                    var value = issueTableItem.ProjectIssue.GetCustomPropertyFloat(customPropertyIndex);
+                    var value = issueTableItem.ReportItem.GetCustomPropertyFloat(customPropertyIndex);
                     sum += value;
                 }
 

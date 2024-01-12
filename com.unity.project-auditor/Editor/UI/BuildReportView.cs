@@ -22,14 +22,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 If your project uses a custom build script, ensure that it passes the <b>BuildOptions.CleanBuildCache</b> option to <b>BuildPipeline.BuildPlayer</b>.";
         static readonly string k_CleanBuildInfoBox = $"A clean build is important for capturing accurate information about build times and steps. For this reason, {ProjectAuditor.DisplayName} does not display the results of incremental builds.";
 
-        List<ProjectIssue> m_MetaData = new List<ProjectIssue>();
+        List<ReportItem> m_MetaData = new List<ReportItem>();
 
         public BuildReportView(ViewManager viewManager) :
             base(viewManager)
         {
         }
 
-        public override void AddIssues(IEnumerable<ProjectIssue> allIssues)
+        public override void AddIssues(IEnumerable<ReportItem> allIssues)
         {
             base.AddIssues(allIssues);
             m_MetaData.AddRange(allIssues.Where(i => i.Category == IssueCategory.BuildSummary));
@@ -60,7 +60,7 @@ If your project uses a custom build script, ensure that it passes the <b>BuildOp
             EditorGUILayout.EndVertical();
         }
 
-        public override void DrawDetails(ProjectIssue[] selectedIssues)
+        public override void DrawDetails(ReportItem[] selectedIssues)
         {
             EditorGUILayout.BeginVertical();
 
@@ -77,7 +77,7 @@ If your project uses a custom build script, ensure that it passes the <b>BuildOp
             EditorGUILayout.EndVertical();
         }
 
-        public virtual string GetIssueDescription(ProjectIssue issue)
+        public virtual string GetIssueDescription(ReportItem issue)
         {
             return issue.Description;
         }

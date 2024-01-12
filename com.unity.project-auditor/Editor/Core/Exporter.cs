@@ -15,7 +15,7 @@ namespace Unity.ProjectAuditor.Editor.Core
             m_Report = report;
         }
 
-        public void Export(string path, IssueCategory category, Func<ProjectIssue, bool> predicate = null)
+        public void Export(string path, IssueCategory category, Func<ReportItem, bool> predicate = null)
         {
             m_StreamWriter = new StreamWriter(path);
             var issues = m_Report.FindByCategory(category);
@@ -41,6 +41,6 @@ namespace Unity.ProjectAuditor.Editor.Core
 
         public abstract void WriteHeader(IssueLayout layout);
 
-        protected abstract void WriteIssue(IssueLayout layout, ProjectIssue issue);
+        protected abstract void WriteIssue(IssueLayout layout, ReportItem issue);
     }
 }

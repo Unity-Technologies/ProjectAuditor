@@ -15,6 +15,6 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
 
     internal interface IAudioClipModuleAnalyzer : IModuleAnalyzer
     {
-        IEnumerable<ProjectIssue> Analyze(AudioClipAnalysisContext context);
+        IEnumerable<ReportItem> Analyze(AudioClipAnalysisContext context);
     }
 }

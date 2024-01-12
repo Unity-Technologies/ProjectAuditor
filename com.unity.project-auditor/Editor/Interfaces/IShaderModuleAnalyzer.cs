@@ -12,6 +12,6 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
 
     internal interface IShaderModuleAnalyzer : IModuleAnalyzer
     {
-        IEnumerable<ProjectIssue> Analyze(ShaderAnalysisContext context);
+        IEnumerable<ReportItem> Analyze(ShaderAnalysisContext context);
     }
 }

@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
         }
 
-        public override void DrawDetails(ProjectIssue[] selectedIssues)
+        public override void DrawDetails(ReportItem[] selectedIssues)
         {
             Descriptor descriptor = null;
             var selectedIDs = selectedIssues.Select(i => i.Id).Distinct().ToArray();
@@ -214,7 +214,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             });
         }
 
-        bool AreIssuesIgnored(ProjectIssue[] selectedIssues)
+        bool AreIssuesIgnored(ReportItem[] selectedIssues)
         {
             foreach (var issue in selectedIssues)
             {
@@ -229,7 +229,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return true;
         }
 
-        protected override void Export(Func<ProjectIssue, bool> predicate = null)
+        protected override void Export(Func<ReportItem, bool> predicate = null)
         {
             var path = EditorUtility.SaveFilePanel("Save to CSV file", UserPreferences.LoadSavePath, string.Format("project-auditor-{0}.csv", m_Desc.Category.ToString()).ToLower(),
                 "csv");
@@ -257,7 +257,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public override bool Match(ProjectIssue issue)
+        public override bool Match(ReportItem issue)
         {
             if (!base.Match(issue))
                 return false;

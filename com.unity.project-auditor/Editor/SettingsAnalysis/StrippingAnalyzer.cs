@@ -57,7 +57,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_iOSManagedStrippingDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
+        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             if (k_EngineCodeStrippingDescriptor.IsApplicable(context.Params) && !PlayerSettings.stripEngineCode)
             {

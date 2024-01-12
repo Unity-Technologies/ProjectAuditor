@@ -95,7 +95,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return AnalysisResult.Success;
         }
 
-        IEnumerable<ProjectIssue> EnumerateInstalledPackages(AnalysisContext context, UnityEditor.PackageManager.PackageInfo package)
+        IEnumerable<ReportItem> EnumerateInstalledPackages(AnalysisContext context, UnityEditor.PackageManager.PackageInfo package)
         {
             var dependencies = package.dependencies.Select(d => d.name + " [" + d.version + "]").ToArray();
             var displayName = string.IsNullOrEmpty(package.displayName) ? package.name : package.displayName;
@@ -111,7 +111,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 .WithLocation(package.assetPath);
         }
 
-        IEnumerable<ProjectIssue> EnumeratePackageDiagnostics(AnalysisContext context, UnityEditor.PackageManager.PackageInfo package)
+        IEnumerable<ReportItem> EnumeratePackageDiagnostics(AnalysisContext context, UnityEditor.PackageManager.PackageInfo package)
         {
             // first check if any package is preview or experimental
             if (package.version.Contains("pre") || package.version.Contains("exp"))

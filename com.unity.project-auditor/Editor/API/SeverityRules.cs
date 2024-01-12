@@ -70,7 +70,7 @@ namespace Unity.ProjectAuditor.Editor
                 m_Rules.Remove(rule);
         }
 
-        internal void ClearRules(ProjectIssue issue)
+        internal void ClearRules(ReportItem issue)
         {
             var id = issue.Id;
             ClearRules(id, issue.GetContext());
@@ -91,7 +91,7 @@ namespace Unity.ProjectAuditor.Editor
             return Severity.Default;
         }
 
-        internal void SetRule(ProjectIssue issue, Severity ruleSeverity)
+        internal void SetRule(ReportItem issue, Severity ruleSeverity)
         {
             var id = issue.Id;
 

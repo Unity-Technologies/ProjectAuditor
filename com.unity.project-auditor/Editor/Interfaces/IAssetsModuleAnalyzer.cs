@@ -10,6 +10,6 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
 
     internal interface IAssetsModuleAnalyzer : IModuleAnalyzer
     {
-        IEnumerable<ProjectIssue> Analyze(AssetAnalysisContext context);
+        IEnumerable<ReportItem> Analyze(AssetAnalysisContext context);
     }
 }

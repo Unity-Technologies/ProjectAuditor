@@ -527,7 +527,7 @@ Shader ""Custom/SRPBatchCompatible""
         [Test]
         public void ShadersAnalysis_PlayerLog_DoesNotContainShaderCompilationMessages()
         {
-            var result = ShadersModule.ParsePlayerLog(m_PlayerLogWithNoCompilationResource.relativePath, new ProjectIssue[0]);
+            var result = ShadersModule.ParsePlayerLog(m_PlayerLogWithNoCompilationResource.relativePath, new ReportItem[0]);
             Assert.That(result, Is.EqualTo(ParseLogResult.NoCompiledVariants));
         }
 

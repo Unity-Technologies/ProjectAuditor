@@ -133,12 +133,12 @@ namespace Unity.ProjectAuditor.Editor
         DescriptorLibrary m_DescriptorLibrary = new DescriptorLibrary();
 
         [JsonIgnore][SerializeField]
-        List<ProjectIssue> m_Issues = new List<ProjectIssue>();
+        List<ReportItem> m_Issues = new List<ReportItem>();
 
         static Mutex s_Mutex = new Mutex();
 
         [JsonProperty("insights")]
-        internal ProjectIssue[] Insights
+        internal ReportItem[] Insights
         {
             get
             {
@@ -148,7 +148,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         [JsonProperty("issues")]
-        internal ProjectIssue[] UnfixedIssues
+        internal ReportItem[] UnfixedIssues
         {
             get
             {
@@ -217,7 +217,7 @@ namespace Unity.ProjectAuditor.Editor
         /// Gets a read-only collection of all of the ProjectIssues included in the report.
         /// </summary>
         /// <returns>All the issues in the report</returns>
-        public IReadOnlyCollection<ProjectIssue> GetAllIssues()
+        public IReadOnlyCollection<ReportItem> GetAllIssues()
         {
             s_Mutex.WaitOne();
             var result = m_Issues.ToArray();
@@ -248,7 +248,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="category"> Desired IssueCategory</param>
         /// <returns> Array of project issues</returns>
-        public IReadOnlyCollection<ProjectIssue> FindByCategory(IssueCategory category)
+        public IReadOnlyCollection<ReportItem> FindByCategory(IssueCategory category)
         {
             s_Mutex.WaitOne();
             var result = m_Issues.Where(i => i.Category == category).ToArray();
@@ -261,7 +261,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="id"> Desired Descriptor ID</param>
         /// <returns> Array of project issues</returns>
-        public IReadOnlyCollection<ProjectIssue> FindByDescriptorId(string id)
+        public IReadOnlyCollection<ReportItem> FindByDescriptorId(string id)
         {
             s_Mutex.WaitOne();
             var result = m_Issues.Where(i => i.Id.IsValid() && i.Id.Equals(id)).ToArray();
@@ -346,7 +346,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         // Internal only: Data written by ProjectAuditor during analysis
-        internal void AddIssues(IEnumerable<ProjectIssue> issues)
+        internal void AddIssues(IEnumerable<ReportItem> issues)
         {
             s_Mutex.WaitOne();
             m_Issues.AddRange(issues);

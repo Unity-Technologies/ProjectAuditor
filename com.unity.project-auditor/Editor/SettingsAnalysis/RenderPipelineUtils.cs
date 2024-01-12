@@ -41,9 +41,9 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             }
         }
 
-        internal static IEnumerable<ProjectIssue> AnalyzeAssets(
+        internal static IEnumerable<ReportItem> AnalyzeAssets(
             SettingsAnalysisContext context,
-            Func<SettingsAnalysisContext, RenderPipelineAsset, int, IEnumerable<ProjectIssue>> analyze)
+            Func<SettingsAnalysisContext, RenderPipelineAsset, int, IEnumerable<ReportItem>> analyze)
         {
             var issues = analyze(context, GraphicsSettings.defaultRenderPipeline, -1);
             foreach (var issue in issues)
@@ -66,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             QualitySettings.SetQualityLevel(initialQualityLevel);
         }
 
-        internal static ProjectIssue CreateAssetSettingIssue(AnalysisContext context, int qualityLevel, string name, string id)
+        internal static ReportItem CreateAssetSettingIssue(AnalysisContext context, int qualityLevel, string name, string id)
         {
             string assetLocation = qualityLevel == -1
                 ? "Default Rendering Pipeline Asset"
@@ -77,7 +77,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 .WithLocation(qualityLevel == -1 ? "Project/Graphics" : "Project/Quality");
         }
 
-        internal static void FixAssetSetting(ProjectIssue issue, Action<RenderPipelineAsset> setter)
+        internal static void FixAssetSetting(ReportItem issue, Action<RenderPipelineAsset> setter)
         {
             int qualityLevel = issue.GetCustomPropertyInt32(0);
             if (qualityLevel == -1)

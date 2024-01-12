@@ -53,7 +53,7 @@ class MyClass : MonoBehaviour
         {
             var projectReport = new ProjectReport(new AnalysisParams());
 
-            projectReport.AddIssues(new[] { new ProjectIssue
+            projectReport.AddIssues(new[] { new ReportItem
                                             (
                                                 IssueCategory.Texture,
                                                 "myTexture"

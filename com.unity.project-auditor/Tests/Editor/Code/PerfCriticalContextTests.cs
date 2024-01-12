@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_TestAssetShaderWarmupIssueIsCritical;
 
         [SerializeField]
-        ProjectIssue m_Issue;
+        ReportItem m_Issue;
 
         [OneTimeSetUp]
         public void SetUp()

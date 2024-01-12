@@ -10,7 +10,7 @@ namespace Unity.ProjectAuditor.Editor
     /// Describes an issue that ProjectAuditor reports in the Unity project.
     /// </summary>
     [Serializable]
-    public class ProjectIssue
+    public class ReportItem
     {
         [SerializeField][JsonIgnore]
         DescriptorId m_DescriptorId;
@@ -44,7 +44,7 @@ namespace Unity.ProjectAuditor.Editor
         /// An unique identifier for the issue descriptor (read-only).
         /// </summary>
         /// <remarks>
-        /// Project Reports can contain two different types of ProjectIssue:
+        /// Project Reports can contain two different types of ReportItem:
         /// - Issues, which indicate a potential problem which should be investigated and possibly fixed: for example, a texture with its Read/Write Enabled checkbox ticked.
         /// - Insights, for informational purposes: for example, general information about a texture in the project.
         ///
@@ -185,19 +185,19 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         [JsonConstructor]
-        internal ProjectIssue()
+        internal ReportItem()
         {
             // only for json serialization purposes
             m_DescriptorId = new DescriptorId(string.Empty);
         }
 
         /// <summary>
-        /// Constructs and returns an instance of ProjectIssue.
+        /// Constructs and returns an instance of ReportItem.
         /// </summary>
         /// <param name="category">Issue category</param>
         /// <param name="id">Descriptor ID</param>
         /// <param name="args">Arguments to be used in the message formatting</param>
-        internal ProjectIssue(IssueCategory category, string id, params object[] args)
+        internal ReportItem(IssueCategory category, string id, params object[] args)
         {
             m_DescriptorId = new DescriptorId(id);
             var descriptor = DescriptorLibrary.GetDescriptor(m_DescriptorId.AsInt());
@@ -217,11 +217,11 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Constructs and returns an instance of ProjectIssue.
+        /// Constructs and returns an instance of ReportItem.
         /// </summary>
         /// <param name="category">Issue category</param>
         /// <param name="description">Issue description</param>
-        internal ProjectIssue(IssueCategory category, string description)
+        internal ReportItem(IssueCategory category, string description)
         {
             m_DescriptorId = new DescriptorId(null);  // Empty, invalid descriptor
             m_Category = category;
@@ -265,7 +265,7 @@ namespace Unity.ProjectAuditor.Editor
             return m_CustomProperties != null ? m_CustomProperties.Length : 0;
         }
 
-        // stephenm TODO: The Get/SetCustomProperty methods need more explanation - like how do you find out what enum is used for a given ProjectIssue. Phase 2.
+        // stephenm TODO: The Get/SetCustomProperty methods need more explanation - like how do you find out what enum is used for a given ReportItem. Phase 2.
         /// <summary>
         /// Get a custom property string given an enum.
         /// </summary>

@@ -9,6 +9,6 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
 
     internal interface ISettingsModuleAnalyzer : IModuleAnalyzer
     {
-        IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context);
+        IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context);
     }
 }

@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
         }
 
-        public override void AddIssues(IEnumerable<ProjectIssue> allIssues)
+        public override void AddIssues(IEnumerable<ReportItem> allIssues)
         {
             base.AddIssues(allIssues);
 
@@ -104,7 +104,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        public override string GetIssueDescription(ProjectIssue issue)
+        public override string GetIssueDescription(ReportItem issue)
         {
             return issue.RelativePath;
         }

@@ -258,7 +258,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_AudioCompressedSourceAssetDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(AudioClipAnalysisContext context)
+        public IEnumerable<ReportItem> Analyze(AudioClipAnalysisContext context)
         {
             var assetPath = context.Importer.assetPath;
 

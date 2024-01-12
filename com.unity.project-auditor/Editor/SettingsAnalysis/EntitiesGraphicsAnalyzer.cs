@@ -44,7 +44,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_EntitiesGraphicsDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
+        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
 #if PACKAGE_ENTITIES_GRAPHICS
             if (PlayerSettingsUtil.IsStaticBatchingEnabled(context.Params.Platform))

@@ -57,7 +57,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_VulkanDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
+        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             if (k_OpenGLESAndMetalDescriptor.IsApplicable(context.Params) && IsUsingOpenGlesAndMetal())
                 yield return context.CreateIssue(IssueCategory.ProjectSetting, k_OpenGLESAndMetalDescriptor.Id)

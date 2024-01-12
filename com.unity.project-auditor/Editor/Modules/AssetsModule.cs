@@ -107,7 +107,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return AnalysisResult.Success;
         }
 
-        static ProjectIssue AnalyzeStreamingAssets(AnalysisContext context)
+        static ReportItem AnalyzeStreamingAssets(AnalysisContext context)
         {
             if (!Directory.Exists("Assets/StreamingAssets"))
                 return null;

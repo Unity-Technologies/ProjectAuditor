@@ -127,7 +127,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return AnalysisResult.Success;
         }
 
-        IEnumerable<ProjectIssue> AnalyzeBuildSteps(BuildAnalysisContext context)
+        IEnumerable<ReportItem> AnalyzeBuildSteps(BuildAnalysisContext context)
         {
             foreach (var step in context.Report.steps)
             {
@@ -157,7 +157,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         }
 
-        IEnumerable<ProjectIssue> AnalyzePackedAssets(BuildAnalysisContext context)
+        IEnumerable<ReportItem> AnalyzePackedAssets(BuildAnalysisContext context)
         {
             ulong dataSize = 0;
             foreach (var packedAsset in context.Report.packedAssets)
@@ -190,7 +190,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         }
 
-        ProjectIssue NewMetaData(BuildAnalysisContext context, string key, object value)
+        ReportItem NewMetaData(BuildAnalysisContext context, string key, object value)
         {
             return context.CreateInsight(IssueCategory.BuildSummary, key)
                 .WithCustomProperties(new object[(int)BuildReportMetaData.Num] { value });

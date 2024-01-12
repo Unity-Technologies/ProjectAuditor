@@ -10,7 +10,7 @@ target platform in the Welcome View or by configuring an `AnalysisParams` object
 each supported asset type, for Project Settings, and several analyzers to detect different kinds of issues in C#
 scripts. Analyzers are typically responsible for declaring and registering relevant `Descriptors` and
 `DiagnosticParams`, and typically implement an `Analyze()` method which detects Issues and Insights, and constructs and
-returns a collection of `ProjectIssue` objects which describe them.
+returns a collection of `ReportItem` objects which describe them.
 
 **Area:** An aspect of a Unity project which may be affected by an Issue. Areas include things like runtime CPU or GPU
 performance, memory footprints, build sizes, build times or iteration times. Not to be confused with Project Areas,
@@ -46,8 +46,8 @@ aspect of your project.
 project, which you may want to take action to address. Examples include calls to Unity APIs that are known to be slow or
 generate garbage, or suboptimal project settings or asset import settings.
 
-**Report Item:** A term to refer to both Insights and Issues. In Project Auditor's code and API, items are represented by
-`ProjectIssue` objects. A `ProjectIssue` with a valid `DescriptorId` is an Issue. One without a valid `DescriptorId` is
+**Report Item:** A term to refer to both Insights and Issues. In Project Auditor's code and API, items are represented
+by `ReportItem` objects. A `ReportItem` with a valid `DescriptorId` is an Issue. One without a valid `DescriptorId` is
 an Insight.
 
 **Module:** One of the static analysis tools provided by Project Auditor. Project Auditor creates and manages several

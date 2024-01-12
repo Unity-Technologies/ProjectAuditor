@@ -22,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor.Core
             m_StreamWriter.WriteLine(m_StringBuilder);
         }
 
-        protected override void WriteIssue(IssueLayout layout, ProjectIssue issue)
+        protected override void WriteIssue(IssueLayout layout, ReportItem issue)
         {
             m_StringBuilder.Clear();
             for (var i = 0; i < layout.Properties.Length; i++)

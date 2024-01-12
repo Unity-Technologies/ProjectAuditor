@@ -409,7 +409,7 @@ class MyClass : MonoBehaviour
             Assert.True(formatCorrect);
         }
 
-        IReadOnlyCollection<ProjectIssue> AnalyzeAndExport(IssueCategory category, string path, string format, Func<ProjectIssue, bool> predicate = null)
+        IReadOnlyCollection<ReportItem> AnalyzeAndExport(IssueCategory category, string path, string format, Func<ReportItem, bool> predicate = null)
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var projectReport = projectAuditor.Audit(new AnalysisParams

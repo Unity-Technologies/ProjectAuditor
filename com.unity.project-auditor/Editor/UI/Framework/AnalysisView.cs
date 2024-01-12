@@ -28,7 +28,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         protected ViewStates m_ViewStates;
         protected ViewDescriptor m_Desc;
         protected IIssueFilter m_BaseFilter;
-        protected List<ProjectIssue> m_Issues = new List<ProjectIssue>();
+        protected List<ReportItem> m_Issues = new List<ReportItem>();
         protected IssueLayout m_Layout;
         protected IssueTable m_Table;
         protected TextFilter m_TextFilter;
@@ -144,7 +144,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_HelpButtonContent = Utility.GetIcon(Utility.IconType.Help, helpButtonTooltip);
         }
 
-        public virtual void AddIssues(IEnumerable<ProjectIssue> allIssues)
+        public virtual void AddIssues(IEnumerable<ReportItem> allIssues)
         {
             var issues = allIssues.Where(i => i.Category == m_Desc.Category).ToArray();
             if (issues.Length == 0)
@@ -202,7 +202,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                         var row = rows[rowIndex];
                         var item = ((IssueTableItem)row);
-                        var issue = item.ProjectIssue;
+                        var issue = item.ReportItem;
                         string cellString;
 
                         if (PropertyTypeUtil.IsCustom(propertyType))
@@ -368,7 +368,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public virtual void DrawContent(bool showDetails = false)
         {
             var selectedItems = m_Table.GetSelectedItems();
-            var selectedIssues = selectedItems.Where(i => i.ProjectIssue != null).Select(i => i.ProjectIssue).ToArray();
+            var selectedIssues = selectedItems.Where(i => i.ReportItem != null).Select(i => i.ReportItem).ToArray();
 
             using (new EditorGUILayout.HorizontalScope(GUI.skin.box, GUILayout.ExpandHeight(true)))
             {
@@ -498,7 +498,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             EditorGUILayout.EndHorizontal();
         }
 
-        public virtual void DrawDetails(ProjectIssue[] selectedIssues)
+        public virtual void DrawDetails(ReportItem[] selectedIssues)
         {
             EditorGUILayout.BeginVertical();
             EditorGUILayout.EndVertical();
@@ -577,7 +577,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        void DrawDependencyView(ProjectIssue[] issues)
+        void DrawDependencyView(ReportItem[] issues)
         {
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.Height(LayoutSize.DependencyViewHeight));
 
@@ -620,13 +620,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_TextFilter.searchString = filter;
         }
 
-        public ProjectIssue[] GetSelection()
+        public ReportItem[] GetSelection()
         {
             var selectedItems = m_Table.GetSelectedItems();
-            return selectedItems.Where(item => item.parent != null).Select(i => i.ProjectIssue).ToArray();
+            return selectedItems.Where(item => item.parent != null).Select(i => i.ReportItem).ToArray();
         }
 
-        public void SetSelection(Func<ProjectIssue, bool> predicate)
+        public void SetSelection(Func<ReportItem, bool> predicate)
         {
             RefreshIfDirty();
 
@@ -634,7 +634,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             SetRowsExpanded(true);
 
             var rows = m_Table.GetRows();
-            var selectedIDs = rows.Select(item => item as IssueTableItem).Where(i => i != null && i.ProjectIssue != null && predicate(i.ProjectIssue)).Select(i => i.id).ToList();
+            var selectedIDs = rows.Select(item => item as IssueTableItem).Where(i => i != null && i.ReportItem != null && predicate(i.ReportItem)).Select(i => i.id).ToList();
 
             m_Table.SetSelection(selectedIDs);
         }
@@ -668,7 +668,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        protected virtual void Export(Func<ProjectIssue, bool> predicate = null)
+        protected virtual void Export(Func<ReportItem, bool> predicate = null)
         {
             var path = EditorUtility.SaveFilePanel("Save to CSV file", UserPreferences.LoadSavePath, string.Format("project-auditor-{0}.csv", m_Desc.Category.ToString()).ToLower(),
                 "csv");
@@ -688,7 +688,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public virtual bool Match(ProjectIssue issue)
+        public virtual bool Match(ReportItem issue)
         {
             return m_BaseFilter.Match(issue) && m_TextFilter.Match(issue);
         }

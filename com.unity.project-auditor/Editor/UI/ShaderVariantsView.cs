@@ -148,7 +148,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        public override void DrawDetails(ProjectIssue[] selectedIssues)
+        public override void DrawDetails(ReportItem[] selectedIssues)
         {
             EditorGUILayout.BeginVertical(GUILayout.Width(300));
 
@@ -256,7 +256,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        protected override void Export(Func<ProjectIssue, bool> predicate = null)
+        protected override void Export(Func<ReportItem, bool> predicate = null)
         {
             if (!m_ExportAsVariantCollection)
             {
@@ -278,7 +278,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        public override bool Match(ProjectIssue issue)
+        public override bool Match(ReportItem issue)
         {
             if (!base.Match(issue))
                 return false;

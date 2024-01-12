@@ -18,6 +18,6 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
 
     internal interface ITextureModuleAnalyzer : IModuleAnalyzer
     {
-        IEnumerable<ProjectIssue> Analyze(TextureAnalysisContext context);
+        IEnumerable<ReportItem> Analyze(TextureAnalysisContext context);
     }
 }

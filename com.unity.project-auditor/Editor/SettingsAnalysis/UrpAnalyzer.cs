@@ -70,7 +70,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_CameraStopNanDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
+        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
 #if PACKAGE_URP
             var renderPipeline = GraphicsSettings.currentRenderPipeline;
@@ -99,21 +99,21 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 #endif
         }
 
-        private static void FixHdrSetting(ProjectIssue issue, AnalysisParams analysisParams)
+        private static void FixHdrSetting(ReportItem issue, AnalysisParams analysisParams)
         {
 #if PACKAGE_URP
             RenderPipelineUtils.FixAssetSetting(issue, p => SetHdrSetting(p, false));
 #endif
         }
 
-        static void FixMsaaSampleCountSetting(ProjectIssue issue, AnalysisParams analysisParams)
+        static void FixMsaaSampleCountSetting(ReportItem issue, AnalysisParams analysisParams)
         {
 #if PACKAGE_URP
             RenderPipelineUtils.FixAssetSetting(issue, p => SetMsaaSampleCountSetting(p, 2));
 #endif
         }
 
-        IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context, RenderPipelineAsset renderPipeline, int qualityLevel)
+        IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context, RenderPipelineAsset renderPipeline, int qualityLevel)
         {
 #if PACKAGE_URP
             if (k_HdrSettingDescriptor.IsApplicable(context.Params) && GetHdrSetting(renderPipeline))

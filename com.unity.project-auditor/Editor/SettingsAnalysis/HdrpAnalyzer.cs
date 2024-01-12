@@ -38,7 +38,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         }
 
 #if PACKAGE_HDRP
-        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
+        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             if (IsLitShaderModeBothOrMixed())
             {
@@ -90,7 +90,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         }
 
 #else
-        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
+        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             yield break;
         }

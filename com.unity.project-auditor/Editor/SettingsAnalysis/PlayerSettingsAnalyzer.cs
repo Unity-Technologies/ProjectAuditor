@@ -107,7 +107,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_LightmapStreamingEnabledDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
+        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             if (k_AccelerometerDescriptor.IsApplicable(context.Params) && IsAccelerometerEnabled())
             {

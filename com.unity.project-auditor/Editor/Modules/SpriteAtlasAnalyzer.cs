@@ -29,7 +29,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_PoorUtilizationDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(SpriteAtlasAnalysisContext context)
+        public IEnumerable<ReportItem> Analyze(SpriteAtlasAnalysisContext context)
         {
             var spriteAtlas = AssetDatabase.LoadAssetAtPath<SpriteAtlas>(context.AssetPath);
 

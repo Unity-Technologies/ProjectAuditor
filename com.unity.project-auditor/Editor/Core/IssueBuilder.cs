@@ -6,18 +6,18 @@ namespace Unity.ProjectAuditor.Editor.Core
 {
     internal class IssueBuilder
     {
-        ProjectIssue m_Issue;
+        ReportItem m_Issue;
 
-        public static implicit operator ProjectIssue(IssueBuilder builder) => builder.m_Issue;
+        public static implicit operator ReportItem(IssueBuilder builder) => builder.m_Issue;
 
         public IssueBuilder(IssueCategory category, DescriptorId id, params object[] args)
         {
-            m_Issue = new ProjectIssue(category, id, args);
+            m_Issue = new ReportItem(category, id, args);
         }
 
         public IssueBuilder(IssueCategory category, string description)
         {
-            m_Issue = new ProjectIssue(category, description);
+            m_Issue = new ReportItem(category, description);
         }
 
         /// <summary>

@@ -24,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_ShowWarn = m_ShowError = true;
         }
 
-        public override void DrawDetails(ProjectIssue[] selectedIssues)
+        public override void DrawDetails(ReportItem[] selectedIssues)
         {
             using (new EditorGUILayout.VerticalScope(GUILayout.Width(LayoutSize.FoldoutWidth)))
             {
@@ -59,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        public override bool Match(ProjectIssue issue)
+        public override bool Match(ReportItem issue)
         {
             switch (issue.Severity)
             {

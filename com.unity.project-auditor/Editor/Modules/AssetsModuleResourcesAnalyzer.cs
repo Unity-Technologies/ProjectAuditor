@@ -43,9 +43,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_AssetInResourcesFolderDependencyDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(AssetAnalysisContext context)
+        public IEnumerable<ReportItem> Analyze(AssetAnalysisContext context)
         {
-            var issues = new List<ProjectIssue>();
+            var issues = new List<ReportItem>();
             var assetPathsDict = new Dictionary<string, DependencyNode>();
 
             if (context.AssetPath.IndexOf("/resources/", StringComparison.OrdinalIgnoreCase) < 0)
@@ -70,7 +70,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         }
 
         static DependencyNode ProcessResourceAsset(AnalysisContext context,
-            string assetPath, Dictionary<string, DependencyNode> assetPathsDict, IList<ProjectIssue> issues, DependencyNode parent)
+            string assetPath, Dictionary<string, DependencyNode> assetPathsDict, IList<ReportItem> issues, DependencyNode parent)
         {
             // skip C# scripts
             if (Path.GetExtension(assetPath).Equals(".cs"))

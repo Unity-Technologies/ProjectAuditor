@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         protected AnalysisParams m_AnalysisParams;
         protected string m_AssemblyName;
         protected string m_BuildPath;
-        protected ProjectIssue[] m_CodeDiagnostics;
+        protected ReportItem[] m_CodeDiagnostics;
         protected CodeOptimization m_CodeOptimization = CodeOptimization.Release;
         protected string m_OriginalCompanyName;
         protected string m_OriginalProductName;
@@ -31,18 +31,18 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         protected UnityEditor.BuildTarget m_Platform;
         protected ProjectAuditor m_ProjectAuditor;
         protected TestFixtureBase() {}
-        protected ProjectIssue[] Analyze(System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
-        protected ProjectIssue[] Analyze(IssueCategory category, System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>));
-        protected ProjectIssue[] AnalyzeAndFindAssetIssues(TestAsset testAsset, IssueCategory category = IssueCategory.Code);
-        protected ProjectIssue[] AnalyzeBuild(System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>), bool isDevelopment = true, string buildFileName = @"test", System.Action preBuildAction = default(System.Action), System.Action postBuildAction = default(System.Action));
-        protected ProjectIssue[] AnalyzeBuild(IssueCategory category, System.Func<ProjectIssue, bool> predicate = default(System.Func<ProjectIssue, bool>), bool isDevelopment = true, string buildFileName = @"test", System.Action preBuildAction = default(System.Action), System.Action postBuildAction = default(System.Action));
-        protected ProjectIssue[] AnalyzeFiltered(System.Predicate<string> filterPredicate);
-        protected ProjectIssue[] AnalyzeFiltered(System.Predicate<string> filterPredicate, IssueCategory category);
-        protected ProjectIssue[] AnalyzeFiltered(System.Predicate<string> filterPredicate, IssueCategory[] categories);
+        protected ReportItem[] Analyze(System.Func<ReportItem, bool> predicate = default(System.Func<ReportItem, bool>));
+        protected ReportItem[] Analyze(IssueCategory category, System.Func<ReportItem, bool> predicate = default(System.Func<ReportItem, bool>));
+        protected ReportItem[] AnalyzeAndFindAssetIssues(TestAsset testAsset, IssueCategory category = IssueCategory.Code);
+        protected ReportItem[] AnalyzeBuild(System.Func<ReportItem, bool> predicate = default(System.Func<ReportItem, bool>), bool isDevelopment = true, string buildFileName = @"test", System.Action preBuildAction = default(System.Action), System.Action postBuildAction = default(System.Action));
+        protected ReportItem[] AnalyzeBuild(IssueCategory category, System.Func<ReportItem, bool> predicate = default(System.Func<ReportItem, bool>), bool isDevelopment = true, string buildFileName = @"test", System.Action preBuildAction = default(System.Action), System.Action postBuildAction = default(System.Action));
+        protected ReportItem[] AnalyzeFiltered(System.Predicate<string> filterPredicate);
+        protected ReportItem[] AnalyzeFiltered(System.Predicate<string> filterPredicate, IssueCategory category);
+        protected ReportItem[] AnalyzeFiltered(System.Predicate<string> filterPredicate, IssueCategory[] categories);
         protected void AnalyzeTempAssetsFolder();
         protected void Build(bool isDevelopment = true, string buildFileName = @"test", System.Action preBuildAction = default(System.Action), System.Action postBuildAction = default(System.Action));
         protected void CleanupBuild();
-        protected ProjectIssue[] FindTestAssetIssues(TestAsset testAsset);
+        protected ReportItem[] FindTestAssetIssues(TestAsset testAsset);
         [NUnit.Framework.OneTimeSetUp] public void FixtureSetUp();
         [NUnit.Framework.OneTimeTearDown] public void FixtureTearDown();
         public static UnityEditor.BuildTarget GetStandaloneBuildTarget();

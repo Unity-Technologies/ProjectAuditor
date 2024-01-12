@@ -173,7 +173,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         void ProcessAnimatorControllers(AnalysisContext context, IProgress progress)
         {
-            var issues = new List<ProjectIssue>();
+            var issues = new List<ReportItem>();
 
             var assetPaths = GetAssetPathsByFilter("t:animatorcontroller, a:assets", context);
             progress?.Start("Finding Animator Controllers", "Search in Progress...", assetPaths.Length);
@@ -215,7 +215,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         void ProcessAnimationClips(AnalysisContext context, IProgress progress)
         {
-            var issues = new List<ProjectIssue>();
+            var issues = new List<ReportItem>();
             var assetPaths = GetAssetPathsByFilter("t:animationclip, a:assets", context);
 
             progress?.Start("Finding Animation Clips", "Search in Progress...", assetPaths.Length);
@@ -267,7 +267,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         void ProcessAvatars(AnalysisContext context, IProgress progress)
         {
-            var issues = new List<ProjectIssue>();
+            var issues = new List<ReportItem>();
             var assetPaths = GetAssetPathsByFilter("t:avatar, a:assets", context);
 
             progress?.Start("Finding Avatars", "Search in Progress...", assetPaths.Length);
@@ -319,7 +319,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         void ProcessAvatarMasks(AnalysisContext context, IProgress progress)
         {
-            var issues = new List<ProjectIssue>();
+            var issues = new List<ReportItem>();
             var assetPaths = GetAssetPathsByFilter("t:avatarmask, a:assets", context);
 
             progress?.Start("Finding Avatar Masks", "Search in Progress...", assetPaths.Length);

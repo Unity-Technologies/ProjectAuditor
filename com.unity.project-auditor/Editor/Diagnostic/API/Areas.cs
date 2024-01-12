@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace Unity.ProjectAuditor.Editor.Diagnostic
 {
     /// <summary>
-    /// Which area(s) of a project may be affected by a ProjectIssue.
+    /// Which area(s) of a project may be affected by a ReportItem.
     /// </summary>
     [Flags]
     [JsonConverter(typeof(AreasJsonConverter))]

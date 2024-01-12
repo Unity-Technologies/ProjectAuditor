@@ -61,26 +61,26 @@ projectAuditor.AuditAsync(analysisParams);
 The `ProjectReport` object produced by Project Auditor's analysis can be saved as a JSON file (as demonstracted in the
 code examples above), or can be examined via its API. `ProjectReport` contains a `SessionInfo` object with information
 about the analysis session, including a copy of the `AnalysisParams` which Project Auditor used to configure the
-analysis. It also provides several methods to access the report's list of discovered `ProjectIssue`s. Each
-`ProjectIssue` represents a single Issue or Insight - all the data for a single item in one of the tables that are shown
+analysis. It also provides several methods to access the report's list of discovered `ReportItem`s. Each
+`ReportItem` represents a single Issue or Insight - all the data for a single item in one of the tables that are shown
 in the UI Views.
 
 You cab tell the difference between an Issue and an Insight because Issues have a valid `DescriptorId` field and
 insights do not. There are a couple of ways to check this:
 
 ```
-bool isIssue = projectIssue.Id.IsValid();
+bool isIssue = reportItem.Id.IsValid();
 
 // A slightly more readable alternative...
-bool isIssue = projectIssue.IsIssue();
+bool isIssue = reportItem.IsIssue();
 ```
 
 If you have a valid `DescriptorId`, you can use it to get the corresponding `Descriptor`, which is the object that
 described a type of issue - including its details and recommendation strings.
 
 ```
-var descriptor = projectIssue.Id.GetDescriptor();
-Debug.Log($"Id: {projectIssue.Id.ToString()}");
+var descriptor = reportItem.Id.GetDescriptor();
+Debug.Log($"Id: {reportItem.Id.ToString()}");
 Debug.Log($"Description: {descriptor.Description}");
 Debug.Log($"Solution: {descriptor.Solution}");
 ```

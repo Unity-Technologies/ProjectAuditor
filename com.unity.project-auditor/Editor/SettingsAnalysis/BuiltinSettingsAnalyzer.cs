@@ -50,7 +50,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             }
         }
 
-        public IEnumerable<ProjectIssue> Analyze(SettingsAnalysisContext context)
+        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             if (m_Descriptors == null)
                 throw new Exception("Descriptors Database not initialized.");
@@ -63,7 +63,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             }
         }
 
-        ProjectIssue Evaluate(AnalysisContext context, Descriptor descriptor)
+        ReportItem Evaluate(AnalysisContext context, Descriptor descriptor)
         {
             // evaluate a Unity API static method or property
             var assembly = m_Assemblies.First(a => a.GetType(descriptor.Type) != null);
@@ -93,7 +93,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             return null;
         }
 
-        ProjectIssue NewIssue(AnalysisContext context, Descriptor descriptor, string description)
+        ReportItem NewIssue(AnalysisContext context, Descriptor descriptor, string description)
         {
             var projectWindowPath = string.Empty;
             var mappings = m_ProjectSettingsMapping.Where(p => descriptor.Type.StartsWith(p.Key)).ToArray();

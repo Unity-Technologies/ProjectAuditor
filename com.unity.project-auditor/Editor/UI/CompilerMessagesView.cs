@@ -29,7 +29,7 @@ To view Roslyn Analyzer diagnostics, make sure Roslyn Analyzer DLLs use the <b>R
             m_ShowInfo = m_ShowWarn = m_ShowError = true;
         }
 
-        public override void DrawDetails(ProjectIssue[] selectedIssues)
+        public override void DrawDetails(ReportItem[] selectedIssues)
         {
             using (new EditorGUILayout.VerticalScope(GUILayout.Width(LayoutSize.FoldoutWidth)))
             {
@@ -83,7 +83,7 @@ To view Roslyn Analyzer diagnostics, make sure Roslyn Analyzer DLLs use the <b>R
             }
         }
 
-        public override bool Match(ProjectIssue issue)
+        public override bool Match(ReportItem issue)
         {
             switch (issue.Severity)
             {
