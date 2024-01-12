@@ -37,22 +37,22 @@ sometimes report Issues that are false positives. For this reason, any reported 
 in the table and clicking the Ignore button in the right-hand panel. See also: _Rules_ which are how ignored Issues are
 implemented.
 
-**Insight:** An item discovered and reported by Project Auditor which is presented for informational purposes and not
-specifically actionable. Examples of insights include details about a single asset, a compiler message, or build step.
-Project Auditor presents filterable, sortable tables of insights as convenient ways to view and investigate some aspect
-of your project.
+**Insight:** A report item discovered and reported by Project Auditor which is presented for informational purposes and
+not specifically actionable. Examples of insights include details about a single asset, a compiler message, or build
+step. Project Auditor presents filterable, sortable tables of insights as convenient ways to view and investigate some
+aspect of your project.
 
-**Issue:** An item discovered and reported by Project Auditor which represents a potential problem in your project,
-which you may want to take action to address. Examples include calls to Unity APIs that are known to be slow or generate
-garbage, or suboptimal project settings or asset import settings.
+**Issue:** A report item discovered and reported by Project Auditor which represents a potential problem in your
+project, which you may want to take action to address. Examples include calls to Unity APIs that are known to be slow or
+generate garbage, or suboptimal project settings or asset import settings.
 
-**Item:** A term to refer to both Insights and Issues. In Project Auditor's code and API, items are represented by
+**Report Item:** A term to refer to both Insights and Issues. In Project Auditor's code and API, items are represented by
 `ProjectIssue` objects. A `ProjectIssue` with a valid `DescriptorId` is an Issue. One without a valid `DescriptorId` is
 an Insight.
 
 **Module:** One of the static analysis tools provided by Project Auditor. Project Auditor creates and manages several
 Modules, each of which may create and run one or more Analyzers to generate Items. For more information on the areas
-covered by Project Auditor's Modules, see the [Welcome View](./WelcomeView.md) documentation.
+covered by Project Auditor's Modules, see the [Configuration](Configuration.md) documentation.
 
 **Project Auditor:** A suite of static analysis tools for Unity projects, in a package of the same name. Also, the name
 of a C# object which is created to actually perform the analysis and to return a Project Report.
@@ -73,8 +73,8 @@ repository.
 `IssueCategory`.
 
 **Welcome View:** The initial View shown when the Project Auditor is initially opened, or when a report is discarded to 
-create a new one. Includes some options for configuring analysis. See [Welcome View](./WelcomeView.md) for more
-information.
+create a new one. Includes some options for configuring analysis. See [Welcome View](./WelcomeView.md) and
+[Configuring Project Auditor analysis](Configuration.md) for more information.
 
 
 

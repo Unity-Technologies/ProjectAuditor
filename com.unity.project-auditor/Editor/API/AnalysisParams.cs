@@ -9,7 +9,7 @@ namespace Unity.ProjectAuditor.Editor
 {
     /// <summary>
     /// Represents an object which can be passed to an instance of <see cref="ProjectAuditor"/> to specify how analysis should be performed and to provide delegates to be called when analysis steps have completed.
-    /// AnalysisParams defaults to values which instruct ProjectAuditor to analyse everything in the project for the current build target, but instances can be populated with custom data in an object initializer to provide additional constraints.
+    /// AnalysisParams defaults to values which instruct ProjectAuditor to analyze everything in the project for the current build target, but instances can be populated with custom data in an object initializer to provide additional constraints.
     /// </summary>
     [Serializable]
     public class AnalysisParams

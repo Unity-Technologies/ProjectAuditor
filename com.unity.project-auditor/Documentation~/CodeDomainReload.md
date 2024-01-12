@@ -56,9 +56,9 @@ To resolve the Issues reported in a C# script, you must do the following:
 ## The View table
 The table columns are as follows:
 
-| Column Name | Column Description                                                                                                                                          | 
-|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Code        | The error/warning code reported by the compiler.                                                                                                            |
-| Issue       | The error/warning message string reported by the compiler. Click on an Issue to see more details in the panel on the right.                                 |
-| Filename    | The file name and line number that generated the message. Double-click on any item to automatically open the file in your IDE and jump to the correct line. |
-| Assembly    | The assembly which contains the file that generated the message. The default assembly for user code in a Unity project is called `Assembly-CSharp`.         |
+| Column Name  | Column Description                                                                                                                                                 | 
+|--------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Code**     | The error/warning code reported by the compiler.                                                                                                                   |
+| **Issue**    | The error/warning message string reported by the compiler. Click on an Issue to see more details in the panel on the right.                                        |
+| **Filename** | The file name and line number that generated the message. Double-click on any report item to automatically open the file in your IDE and jump to the correct line. |
+| **Assembly** | The assembly which contains the file that generated the message. The default assembly for user code in a Unity project is called `Assembly-CSharp`.                |

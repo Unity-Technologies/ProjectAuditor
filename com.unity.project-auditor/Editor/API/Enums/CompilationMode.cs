@@ -40,7 +40,7 @@ namespace Unity.ProjectAuditor.Editor
         ///   <para>Editor assemblies</para>
         /// </summary>
         /// <remarks>
-        /// Analysis will be performed only on Editor code assemblies. Select this option to analyse custom Editor code, including packages.
+        /// Analysis will be performed only on Editor code assemblies. Select this option to analyze custom Editor code, including packages.
         /// </remarks>
         Editor
     }

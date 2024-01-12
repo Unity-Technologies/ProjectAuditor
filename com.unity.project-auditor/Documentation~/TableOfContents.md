@@ -1,27 +1,41 @@
 * [Index](./index.md)
-* [Installing](./Installing.md)
 * [Getting started](./GettingStarted.md)
-* [Code diagnostics](./Code.md)
-  * [Compiler messages](./CompilerMessages.md) 
-  * [Assemblies](./Assemblies.md)
-  * [Generics](./Generics.md)
-* [Settings diagnostics](./Settings.md)
-* [Asset diagnostics](./AssetDiagnostics.md)
-  * [Audio clips](./AudioClip.md)
-  * [Meshes](./Meshes.md)
-  * [Textures](./Textures.md)
-    * [Texture diagnostics](./TextureDiagnostics.md)
-  * [Shaders](./Shaders.md)
-    * [Shader messages](./ShaderMessages.md)
-    * [Variants](./Variants.md)
-    * [Compute shader variants](./ComputeShaderVariants.md)
-* Build diagnostics
-  * [Build size](./BuildSize.md)
-  * [Build steps](./BuildSteps.md)
-* [Package diagnostics](./PackageDiagnostics.md)
-  * [Installed packages](./InstalledPackages.md)
-* Advanced
-  * [Diagnostics](./Diagnostics.md)
-  * [Developing](./Developing.md)
-  * [Extending](./Extending.md)
-    * [Reporting](./Reporting.md)
+* [Configuring Project Auditor analysis](Configuration.md)
+* Welcome/Summary
+  * [Welcome View](WelcomeView.md)
+  * [Summary View](SummaryView.md)
+* Code
+  * [Code Issues](CodeIssues.md)
+  * [Assemblies](CodeAssemblies.md)
+  * [C# Compiler Messages](CodeCompilerMessages.md)
+  * [Domain Reload](CodeDomainReload.md)
+* Assets
+  * [Assets Issues](AssetsIssues.md)
+  * [Textures](AssetsTextures.md)
+  * [Meshes](AssetsMeshes.md)
+  * [AudioClips](AssetsAudioClips.md)
+  * [Animator Controllers](AssetsAnimatorControllers.md)
+  * [Animation Clips](AssetsAnimationClips.md)
+  * [Avatars](AssetsAvatars.md)
+  * [Avatar Masks](AssetsAvatarMasks.md)
+* Shaders
+  * [Shaders](Shaders.md)
+  * [Shader Variants](ShadersVariants.md)
+  * [Compute Shader Variants](ShadersComputeVariants.md)
+  * [Compiler Messages](ShadersCompilerMessages.md)
+  * [Materials](ShadersMaterials.md)
+* Project
+  * [Project Settings](ProjectSettings.md)
+* Build
+  * [Build Size](BuildSize.md)
+  * [Build Steps](BuildSteps.md)
+
+* [Scripting API Overview](./API.md)
+* [Glossary](./Glossary.md)
+
+
+
+
+
+
+

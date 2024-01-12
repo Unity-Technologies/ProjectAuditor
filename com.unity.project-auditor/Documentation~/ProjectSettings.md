@@ -11,16 +11,16 @@ To open the Project Settings window, select **Edit > Project Settings...** from 
 
 The table columns are as follows:
 
-| Column Name | Column Description                                                                                                                                                                                                         | 
-|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Issue       | A brief description of the Issue.                                                                                                                                                                                          |
-| Severity    | An estimate of how severe the issue might be for your project (Critical/Major/Moderate/Minor).                                                                                                                             |
-| Areas       | The area(s) impacted by the Issue. Project Settings Issues can impact a wide range of project areas.                                                                                                                       |
-| System      | The feature or system which contains the setting related to this Issue. In practical terms, this should match the name of one of the items in the left panel of the Project Settings window.                               |
-| Platform    | The build target(s) which may be affected by this issue. Most Issues are likely to exist across all platforms, but some Issues only affect, or disproportionately affect, a smaller subset of Unity's supported platforms. |
+| Column Name  | Column Description                                                                                                                                                                                                         | 
+|--------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Issue**    | A brief description of the Issue.                                                                                                                                                                                          |
+| **Severity** | An estimate of how severe the issue might be for your project (Critical/Major/Moderate/Minor).                                                                                                                             |
+| **Areas**    | The area(s) impacted by the Issue. Project Settings Issues can impact a wide range of project areas.                                                                                                                       |
+| **System**   | The feature or system which contains the setting related to this Issue. In practical terms, this should match the name of one of the items in the left panel of the Project Settings window.                               |
+| **Platform** | The build target(s) which may be affected by this issue. Most Issues are likely to exist across all platforms, but some Issues only affect, or disproportionately affect, a smaller subset of Unity's supported platforms. |
 
 As in other Issues Views, this View provides several filtering tools. These are often useful to narrow down the list of
-reported issues, especially on large projects. The [Getting Started](#GettingStarted.md) guide contains a more detailed description of
+reported issues, especially on large projects. The [Getting Started](GettingStarted.md) guide contains a more detailed description of
 the View Filter Panel.
 
 Issues in this View typically show a Quick Fix button in the selected item detail panel when they are selected. If you

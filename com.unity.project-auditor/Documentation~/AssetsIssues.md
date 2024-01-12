@@ -18,15 +18,15 @@ The table columns are as follows:
 
 | Column Name | Column Description                                                                                                                                                                    | 
 |-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Issue       | A brief description of the Issue.                                                                                                                                                     |
-| Severity    | An estimate of how severe the issue might be for your project (Critical/Major/Moderate/Minor).                                                                                        |
-| Areas       | The area(s) impacted by the Issue. Assets Issues typically impact Build Size, Memory, Quality or CPU/GPU perfomance.                                                                  |
-| Path        | The full path and file name of the asset in which the Issue was found. Double-click on any issue to select the corresponding asset in the Project window to view it in the Inspector. |
+| **Issue**   | A brief description of the Issue.                                                                                                                                                     |
+| **Severity** | An estimate of how severe the issue might be for your project (Critical/Major/Moderate/Minor).                                                                                        |
+| **Areas**   | The area(s) impacted by the Issue. Assets Issues typically impact Build Size, Memory, Quality or CPU/GPU perfomance.                                                                  |
+| **Path**    | The full path and file name of the asset in which the Issue was found. Double-click on any issue to select the corresponding asset in the Project window to view it in the Inspector. |
 
 
 
 As in other Issues Views, this View provides several filtering tools. These are often useful to narrow down the list of
-reported issues, especially on large projects. The [Getting Started](#GettingStarted.md) guide contains a more detailed description of
+reported issues, especially on large projects. The [Getting Started](GettingStarted.md) guide contains a more detailed description of
 the View Filter Panel.
 
 As with other Issues Views, selected issues also display an **Ignore** button in the selected item detail panel, which

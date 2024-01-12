@@ -335,7 +335,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 if (progress != null)
                     progress.Start("Analyzing Assemblies", string.Empty, assemblyInfos.Count());
 
-                // Analyse all Player assemblies
+                // Analyze all Player assemblies
                 foreach (var assemblyInfo in assemblyInfos)
                 {
                     if (progress?.IsCancelled ?? false)

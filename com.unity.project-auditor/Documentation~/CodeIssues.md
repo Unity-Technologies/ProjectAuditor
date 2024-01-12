@@ -23,16 +23,16 @@ above the table to re-run code analysis.
 
 The table columns are as follows:
 
-| Column Name | Column Description                                                                                                                                                                                         | 
-|-------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Issue       | A brief description of the Issue                                                                                                                                                                           |
-| Severity    | An estimate of how severe the issue might be for your project (Critical/Major/Moderate/Minor). Issues that were found in hot-paths such as a MonoBehaviour.Update() are automatically denoted as Critical. |
-| Areas       | The area(s) impacted by the Issue. Code Issues typically impact CPU performance and/or Memory usage.                                                                                                       |
-| Filename    | The file name and line number where the Issue was found. Double-click on any issue to automatically open the file in your IDE and jump to the correct line.                                                |
-| Assembly    | The assembly which the code file is a part of.                                                                                                                                                             |
+| Column Name  | Column Description                                                                                                                                                                                         | 
+|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Issue**    | A brief description of the Issue                                                                                                                                                                           |
+| **Severity** | An estimate of how severe the issue might be for your project (Critical/Major/Moderate/Minor). Issues that were found in hot-paths such as a MonoBehaviour.Update() are automatically denoted as Critical. |
+| **Areas**    | The area(s) impacted by the Issue. Code Issues typically impact CPU performance and/or Memory usage.                                                                                                       |
+| **Filename** | The file name and line number where the Issue was found. Double-click on any issue to automatically open the file in your IDE and jump to the correct line.                                                |
+| **Assembly** | The assembly which the code file is a part of.                                                                                                                                                             |
 
 As in other Issues Views, this View provides several filtering tools. These are often useful to narrow down the list of
-reported issues, especially on large projects. The [Getting Started](#GettingStarted.md) guide contains a more detailed description of
+reported issues, especially on large projects. The [Getting Started](GettingStarted.md) guide contains a more detailed description of
 the View Filter Panel.
 
 As with other Issues Views, selected issues also display an **Ignore** button in the selected item detail panel, which
