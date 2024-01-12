@@ -189,11 +189,6 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Issues relating to build data
         /// </summary>
-        BuildDataDiagnostic,
-
-        /// <summary>
-        /// Dummy issue for build data analyze view
-        /// </summary>
-        BuildDataAnalyze,
+        BuildDataDiagnostic
     }
 }

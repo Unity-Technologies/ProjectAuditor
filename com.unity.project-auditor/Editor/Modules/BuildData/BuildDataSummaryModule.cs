@@ -51,15 +51,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        static readonly IssueLayout k_AnalyzeViewLayout = new IssueLayout
-        {
-            Category = IssueCategory.BuildDataAnalyze,
-            Properties = new PropertyDefinition[]
-            {
-                new PropertyDefinition { Type = PropertyType.Description, Format = PropertyFormat.String, Name = "Unused", LongName = "Unused" }
-            }
-        };
-
         internal const string PBD0000 = nameof(PBD0000);
 
         internal static readonly Descriptor k_DuplicateDiagnosticDescriptor = new Descriptor(
@@ -78,8 +69,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_SummaryLayout,
-            k_DiagnosticIssueLayout,
-            k_AnalyzeViewLayout
+            k_DiagnosticIssueLayout
         };
 
         class SerializedObjectInfo

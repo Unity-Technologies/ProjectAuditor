@@ -5,10 +5,12 @@ using System.Linq;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
+using Unity.ProjectAuditor.Editor.Build;
 using Unity.ProjectAuditor.Editor.BuildData;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
+using Unity.ProjectAuditor.Editor.UnityFileSystemApi;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
@@ -155,6 +157,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         int m_TabButtonControlID;
 
         BuildObjects m_BuildObjects = new BuildObjects();
+        FolderList m_BuildDataFolderList;
+        List<string> m_BuildDataFolders = new List<string>();
 
         internal BuildObjects BuildObjects => m_BuildObjects;
 
@@ -165,6 +169,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] Tab m_SelectedNonAnalyzedTab;
 
         internal ViewSelectionTreeView ViewSelectionTreeView => m_ViewSelectionTreeView;
+
 
         public bool Match(ProjectIssue issue)
         {
@@ -255,6 +260,20 @@ namespace Unity.ProjectAuditor.Editor.UI
             Profiler.EndSample();
 
             wantsMouseMove = true;
+
+            var provider = new LastBuildReportProvider();
+            var buildReport = provider.GetBuildReport(Platform);
+            var lastBuildDataPath = buildReport != null
+                ? Path.GetDirectoryName(buildReport.summary.outputPath)
+                : "";
+
+            if (!Directory.Exists(lastBuildDataPath))
+                lastBuildDataPath = "";
+
+            m_BuildDataFolderList = new FolderList(this, Contents.BuildDataFolderText);
+            m_BuildDataFolderList.AddFolder(lastBuildDataPath);
+
+            OnFolderListChanged();
         }
 
         void InitializeViews(IssueCategory[] categories, SeverityRules rules, bool reload)
@@ -330,15 +349,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             InitializeTabs(!initialize);
             InitializeViewSelection(!initialize);
-
-            for (int i = 0; i < m_ViewManager.NumViews; ++i)
-            {
-                if (m_ViewManager.GetView(i) is BuildDataAnalyzeView view)
-                {
-                    view.ProjectAuditorWindow = this;
-                    break;
-                }
-            }
 
             Profiler.EndSample();
         }
@@ -427,19 +437,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     if (!hasAnyAnalyzedCategory)
                     {
-                        if (tab.id == TabId.BuildData)
-                        {
-                            m_ViewManager.ChangeView(IssueCategory.BuildDataAnalyze);
-                        }
-                        else
-                        {
-                            // Change view anyway, even if overridden, to get into a proper view state, not the previous view
-                            m_ViewManager.ChangeView(tab.availableCategories[0]);
+                        // Change view anyway, even if overridden, to get into a proper view state, not the previous view
+                        m_ViewManager.ChangeView(tab.availableCategories[0]);
 
-                            // Override view to show info and analyze button
-                            m_IsNonAnalyzedViewSelected = true;
-                            m_SelectedNonAnalyzedTab = selectedTab;
-                        }
+                        // Override view to show info and analyze button
+                        m_IsNonAnalyzedViewSelected = true;
+                        m_SelectedNonAnalyzedTab = selectedTab;
                     }
                 }
             }
@@ -476,15 +479,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                             DrawViewSelection();
                         }
 #endif
-                        // Set Build Data tab to first view once build data data exists
-                        if (m_Tabs[m_ActiveTabIndex].id == TabId.BuildData && activeView is BuildDataAnalyzeView)
-                        {
-                            if (m_ProjectReport.HasCategory(IssueCategory.BuildDataSummary))
-                            {
-                                m_ViewManager.ChangeView(m_Tabs[m_ActiveTabIndex].availableCategories[0]);
-                            }
-                        }
-
                         if (!m_IsNonAnalyzedViewSelected)
                         {
                             using (new EditorGUILayout.VerticalScope())
@@ -530,8 +524,14 @@ namespace Unity.ProjectAuditor.Editor.UI
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     GUILayout.FlexibleSpace();
+
                     if (GUILayout.Button(string.Format(Contents.AnalyzeButtonText, tabName), GUILayout.Width(200)))
                     {
+                        if (m_SelectedNonAnalyzedTab.id == TabId.BuildData)
+                        {
+                            AnalyzeBuildData();
+                        }
+
                         var categories = GetTabCategories(m_SelectedNonAnalyzedTab);
                         AuditCategories(categories.ToArray());
 
@@ -545,7 +545,90 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     GUILayout.FlexibleSpace();
                 }
+
+                if (m_SelectedNonAnalyzedTab.id == TabId.BuildData)
+                {
+                    GUILayout.Space(10);
+
+                    DrawHorizontalLine();
+
+                    GUILayout.Space(10);
+
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        GUILayout.FlexibleSpace();
+
+                        using (new EditorGUILayout.VerticalScope(GUILayout.MinWidth(600)))
+                        {
+                            GUILayout.Label(Contents.BuildDataSettingsText, SharedStyles.BoldLabel);
+
+                            m_BuildDataFolderList.Draw(OnFolderListChanged, false);
+                        }
+
+                        GUILayout.FlexibleSpace();
+                    }
+                }
             }
+        }
+
+        void AnalyzeBuildData()
+        {
+            var progress = new ProgressBar();
+
+            progress.Start("Scanning Build Data", "In Progress...", 0);
+
+            UnityFileSystem.Init();
+
+            var m_BuildDataAnalyzer = new Analyzer();
+            foreach (var f in m_BuildDataFolders)
+            {
+                Debug.Log("Scanning folder: " + f);
+                m_BuildDataAnalyzer.Analyze(f, "*", BuildObjects);
+            }
+
+            m_BuildDataAnalyzer.Cleanup();
+
+            // progress.Start("Starting Build Data Analysis", "In Progress...", 0);
+            //
+            // AuditCategories(categories);
+            //
+            // progress.Clear();
+        }
+
+        void OnFolderListChanged()
+        {
+            // Collect only valid folders from folder selection UI
+            var folders = m_BuildDataFolderList.Folders;
+            m_BuildDataFolders.Clear();
+            foreach (var f in folders)
+            {
+                if (f.m_Status == FolderList.Folder.FolderStatus.IsValidFolder)
+                {
+                    m_BuildDataFolders.Add(f.FullPathString);
+                }
+            }
+
+            // Remove any folders that are already included by other folders
+            for (int i = 0; i < m_BuildDataFolders.Count; i++)
+            {
+                for (int j = 0; j < m_BuildDataFolders.Count; j++)
+                {
+                    if (i != j && IsSubfolder(m_BuildDataFolders[j], m_BuildDataFolders[i]))
+                    {
+                        m_BuildDataFolders.RemoveAt(i);
+                        i--;
+                        break;
+                    }
+                }
+            }
+        }
+
+        bool IsSubfolder(string parentFolderPath, string possibleSubfolderPath)
+        {
+            string fullParentPath = Path.GetFullPath(parentFolderPath);
+            string fullSubfolderPath = Path.GetFullPath(possibleSubfolderPath);
+
+            return fullSubfolderPath.StartsWith(fullParentPath);
         }
 
         void InitializeViewSelection(bool reload)
@@ -1030,19 +1113,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 Type = typeof(BuildDataShaderVariantsView),
                 AnalyticsEventId = (int)AnalyticsReporter.UIButton.BuildDataShaderVariants
             });
-
-            ViewDescriptor.Register(new ViewDescriptor
-            {
-                Category = IssueCategory.BuildDataAnalyze,
-                DisplayName = "Analyze Build Data",
-                MenuOrder = 3,
-                MenuLabel = "BuildData/Analyze",
-                ShowFilters = false,
-                ShowInfoPanel = false,
-                Type = typeof(BuildDataAnalyzeView),
-                AnalyticsEventId = (int)AnalyticsReporter.UIButton.BuildDataAnalyze,
-                HideViewSelection = true
-            });
         }
 
         bool IsAnalysisValid()
@@ -1238,8 +1308,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 var categories = GetTabCategories(tab);
                 allTabCategories.AddRange(categories);
             }
-
-            allTabCategories.Add(IssueCategory.BuildDataAnalyze);
 
             return allTabCategories.Distinct().ToArray();
         }
@@ -1594,7 +1662,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             GUILayout.Space(2);
 
             var view = m_ViewManager.GetActiveView();
-            if (view != null && view.Desc.Category != IssueCategory.BuildDataAnalyze)
+            if (view != null)
             {
                 using (new GUILayout.HorizontalScope(GUI.skin.box))
                 {
@@ -1798,13 +1866,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                         if (!hasAnyCategories)
                         {
-                            if (tab.id == TabId.BuildData)
-                            {
-                                m_ViewManager.ChangeView(IssueCategory.BuildDataAnalyze);
-                                m_ActiveTabIndex = i;
-                            }
-                            else
-                                tabToAudit = i;
+                            tabToAudit = i;
                         }
                         else
                         {
@@ -1824,19 +1886,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 var tab = m_Tabs[tabToAudit];
 
-                if (tab.id == TabId.BuildData)
-                {
-                    m_ViewManager.ChangeView(IssueCategory.BuildDataAnalyze);
-                }
-                else
-                {
-                    // Change view anyway, even if overridden, to get into a proper view state, not the previous view
-                    m_ViewManager.ChangeView(tab.availableCategories[0]);
+                // Change view anyway, even if overridden, to get into a proper view state, not the previous view
+                m_ViewManager.ChangeView(tab.availableCategories[0]);
 
-                    // Override view to show info and analyze button
-                    m_IsNonAnalyzedViewSelected = true;
-                    m_SelectedNonAnalyzedTab = tab;
-                }
+                // Override view to show info and analyze button
+                m_IsNonAnalyzedViewSelected = true;
+                m_SelectedNonAnalyzedTab = tab;
             }
         }
 
@@ -2038,6 +2093,9 @@ Once the project is analyzed, {ProjectAuditor.DisplayName} displays a summary wi
 
             public static readonly string AnalyzeInfoText = "{0} analysis is not yet included in this report. Run analysis now?";
             public static readonly string AnalyzeButtonText = "Start {0} Analysis";
+
+            public static string BuildDataSettingsText = "Build Data Settings";
+            public static string BuildDataFolderText = "Folders To Scan";
         }
     }
 }
