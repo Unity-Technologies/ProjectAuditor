@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Tests.Common;
 using Unity.ProjectAuditor.Editor.UI.Framework;
-using UnityEditor;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -16,7 +14,7 @@ namespace Unity.ProjectAuditor.EditorTests
         IssueCategory[] m_TestCategories;
         ReportItem[] m_ReportItems;
 
-        [SetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
             m_TestScriptAsset = new TestAsset("MyClass.cs",
