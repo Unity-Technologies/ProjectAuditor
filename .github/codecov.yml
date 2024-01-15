@@ -1,4 +1,6 @@
 codecov:
+  ignore:
+    - "com.unity.project-auditor/Tests"
   require_ci_to_pass: false
   notify:
     wait_for_ci: true
