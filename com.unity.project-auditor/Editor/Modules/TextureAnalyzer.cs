@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string PAA0003 = nameof(PAA0003);
         internal const string PAA0004 = nameof(PAA0004);
 
-        internal static readonly Descriptor k_TextureMipMapNotEnabledDescriptor = new Descriptor(
+        internal static readonly Descriptor k_TextureMipmapsNotEnabledDescriptor = new Descriptor(
             PAA0000,
             "Texture: Mipmaps not enabled",
             Areas.GPU | Areas.Quality,
@@ -37,7 +37,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        internal static readonly Descriptor k_TextureMipMapEnabledDescriptor = new Descriptor(
+        internal static readonly Descriptor k_TextureMipmapsEnabledDescriptor = new Descriptor(
             PAA0001,
             "Texture: Mipmaps enabled on Sprite/UI texture",
             Areas.BuildSize | Areas.Quality,
@@ -121,8 +121,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public void Initialize(Module module)
         {
-            module.RegisterDescriptor(k_TextureMipMapNotEnabledDescriptor);
-            module.RegisterDescriptor(k_TextureMipMapEnabledDescriptor);
+            module.RegisterDescriptor(k_TextureMipmapsNotEnabledDescriptor);
+            module.RegisterDescriptor(k_TextureMipmapsEnabledDescriptor);
             module.RegisterDescriptor(k_TextureReadWriteEnabledDescriptor);
             module.RegisterDescriptor(k_TextureStreamingMipMapEnabledDescriptor);
             module.RegisterDescriptor(k_TextureAnisotropicLevelDescriptor);
@@ -166,7 +166,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (!context.Importer.mipmapEnabled && context.Importer.textureType == TextureImporterType.Default)
             {
                 yield return context.CreateIssue(IssueCategory.AssetIssue,
-                    k_TextureMipMapNotEnabledDescriptor.Id, context.Name)
+                    k_TextureMipmapsNotEnabledDescriptor.Id, context.Name)
                     .WithLocation(assetPath);
             }
 
@@ -175,7 +175,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             )
             {
                 yield return context.CreateIssue(IssueCategory.AssetIssue,
-                    k_TextureMipMapEnabledDescriptor.Id, context.Name)
+                    k_TextureMipmapsEnabledDescriptor.Id, context.Name)
                     .WithLocation(assetPath);
             }
 

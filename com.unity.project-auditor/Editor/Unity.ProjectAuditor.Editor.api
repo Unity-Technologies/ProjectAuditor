@@ -63,34 +63,33 @@ namespace Unity.ProjectAuditor.Editor
 
     [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))] public enum IssueCategory
     {
-        AnimationClip = 23,
-        AnimatorController = 22,
+        AnimationClip = 22,
+        AnimatorController = 21,
         Assembly = 11,
         AssetIssue = 1,
-        AudioClip = 17,
-        Avatar = 24,
-        AvatarMask = 25,
+        AudioClip = 16,
+        Avatar = 23,
+        AvatarMask = 24,
         BuildFile = 8,
         BuildStep = 9,
         BuildSummary = 10,
         Code = 4,
         CodeCompilerMessage = 5,
-        ComputeShaderVariant = 18,
-        DomainReload = 26,
-        FirstCustomCategory = 27,
+        ComputeShaderVariant = 17,
+        DomainReload = 25,
+        FirstCustomCategory = 26,
         GenericInstance = 6,
-        Material = 21,
-        Mesh = 19,
+        Material = 20,
+        Mesh = 18,
         Metadata = 0,
         Package = 14,
-        PackageDiagnostic = 15,
         PrecompiledAssembly = 12,
         ProjectSetting = 7,
         Shader = 2,
         ShaderCompilerMessage = 13,
         ShaderVariant = 3,
-        SpriteAtlas = 20,
-        Texture = 16,
+        SpriteAtlas = 19,
+        Texture = 15,
     }
 
     public class Location
@@ -115,7 +114,6 @@ namespace Unity.ProjectAuditor.Editor
 
     public sealed class ProjectAuditor : UnityEditor.Build.IOrderedCallback, UnityEditor.Build.IPostprocessBuildWithReport
     {
-        public const string DisplayName = @"Project Auditor";
         public int callbackOrder { get; }
         public ProjectAuditor() {}
         public ProjectReport Audit(IProgress progress = default(IProgress));
@@ -127,6 +125,22 @@ namespace Unity.ProjectAuditor.Editor
     [UnityEditor.FilePath(@"ProjectSettings/ProjectAuditorSettings.asset", UnityEditor.FilePathAttribute.Location.ProjectFolder)] public class ProjectAuditorSettings : UnityEditor.ScriptableSingleton<ProjectAuditorSettings>
     {
         public void Save();
+    }
+
+    public sealed class ProjectReport
+    {
+        [Newtonsoft.Json.JsonProperty(@"sessionInfo")] [UnityEngine.SerializeField] public SessionInfo SessionInfo;
+        [Newtonsoft.Json.JsonIgnore] public int NumTotalIssues { get; }
+        [Newtonsoft.Json.JsonIgnore] public string Version { get; }
+        public void ClearIssues(IssueCategory Category);
+        public System.Collections.Generic.IReadOnlyCollection<ReportItem> FindByCategory(IssueCategory category);
+        public System.Collections.Generic.IReadOnlyCollection<ReportItem> FindByDescriptorId(string id);
+        public System.Collections.Generic.IReadOnlyCollection<ReportItem> GetAllIssues();
+        public int GetNumIssues(IssueCategory category);
+        public bool HasCategory(IssueCategory category);
+        public bool IsValid();
+        public static ProjectReport Load(string path);
+        public void Save(string path);
     }
 
     public class ReportItem
@@ -149,26 +163,10 @@ namespace Unity.ProjectAuditor.Editor
         public long GetCustomPropertyInt64<T>(T propertyEnum) where T : struct, new();
         public System.UInt64 GetCustomPropertyUInt64<T>(T propertyEnum) where T : struct, new();
         public int GetNumCustomProperties();
-        public bool IsDiagnostic();
+        public bool IsIssue();
         public bool IsMajorOrCritical();
         public bool IsValid();
         public void SetCustomProperty<T>(T propertyEnum, object property) where T : struct, new();
-    }
-
-    public sealed class ProjectReport
-    {
-        [Newtonsoft.Json.JsonProperty(@"sessionInfo")] [UnityEngine.SerializeField] public SessionInfo SessionInfo;
-        [Newtonsoft.Json.JsonIgnore] public int NumTotalIssues { get; }
-        [Newtonsoft.Json.JsonIgnore] public string Version { get; }
-        public void ClearIssues(IssueCategory Category);
-        public System.Collections.Generic.IReadOnlyCollection<ReportItem> FindByCategory(IssueCategory category);
-        public System.Collections.Generic.IReadOnlyCollection<ReportItem> FindByDescriptorId(string id);
-        public System.Collections.Generic.IReadOnlyCollection<ReportItem> GetAllIssues();
-        public int GetNumIssues(IssueCategory category);
-        public bool HasCategory(IssueCategory category);
-        public bool IsValid();
-        public static ProjectReport Load(string path);
-        public void Save(string path);
     }
 
     public class SessionInfo : AnalysisParams
@@ -206,21 +204,13 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         Support = 512,
     }
 
-    public class BuildTargetJsonConverter : Newtonsoft.Json.JsonConverter
-    {
-        public BuildTargetJsonConverter() {}
-        public override bool CanConvert(System.Type objectType);
-        public override object ReadJson(Newtonsoft.Json.JsonReader reader, System.Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer);
-        public override void WriteJson(Newtonsoft.Json.JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer);
-    }
-
     public sealed class Descriptor : System.IEquatable<Descriptor>
     {
         public Areas Areas;
         public Severity DefaultSeverity;
         public string Description;
         public string DocumentationUrl;
-        [Newtonsoft.Json.JsonIgnore] public System.Action<ReportItem, AnalysisParams> fixer;
+        [Newtonsoft.Json.JsonIgnore] public System.Action<ReportItem, AnalysisParams> Fixer;
         public string Id;
         public bool IsEnabledByDefault = true;
         public string MaximumVersion;
@@ -251,14 +241,6 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         public static string op_Implicit(DescriptorId d);
         public static DescriptorId op_Implicit(string id);
         public override string ToString();
-    }
-
-    public class DescriptorJsonConverter : Newtonsoft.Json.JsonConverter
-    {
-        public DescriptorJsonConverter() {}
-        public override bool CanConvert(System.Type objectType);
-        public override object ReadJson(Newtonsoft.Json.JsonReader reader, System.Type objectType, object existingValue, Newtonsoft.Json.JsonSerializer serializer);
-        public override void WriteJson(Newtonsoft.Json.JsonWriter writer, object value, Newtonsoft.Json.JsonSerializer serializer);
     }
 
     public class Rule

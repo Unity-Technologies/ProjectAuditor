@@ -527,7 +527,7 @@ Shader ""Custom/SRPBatchCompatible""
         [Test]
         public void ShadersAnalysis_PlayerLog_DoesNotContainShaderCompilationMessages()
         {
-            var result = ShadersModule.ParsePlayerLog(m_PlayerLogWithNoCompilationResource.relativePath, new ReportItem[0]);
+            var result = ShadersModule.ParsePlayerLog(m_PlayerLogWithNoCompilationResource.RelativePath, new ReportItem[0]);
             Assert.That(result, Is.EqualTo(ParseLogResult.NoCompiledVariants));
         }
 
@@ -541,7 +541,7 @@ Shader ""Custom/SRPBatchCompatible""
             var variants = allVariants.Where(i => i.Description.Equals(k_ShaderName) && i.Category == IssueCategory.ShaderVariant).ToArray();
             Assert.Positive(variants.Length);
 
-            var result = ShadersModule.ParsePlayerLog(m_PlayerLogResource.relativePath, variants);
+            var result = ShadersModule.ParsePlayerLog(m_PlayerLogResource.RelativePath, variants);
 
             Assert.That(result, Is.EqualTo(ParseLogResult.Success), "No compiled shader variants found in player log.");
 

@@ -48,7 +48,7 @@ class MyClass
             Assert.AreEqual("System.Linq", descriptor.Type);
             Assert.AreEqual("*", descriptor.Method);
 
-            Assert.AreEqual(m_TestAsset.fileName, myIssue.Filename);
+            Assert.AreEqual(m_TestAsset.FileName, myIssue.Filename);
             Assert.AreEqual("'System.Linq.Enumerable.Count' usage", myIssue.Description, "Description: {0}", myIssue.Description);
             Assert.AreEqual("System.Int32 MyClass::Dummy(System.Collections.Generic.List`1<System.Int32>)", myIssue.GetContext());
             Assert.AreEqual(9, myIssue.Line);

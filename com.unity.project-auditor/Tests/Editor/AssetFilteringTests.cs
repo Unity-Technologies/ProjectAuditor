@@ -2,13 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
-using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Tests.Common;
-using UnityEditor;
-using UnityEditor.U2D;
-using UnityEngine;
-using Object = UnityEngine.Object;
-using Random = UnityEngine.Random;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -31,7 +25,7 @@ namespace Unity.ProjectAuditor.EditorTests
         bool m_NullTestPassed = false;
 
         [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
             // this is required so the default assembly is generated when testing on an empty project (i.e: on Yamato)
             m_CodeAsset = new TestAsset("LinqError.cs",
@@ -97,7 +91,7 @@ namespace Unity.ProjectAuditor.EditorTests
             bool foundIssueForAsset = false;
             for (var i = 0; i < issuesAll.Length; i++)
             {
-                if (issuesAll[i].RelativePath == testAsset.relativePath)
+                if (issuesAll[i].RelativePath == testAsset.RelativePath)
                 {
                     foundIssueForAsset = true;
                     break;
@@ -114,22 +108,22 @@ namespace Unity.ProjectAuditor.EditorTests
             var issuesNone = AnalyzeFiltered(_ => false, issueCategory);
             Assert.Zero(issuesNone.Length, "Issues still created when all assets filtered out");
 
-            var issuesTestAssetOnly = AnalyzeFiltered(str => str.Equals(testAsset.relativePath), issueCategory);
+            var issuesTestAssetOnly = AnalyzeFiltered(str => str.Equals(testAsset.RelativePath), issueCategory);
             Assert.NotZero(issuesTestAssetOnly.Length);
             foreach (var issue in issuesTestAssetOnly)
             {
-                if (issue.RelativePath != testAsset.relativePath)
+                if (issue.RelativePath != testAsset.RelativePath)
                 {
                     Assert.Fail("Issue created for asset not included in filter");
                 }
             }
 
-            var issuesNotTestAsset = AnalyzeFiltered(str => !str.Equals(testAsset.relativePath), issueCategory);
+            var issuesNotTestAsset = AnalyzeFiltered(str => !str.Equals(testAsset.RelativePath), issueCategory);
             Assert.NotZero(issuesNotTestAsset.Length);
             Assert.True(issuesNotTestAsset.Length + issuesTestAssetOnly.Length == issuesAll.Length, "Filtering for opposites generating inconsistent results");
             foreach (var issue in issuesNotTestAsset)
             {
-                if (issue.RelativePath == testAsset.relativePath)
+                if (issue.RelativePath == testAsset.RelativePath)
                 {
                     Assert.Fail("Issue created for asset excluded by filter");
                 }

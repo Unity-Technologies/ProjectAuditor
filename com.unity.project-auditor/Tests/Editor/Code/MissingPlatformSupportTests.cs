@@ -66,15 +66,15 @@ class MicrophoneUsageTest
         [Test]
         public void CodeAnalysis_MissingPlatformSupport_IssueIsNotReported()
         {
-            AnalyzeTempAssetsFolder();
+            AnalyzeTestAssets();
 
-            var systemNetDiagnostic = FindTestAssetIssues(m_TestAssetSystemNet).FirstOrDefault(i => i.Id.Equals("PAC1005"));
+            var systemNetDiagnostic = GetIssuesForAsset(m_TestAssetSystemNet).FirstOrDefault(i => i.Id.Equals("PAC1005"));
             Assert.Null(systemNetDiagnostic);
 
-            var systemThreadingDiagnostic = FindTestAssetIssues(m_TestAssetSystemThreading).FirstOrDefault(i => i.Id.Equals("PAC1006"));
+            var systemThreadingDiagnostic = GetIssuesForAsset(m_TestAssetSystemThreading).FirstOrDefault(i => i.Id.Equals("PAC1006"));
             Assert.Null(systemThreadingDiagnostic);
 
-            var microphoneDiagnostic = FindTestAssetIssues(m_TestAssetMicrophone).FirstOrDefault(i => i.Id.Equals("PAC0233"));
+            var microphoneDiagnostic = GetIssuesForAsset(m_TestAssetMicrophone).FirstOrDefault(i => i.Id.Equals("PAC0233"));
             Assert.Null(microphoneDiagnostic);
         }
 
@@ -83,15 +83,15 @@ class MicrophoneUsageTest
         public void CodeAnalysis_MissingPlatformSupport_IssuesAreReported()
         {
             m_Platform = BuildTarget.WebGL;
-            AnalyzeTempAssetsFolder();
+            AnalyzeTestAssets();
 
-            var systemNetDiagnostic = FindTestAssetIssues(m_TestAssetSystemNet).FirstOrDefault(i => i.Id.Equals(UnsupportedOnWebGLAnalyzer.k_DescriptorSystemNet.Id));
+            var systemNetDiagnostic = GetIssuesForAsset(m_TestAssetSystemNet).FirstOrDefault(i => i.Id.Equals(UnsupportedOnWebGLAnalyzer.k_DescriptorSystemNet.Id));
             Assert.NotNull(systemNetDiagnostic);
 
-            var systemThreadingDiagnostic = FindTestAssetIssues(m_TestAssetSystemThreading).FirstOrDefault(i => i.Id.Equals(UnsupportedOnWebGLAnalyzer.k_DescriptorSystemThreading.Id));
+            var systemThreadingDiagnostic = GetIssuesForAsset(m_TestAssetSystemThreading).FirstOrDefault(i => i.Id.Equals(UnsupportedOnWebGLAnalyzer.k_DescriptorSystemThreading.Id));
             Assert.NotNull(systemThreadingDiagnostic);
 
-            var microphoneDiagnostic = FindTestAssetIssues(m_TestAssetMicrophone).FirstOrDefault(i => i.Id.Equals(UnsupportedOnWebGLAnalyzer.k_DescriptorMicrophone.Id));
+            var microphoneDiagnostic = GetIssuesForAsset(m_TestAssetMicrophone).FirstOrDefault(i => i.Id.Equals(UnsupportedOnWebGLAnalyzer.k_DescriptorMicrophone.Id));
             Assert.NotNull(microphoneDiagnostic);
 
             Assert.AreEqual("'System.Boolean System.Net.Sockets.TcpClient::get_Connected()' usage", systemNetDiagnostic.Description);

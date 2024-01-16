@@ -21,11 +21,6 @@ namespace Unity.ProjectAuditor.EditorTests
             ShadersModule.ClearBuildData();
         }
 
-        [OneTimeSetUp]
-        public void SetUp()
-        {
-        }
-
         [UnityTest]
 #if UNITY_2022_3_OR_NEWER && UNITY_EDITOR_WIN
         [Ignore("This fails with error: unexpected token '}' at line 38 (on d3d11)")]
@@ -85,7 +80,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var shadersWithErrors = Analyze(IssueCategory.Shader, i => i.Severity == Severity.Error);
 
             Assert.Positive(shadersWithErrors.Count());
-            var shaderIssue = shadersWithErrors.FirstOrDefault(i => i.RelativePath.Equals(local_shaderWithFunctionError.relativePath));
+            var shaderIssue = shadersWithErrors.FirstOrDefault(i => i.RelativePath.Equals(local_shaderWithFunctionError.RelativePath));
             Assert.NotNull(shaderIssue);
 
             local_shaderWithFunctionError.CleanupLocal();
@@ -110,7 +105,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var shadersWithErrors = Analyze(IssueCategory.Shader, i => i.Severity == Severity.Error);
 
             Assert.Positive(shadersWithErrors.Count());
-            var shaderIssue = shadersWithErrors.FirstOrDefault(i => i.RelativePath.Equals(local_shaderWithShaderLabError.relativePath));
+            var shaderIssue = shadersWithErrors.FirstOrDefault(i => i.RelativePath.Equals(local_shaderWithShaderLabError.RelativePath));
             Assert.NotNull(shaderIssue);
 
             local_shaderWithShaderLabError.CleanupLocal();

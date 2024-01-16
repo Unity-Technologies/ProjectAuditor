@@ -7,8 +7,8 @@ namespace Unity.ProjectAuditor.EditorTests
 {
     internal class EditorCodeAnalysisTests
     {
-        private readonly Unity.ProjectAuditor.Editor.ProjectAuditor m_ProjectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-        private ProjectReport m_ProjectReport;
+        readonly Unity.ProjectAuditor.Editor.ProjectAuditor m_ProjectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+        ProjectReport m_ProjectReport;
 
         [OneTimeSetUp]
         public void EditorCodeAnalysisSetup()

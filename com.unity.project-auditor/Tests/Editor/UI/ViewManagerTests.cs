@@ -12,17 +12,16 @@ namespace Unity.ProjectAuditor.EditorTests
 
         ViewManager m_ViewManager;
         IssueCategory[] m_TestCategories;
-        ReportItem[] m_ReportItems;
 
         [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
             m_TestScriptAsset = new TestAsset("MyClass.cs",
                 "using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(Camera.allCameras.Length.ToString()); } }");
 
             // Setup test data
             m_TestCategories = new[] { IssueCategory.Code, IssueCategory.ProjectSetting };
-            m_ReportItems = Analyze();
+            AnalyzeTestAssets();
 
             // Instantiate the ViewManager
             m_ViewManager = new ViewManager(m_TestCategories);
@@ -39,7 +38,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void UI_ViewManager_AddIssues_AddsIssuesToViews()
         {
             // Add issues to the view manager
-            m_ViewManager.AddIssues(m_ReportItems);
+            m_ViewManager.AddIssues(GetIssues());
 
             // Check each view for added issues
             for (var i = 0; i < m_ViewManager.NumViews; i++)
@@ -53,7 +52,7 @@ namespace Unity.ProjectAuditor.EditorTests
         public void UI_ViewManager_Clear_ClearsAllViews()
         {
             // Add issues to the view manager
-            m_ViewManager.AddIssues(m_ReportItems);
+            m_ViewManager.AddIssues(GetIssues());
 
             // Clear all views
             m_ViewManager.Clear();

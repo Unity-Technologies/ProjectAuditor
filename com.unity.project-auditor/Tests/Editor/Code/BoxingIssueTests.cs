@@ -16,7 +16,7 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_TestAssetBoxingInt;
 
         [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
             m_TestAssetBoxingInt = new TestAsset("BoxingIntTest.cs",
                 "using System; class BoxingIntTest { Object Dummy() { return 666; } }");
@@ -27,13 +27,13 @@ namespace Unity.ProjectAuditor.EditorTests
             m_TestAssetBoxingGeneric = new TestAsset("BoxingGeneric.cs",
                 "class BoxingGeneric<T> { T refToGenericType; void Dummy() { if (refToGenericType == null){} } }");
 
-            AnalyzeTempAssetsFolder();
+            AnalyzeTestAssets();
         }
 
         [Test]
         public void CodeAnalysis_BoxingIntValue_IsReported()
         {
-            var issues = FindTestAssetIssues(m_TestAssetBoxingInt);
+            var issues = GetIssuesForAsset(m_TestAssetBoxingInt);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -41,7 +41,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             // check issue
             Assert.NotNull(boxingInt);
-            Assert.AreEqual(m_TestAssetBoxingInt.fileName, boxingInt.Filename);
+            Assert.AreEqual(m_TestAssetBoxingInt.FileName, boxingInt.Filename);
             Assert.AreEqual("Conversion from value type 'Int32' to ref type", boxingInt.Description);
             Assert.AreEqual("System.Object BoxingIntTest::Dummy()", boxingInt.GetContext());
             Assert.AreEqual(1, boxingInt.Line);
@@ -63,7 +63,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void CodeAnalysis_BoxingFloatValue_IsReported()
         {
-            var issues = FindTestAssetIssues(m_TestAssetBoxingFloat);
+            var issues = GetIssuesForAsset(m_TestAssetBoxingFloat);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -71,7 +71,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             // check issue
             Assert.NotNull(boxingFloat);
-            Assert.AreEqual(m_TestAssetBoxingFloat.fileName, boxingFloat.Filename);
+            Assert.AreEqual(m_TestAssetBoxingFloat.FileName, boxingFloat.Filename);
             Assert.AreEqual("Conversion from value type 'float' to ref type", boxingFloat.Description);
             Assert.AreEqual("System.Object BoxingFloatTest::Dummy()", boxingFloat.GetContext());
             Assert.AreEqual(1, boxingFloat.Line);
@@ -93,7 +93,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void CodeAnalysis_BoxingGeneric_IsReported()
         {
-            var issues = FindTestAssetIssues(m_TestAssetBoxingGeneric);
+            var issues = GetIssuesForAsset(m_TestAssetBoxingGeneric);
 
             Assert.AreEqual(1, issues.Count());
         }
@@ -101,7 +101,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void CodeAnalysis_BoxingGenericRefType_IsNotReported()
         {
-            var issues = FindTestAssetIssues(m_TestAssetBoxingGenericRefType);
+            var issues = GetIssuesForAsset(m_TestAssetBoxingGenericRefType);
 
             Assert.Zero(issues.Count());
         }

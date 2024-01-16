@@ -16,22 +16,11 @@ namespace Unity.ProjectAuditor.EditorTests
     {
         TestAsset m_TestAsset;
 
-
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
             var material = new Material(Shader.Find("UI/Default"));
             m_TestAsset = TestAsset.Save(material, "Resources/Shiny.mat");
-        }
-
-        [SetUp]
-        public void SetUp()
-        {
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
         }
 
         [Test]
@@ -46,7 +35,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void BuildReport_Files_AreReported()
         {
-            var issues = AnalyzeBuild(IssueCategory.BuildFile, i => i.RelativePath.Equals(m_TestAsset.relativePath));
+            var issues = AnalyzeBuild(IssueCategory.BuildFile, i => i.RelativePath.Equals(m_TestAsset.RelativePath));
             var matchingIssue = issues.FirstOrDefault();
 
             Assert.NotNull(matchingIssue);
@@ -56,9 +45,9 @@ namespace Unity.ProjectAuditor.EditorTests
 
             Assert.NotNull(buildReport);
 
-            var reportedCorrectAssetBuildFile = buildReport.packedAssets.Any(p => p.shortPath == buildFile && p.contents.Any(c => c.sourceAssetPath == m_TestAsset.relativePath));
+            var reportedCorrectAssetBuildFile = buildReport.packedAssets.Any(p => p.shortPath == buildFile && p.contents.Any(c => c.sourceAssetPath == m_TestAsset.RelativePath));
 
-            Assert.AreEqual(Path.GetFileNameWithoutExtension(m_TestAsset.relativePath), matchingIssue.Description);
+            Assert.AreEqual(Path.GetFileNameWithoutExtension(m_TestAsset.RelativePath), matchingIssue.Description);
             Assert.That(matchingIssue.GetNumCustomProperties(), Is.EqualTo((int)BuildReportFileProperty.Num));
             Assert.True(reportedCorrectAssetBuildFile);
             Assert.AreEqual(typeof(AssetImporter).Name, matchingIssue.GetCustomProperty(BuildReportFileProperty.ImporterType));

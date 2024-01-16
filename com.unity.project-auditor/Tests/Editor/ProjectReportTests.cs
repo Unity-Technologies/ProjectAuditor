@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.EditorTests
 #pragma warning restore 0414
 
         [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
             DescriptorLibrary.RegisterDescriptor(m_Descriptor.Id, m_Descriptor);
 

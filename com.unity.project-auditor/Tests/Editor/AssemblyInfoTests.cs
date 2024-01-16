@@ -15,15 +15,9 @@ namespace Unity.ProjectAuditor.EditorTests
     class AssemblyInfoTests : TestFixtureBase
     {
 #pragma warning disable 0414
-        TestAsset m_TestAsset;
+        // this is required so the default assembly is generated when testing on an empty project (i.e: on Yamato)
+        TestAsset m_TestAsset = new TestAsset("MyClass.cs", "class MyClass { void MyMethod() { UnityEngine.Debug.Log(666); } }");
 #pragma warning restore 0414
-
-        [OneTimeSetUp]
-        public void SetUp()
-        {
-            // this is required so the default assembly is generated when testing on an empty project (i.e: on Yamato)
-            m_TestAsset = new TestAsset("MyClass.cs", "class MyClass { void MyMethod() { UnityEngine.Debug.Log(666); } }");
-        }
 
         [Test]
         [TestCase("/Managed/UnityEngine/UnityEditor.dll")]

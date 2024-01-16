@@ -13,7 +13,7 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_TestAssetRecursive;
 
         [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
             m_TestAsset = new TestAsset("SimpleTest.cs", @"
 using System;
@@ -69,13 +69,13 @@ class HierarchyTest
     void B() { A(); Y(); }
     void C() { B(); }
 }");
-            AnalyzeTempAssetsFolder();
+            AnalyzeTestAssets();
         }
 
         [Test]
         public void CallTree_Root_IsValid()
         {
-            var issues = FindTestAssetIssues(m_TestAsset).ToArray();
+            var issues = GetIssuesForAsset(m_TestAsset).ToArray();
 
             Assert.AreEqual(1, issues.Length);
 
@@ -93,7 +93,7 @@ class HierarchyTest
         [Test]
         public void CallTree_Hierarchy_IsNotRecursive()
         {
-            var issues = FindTestAssetIssues(m_TestAssetRecursive).ToArray();
+            var issues = GetIssuesForAsset(m_TestAssetRecursive).ToArray();
 
             var root = issues[0].Dependencies as CallTreeNode;
 
@@ -106,7 +106,7 @@ class HierarchyTest
         [Test]
         public void CallTree_SameSubHierarchy_IsUnique()
         {
-            var issues = FindTestAssetIssues(m_TestAssetHierarchy).ToArray();
+            var issues = GetIssuesForAsset(m_TestAssetHierarchy).ToArray();
 
             Assert.AreEqual(2, issues.Length);
 

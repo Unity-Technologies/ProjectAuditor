@@ -36,7 +36,7 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
             DescriptorLibrary.RegisterDescriptor(k_Descriptor.Id, k_Descriptor);
         }

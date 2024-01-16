@@ -14,7 +14,7 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_NotMonoBehaviourWithEmptyMethod;
 
         [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
             m_MonoBehaviourWithEmptyEventMethod = new TestAsset("MonoBehaviourWithEmptyEventMethod.cs",
                 "using UnityEngine; class MyBaseClass : MonoBehaviour { } class MonoBehaviourWithEmptyEventMethod : MyBaseClass { void Update() { ; } }"); // ';' should introduce a noop
@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.EditorTests
             m_NotMonoBehaviourWithEmptyMethod = new TestAsset("NotMonoBehaviourWithEmptyMethod.cs",
                 "class NotMonoBehaviourWithEmptyMethod { void Update() { } }");
 
-            AnalyzeTempAssetsFolder();
+            AnalyzeTestAssets();
         }
 
         [Test]
@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var prevCodeOptimization = m_CodeOptimization;
             m_CodeOptimization = codeOptimization;
 
-            var scriptIssues = FindTestAssetIssues(m_MonoBehaviourWithEmptyEventMethod);
+            var scriptIssues = GetIssuesForAsset(m_MonoBehaviourWithEmptyEventMethod);
 
             m_CodeOptimization = prevCodeOptimization; // restore previous value
 
@@ -50,7 +50,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.True(string.IsNullOrEmpty(descriptor.Type));
             Assert.True(string.IsNullOrEmpty(descriptor.Method));
 
-            Assert.AreEqual(m_MonoBehaviourWithEmptyEventMethod.fileName, issue.Filename);
+            Assert.AreEqual(m_MonoBehaviourWithEmptyEventMethod.FileName, issue.Filename);
             Assert.AreEqual("MonoBehaviour method 'Update' is empty", issue.Description);
             Assert.AreEqual("System.Void MonoBehaviourWithEmptyEventMethod::Update()", issue.GetContext());
             Assert.AreEqual(1, issue.Line);
@@ -60,7 +60,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void CodeAnalysis_MonoBehaviourWithEmptyMethod_IsNotReported()
         {
-            var scriptIssues = FindTestAssetIssues(m_MonoBehaviourWithEmptyMethod);
+            var scriptIssues = GetIssuesForAsset(m_MonoBehaviourWithEmptyMethod);
 
             Assert.AreEqual(0, scriptIssues.Count());
         }
@@ -68,7 +68,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void CodeAnalysis_NotMonoBehaviourWithEmptyMethod_IsNotReported()
         {
-            var scriptIssues = FindTestAssetIssues(m_NotMonoBehaviourWithEmptyMethod);
+            var scriptIssues = GetIssuesForAsset(m_NotMonoBehaviourWithEmptyMethod);
 
             Assert.AreEqual(0, scriptIssues.Count());
         }

@@ -31,7 +31,7 @@ namespace Unity.ProjectAuditor.EditorTests
         static string k_TempAssemblyName => Path.GetFileNameWithoutExtension(k_TempAssemblyFileName);
 
         [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
             m_AssemblyName = k_TempAssemblyName;
             m_ScriptWithError = new TestAsset("ScriptWithError.cs", @"
@@ -125,7 +125,7 @@ class ScriptWithError {
         {
             LogAssert.ignoreFailingMessages = true;
 
-            var issues = Analyze(IssueCategory.Assembly, i => i.Severity == Severity.Error && i.RelativePath.Equals(m_TestAsmdef.relativePath));
+            var issues = Analyze(IssueCategory.Assembly, i => i.Severity == Severity.Error && i.RelativePath.Equals(m_TestAsmdef.RelativePath));
 
             LogAssert.ignoreFailingMessages = false;
 
@@ -139,7 +139,7 @@ class ScriptWithError {
             // check issue
             Assert.That(issue.Category, Is.EqualTo(IssueCategory.Assembly));
             Assert.That(issue.Severity, Is.EqualTo(Severity.Error));
-            Assert.That(issue.Filename, Is.EqualTo(m_TestAsmdef.fileName));
+            Assert.That(issue.Filename, Is.EqualTo(m_TestAsmdef.FileName));
         }
 
         [Test]

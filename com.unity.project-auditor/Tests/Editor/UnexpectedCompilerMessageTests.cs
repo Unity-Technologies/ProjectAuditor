@@ -120,7 +120,7 @@ class MyClass
             Assert.AreEqual("UnityEngine.Camera", descriptor.Type);
             Assert.AreEqual("allCameras", descriptor.Method);
 
-            Assert.AreEqual(m_ScriptWithDiagnostic.fileName, myIssue.Filename);
+            Assert.AreEqual(m_ScriptWithDiagnostic.FileName, myIssue.Filename);
             Assert.AreEqual("'UnityEngine.Camera.allCameras' usage", myIssue.Description);
             Assert.AreEqual("System.Void MyClass::Dummy()", myIssue.GetContext());
             Assert.AreEqual(7, myIssue.Line);

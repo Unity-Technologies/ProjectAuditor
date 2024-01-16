@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         static readonly string s_TempSceneFilename = Path.Combine(TestAsset.TempAssetsFolder, "TestScene.unity");
 
         protected CodeOptimization m_CodeOptimization = CodeOptimization.Release;
-        protected BuildTarget m_Platform = GetStandaloneBuildTarget();
+        protected BuildTarget m_Platform = GetDefaultBuildTarget();
         protected string m_BuildPath;
         protected ProjectAuditor m_ProjectAuditor;
         protected AnalysisParams m_AnalysisParams;
@@ -33,8 +33,9 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         bool m_SavedAnalyzeInBackground;
         bool m_SavedAnalyzeAfterBuild;
 
-        protected ReportItem[] m_CodeDiagnostics;
-        public static BuildTarget GetStandaloneBuildTarget()
+        protected ReportItem[] m_ReportItems;
+
+        public static BuildTarget GetDefaultBuildTarget()
         {
 #if UNITY_EDITOR_WIN
             return BuildTarget.StandaloneWindows64;
@@ -48,8 +49,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 #endif
         }
 
-        [OneTimeSetUp]
-        public void FixtureSetUp()
+        protected TestFixtureBase()
         {
             m_SavedAnalyzeInBackground = UserPreferences.AnalyzeInBackground;
             UserPreferences.AnalyzeInBackground = false;
@@ -82,7 +82,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         }
 
         [OneTimeTearDown]
-        public void FixtureTearDown()
+        public void Cleanup()
         {
             if (m_Platform == BuildTarget.Android)
             {
@@ -102,10 +102,16 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             UserPreferences.AnalyzeAfterBuild = m_SavedAnalyzeAfterBuild;
         }
 
-        protected void AnalyzeTempAssetsFolder()
+        protected void AnalyzeTestAssets()
         {
-            m_CodeDiagnostics = Analyze(IssueCategory.Code, i =>
-                PathUtils.GetDirectoryName(i.RelativePath).Equals(TestAsset.TempAssetsFolder));
+            m_ReportItems = Analyze(i =>
+            {
+                if (!i.IsIssue())
+                    return false;
+                if (i.Category == IssueCategory.ProjectSetting)
+                    return true;
+                return PathUtils.GetDirectoryName(i.RelativePath).Equals(TestAsset.TempAssetsFolder);
+            });
         }
 
         protected ReportItem[] AnalyzeFiltered(Predicate<string> filterPredicate)
@@ -196,15 +202,10 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
             return foundIssues.ToArray();
         }
 
-        protected ReportItem[] FindTestAssetIssues(TestAsset testAsset)
-        {
-            return m_CodeDiagnostics.Where(x => x.RelativePath == testAsset.relativePath).ToArray();
-        }
-
         protected ReportItem[] AnalyzeAndFindAssetIssues(TestAsset testAsset,
             IssueCategory category = IssueCategory.Code)
         {
-            return Analyze(category, i => i.RelativePath.Equals(testAsset.relativePath));
+            return Analyze(category, i => i.RelativePath.Equals(testAsset.RelativePath));
         }
 
         protected ReportItem[] AnalyzeBuild(Func<ReportItem, bool> predicate = null, bool isDevelopment = true, string buildFileName = "test", Action preBuildAction = null, Action postBuildAction = null)
@@ -266,6 +267,16 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
             if (File.Exists(s_TempSceneFilename))
                 AssetDatabase.DeleteAsset(s_TempSceneFilename);
+        }
+
+        protected ReportItem[] GetIssues()
+        {
+            return m_ReportItems.Where(i => i.IsIssue()).ToArray();
+        }
+
+        protected ReportItem[] GetIssuesForAsset(TestAsset testAsset)
+        {
+            return m_ReportItems.Where(i => i.IsIssue() && i.RelativePath == testAsset.RelativePath).ToArray();
         }
 
         protected void ValidateTargetPlatform()

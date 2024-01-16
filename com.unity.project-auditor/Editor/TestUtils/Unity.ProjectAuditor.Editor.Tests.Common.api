@@ -5,9 +5,9 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 {
     public class TestAsset
     {
-        public readonly string relativePath;
+        public readonly string RelativePath;
         public static readonly string TempAssetsFolder;
-        public string fileName { get; }
+        public string FileName { get; }
         public TestAsset(string fileName, byte[] byteContent) {}
         public TestAsset(string fileName, string content) {}
         public static void Cleanup();
@@ -23,13 +23,13 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         protected AnalysisParams m_AnalysisParams;
         protected string m_AssemblyName;
         protected string m_BuildPath;
-        protected ReportItem[] m_CodeDiagnostics;
         protected CodeOptimization m_CodeOptimization = CodeOptimization.Release;
-        protected string m_OriginalCompanyName;
-        protected string m_OriginalProductName;
         protected UnityEditor.AndroidArchitecture m_OriginalTargetArchitecture;
         protected UnityEditor.BuildTarget m_Platform;
         protected ProjectAuditor m_ProjectAuditor;
+        protected ReportItem[] m_ReportItems;
+        protected string m_SavedCompanyName;
+        protected string m_SavedProductName;
         protected TestFixtureBase() {}
         protected ReportItem[] Analyze(System.Func<ReportItem, bool> predicate = default(System.Func<ReportItem, bool>));
         protected ReportItem[] Analyze(IssueCategory category, System.Func<ReportItem, bool> predicate = default(System.Func<ReportItem, bool>));
@@ -39,13 +39,13 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         protected ReportItem[] AnalyzeFiltered(System.Predicate<string> filterPredicate);
         protected ReportItem[] AnalyzeFiltered(System.Predicate<string> filterPredicate, IssueCategory category);
         protected ReportItem[] AnalyzeFiltered(System.Predicate<string> filterPredicate, IssueCategory[] categories);
-        protected void AnalyzeTempAssetsFolder();
+        protected void AnalyzeTestAssets();
         protected void Build(bool isDevelopment = true, string buildFileName = @"test", System.Action preBuildAction = default(System.Action), System.Action postBuildAction = default(System.Action));
+        [NUnit.Framework.OneTimeTearDown] public void Cleanup();
         protected void CleanupBuild();
-        protected ReportItem[] FindTestAssetIssues(TestAsset testAsset);
-        [NUnit.Framework.OneTimeSetUp] public void FixtureSetUp();
-        [NUnit.Framework.OneTimeTearDown] public void FixtureTearDown();
-        public static UnityEditor.BuildTarget GetStandaloneBuildTarget();
+        public static UnityEditor.BuildTarget GetDefaultBuildTarget();
+        protected ReportItem[] GetIssues();
+        protected ReportItem[] GetIssuesForAsset(TestAsset testAsset);
         protected void ValidateTargetPlatform();
     }
 }

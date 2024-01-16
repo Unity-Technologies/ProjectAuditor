@@ -18,21 +18,7 @@ namespace Unity.ProjectAuditor.EditorTests
 #pragma warning restore 0414
 
         [OneTimeSetUp]
-        public void EnableAnalyzers()
-        {
-            m_SavedUseRoslynAnalyzers = UserPreferences.UseRoslynAnalyzers;
-
-            UserPreferences.UseRoslynAnalyzers = true;
-        }
-
-        [OneTimeTearDown]
-        public void RestoreEnableAnalyzers()
-        {
-            UserPreferences.UseRoslynAnalyzers = m_SavedUseRoslynAnalyzers;
-        }
-
-        [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
             m_ScriptWithStaticMember = new TestAsset("ScriptWithStaticMember.cs", @"
 class ScriptWithStaticMember
@@ -42,6 +28,16 @@ class ScriptWithStaticMember
 #pragma warning restore 0414
 }
 ");
+
+            m_SavedUseRoslynAnalyzers = UserPreferences.UseRoslynAnalyzers;
+
+            UserPreferences.UseRoslynAnalyzers = true;
+        }
+
+        [OneTimeTearDown]
+        public void OneTimeTearDown()
+        {
+            UserPreferences.UseRoslynAnalyzers = m_SavedUseRoslynAnalyzers;
         }
 
         [Test]

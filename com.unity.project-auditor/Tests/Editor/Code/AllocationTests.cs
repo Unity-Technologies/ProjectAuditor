@@ -17,7 +17,7 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_TestAssetParamsArrayAllocation;
 
         [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
             m_TestAssetObjectAllocation = new TestAsset("ObjectAllocation.cs", @"
 class ObjectAllocation
@@ -82,13 +82,13 @@ class ParamsArrayAllocation
     }
 }
 ");
-            AnalyzeTempAssetsFolder();
+            AnalyzeTestAssets();
         }
 
         [Test]
         public void CodeAnalysis_NewObject_IsReported()
         {
-            var issues = FindTestAssetIssues(m_TestAssetObjectAllocation);
+            var issues = GetIssuesForAsset(m_TestAssetObjectAllocation);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -101,7 +101,7 @@ class ParamsArrayAllocation
         [Test]
         public void CodeAnalysis_ClosureAllocation_IsReported()
         {
-            var issues = FindTestAssetIssues(m_TestAssetClosureAllocation);
+            var issues = GetIssuesForAsset(m_TestAssetClosureAllocation);
 
             Assert.AreEqual(1, issues.Count());
 
@@ -115,7 +115,7 @@ class ParamsArrayAllocation
         [Test]
         public void CodeAnalysis_NewArray_IsReported()
         {
-            var issues = FindTestAssetIssues(m_TestAssetArrayAllocation);
+            var issues = GetIssuesForAsset(m_TestAssetArrayAllocation);
             Assert.AreEqual(1, issues.Count());
 
             var allocationIssue = issues.First();
@@ -127,7 +127,7 @@ class ParamsArrayAllocation
         [Test]
         public void CodeAnalysis_NewMultidimensionalArray_IsReported()
         {
-            var issues = FindTestAssetIssues(m_TestAssetMultidimensionalArrayAllocation);
+            var issues = GetIssuesForAsset(m_TestAssetMultidimensionalArrayAllocation);
             Assert.AreEqual(1, issues.Count());
 
             var allocationIssue = issues.First();
@@ -139,7 +139,7 @@ class ParamsArrayAllocation
         [Test]
         public void CodeAnalysis_NewParamsArray_IsReported()
         {
-            var issues = FindTestAssetIssues(m_TestAssetParamsArrayAllocation);
+            var issues = GetIssuesForAsset(m_TestAssetParamsArrayAllocation);
             Assert.AreEqual(2, issues.Count());
 
             Assert.AreEqual(IssueCategory.Code, issues[0].Category);

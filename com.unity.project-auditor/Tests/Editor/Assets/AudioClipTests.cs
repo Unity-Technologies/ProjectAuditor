@@ -13,9 +13,9 @@ namespace Unity.ProjectAuditor.EditorTests
 {
     internal class AudioClipTests : TestFixtureBase
     {
-        private byte[] m_VeryLongWavData;
-        private byte[] m_LongWavData;
-        private byte[] m_ShortWavData;
+        byte[] m_VeryLongWavData;
+        byte[] m_LongWavData;
+        byte[] m_ShortWavData;
 
         const string k_LongNonStreamingClipName = "LongNonStreamingClip.wav";
         const string k_ShortNonStreamingClipName = "ShortNonStreamingClip.wav";
@@ -31,11 +31,10 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_TestCompressedInMemoryClipAsset;
         TestAsset m_TestPCMInMemoryClipAsset;
 
-        private string m_BuildTargetString;
-
+        string m_BuildTargetString;
 
         [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
             m_VeryLongWavData = AudioClipGeneratorUtil.CreateTestWav(640000, 2, 48000);
             m_LongWavData = AudioClipGeneratorUtil.CreateTestWav(64000, 2, 48000);
@@ -66,20 +65,21 @@ namespace Unity.ProjectAuditor.EditorTests
             m_TestPCMInMemoryClipAsset = CreateTestAudioClip(
                 k_PCMInMemoryClipName, m_ShortWavData, m_BuildTargetString,
                 AudioCompressionFormat.PCM, AudioClipLoadType.CompressedInMemory, true);
+
+            AnalyzeTestAssets();
         }
 
-        private TestAsset CreateTestAudioClip(string name, byte[] data, string platformString,
+        TestAsset CreateTestAudioClip(string name, byte[] data, string platformString,
             AudioCompressionFormat format, AudioClipLoadType loadType,
             bool forceToMono = false, bool preload = true, bool loadInBackground = false)
         {
             var testAsset = new TestAsset(name, data);
-            var audioImporter = AssetImporter.GetAtPath(testAsset.relativePath) as AudioImporter;
+            var audioImporter = AssetImporter.GetAtPath(testAsset.RelativePath) as AudioImporter;
             Assert.NotNull(audioImporter);
 
             var sampleSettings = audioImporter.GetOverrideSampleSettings(platformString);
             sampleSettings.compressionFormat = format;
             sampleSettings.loadType = loadType;
-
 
 #if UNITY_2022_2_OR_NEWER
             sampleSettings.preloadAudioData = preload;
@@ -93,11 +93,6 @@ namespace Unity.ProjectAuditor.EditorTests
             audioImporter.SetOverrideSampleSettings(platformString, sampleSettings);
             audioImporter.SaveAndReimport();
             return testAsset;
-        }
-
-        [OneTimeTearDown]
-        public void TearDown()
-        {
         }
 
         // PAA4000 Long AudioClips which aren’t set to streaming
@@ -128,7 +123,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void AudioClip_ShortStreaming_IsReported()
         {
-            var issue = AnalyzeAndFindAssetIssues(m_TestShortStreamingClipAsset, IssueCategory.AssetIssue)
+            var issue = GetIssuesForAsset(m_TestShortStreamingClipAsset)
                 .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioShortClipStreamsDescriptor.Id));
 
             Assert.NotNull(issue);
@@ -194,7 +189,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void AudioClip_LongClipDecompressOnLoad_IsReported()
         {
-            var issue = AnalyzeAndFindAssetIssues(m_TestLongNonStreamingClipAsset, IssueCategory.AssetIssue)
+            var issue = GetIssuesForAsset(m_TestLongNonStreamingClipAsset)
                 .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioLongDecompressedClipDescriptor.Id));
 
             Assert.NotNull(issue);
@@ -206,7 +201,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void AudioClip_CompressedInMemory_IsReported()
         {
-            var issue = AnalyzeAndFindAssetIssues(m_TestCompressedInMemoryClipAsset, IssueCategory.AssetIssue)
+            var issue = GetIssuesForAsset(m_TestCompressedInMemoryClipAsset)
                 .FirstOrDefault(i => i.Id.Equals(AudioClipAnalyzer.k_AudioCompressedInMemoryDescriptor.Id));
 
             Assert.NotNull(issue);
@@ -384,7 +379,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void AudioClip_FalsePositives_AreNotReported()
         {
-            var foundIssues = AnalyzeAndFindAssetIssues(m_TestShortNonStreamingClipAsset, IssueCategory.AssetIssue);
+            var foundIssues = GetIssuesForAsset(m_TestShortNonStreamingClipAsset);
             Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4000));
             Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4001));
             Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4004));
@@ -394,13 +389,13 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4010));
             Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4011));
 
-            foundIssues = AnalyzeAndFindAssetIssues(m_TestLongStreamingClipAsset, IssueCategory.AssetIssue);
+            foundIssues = GetIssuesForAsset(m_TestLongStreamingClipAsset);
             Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4000));
             Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4001));
             Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4004));
             Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4005));
 
-            foundIssues = AnalyzeAndFindAssetIssues(m_TestPCMInMemoryClipAsset, IssueCategory.AssetIssue);
+            foundIssues = GetIssuesForAsset(m_TestPCMInMemoryClipAsset);
             Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4005));
             Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4006));
             Assert.IsFalse(foundIssues.Any(issue => issue.Id == AudioClipAnalyzer.PAA4009)); // It has loadInBackground = true

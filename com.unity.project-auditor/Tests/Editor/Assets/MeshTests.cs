@@ -15,24 +15,21 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_TestLargeMeshAsset;
 
         [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
             var smallMesh = MeshGeneratorUtil.CreateTestMesh(k_SmallMeshName, 100);
             m_TestSmallMeshAsset = TestAsset.Save(smallMesh, k_SmallMeshName + ".mesh");
 
             var largeMesh = MeshGeneratorUtil.CreateTestMesh(k_LargeMeshName, 100000, true);
             m_TestLargeMeshAsset = TestAsset.Save(largeMesh, k_LargeMeshName + ".mesh");
-        }
 
-        [OneTimeTearDown]
-        public void TearDown()
-        {
+            AnalyzeTestAssets();
         }
 
         [Test]
         public void Mesh_Using32bitIndexFormat_IsReported()
         {
-            var foundIssues = AnalyzeAndFindAssetIssues(m_TestSmallMeshAsset, IssueCategory.AssetIssue);
+            var foundIssues = GetIssuesForAsset(m_TestSmallMeshAsset);
 
             Assert.IsNotEmpty(foundIssues);
             Assert.IsTrue(foundIssues.Any(issue => issue.Id == MeshAnalyzer.PAA1001), "Small mesh should be reported");
@@ -41,7 +38,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Mesh_ReadWrite_IsReported()
         {
-            var foundIssues = AnalyzeAndFindAssetIssues(m_TestSmallMeshAsset, IssueCategory.AssetIssue);
+            var foundIssues = GetIssuesForAsset(m_TestSmallMeshAsset);
 
             Assert.IsNotEmpty(foundIssues);
             Assert.IsTrue(foundIssues.Any(issue => issue.Id == MeshAnalyzer.PAA1000), "Read/Write mesh should be reported");
@@ -50,7 +47,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Mesh_ReadWrite_IsNotReported()
         {
-            var foundIssues = AnalyzeAndFindAssetIssues(m_TestLargeMeshAsset, IssueCategory.AssetIssue);
+            var foundIssues = GetIssuesForAsset(m_TestLargeMeshAsset);
 
             Assert.IsFalse(foundIssues.Any(issue => issue.Id == MeshAnalyzer.PAA1000), "Read/Write mesh should no be reported");
         }

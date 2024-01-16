@@ -9,7 +9,7 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_TestAsset;
 
         [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
             m_TestAsset = new TestAsset("FindObjectsOfTypeClass.cs", @"
 using UnityEngine;
@@ -34,13 +34,13 @@ class FindObjectsOfTypeClass
     }
 }
 ");
-            AnalyzeTempAssetsFolder();
+            AnalyzeTestAssets();
         }
 
         [Test]
         public void CodeAnalysis_FindObjectsOfType_IsReported()
         {
-            var issues = m_CodeDiagnostics.Where(i => i.Id == "PAC0129").ToArray();
+            var issues = GetIssuesForAsset(m_TestAsset).Where(i => i.Id == "PAC0129").ToArray();
 
             Assert.AreEqual(4, issues.Length);
             Assert.AreEqual(issues[0].Description, "'UnityEngine.Object.FindObjectsOfType<UnityEngine.Collider>' usage");
@@ -52,7 +52,7 @@ class FindObjectsOfTypeClass
         [Test]
         public void CodeAnalysis_FindObjectOfType_IsReported()
         {
-            var issues = m_CodeDiagnostics.Where(i => i.Id == "PAC0234").ToArray();
+            var issues = GetIssuesForAsset(m_TestAsset).Where(i => i.Id == "PAC0234").ToArray();
 
             Assert.AreEqual(4, issues.Length);
             Assert.AreEqual(issues[0].Description, "'UnityEngine.Object.FindObjectOfType<UnityEngine.Collider>' usage");

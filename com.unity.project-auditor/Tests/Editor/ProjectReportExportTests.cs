@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.EditorTests
 #pragma warning restore 0414
 
         [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
             m_TestAsset = new TestAsset("MyClass.cs", @"
 using UnityEngine;

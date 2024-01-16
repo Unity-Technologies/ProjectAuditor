@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_TestAssetClassWithOutConditionalAttribute;
 
         [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
             m_TestAssetClassWithConditionalAttribute = new TestAsset("ClassLoggingWithConditionalAttribute.cs", @"
 using System.Diagnostics;
@@ -56,13 +56,13 @@ class ClassLoggingWithoutConditionalAttribute
     }
 }
 ");
-            AnalyzeTempAssetsFolder();
+            AnalyzeTestAssets();
         }
 
         [Test]
         public void CodeAnalysis_LoggingMethodWithConditionalAttribute_IsNotReported()
         {
-            var issues = FindTestAssetIssues(m_TestAssetClassWithConditionalAttribute);
+            var issues = GetIssuesForAsset(m_TestAssetClassWithConditionalAttribute);
 
             Assert.IsFalse(issues.Any(i => i.Id == DebugLogAnalyzer.PAC0192));
             Assert.IsFalse(issues.Any(i => i.Id == DebugLogAnalyzer.PAC0193));
@@ -71,7 +71,7 @@ class ClassLoggingWithoutConditionalAttribute
         [Test]
         public void CodeAnalysis_LoggingMethodWithoutConditionalAttribute_IsReported()
         {
-            var issues = FindTestAssetIssues(m_TestAssetClassWithOutConditionalAttribute);
+            var issues = GetIssuesForAsset(m_TestAssetClassWithOutConditionalAttribute);
 
             Assert.IsTrue(issues.Any(i => i.Id == DebugLogAnalyzer.PAC0192));
             Assert.IsTrue(issues.Any(i => i.Id == DebugLogAnalyzer.PAC0193));

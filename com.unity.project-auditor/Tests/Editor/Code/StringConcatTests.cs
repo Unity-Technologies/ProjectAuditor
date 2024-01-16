@@ -10,7 +10,7 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_TestAssetStringConcat;
 
         [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
             m_TestAssetStringConcat = new TestAsset("StringConcat.cs", @"
 class StringConcat

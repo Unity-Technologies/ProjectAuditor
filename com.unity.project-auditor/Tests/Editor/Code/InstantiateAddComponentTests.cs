@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_TestAssetInstantiate;
 
         [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
             m_TestAssetInstantiate = new TestAsset("InstantiateObject.cs", @"
 using UnityEngine;
@@ -49,13 +49,13 @@ class AddComponentGeneric : MonoBehaviour
     }
 }
 ");
-            AnalyzeTempAssetsFolder();
+            AnalyzeTestAssets();
         }
 
         [Test]
         public void CodeAnalysis_Instantiate_IsReported()
         {
-            var issues = FindTestAssetIssues(m_TestAssetInstantiate);
+            var issues = GetIssuesForAsset(m_TestAssetInstantiate);
 
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("System.Void InstantiateObject::Test()", issues[0].GetContext());
@@ -65,7 +65,7 @@ class AddComponentGeneric : MonoBehaviour
         [Test]
         public void CodeAnalysis_AddComponent_IsReported()
         {
-            var issues = FindTestAssetIssues(m_TestAssetAddComponent);
+            var issues = GetIssuesForAsset(m_TestAssetAddComponent);
 
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("System.Void AddComponentToGameObject::Test()", issues[0].GetContext());
@@ -75,7 +75,7 @@ class AddComponentGeneric : MonoBehaviour
         [Test]
         public void CodeAnalysis_AddComponentGeneric_IsReported()
         {
-            var issues = FindTestAssetIssues(m_TestAssetAddComponentGeneric);
+            var issues = GetIssuesForAsset(m_TestAssetAddComponentGeneric);
 
             Assert.AreEqual(1, issues.Length);
             Assert.AreEqual("System.Void AddComponentGeneric::Test()", issues[0].GetContext());

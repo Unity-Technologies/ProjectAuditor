@@ -27,7 +27,7 @@ namespace Unity.ProjectAuditor.EditorTests
             );
 
         [OneTimeSetUp]
-        public void Setup()
+        public void OneTimeSetUp()
         {
             DescriptorLibrary.RegisterDescriptor(m_Descriptor.Id, m_Descriptor);
         }
@@ -171,7 +171,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 "do nothing"
                 )
             {
-                Platforms = new[] { TestFixtureBase.GetStandaloneBuildTarget() }
+                Platforms = new[] { TestFixtureBase.GetDefaultBuildTarget() }
             };
 
             Assert.True(desc.IsPlatformSupported());

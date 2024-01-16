@@ -12,13 +12,8 @@ namespace Unity.ProjectAuditor.EditorTests
     class AssemblyCompilationTests : TestFixtureBase
     {
 #pragma warning disable 0414
-        TestAsset m_TestAsset; // this is required to generate Assembly-CSharp.dll
-#pragma warning restore 0414
-
-        [OneTimeSetUp]
-        public void SetUp()
-        {
-            m_TestAsset = new TestAsset("MyClass.cs", @"
+        // this is required to generate Assembly-CSharp.dll
+        TestAsset m_TestAsset = new TestAsset("MyClass.cs", @"
 class MyClass
 {
     object myObj;
@@ -32,9 +27,8 @@ class MyClass
     void PlayerMethod()
     { myObj = 9; }
 #endif
-}
-");
-        }
+}");
+#pragma warning restore 0414
 
         [Test]
         public void AssemblyCompilation_DefaultSettings_AreCorrect()
@@ -100,7 +94,7 @@ class MyClass
             });
 
             var issues = projectReport.FindByCategory(IssueCategory.Code);
-            var codeIssue = issues.FirstOrDefault(i => i.RelativePath.Equals(m_TestAsset.relativePath));
+            var codeIssue = issues.FirstOrDefault(i => i.RelativePath.Equals(m_TestAsset.RelativePath));
 
             Assert.NotNull(codeIssue);
             Assert.AreEqual("MyClass." + methodName, codeIssue.Dependencies.PrettyName);

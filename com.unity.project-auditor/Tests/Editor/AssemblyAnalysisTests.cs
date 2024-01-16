@@ -10,18 +10,12 @@ namespace Unity.ProjectAuditor.EditorTests
     class AssemblyAnalysisTests : TestFixtureBase
     {
 #pragma warning disable 0414
-        TestAsset m_TestAsset; // this is required to generate Assembly-CSharp.dll
-#pragma warning restore 0414
-
-        [OneTimeSetUp]
-        public void SetUp()
-        {
-            m_TestAsset = new TestAsset("MyClass.cs", @"
+        // this is required to generate Assembly-CSharp.dll
+        TestAsset m_TestAsset = new TestAsset("MyClass.cs", @"
 class MyClass
 {
-}
-");
-        }
+}");
+#pragma warning restore 0414
 
         [Test]
         public void AssemblyAnalysis_DefaultAssembly_IsReported()

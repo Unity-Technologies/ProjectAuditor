@@ -18,7 +18,7 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_TestAssetUxmlAttributeDescriptionPropertyUsage;
 
         [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
             m_TestAssetObjectName = new TestAsset("ObjectNameTest.cs", @"
 using UnityEngine;
@@ -75,13 +75,13 @@ class UxmlAttributeDescriptionPropertyUsage
     }
 }
 ");
-            AnalyzeTempAssetsFolder();
+            AnalyzeTestAssets();
         }
 
         [Test]
         public void CodeAnalysis_PropertyName_IsReported()
         {
-            var issues = FindTestAssetIssues(m_TestAssetObjectName);
+            var issues = GetIssuesForAsset(m_TestAssetObjectName);
 
             var propertyNameIssues = issues.Where(i => i.Id == "PAC0231").ToArray();
 
@@ -92,7 +92,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_PropertyOfBaseType_IsReported()
         {
-            var issues = FindTestAssetIssues(m_TestAssetBaseTypePropertyUsage);
+            var issues = GetIssuesForAsset(m_TestAssetBaseTypePropertyUsage);
 
             var propertyOfBaseTypeIssues = issues.Where(
                 i => i.Id == "PAC0039" || i.Id == "PAC0084" || i.Id == "PAC0085")
@@ -104,7 +104,7 @@ class UxmlAttributeDescriptionPropertyUsage
         [Test]
         public void CodeAnalysis_PropertyUxmlAttributeDescription_IsReported()
         {
-            var issues = FindTestAssetIssues(m_TestAssetUxmlAttributeDescriptionPropertyUsage);
+            var issues = GetIssuesForAsset(m_TestAssetUxmlAttributeDescriptionPropertyUsage);
 
             var propertyUxmlAttributeIssues = issues.Where(i => i.Id == "PAC0191").ToArray();
 

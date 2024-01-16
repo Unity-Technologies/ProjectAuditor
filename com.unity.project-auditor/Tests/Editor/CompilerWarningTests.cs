@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.EditorTests
 #pragma warning restore 0414
 
         [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
             m_ScriptWithWarning = new TestAsset("ScriptWithWarning.cs", @"
 class ScriptWithWarning {

@@ -30,7 +30,7 @@ namespace Unity.ProjectAuditor.EditorTests
         SpritePackerMode m_SpritePackerMode;
 
         [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
             m_SpritePackerMode = EditorSettings.spritePackerMode;
             EditorSettings.spritePackerMode = SpritePackerMode.SpriteAtlasV2;
@@ -41,17 +41,17 @@ namespace Unity.ProjectAuditor.EditorTests
 
             GenerateTestSpritesForFullSpriteAtlasTest();
 
-            var blueSquareTextureImporter = AssetImporter.GetAtPath(m_BlueSquareSprite.relativePath) as TextureImporter;
+            var blueSquareTextureImporter = AssetImporter.GetAtPath(m_BlueSquareSprite.RelativePath) as TextureImporter;
             blueSquareTextureImporter.textureType = TextureImporterType.Sprite;
             blueSquareTextureImporter.SaveAndReimport();
 
-            var blueSquareSprite = AssetDatabase.LoadAssetAtPath<Sprite>(m_BlueSquareSprite.relativePath);
+            var blueSquareSprite = AssetDatabase.LoadAssetAtPath<Sprite>(m_BlueSquareSprite.RelativePath);
 
-            var redSquareTextureImporter = AssetImporter.GetAtPath(m_RedSquareSprite.relativePath) as TextureImporter;
+            var redSquareTextureImporter = AssetImporter.GetAtPath(m_RedSquareSprite.RelativePath) as TextureImporter;
             redSquareTextureImporter.textureType = TextureImporterType.Sprite;
             redSquareTextureImporter.SaveAndReimport();
 
-            var redSquareSprite = AssetDatabase.LoadAssetAtPath<Sprite>(m_RedSquareSprite.relativePath);
+            var redSquareSprite = AssetDatabase.LoadAssetAtPath<Sprite>(m_RedSquareSprite.RelativePath);
 
             fullSpriteAtlasAsset.Add(new Object[] {blueSquareSprite, redSquareSprite});
             m_TestSpriteAtlasFull = TestAsset.SaveSpriteAtlasAsset(fullSpriteAtlasAsset, k_SpriteAtlasNameFull + ".spriteatlasv2");
@@ -62,18 +62,18 @@ namespace Unity.ProjectAuditor.EditorTests
 
             GenerateTestSpritesForEmptySpriteAtlasTest();
 
-            var emptySquareTextureImporter = AssetImporter.GetAtPath(m_EmptySquareSprite.relativePath) as TextureImporter;
+            var emptySquareTextureImporter = AssetImporter.GetAtPath(m_EmptySquareSprite.RelativePath) as TextureImporter;
             emptySquareTextureImporter.textureType = TextureImporterType.Sprite;
             emptySquareTextureImporter.SaveAndReimport();
 
-            var emptySquareSprite = AssetDatabase.LoadAssetAtPath<Sprite>(m_EmptySquareSprite.relativePath);
+            var emptySquareSprite = AssetDatabase.LoadAssetAtPath<Sprite>(m_EmptySquareSprite.RelativePath);
 
             emptySpriteAtlasAsset.Add(new Object[] {emptySquareSprite, emptySquareSprite});
             m_TestSpriteAtlasEmpty = TestAsset.SaveSpriteAtlasAsset(emptySpriteAtlasAsset, k_SpriteAtlasNameEmpty + ".spriteatlasv2");
         }
 
         [OneTimeTearDown]
-        public void TearDown()
+        public void OneTimeTearDown()
         {
             EditorSettings.spritePackerMode = m_SpritePackerMode;
         }
