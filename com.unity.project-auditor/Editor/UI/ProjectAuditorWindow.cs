@@ -1280,42 +1280,43 @@ namespace Unity.ProjectAuditor.Editor.UI
             EditorGUILayout.Space();
             EditorGUILayout.Space();
 
-            EditorGUILayout.LabelField(Contents.ConfigurationsTitle, SharedStyles.LargeLabel);
-
-            EditorGUILayout.Space();
-
-            m_SelectedProjectAreas = (ProjectAreaFlags)EditorGUILayout.EnumFlagsField(Contents.ProjectAreaSelection, m_SelectedProjectAreas, GUILayout.ExpandWidth(true));
-
-            var selectedTarget = Array.IndexOf(m_SupportedBuildTargets, m_Platform);
-            selectedTarget = EditorGUILayout.Popup(Contents.PlatformSelection, selectedTarget, m_PlatformContents);
-            m_Platform = m_SupportedBuildTargets[selectedTarget];
-
-            m_CompilationMode = (CompilationMode)EditorGUILayout.EnumPopup(Contents.CompilationModeSelection, m_CompilationMode);
-
-            GUILayout.FlexibleSpace();
-
-            using (new EditorGUILayout.HorizontalScope())
+            using (new EditorGUILayout.VerticalScope(GUILayout.MaxWidth(500)))
             {
-                const int height = 30;
+                EditorGUILayout.LabelField(Contents.ConfigurationsTitle, SharedStyles.LargeLabel);
 
-                GUILayout.FlexibleSpace();
+                EditorGUILayout.Space();
 
-                using (new EditorGUI.DisabledScope(m_SelectedProjectAreas == ProjectAreaFlags.None))
+                m_SelectedProjectAreas = (ProjectAreaFlags)EditorGUILayout.EnumFlagsField(Contents.ProjectAreaSelection, m_SelectedProjectAreas, GUILayout.ExpandWidth(true));
+
+                var selectedTarget = Array.IndexOf(m_SupportedBuildTargets, m_Platform);
+                selectedTarget = EditorGUILayout.Popup(Contents.PlatformSelection, selectedTarget, m_PlatformContents);
+                m_Platform = m_SupportedBuildTargets[selectedTarget];
+
+                m_CompilationMode = (CompilationMode)EditorGUILayout.EnumPopup(Contents.CompilationModeSelection, m_CompilationMode);
+
+                GUILayout.Space(16);
+
+                using (new EditorGUILayout.HorizontalScope())
                 {
-                    if (GUILayout.Button(Contents.AnalyzeButton, GUILayout.Width(100), GUILayout.Height(height)))
+                    const int height = 30;
+
+                    GUILayout.FlexibleSpace();
+
+                    using (new EditorGUI.DisabledScope(m_SelectedProjectAreas == ProjectAreaFlags.None))
                     {
-                        Analyze();
-                        GUIUtility.ExitGUI();
+                        if (GUILayout.Button(Contents.AnalyzeButton, GUILayout.Width(100), GUILayout.Height(height)))
+                        {
+                            Analyze();
+                            GUIUtility.ExitGUI();
+                        }
+                    }
+
+                    if (GUILayout.Button(Contents.LoadButton, GUILayout.Width(40), GUILayout.Height(height)))
+                    {
+                        LoadReport();
                     }
                 }
-
-                if (GUILayout.Button(Contents.LoadButton, GUILayout.Width(40), GUILayout.Height(height)))
-                {
-                    LoadReport();
-                }
             }
-
-            EditorGUILayout.Space();
 
             EditorGUILayout.EndVertical();
         }
@@ -1800,7 +1801,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent WindowTitle = new GUIContent(ProjectAuditor.DisplayName);
 
             public static readonly GUIContent AnalyzeButton =
-                new GUIContent("Analyze", "Analyze Project and list all issues found.");
+                new GUIContent("Start Analysis", "Analyze Project and list all issues found.");
             public static readonly GUIContent ProjectAreaSelection =
                 new GUIContent("Project Areas", $"Select project areas to analyze.");
             public static readonly GUIContent PlatformSelection =
@@ -1840,7 +1841,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 • <b>Project Settings Issues</b>: a list of possible problems that might affect performance, memory and other areas.
 • <b>Build Report Insights</b>: How long each step of the last clean build took, and what assets were included in it.
 
-To Analyze the project, click on <b>Analyze</b>.
+To Analyze the project, click on <b>Start Analysis</b>.
 
 Once the project is analyzed, {ProjectAuditor.DisplayName} displays a summary with high-level information. From here, click on a tab representing an area you're interested in, and then select a View from the drop-down menu to see a list of issues or insights.
 "
