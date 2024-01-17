@@ -6,5 +6,9 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
     internal interface IModuleAnalyzer
     {
         void Initialize(Module module);
+
+        void CacheParameters(DiagnosticParams diagnosticParams);
+
+        void RegisterParameters(DiagnosticParams diagnosticParams);
     }
 }

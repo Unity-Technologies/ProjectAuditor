@@ -37,6 +37,16 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_CameraLitShaderModeBothOrMixed);
         }
 
+        public void CacheParameters(DiagnosticParams diagnosticParams)
+        {
+            // settings module analyzers run only once so no need to cache settings parameters
+        }
+
+        public void RegisterParameters(DiagnosticParams diagnosticParams)
+        {
+            // no parameters to register.
+        }
+
 #if PACKAGE_HDRP
         public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {

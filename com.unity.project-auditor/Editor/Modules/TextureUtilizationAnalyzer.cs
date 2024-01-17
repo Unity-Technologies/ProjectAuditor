@@ -53,11 +53,25 @@ namespace Unity.ProjectAuditor.Editor.Modules
             MessageFormat = "Texture Atlas '{0}' has too much empty space ({1})"
         };
 
+        const string k_EmptySpaceLimit       = "TextureEmptySpaceLimit";
+
+        int m_EmptySpaceLimit;
+
         public void Initialize(Module module)
         {
             module.RegisterDescriptor(k_TextureSolidColorDescriptor);
             module.RegisterDescriptor(k_TextureSolidColorNoFixerDescriptor);
             module.RegisterDescriptor(k_TextureAtlasEmptyDescriptor);
+        }
+
+        public void CacheParameters(DiagnosticParams diagnosticParams)
+        {
+            m_EmptySpaceLimit = diagnosticParams.GetParameter(k_EmptySpaceLimit);
+        }
+
+        public void RegisterParameters(DiagnosticParams diagnosticParams)
+        {
+            diagnosticParams.RegisterParameter(k_EmptySpaceLimit, 50);
         }
 
         public IEnumerable<ReportItem> Analyze(TextureAnalysisContext context)
@@ -74,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (context.IsDescriptorEnabled(k_TextureAtlasEmptyDescriptor) && texture2D != null)
             {
                 var emptyPercent = TextureUtils.GetEmptyPixelsPercent(texture2D);
-                if (emptyPercent > context.SpriteAtlasEmptySpaceLimit)
+                if (emptyPercent > m_EmptySpaceLimit)
                 {
                     yield return context.CreateIssue(IssueCategory.AssetIssue, k_TextureAtlasEmptyDescriptor.Id, context.Name, Formatting.FormatPercentage(emptyPercent / 100.0f))
                         .WithLocation(context.Importer.assetPath);

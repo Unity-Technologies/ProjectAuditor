@@ -62,6 +62,15 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             module.RegisterDescriptor(k_DebugLogWarningIssueDescriptor);
         }
 
+        public void CacheParameters(DiagnosticParams diagnosticParams)
+        {
+        }
+
+        public void RegisterParameters(DiagnosticParams diagnosticParams)
+        {
+            // no parameters to register.
+        }
+
         public IssueBuilder Analyze(InstructionAnalysisContext context)
         {
             var callee = (MethodReference)context.Instruction.Operand;

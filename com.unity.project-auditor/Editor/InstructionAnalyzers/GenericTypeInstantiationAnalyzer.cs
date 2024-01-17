@@ -24,6 +24,15 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
         {
         }
 
+        public void CacheParameters(DiagnosticParams diagnosticParams)
+        {
+        }
+
+        public void RegisterParameters(DiagnosticParams diagnosticParams)
+        {
+            // no parameters to register.
+        }
+
         public IssueBuilder Analyze(InstructionAnalysisContext context)
         {
             return AnalyzeType(context, context.Instruction.OpCode == OpCodes.Newobj ? ((MethodReference)context.Instruction.Operand).DeclaringType : (TypeReference)context.Instruction.Operand);

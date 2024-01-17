@@ -11,9 +11,6 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
         public Texture Texture;
         public TextureImporter Importer;
         public TextureImporterPlatformSettings ImporterPlatformSettings;
-        public int TextureStreamingMipmapsSizeLimit;
-        public int TextureSizeLimit;
-        public int SpriteAtlasEmptySpaceLimit;
     }
 
     internal interface ITextureModuleAnalyzer : IModuleAnalyzer

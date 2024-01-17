@@ -24,37 +24,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        internal const string PAA3002 = nameof(PAA3002);
-
-        static readonly Descriptor k_StreamingAssetsFolderDescriptor = new Descriptor(
-            PAA3002,
-            "StreamingAssets folder size",
-            Areas.BuildSize,
-            $"There are many files in the <b>StreamingAssets folder</b>. Keeping them in the StreamingAssets folder will increase the build size.",
-            $"Try to move files outside this folder and use Asset Bundles or Addressables when possible."
-        )
-        {
-            Platforms = new[] { BuildTarget.Android, BuildTarget.iOS},
-            MessageFormat = "StreamingAssets folder contains {0} of data",
-        };
-
         public override string Name => "Assets";
 
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[] {k_IssueLayout};
-
-        public override void Initialize()
-        {
-            base.Initialize();
-
-            RegisterDescriptor(k_StreamingAssetsFolderDescriptor);
-        }
-
-        const string k_StreamingAssetsFolderSizeLimit   = "StreamingAssetsFolderSizeLimit";
-
-        public override void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            diagnosticParams.RegisterParameter(k_StreamingAssetsFolderSizeLimit, 50);
-        }
 
         public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
@@ -63,15 +35,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 Params = analysisParams
             };
 
-            // StreamingAssets folder is checked once, AssetsModule might not be the best place this check
-            if (k_StreamingAssetsFolderDescriptor.IsApplicable(analysisParams))
-            {
-                var issue = AnalyzeStreamingAssets(context);
-                if (issue != null)
-                    analysisParams.OnIncomingIssues(new[] {issue});
-            }
-
-            var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
+            var analyzers = GetCompatibleAnalyzers(analysisParams);
             if (analyzers.Length == 0)
                 return AnalysisResult.Success;
 
@@ -105,29 +69,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             progress?.Clear();
 
             return AnalysisResult.Success;
-        }
-
-        static ReportItem AnalyzeStreamingAssets(AnalysisContext context)
-        {
-            if (!Directory.Exists("Assets/StreamingAssets"))
-                return null;
-
-            long totalBytes = 0;
-            string[] files = Directory.GetFiles("Assets/StreamingAssets", "*", SearchOption.AllDirectories);
-            foreach (var file in files)
-            {
-                var fileInfo = new FileInfo(file);
-                totalBytes += fileInfo.Length;
-            }
-
-            var folderSizeLimitMB =
-                context.Params.DiagnosticParams.GetParameter(k_StreamingAssetsFolderSizeLimit);
-
-            if (totalBytes <= folderSizeLimitMB * 1024 * 1024)
-                return null;
-
-            return context.CreateIssue(IssueCategory.AssetIssue, k_StreamingAssetsFolderDescriptor.Id,
-                Formatting.FormatSize((ulong)totalBytes));
         }
     }
 }

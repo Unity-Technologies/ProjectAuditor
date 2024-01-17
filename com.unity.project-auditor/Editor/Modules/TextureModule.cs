@@ -50,25 +50,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             AssetsModule.k_IssueLayout
         };
 
-        const string k_TextureStreamingMipmapsSizeLimit = "TextureStreamingMipmapsSizeLimit";
-        const string k_TextureSizeLimit                 = "TextureSizeLimit";
-        const string k_SpriteAtlasEmptySpaceLimit       = "SpriteAtlasEmptySpaceLimit";
-
-        public override void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            diagnosticParams.RegisterParameter(k_TextureStreamingMipmapsSizeLimit, 4000);
-            diagnosticParams.RegisterParameter(k_TextureSizeLimit, 2048);
-            diagnosticParams.RegisterParameter(k_SpriteAtlasEmptySpaceLimit, 50);
-        }
-
         public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
-            var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
+            var analyzers = GetCompatibleAnalyzers(analysisParams);
 
-            var diagnosticParams = analysisParams.DiagnosticParams;
-            var textureStreamingMipmapsSizeLimit = diagnosticParams.GetParameter(k_TextureStreamingMipmapsSizeLimit);
-            var textureSizeLimit = diagnosticParams.GetParameter(k_TextureSizeLimit);
-            var spriteAtlasEmptySpaceLimit = diagnosticParams.GetParameter(k_SpriteAtlasEmptySpaceLimit);
             var platformString = analysisParams.PlatformAsString;
 
             var context = new TextureAnalysisContext
@@ -76,10 +61,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 // Importer set in loop
                 // ImporterPlatformSettings set in loop
                 // Texture set in loop
-                Params = analysisParams,
-                TextureStreamingMipmapsSizeLimit = textureStreamingMipmapsSizeLimit,
-                TextureSizeLimit = textureSizeLimit,
-                SpriteAtlasEmptySpaceLimit = spriteAtlasEmptySpaceLimit
+                Params = analysisParams
             };
 
             var assetPaths = GetAssetPathsByFilter("t:texture, a:assets", context);

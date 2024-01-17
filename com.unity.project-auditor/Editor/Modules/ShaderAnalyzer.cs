@@ -28,6 +28,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_SrpBatcherDescriptor);
         }
 
+        public void CacheParameters(DiagnosticParams diagnosticParams)
+        {
+        }
+
+        public void RegisterParameters(DiagnosticParams diagnosticParams)
+        {
+            // no parameters to register.
+        }
+
         public IEnumerable<ReportItem> Analyze(ShaderAnalysisContext context)
         {
             if (!IsSrpBatchingEnabled)

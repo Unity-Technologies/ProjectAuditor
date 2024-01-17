@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Interfaces;
 using Unity.ProjectAuditor.Editor.Utils; // Required for TypeCache in Unity 2018
 using UnityEditor;
 using UnityEngine;
@@ -259,11 +260,13 @@ namespace Unity.ProjectAuditor.Editor
         internal void RegisterParameters()
         {
             m_ParamsStack[0].Platform = BuildTarget.NoTarget;
-            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(Module)))
+            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(IModuleAnalyzer)))
             {
                 if (type.IsAbstract)
                     continue;
-                var instance = Activator.CreateInstance(type) as Module;
+
+                // create a temporary analyzer instance
+                var instance = Activator.CreateInstance(type) as IModuleAnalyzer;
                 instance.RegisterParameters(this);
             }
         }

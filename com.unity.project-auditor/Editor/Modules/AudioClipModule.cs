@@ -54,33 +54,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             AssetsModule.k_IssueLayout
         };
 
-        const string k_StreamingClipThresholdBytes            = "StreamingClipThresholdBytes";
-        const string k_LongDecompressedClipThresholdBytes     = "LongDecompressedClipThresholdBytes";
-        const string k_LongCompressedMobileClipThresholdBytes = "LongCompressedMobileClipThresholdBytes";
-        const string k_LoadInBackGroundClipSizeThresholdBytes = "LoadInBackGroundClipSizeThresholdBytes";
-
-        public override void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            diagnosticParams.RegisterParameter(k_StreamingClipThresholdBytes, 1 * (64000 + (int)(1.6 * 48000 * 2)) + 694);
-            diagnosticParams.RegisterParameter(k_LongDecompressedClipThresholdBytes, 200 * 1024);
-            diagnosticParams.RegisterParameter(k_LongCompressedMobileClipThresholdBytes, 200 * 1024);
-            diagnosticParams.RegisterParameter(k_LoadInBackGroundClipSizeThresholdBytes, 200 * 1024);
-        }
-
         public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
-            var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
-
-            var diagnosticParams = analysisParams.DiagnosticParams;
+            var analyzers = GetCompatibleAnalyzers(analysisParams);
 
             var context = new AudioClipAnalysisContext
             {
                 // Importer is set in the loop
-                Params = analysisParams,
-                StreamingClipThresholdBytes = diagnosticParams.GetParameter(k_StreamingClipThresholdBytes),
-                LongDecompressedClipThresholdBytes = diagnosticParams.GetParameter(k_LongDecompressedClipThresholdBytes),
-                LongCompressedMobileClipThresholdBytes = diagnosticParams.GetParameter(k_LongCompressedMobileClipThresholdBytes),
-                LoadInBackGroundClipSizeThresholdBytes = diagnosticParams.GetParameter(k_LoadInBackGroundClipSizeThresholdBytes)
+                Params = analysisParams
             };
 
             var assetPaths = GetAssetPathsByFilter("t:AudioClip, a:assets", context);

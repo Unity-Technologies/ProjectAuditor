@@ -38,29 +38,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             AssetsModule.k_IssueLayout
         };
 
-        const string k_MeshVertexCountLimit   = "MeshVertexCountLimit";
-        const string k_MeshTriangleCountLimit = "MeshTriangleCountLimit";
-
-        public override void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            diagnosticParams.RegisterParameter(k_MeshVertexCountLimit, 5000);
-            diagnosticParams.RegisterParameter(k_MeshTriangleCountLimit, 5000);
-        }
-
         public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
-            var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
-
-            var diagnosticParams = analysisParams.DiagnosticParams;
-            var meshVertexCountLimit = diagnosticParams.GetParameter(k_MeshVertexCountLimit);
-            var meshTriangleCountLimit = diagnosticParams.GetParameter(k_MeshTriangleCountLimit);
+            var analyzers = GetCompatibleAnalyzers(analysisParams);
 
             var context = new MeshAnalysisContext()
             {
                 // Importer is set in the loop
-                Params = analysisParams,
-                MeshVertexCountLimit = meshVertexCountLimit,
-                MeshTriangleCountLimit = meshTriangleCountLimit
+                Params = analysisParams
             };
 
             var assetPaths = GetAssetPathsByFilter("t:mesh, a:assets", context);

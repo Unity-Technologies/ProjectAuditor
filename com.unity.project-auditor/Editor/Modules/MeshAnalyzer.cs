@@ -39,10 +39,24 @@ namespace Unity.ProjectAuditor.Editor.Modules
             DocumentationUrl = "https://docs.unity3d.com/Manual/FBXImporter-Model.html"
         };
 
+        const string k_VertexCountLimit   = "MeshVertexCountLimit";
+        const string k_TriangleCountLimit = "MeshTriangleCountLimit";
+
         public void Initialize(Module module)
         {
             module.RegisterDescriptor(k_MeshReadWriteEnabledDescriptor);
             module.RegisterDescriptor(k_Mesh32BitIndexFormatUsedDescriptor);
+        }
+
+        public void CacheParameters(DiagnosticParams diagnosticParams)
+        {
+        }
+
+        public void RegisterParameters(DiagnosticParams diagnosticParams)
+        {
+            // TODO: implement diagnostic that use this parameters
+            diagnosticParams.RegisterParameter(k_VertexCountLimit, 5000);
+            diagnosticParams.RegisterParameter(k_TriangleCountLimit, 5000);
         }
 
         public IEnumerable<ReportItem> Analyze(MeshAnalysisContext context)

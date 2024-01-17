@@ -119,6 +119,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
+        const string k_StreamingMipmapsSizeLimit = "TextureStreamingMipmapsSizeLimit";
+        const string k_SizeLimit                 = "TextureSizeLimit";
+
+        int m_StreamingMipmapsSizeLimit;
+
         public void Initialize(Module module)
         {
             module.RegisterDescriptor(k_TextureMipmapsNotEnabledDescriptor);
@@ -126,6 +131,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_TextureReadWriteEnabledDescriptor);
             module.RegisterDescriptor(k_TextureStreamingMipMapEnabledDescriptor);
             module.RegisterDescriptor(k_TextureAnisotropicLevelDescriptor);
+        }
+
+        public void CacheParameters(DiagnosticParams diagnosticParams)
+        {
+            m_StreamingMipmapsSizeLimit = diagnosticParams.GetParameter(k_StreamingMipmapsSizeLimit);
+        }
+
+        public void RegisterParameters(DiagnosticParams diagnosticParams)
+        {
+            diagnosticParams.RegisterParameter(k_StreamingMipmapsSizeLimit, 4000);
+
+            // this is not used at this time
+            diagnosticParams.RegisterParameter(k_SizeLimit, 2048);
         }
 
         public IEnumerable<ReportItem> Analyze(TextureAnalysisContext context)
@@ -185,7 +203,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithLocation(context.Importer.assetPath);
             }
 
-            if (context.Importer.mipmapEnabled && !context.Importer.streamingMipmaps && size > Mathf.Pow(context.TextureStreamingMipmapsSizeLimit, 2))
+            if (context.Importer.mipmapEnabled && !context.Importer.streamingMipmaps && size > Mathf.Pow(m_StreamingMipmapsSizeLimit, 2))
             {
                 yield return context.CreateIssue(IssueCategory.AssetIssue, k_TextureStreamingMipMapEnabledDescriptor.Id, context.Name)
                     .WithLocation(context.Importer.assetPath);

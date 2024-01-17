@@ -26,7 +26,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
-            var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
+            var analyzers = GetCompatibleAnalyzers(analysisParams);
             var context = new SettingsAnalysisContext
             {
                 Params = analysisParams

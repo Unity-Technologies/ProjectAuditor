@@ -50,6 +50,15 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             m_NamespaceOrClassDescriptors = descriptors.Where(descriptor => descriptor.Method.Equals("*")).ToDictionary(d => d.Type);
         }
 
+        public void CacheParameters(DiagnosticParams diagnosticParams)
+        {
+        }
+
+        public void RegisterParameters(DiagnosticParams diagnosticParams)
+        {
+            // no parameters to register.
+        }
+
         public IssueBuilder Analyze(InstructionAnalysisContext context)
         {
             var callee = (MethodReference)context.Instruction.Operand;

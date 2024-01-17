@@ -67,6 +67,16 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_TextureStreamingDisabledDescriptor);
         }
 
+        public void CacheParameters(DiagnosticParams diagnosticParams)
+        {
+            // settings module analyzers run only once so no need to cache settings parameters
+        }
+
+        public void RegisterParameters(DiagnosticParams diagnosticParams)
+        {
+            // no parameters to register.
+        }
+
         public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             if (IsUsingDefaultSettings())

@@ -8,5 +8,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public void Initialize(Module module)
         {
         }
+
+        public void CacheParameters(DiagnosticParams diagnosticParams)
+        {
+        }
+
+        public void RegisterParameters(DiagnosticParams diagnosticParams)
+        {
+        }
     }
 }

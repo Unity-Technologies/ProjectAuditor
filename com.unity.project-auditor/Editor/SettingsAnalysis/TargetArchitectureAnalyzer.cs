@@ -40,6 +40,16 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_DescriptorAndroid);
         }
 
+        public void CacheParameters(DiagnosticParams diagnosticParams)
+        {
+            // settings module analyzers run only once so no need to cache settings parameters
+        }
+
+        public void RegisterParameters(DiagnosticParams diagnosticParams)
+        {
+            // no parameters to register.
+        }
+
         public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             // PlayerSettings.GetArchitecture returns an integer value associated with the architecture of a BuildTargetPlatformGroup. 0 - None, 1 - ARM64, 2 - Universal.

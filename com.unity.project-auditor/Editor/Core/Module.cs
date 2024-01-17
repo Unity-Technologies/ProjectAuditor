@@ -83,10 +83,6 @@ namespace Unity.ProjectAuditor.Editor.Core
             m_Ids = new HashSet<DescriptorId>();
         }
 
-        public virtual void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-        }
-
         public void RegisterDescriptor(Descriptor descriptor)
         {
             // Don't register descriptors that aren't applicable to this Unity version, or to platforms that aren't supported

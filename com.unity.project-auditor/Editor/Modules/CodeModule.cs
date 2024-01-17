@@ -146,7 +146,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             base.Initialize();
 
-            m_OpCodes = m_Analyzers.Select(a => a.opCodes).SelectMany(c => c).Distinct().ToList();
+            m_OpCodes = GetAnalyzers().Select(a => a.opCodes).SelectMany(c => c).Distinct().ToList();
         }
 
         public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
@@ -443,7 +443,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 };
 
                 Profiler.BeginSample("CodeModule.Analyzing " + inst.OpCode.Name);
-                foreach (var analyzer in m_Analyzers)
+
+                // TODO: Replace GetAnalyzers() with GetCompatibleAnalyzers() and move to Audit()
+                foreach (var analyzer in GetAnalyzers())
                     if (analyzer.opCodes.Contains(inst.OpCode))
                     {
                         Profiler.BeginSample("CodeModule " + analyzer.GetType().Name);

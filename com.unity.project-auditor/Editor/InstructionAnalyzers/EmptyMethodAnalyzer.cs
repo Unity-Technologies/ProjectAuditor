@@ -38,6 +38,14 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             module.RegisterDescriptor(k_Descriptor);
         }
 
+        public void CacheParameters(DiagnosticParams diagnosticParams)
+        {
+        }
+
+        public void RegisterParameters(DiagnosticParams diagnosticParams)
+        {
+        }
+
         public IssueBuilder Analyze(InstructionAnalysisContext context)
         {
             // skip any no-op

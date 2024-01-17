@@ -76,6 +76,15 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             descriptorMicrophoneSupported = module.SupportsDescriptor(k_DescriptorMicrophone.Id);
         }
 
+        public void CacheParameters(DiagnosticParams diagnosticParams)
+        {
+        }
+
+        public void RegisterParameters(DiagnosticParams diagnosticParams)
+        {
+            // no parameters to register.
+        }
+
         public IssueBuilder Analyze(InstructionAnalysisContext context)
         {
             var methodReference = (MethodReference)context.Instruction.Operand;

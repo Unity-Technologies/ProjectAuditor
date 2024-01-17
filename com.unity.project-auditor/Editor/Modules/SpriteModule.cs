@@ -10,24 +10,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts  => new IssueLayout[] { AssetsModule.k_IssueLayout };
 
-        const string k_SpriteAtlasEmptySpaceLimit   = "SpriteAtlasEmptySpaceLimit";
-
-        public override void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            diagnosticParams.RegisterParameter(k_SpriteAtlasEmptySpaceLimit, 50);
-        }
-
         public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
-            var analyzers = GetPlatformAnalyzers(analysisParams.Platform);
-
-            var spriteAtlasEmptySpaceLimit = analysisParams.DiagnosticParams.GetParameter(k_SpriteAtlasEmptySpaceLimit);
+            var analyzers = GetCompatibleAnalyzers(analysisParams);
 
             var context = new SpriteAtlasAnalysisContext
             {
                 // AssetPath set in loop
-                Params = analysisParams,
-                SpriteAtlasEmptySpaceLimit = spriteAtlasEmptySpaceLimit
+                Params = analysisParams
             };
 
             var assetPaths = GetAssetPathsByFilter("t:SpriteAtlas, a:assets", context);

@@ -1,26 +1,38 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Unity.ProjectAuditor.Editor.Interfaces;
-using Unity.ProjectAuditor.Editor.Utils; // Required for TypeCache in Unity 2018
 using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
     internal abstract class ModuleWithAnalyzers<T> : Module where T : IModuleAnalyzer
     {
-        protected List<T> m_Analyzers;
+        T[] m_Analyzers;
 
-        protected T[] GetPlatformAnalyzers(BuildTarget platform)
+        protected T[] GetAnalyzers()
         {
-            return m_Analyzers.Where(a => CoreUtils.SupportsPlatform(a.GetType(), platform)).ToArray();
+            return m_Analyzers;
+        }
+
+        protected T[] GetCompatibleAnalyzers(AnalysisParams analysisParams)
+        {
+            var analyzers = new List<T>();
+            foreach (var analyzer in m_Analyzers)
+            {
+                if(CoreUtils.SupportsPlatform(analyzer.GetType(), analysisParams.Platform))
+                {
+                    analyzer.CacheParameters(analysisParams.DiagnosticParams);
+                    analyzers.Add(analyzer);
+                }
+            }
+            return analyzers.ToArray();
         }
 
         public override void Initialize()
         {
             base.Initialize();
 
-            m_Analyzers = new List<T>();
+            var analyzers = new List<T>();
 
             foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(T)))
             {
@@ -28,8 +40,9 @@ namespace Unity.ProjectAuditor.Editor.Core
                     continue;
                 var moduleAnalyzer = (IModuleAnalyzer)Activator.CreateInstance(type);
                 moduleAnalyzer.Initialize(this);
-                m_Analyzers.Add((T)moduleAnalyzer);
+                analyzers.Add((T)moduleAnalyzer);
             }
+            m_Analyzers = analyzers.ToArray();
         }
     }
 }

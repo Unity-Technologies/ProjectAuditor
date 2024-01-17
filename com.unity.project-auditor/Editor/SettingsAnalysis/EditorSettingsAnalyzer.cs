@@ -47,6 +47,15 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_DomainReloadDescriptor);
         }
 
+        public void CacheParameters(DiagnosticParams diagnosticParams)
+        {
+        }
+
+        public void RegisterParameters(DiagnosticParams diagnosticParams)
+        {
+            // no parameters to register.
+        }
+
         public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             if (k_EnterPlayModeOptionsDescriptor.IsVersionCompatible() &&

@@ -50,6 +50,15 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             }
         }
 
+        public void CacheParameters(DiagnosticParams diagnosticParams)
+        {
+            // settings module analyzers run only once so no need to cache settings parameters
+        }
+
+        public void RegisterParameters(DiagnosticParams diagnosticParams)
+        {
+        }
+
         public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             if (m_Descriptors == null)

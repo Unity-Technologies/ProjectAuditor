@@ -1,7 +1,7 @@
 using System.IO;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
-using Unity.ProjectAuditor.Editor.Modules;
+using Unity.ProjectAuditor.Editor.SettingsAnalysis;
 using Unity.ProjectAuditor.Editor.Tests.Common;
 using UnityEditor;
 using UnityEditor.TestTools;
@@ -58,7 +58,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var platform = m_Platform;
             m_Platform = BuildTarget.Android;
 
-            var assetDiagnostic = Analyze(IssueCategory.AssetIssue, issue => issue.Id == AssetsModule.PAA3002);
+            var assetDiagnostic = Analyze(IssueCategory.ProjectSetting, issue => issue.Id == StreamingAssetsFolderAnalyzer.PAA3002);
 
             Assert.IsNotEmpty(assetDiagnostic);
 
@@ -68,7 +68,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void StreamingAssets_FolderTooLarge_IsNotReported()
         {
-            var assetDiagnostic = Analyze(IssueCategory.AssetIssue, issue => issue.Id == AssetsModule.PAA3002);
+            var assetDiagnostic = Analyze(IssueCategory.ProjectSetting, issue => issue.Id == StreamingAssetsFolderAnalyzer.PAA3002);
 
             // it should not be reported on default analysis platform (Standalone)
             Assert.IsEmpty(assetDiagnostic);
