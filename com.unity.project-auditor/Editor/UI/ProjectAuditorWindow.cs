@@ -345,7 +345,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 dropDownItems.Add(new Utility.DropdownItem
                 {
                     Content = new GUIContent(displayName),
-                    SelectionContent = new GUIContent("View: " + displayName),
+                    SelectionContent = new GUIContent(displayName),
                     Enabled = true,
                     UserData = categoryIndex++
                 });
