@@ -12,7 +12,7 @@ using Module = Unity.ProjectAuditor.Editor.Core.Module;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    class AudioClipAnalyzer : IAudioClipModuleAnalyzer
+    class AudioClipAnalyzer : AudioClipModuleAnalyzer
     {
         internal const string PAA4000 = nameof(PAA4000);    // Long AudioClips which aren’t set to streaming
         internal const string PAA4001 = nameof(PAA4001);    // Very small ACs (uncompressed size <200KB) that ARE set to streaming. These should probably be Decompress on Load
@@ -242,17 +242,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
             MessageFormat = "AudioClip '{0}' source asset is in a lossy compressed format",
         };
 
-        const string k_StreamingClipThresholdBytes            = "StreamingClipThresholdBytes";
-        const string k_LongDecompressedClipThresholdBytes     = "LongDecompressedClipThresholdBytes";
-        const string k_LongCompressedMobileClipThresholdBytes = "LongCompressedMobileClipThresholdBytes";
-        const string k_LoadInBackGroundClipSizeThresholdBytes = "LoadInBackGroundClipSizeThresholdBytes";
-
+        [DiagnosticParameter("StreamingClipThresholdBytes", 1 * (64000 + (int)(1.6 * 48000 * 2)) + 694)]
         int m_StreamingClipThresholdBytes;
+
+        [DiagnosticParameter("LongDecompressedClipThresholdBytes", 200 * 1024)]
         int m_LongDecompressedClipThresholdBytes;
+
+        [DiagnosticParameter("LongCompressedMobileClipThresholdBytes", 200 * 1024)]
         int m_LongCompressedMobileClipThresholdBytes;
+
+        [DiagnosticParameter("LoadInBackGroundClipSizeThresholdBytes", 200 * 1024)]
         int m_LoadInBackGroundClipSizeThresholdBytes;
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_AudioLongClipDoesNotStreamDescriptor);
             module.RegisterDescriptor(k_AudioShortClipStreamsDescriptor);
@@ -268,25 +270,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_AudioCompressedSourceAssetDescriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-            m_StreamingClipThresholdBytes = diagnosticParams.GetParameter(k_StreamingClipThresholdBytes);
-            m_LongDecompressedClipThresholdBytes = diagnosticParams.GetParameter(k_LongDecompressedClipThresholdBytes);
-            m_LongCompressedMobileClipThresholdBytes =
-                diagnosticParams.GetParameter(k_LongCompressedMobileClipThresholdBytes);
-            m_LoadInBackGroundClipSizeThresholdBytes =
-                diagnosticParams.GetParameter(k_LoadInBackGroundClipSizeThresholdBytes);
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            diagnosticParams.RegisterParameter(k_StreamingClipThresholdBytes, 1 * (64000 + (int)(1.6 * 48000 * 2)) + 694);
-            diagnosticParams.RegisterParameter(k_LongDecompressedClipThresholdBytes, 200 * 1024);
-            diagnosticParams.RegisterParameter(k_LongCompressedMobileClipThresholdBytes, 200 * 1024);
-            diagnosticParams.RegisterParameter(k_LoadInBackGroundClipSizeThresholdBytes, 200 * 1024);
-        }
-
-        public IEnumerable<ReportItem> Analyze(AudioClipAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(AudioClipAnalysisContext context)
         {
             var assetPath = context.Importer.assetPath;
 

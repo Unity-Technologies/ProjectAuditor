@@ -8,7 +8,7 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    internal class AssetsModuleResourcesAnalyzer : IAssetsModuleAnalyzer
+    internal class AssetsModuleResourcesAnalyzer : AssetsModuleAnalyzer
     {
         internal const string PAA3000 = nameof(PAA3000);
         internal const string PAA3001 = nameof(PAA3001);
@@ -37,22 +37,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             MessageFormat = "Asset '{0}' is a dependency of a Resources folder asset"
         };
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_AssetInResourcesFolderDescriptor);
             module.RegisterDescriptor(k_AssetInResourcesFolderDependencyDescriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // no parameters to register.
-        }
-
-        public IEnumerable<ReportItem> Analyze(AssetAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(AssetAnalysisContext context)
         {
             var issues = new List<ReportItem>();
             var assetPathsDict = new Dictionary<string, DependencyNode>();

@@ -41,6 +41,13 @@ namespace Unity.ProjectAuditor.Editor
         Player = 0,
     }
 
+    [System.AttributeUsage(System.AttributeTargets.Field)] public class DiagnosticParameterAttribute : System.Attribute
+    {
+        public int DefaultValue { get; }
+        public string Name { get; }
+        public DiagnosticParameterAttribute(string name, int defaultValue) {}
+    }
+
     public sealed class DiagnosticParams : UnityEngine.ISerializationCallbackReceiver
     {
         public DiagnosticParams() {}

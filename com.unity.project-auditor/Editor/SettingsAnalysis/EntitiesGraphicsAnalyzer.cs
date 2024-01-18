@@ -6,7 +6,7 @@ using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class EntitiesGraphicsAnalyzer : ISettingsModuleAnalyzer
+    class EntitiesGraphicsAnalyzer : SettingsModuleAnalyzer
     {
         internal const string PAS1000 = nameof(PAS1000);
         internal const string PAS1013 = nameof(PAS1013);
@@ -38,23 +38,13 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             }
         };
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_HybridDescriptor);
             module.RegisterDescriptor(k_EntitiesGraphicsDescriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-            // settings module analyzers run only once so no need to cache settings parameters
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // no parameters to register.
-        }
-
-        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
 #if PACKAGE_ENTITIES_GRAPHICS
             if (PlayerSettingsUtil.IsStaticBatchingEnabled(context.Params.Platform))

@@ -108,7 +108,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         public string[] Keywords;
     }
 
-    class ShadersModule : ModuleWithAnalyzers<IShaderModuleAnalyzer>
+    class ShadersModule : ModuleWithAnalyzers<ShaderModuleAnalyzer>
         , IPreprocessShaders
 #if PA_CAN_USE_IPREPROCESSCOMPUTESHADERS
         , IPreprocessComputeShaders

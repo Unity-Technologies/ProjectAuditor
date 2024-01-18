@@ -10,7 +10,7 @@ using Unity.ProjectAuditor.Editor.Modules;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    class EmptyMethodAnalyzer : ICodeModuleInstructionAnalyzer
+    class EmptyMethodAnalyzer : CodeModuleInstructionAnalyzer
     {
         internal const string PAC2001 = nameof(PAC2001);
 
@@ -31,22 +31,14 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             OpCodes.Ret
         };
 
-        public IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
+        public override IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_Descriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-        }
-
-        public IssueBuilder Analyze(InstructionAnalysisContext context)
+        public override IssueBuilder Analyze(InstructionAnalysisContext context)
         {
             // skip any no-op
             var previousIL = context.Instruction.Previous;

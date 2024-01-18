@@ -10,7 +10,7 @@ using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    class MeshAnalyzer : IMeshModuleAnalyzer
+    class MeshAnalyzer : MeshModuleAnalyzer
     {
         internal const string PAA1000 = nameof(PAA1000);
         internal const string PAA1001 = nameof(PAA1001);
@@ -39,27 +39,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
             DocumentationUrl = "https://docs.unity3d.com/Manual/FBXImporter-Model.html"
         };
 
-        const string k_VertexCountLimit   = "MeshVertexCountLimit";
-        const string k_TriangleCountLimit = "MeshTriangleCountLimit";
+        [DiagnosticParameter("MeshVertexCountLimit", 5000)]
+        int m_VertexCountLimit;
 
-        public void Initialize(Module module)
+        [DiagnosticParameter("MeshTriangleCountLimit", 5000)]
+        int m_TriangleCountLimit;
+
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_MeshReadWriteEnabledDescriptor);
             module.RegisterDescriptor(k_Mesh32BitIndexFormatUsedDescriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // TODO: implement diagnostic that use this parameters
-            diagnosticParams.RegisterParameter(k_VertexCountLimit, 5000);
-            diagnosticParams.RegisterParameter(k_TriangleCountLimit, 5000);
-        }
-
-        public IEnumerable<ReportItem> Analyze(MeshAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(MeshAnalysisContext context)
         {
             var assetPath = context.Importer.assetPath;
             var modelImporter = context.Importer as ModelImporter;

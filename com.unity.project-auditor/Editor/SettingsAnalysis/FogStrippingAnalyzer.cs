@@ -20,7 +20,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         ExponentialSquared
     }
 
-    class FogStrippingAnalyzer : ISettingsModuleAnalyzer
+    class FogStrippingAnalyzer : SettingsModuleAnalyzer
     {
         internal const string PAS1003 = nameof(PAS1003);
 
@@ -39,22 +39,12 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             MessageFormat = "Graphics: Fog Mode '{0}' shader variants are always included in the build"
         };
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_FogModeDescriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-            // settings module analyzers run only once so no need to cache settings parameters
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // no parameters to register.
-        }
-
-        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             if (IsFogModeEnabled(FogMode.Linear))
             {

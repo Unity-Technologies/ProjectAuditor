@@ -11,10 +11,10 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
         public Instruction Instruction;
     }
 
-    internal interface ICodeModuleInstructionAnalyzer : IModuleAnalyzer
+    internal abstract class CodeModuleInstructionAnalyzer : ModuleAnalyzer
     {
-        IReadOnlyCollection<OpCode> opCodes { get; }
+        public abstract IReadOnlyCollection<OpCode> opCodes { get; }
 
-        IssueBuilder Analyze(InstructionAnalysisContext context);
+        public abstract IssueBuilder Analyze(InstructionAnalysisContext context);
     }
 }

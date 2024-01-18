@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class QualitySettingsAnalyzer : ISettingsModuleAnalyzer
+    class QualitySettingsAnalyzer : SettingsModuleAnalyzer
     {
         internal const string PAS0018 = nameof(PAS0018);
         internal const string PAS0019 = nameof(PAS0019);
@@ -58,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             MessageFormat = "Quality: Texture streaming on Quality Level '{0}' is turned off"
         };
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_DefaultSettingsDescriptor);
             module.RegisterDescriptor(k_UsingLowQualityTexturesDescriptor);
@@ -67,17 +67,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_TextureStreamingDisabledDescriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-            // settings module analyzers run only once so no need to cache settings parameters
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // no parameters to register.
-        }
-
-        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             if (IsUsingDefaultSettings())
             {

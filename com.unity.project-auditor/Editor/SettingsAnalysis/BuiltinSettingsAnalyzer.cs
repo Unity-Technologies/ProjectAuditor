@@ -14,14 +14,14 @@ using Module = Unity.ProjectAuditor.Editor.Core.Module;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class BuiltinSettingsAnalyzer : ISettingsModuleAnalyzer
+    class BuiltinSettingsAnalyzer : SettingsModuleAnalyzer
     {
         readonly List<Assembly> m_Assemblies = new List<Assembly>();
         readonly List<KeyValuePair<string, string>> m_ProjectSettingsMapping =
             new List<KeyValuePair<string, string>>();
         List<Descriptor> m_Descriptors;
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
             m_Assemblies.Add(assemblies.First(a => a.Location.Contains("UnityEngine.dll")));
@@ -50,16 +50,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             }
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-            // settings module analyzers run only once so no need to cache settings parameters
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-        }
-
-        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             if (m_Descriptors == null)
                 throw new Exception("Descriptors Database not initialized.");

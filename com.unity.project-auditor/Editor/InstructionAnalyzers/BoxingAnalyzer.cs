@@ -9,7 +9,7 @@ using Unity.ProjectAuditor.Editor.Modules;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    class BoxingAnalyzer : ICodeModuleInstructionAnalyzer
+    class BoxingAnalyzer : CodeModuleInstructionAnalyzer
     {
         internal const string PAC2000 = nameof(PAC2000);
 
@@ -31,23 +31,14 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             OpCodes.Box
         };
 
-        public IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
+        public override IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_Descriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // no parameters to register.
-        }
-
-        public IssueBuilder Analyze(InstructionAnalysisContext context)
+        public override IssueBuilder Analyze(InstructionAnalysisContext context)
         {
             var type = (TypeReference)context.Instruction.Operand;
             if (type.IsGenericParameter)

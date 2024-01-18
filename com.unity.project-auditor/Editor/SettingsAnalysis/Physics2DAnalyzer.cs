@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class Physics2DAnalyzer : ISettingsModuleAnalyzer
+    class Physics2DAnalyzer : SettingsModuleAnalyzer
     {
         internal const string PAS0015 = nameof(PAS0015);
         internal const string PAS0032 = nameof(PAS0032);
@@ -29,23 +29,13 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             MinimumVersion = "2020.2"
         };
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_DefaultLayerCollisionMatrixDescriptor);
             module.RegisterDescriptor(k_SimulationModeDescriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-            // settings module analyzers run only once so no need to cache settings parameters
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // no parameters to register.
-        }
-
-        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             if (IsDefaultLayerCollisionMatrix())
             {

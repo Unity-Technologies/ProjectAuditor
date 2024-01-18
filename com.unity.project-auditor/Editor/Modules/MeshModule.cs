@@ -14,7 +14,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    class MeshModule : ModuleWithAnalyzers<IMeshModuleAnalyzer>
+    class MeshModule : ModuleWithAnalyzers<MeshModuleAnalyzer>
     {
         static readonly IssueLayout k_MeshLayout = new IssueLayout
         {

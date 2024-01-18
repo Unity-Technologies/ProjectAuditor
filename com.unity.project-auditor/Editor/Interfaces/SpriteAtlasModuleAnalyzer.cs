@@ -8,8 +8,8 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
         public string AssetPath;
     }
 
-    internal interface ISpriteAtlasModuleAnalyzer : IModuleAnalyzer
+    internal abstract class SpriteAtlasModuleAnalyzer : ModuleAnalyzer
     {
-        IEnumerable<ReportItem> Analyze(SpriteAtlasAnalysisContext context);
+        public abstract IEnumerable<ReportItem> Analyze(SpriteAtlasAnalysisContext context);
     }
 }

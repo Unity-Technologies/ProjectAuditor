@@ -45,7 +45,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    class CodeModule : ModuleWithAnalyzers<ICodeModuleInstructionAnalyzer>
+    class CodeModule : ModuleWithAnalyzers<CodeModuleInstructionAnalyzer>
     {
         static readonly IssueLayout k_AssemblyLayout = new IssueLayout
         {

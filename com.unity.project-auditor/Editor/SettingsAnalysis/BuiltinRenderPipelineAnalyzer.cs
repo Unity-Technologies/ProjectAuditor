@@ -10,7 +10,7 @@ using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class BuiltinRenderPipelineAnalyzer : ISettingsModuleAnalyzer
+    class BuiltinRenderPipelineAnalyzer : SettingsModuleAnalyzer
     {
         static readonly GraphicsTier[] k_GraphicsTiers = { GraphicsTier.Tier1, GraphicsTier.Tier2, GraphicsTier.Tier3};
 
@@ -39,24 +39,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "The current build target uses deferred rendering, as set in the <b>Rendering Path</b> settings in <b>Project Settings > Graphics > Tier Settings</b>. This can impact GPU performance in projects with simple rendering requirements.",
             "This rendering path is suitable for games with more complex rendering requirements - for instance, games that make uses of dynamic lighting or certain types of fullscreen post-processing effects. If the project doesn't make use of such rendering techniques, consider experimenting with changing <b>Rendering Path</b> to Forward to see whether doing so improves GPU rendering times.");
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_ShaderQualityDescriptor);
             module.RegisterDescriptor(k_ForwardRenderingDescriptor);
             module.RegisterDescriptor(k_DeferredRenderingDescriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-            // settings module analyzers run only once so no need to cache settings parameters
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // no parameters to register.
-        }
-
-        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             // Only check for Built-In Rendering Pipeline
             if (!IsUsingBuiltinRenderPipeline())

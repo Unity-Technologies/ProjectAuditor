@@ -8,7 +8,7 @@ using UnityEngine.U2D;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    internal class SpriteAtlasAnalyzer : ISpriteAtlasModuleAnalyzer
+    internal class SpriteAtlasAnalyzer : SpriteAtlasModuleAnalyzer
     {
         internal const string PAA0008 = nameof(PAA0008);
 
@@ -24,26 +24,15 @@ namespace Unity.ProjectAuditor.Editor.Modules
             MessageFormat = "Sprite Atlas '{0}' has too much empty space ({1})"
         };
 
-        const string k_EmptySpaceLimit   = "SpriteAtlasEmptySpaceLimit";
-
+        [DiagnosticParameter("SpriteAtlasEmptySpaceLimit", 50)]
         int m_EmptySpaceLimit;
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_PoorUtilizationDescriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-            m_EmptySpaceLimit = diagnosticParams.GetParameter(k_EmptySpaceLimit);
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            diagnosticParams.RegisterParameter(k_EmptySpaceLimit, 50);
-        }
-
-        public IEnumerable<ReportItem> Analyze(SpriteAtlasAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(SpriteAtlasAnalysisContext context)
         {
             var spriteAtlas = AssetDatabase.LoadAssetAtPath<SpriteAtlas>(context.AssetPath);
 

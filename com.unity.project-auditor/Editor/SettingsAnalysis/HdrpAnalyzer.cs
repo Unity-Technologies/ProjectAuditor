@@ -10,7 +10,7 @@ using Unity.ProjectAuditor.Editor.Modules;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class HdrpAnalyzer : ISettingsModuleAnalyzer
+    class HdrpAnalyzer : SettingsModuleAnalyzer
     {
         internal const string PAS1001 = nameof(PAS1001);
         internal const string PAS1002 = nameof(PAS1002);
@@ -31,24 +31,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "Change the <b>Lit Shader Mode</b> in all HDRP Assets and all Cameras to either <b>Forward</b> or <b>Deferred</b>."
         );
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_AssetLitShaderModeBothOrMixed);
             module.RegisterDescriptor(k_CameraLitShaderModeBothOrMixed);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-            // settings module analyzers run only once so no need to cache settings parameters
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // no parameters to register.
-        }
-
 #if PACKAGE_HDRP
-        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             if (IsLitShaderModeBothOrMixed())
             {
@@ -100,7 +90,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         }
 
 #else
-        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             yield break;
         }

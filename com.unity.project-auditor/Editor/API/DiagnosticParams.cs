@@ -260,13 +260,13 @@ namespace Unity.ProjectAuditor.Editor
         internal void RegisterParameters()
         {
             m_ParamsStack[0].Platform = BuildTarget.NoTarget;
-            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(IModuleAnalyzer)))
+            foreach (var type in TypeCache.GetTypesDerivedFrom(typeof(ModuleAnalyzer)))
             {
                 if (type.IsAbstract)
                     continue;
 
                 // create a temporary analyzer instance
-                var instance = Activator.CreateInstance(type) as IModuleAnalyzer;
+                var instance = Activator.CreateInstance(type) as ModuleAnalyzer;
                 instance.RegisterParameters(this);
             }
         }

@@ -9,7 +9,7 @@ using UnityEditor.Build;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class TargetArchitectureAnalyzer : ISettingsModuleAnalyzer
+    class TargetArchitectureAnalyzer : SettingsModuleAnalyzer
     {
         internal const string PAS0003 = nameof(PAS0003);
         internal const string PAS0004 = nameof(PAS0004);
@@ -34,23 +34,13 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             Platforms = new[] { BuildTarget.Android }
         };
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_DescriptorIOS);
             module.RegisterDescriptor(k_DescriptorAndroid);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-            // settings module analyzers run only once so no need to cache settings parameters
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // no parameters to register.
-        }
-
-        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             // PlayerSettings.GetArchitecture returns an integer value associated with the architecture of a BuildTargetPlatformGroup. 0 - None, 1 - ARM64, 2 - Universal.
             if (k_DescriptorIOS.IsApplicable(context.Params) && PlayerSettingsUtil.GetArchitecture(BuildTargetGroup.iOS) == 2)

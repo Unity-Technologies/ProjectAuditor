@@ -10,7 +10,7 @@ using UnityEngine.Rendering.Universal;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class UrpAnalyzer : ISettingsModuleAnalyzer
+    class UrpAnalyzer : SettingsModuleAnalyzer
     {
         internal const string PAS1009 = nameof(PAS1009);
         internal const string PAS1010 = nameof(PAS1010);
@@ -62,7 +62,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             Platforms = new[] { BuildTarget.Android, BuildTarget.iOS, BuildTarget.Switch}
         };
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_URPAssetDescriptor);
             module.RegisterDescriptor(k_HdrSettingDescriptor);
@@ -70,17 +70,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_CameraStopNanDescriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-            // settings module analyzers run only once so no need to cache settings parameters
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // no parameters to register.
-        }
-
-        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
 #if PACKAGE_URP
             var renderPipeline = GraphicsSettings.currentRenderPipeline;

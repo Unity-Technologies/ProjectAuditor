@@ -11,7 +11,7 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    class BuiltinCallAnalyzer : ICodeModuleInstructionAnalyzer
+    class BuiltinCallAnalyzer : CodeModuleInstructionAnalyzer
     {
         Dictionary<string, List<Descriptor>> m_Descriptors; // method name as key, list of type names as value
         Dictionary<string, Descriptor> m_NamespaceOrClassDescriptors; // namespace/class name as key
@@ -22,9 +22,9 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             OpCodes.Callvirt
         };
 
-        public IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
+        public override IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             var descriptors = DescriptorLoader.LoadFromJson(ProjectAuditor.s_DataPath, "ApiDatabase");
             foreach (var descriptor in descriptors)
@@ -50,16 +50,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             m_NamespaceOrClassDescriptors = descriptors.Where(descriptor => descriptor.Method.Equals("*")).ToDictionary(d => d.Type);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // no parameters to register.
-        }
-
-        public IssueBuilder Analyze(InstructionAnalysisContext context)
+        public override IssueBuilder Analyze(InstructionAnalysisContext context)
         {
             var callee = (MethodReference)context.Instruction.Operand;
             var description = string.Empty;

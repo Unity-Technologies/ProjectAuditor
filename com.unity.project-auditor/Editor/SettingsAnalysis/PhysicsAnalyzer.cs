@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class PhysicsAnalyzer : ISettingsModuleAnalyzer
+    class PhysicsAnalyzer : SettingsModuleAnalyzer
     {
         internal const string PAS0013 = nameof(PAS0013);
 
@@ -18,22 +18,12 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "Un-tick all of the boxes except the ones that represent collisions that should be considered by the Physics system."
         );
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_DefaultLayerCollisionMatrixDescriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-            // settings module analyzers run only once so no need to cache settings parameters
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // no parameters to register.
-        }
-
-        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             if (IsDefaultLayerCollisionMatrix())
             {

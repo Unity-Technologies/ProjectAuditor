@@ -10,8 +10,8 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
         public Shader Shader;
     }
 
-    internal interface IShaderModuleAnalyzer : IModuleAnalyzer
+    internal abstract class ShaderModuleAnalyzer : ModuleAnalyzer
     {
-        IEnumerable<ReportItem> Analyze(ShaderAnalysisContext context);
+        public abstract IEnumerable<ReportItem> Analyze(ShaderAnalysisContext context);
     }
 }

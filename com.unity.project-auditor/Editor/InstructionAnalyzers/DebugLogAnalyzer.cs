@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    class DebugLogAnalyzer : ICodeModuleInstructionAnalyzer
+    class DebugLogAnalyzer : CodeModuleInstructionAnalyzer
     {
         static readonly int k_ModuleHashCode = "UnityEngine.CoreModule.dll".GetHashCode();
         static readonly int k_TypeHashCode = "UnityEngine.Debug".GetHashCode();
@@ -54,24 +54,15 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             OpCodes.Callvirt
         };
 
-        public IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
+        public override IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_DebugLogIssueDescriptor);
             module.RegisterDescriptor(k_DebugLogWarningIssueDescriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // no parameters to register.
-        }
-
-        public IssueBuilder Analyze(InstructionAnalysisContext context)
+        public override IssueBuilder Analyze(InstructionAnalysisContext context)
         {
             var callee = (MethodReference)context.Instruction.Operand;
             var methodName = callee.Name;

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class TimeSettingsAnalyzer : ISettingsModuleAnalyzer
+    class TimeSettingsAnalyzer : SettingsModuleAnalyzer
     {
         internal const string PAS0016 = nameof(PAS0016);
         internal const string PAS0017 = nameof(PAS0017);
@@ -28,23 +28,13 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "Consider reducing <b>Maximum Allowed Timestep</b> to a time that can be comfortably accommodated within your project's target frame rate."
         );
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_FixedTimestepDescriptor);
             module.RegisterDescriptor(k_MaximumAllowedTimestepDescriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-            // settings module analyzers run only once so no need to cache settings parameters
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // no parameters to register.
-        }
-
-        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             if (UnityEngine.Time.fixedDeltaTime - 0.02f < Mathf.Epsilon)
                 yield return context.CreateIssue(IssueCategory.ProjectSetting, k_FixedTimestepDescriptor.Id)

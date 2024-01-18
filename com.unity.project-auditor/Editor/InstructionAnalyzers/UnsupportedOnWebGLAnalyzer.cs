@@ -8,7 +8,7 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    internal class UnsupportedOnWebGLAnalyzer : ICodeModuleInstructionAnalyzer
+    internal class UnsupportedOnWebGLAnalyzer : CodeModuleInstructionAnalyzer
     {
         internal const string PAC1005 = nameof(PAC1005);
         internal const string PAC1006 = nameof(PAC1006);
@@ -63,9 +63,9 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
         bool descriptorSystemThreadingSupported;
         bool descriptorMicrophoneSupported;
 
-        public IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
+        public override IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_DescriptorSystemNet);
             module.RegisterDescriptor(k_DescriptorSystemThreading);
@@ -76,16 +76,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             descriptorMicrophoneSupported = module.SupportsDescriptor(k_DescriptorMicrophone.Id);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // no parameters to register.
-        }
-
-        public IssueBuilder Analyze(InstructionAnalysisContext context)
+        public override IssueBuilder Analyze(InstructionAnalysisContext context)
         {
             var methodReference = (MethodReference)context.Instruction.Operand;
             if (descriptorSystemNetSupported && methodReference.DeclaringType.FullName.StartsWith("System.Net."))

@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    class TextureUtilizationAnalyzer : ITextureModuleAnalyzer
+    class TextureUtilizationAnalyzer : TextureModuleAnalyzer
     {
         internal const string PAA0005 = nameof(PAA0005);
         internal const string PAA0006 = nameof(PAA0006);
@@ -53,28 +53,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
             MessageFormat = "Texture Atlas '{0}' has too much empty space ({1})"
         };
 
-        const string k_EmptySpaceLimit       = "TextureEmptySpaceLimit";
-
+        [DiagnosticParameter("TextureEmptySpaceLimit", 50)]
         int m_EmptySpaceLimit;
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_TextureSolidColorDescriptor);
             module.RegisterDescriptor(k_TextureSolidColorNoFixerDescriptor);
             module.RegisterDescriptor(k_TextureAtlasEmptyDescriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-            m_EmptySpaceLimit = diagnosticParams.GetParameter(k_EmptySpaceLimit);
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            diagnosticParams.RegisterParameter(k_EmptySpaceLimit, 50);
-        }
-
-        public IEnumerable<ReportItem> Analyze(TextureAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(TextureAnalysisContext context)
         {
             var dimensionAppropriateDescriptor = context.Texture.dimension == UnityEngine.Rendering.TextureDimension.Tex2D ? k_TextureSolidColorDescriptor : k_TextureSolidColorNoFixerDescriptor;
             if (context.IsDescriptorEnabled(dimensionAppropriateDescriptor) &&

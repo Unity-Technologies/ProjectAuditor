@@ -10,7 +10,7 @@ using UnityEditor.Build;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class StrippingAnalyzer : ISettingsModuleAnalyzer
+    class StrippingAnalyzer : SettingsModuleAnalyzer
     {
         internal const string PAS0009 = nameof(PAS0009);
         internal const string PAS0025 = nameof(PAS0025);
@@ -50,24 +50,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             Platforms = new[] { BuildTarget.iOS }
         };
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_EngineCodeStrippingDescriptor);
             module.RegisterDescriptor(k_AndroidManagedStrippingDescriptor);
             module.RegisterDescriptor(k_iOSManagedStrippingDescriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-            // settings module analyzers run only once so no need to cache settings parameters
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // no parameters to register.
-        }
-
-        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             if (k_EngineCodeStrippingDescriptor.IsApplicable(context.Params) && !PlayerSettings.stripEngineCode)
             {

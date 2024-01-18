@@ -13,8 +13,8 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
         public TextureImporterPlatformSettings ImporterPlatformSettings;
     }
 
-    internal interface ITextureModuleAnalyzer : IModuleAnalyzer
+    internal abstract class TextureModuleAnalyzer : ModuleAnalyzer
     {
-        IEnumerable<ReportItem> Analyze(TextureAnalysisContext context);
+        public abstract IEnumerable<ReportItem> Analyze(TextureAnalysisContext context);
     }
 }

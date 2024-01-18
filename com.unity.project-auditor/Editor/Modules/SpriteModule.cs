@@ -4,7 +4,7 @@ using Unity.ProjectAuditor.Editor.Interfaces;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    class SpriteModule : ModuleWithAnalyzers<ISpriteAtlasModuleAnalyzer>
+    class SpriteModule : ModuleWithAnalyzers<SpriteAtlasModuleAnalyzer>
     {
         public override string Name => "Sprites Atlas";
 

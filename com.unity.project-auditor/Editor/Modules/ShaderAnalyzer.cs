@@ -7,7 +7,7 @@ using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    class ShaderAnalyzer : IShaderModuleAnalyzer
+    class ShaderAnalyzer : ShaderModuleAnalyzer
     {
         internal const string PAA2000 = nameof(PAA2000);
 
@@ -23,21 +23,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
             DocumentationUrl = "https://docs.unity3d.com/Manual/SRPBatcher.html"
         };
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_SrpBatcherDescriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // no parameters to register.
-        }
-
-        public IEnumerable<ReportItem> Analyze(ShaderAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(ShaderAnalysisContext context)
         {
             if (!IsSrpBatchingEnabled)
             {

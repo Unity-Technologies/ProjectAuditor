@@ -5,7 +5,7 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
-    internal abstract class ModuleWithAnalyzers<T> : Module where T : IModuleAnalyzer
+    internal abstract class ModuleWithAnalyzers<T> : Module where T : ModuleAnalyzer
     {
         T[] m_Analyzers;
 
@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor.Core
             var analyzers = new List<T>();
             foreach (var analyzer in m_Analyzers)
             {
-                if(CoreUtils.SupportsPlatform(analyzer.GetType(), analysisParams.Platform))
+                if (CoreUtils.SupportsPlatform(analyzer.GetType(), analysisParams.Platform))
                 {
                     analyzer.CacheParameters(analysisParams.DiagnosticParams);
                     analyzers.Add(analyzer);
@@ -38,7 +38,7 @@ namespace Unity.ProjectAuditor.Editor.Core
             {
                 if (type.IsAbstract)
                     continue;
-                var moduleAnalyzer = (IModuleAnalyzer)Activator.CreateInstance(type);
+                var moduleAnalyzer = (ModuleAnalyzer)Activator.CreateInstance(type);
                 moduleAnalyzer.Initialize(this);
                 analyzers.Add((T)moduleAnalyzer);
             }

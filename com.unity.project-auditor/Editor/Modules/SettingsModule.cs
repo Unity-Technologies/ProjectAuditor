@@ -5,7 +5,7 @@ using Unity.ProjectAuditor.Editor.Interfaces;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    class SettingsModule : ModuleWithAnalyzers<ISettingsModuleAnalyzer>
+    class SettingsModule : ModuleWithAnalyzers<SettingsModuleAnalyzer>
     {
         internal static readonly IssueLayout k_IssueLayout = new IssueLayout
         {

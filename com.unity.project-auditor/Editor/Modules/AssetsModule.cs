@@ -9,7 +9,7 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    internal class AssetsModule : ModuleWithAnalyzers<IAssetsModuleAnalyzer>
+    internal class AssetsModule : ModuleWithAnalyzers<AssetsModuleAnalyzer>
     {
         internal static readonly IssueLayout k_IssueLayout = new IssueLayout
         {

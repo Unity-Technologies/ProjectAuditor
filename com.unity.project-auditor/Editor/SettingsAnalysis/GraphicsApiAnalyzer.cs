@@ -8,7 +8,7 @@ using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class GraphicsApiAnalyzer : ISettingsModuleAnalyzer
+    class GraphicsApiAnalyzer : SettingsModuleAnalyzer
     {
         const string documentationUrl = "https://docs.unity3d.com/Manual/GraphicsAPIs.html";
 
@@ -50,24 +50,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             Platforms = new[] { BuildTarget.Android }
         };
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_OpenGLESAndMetalDescriptor);
             module.RegisterDescriptor(k_MetalDescriptor);
             module.RegisterDescriptor(k_VulkanDescriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-            // settings module analyzers run only once so no need to cache settings parameters
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // no parameters to register.
-        }
-
-        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             if (k_OpenGLESAndMetalDescriptor.IsApplicable(context.Params) && IsUsingOpenGlesAndMetal())
                 yield return context.CreateIssue(IssueCategory.ProjectSetting, k_OpenGLESAndMetalDescriptor.Id)

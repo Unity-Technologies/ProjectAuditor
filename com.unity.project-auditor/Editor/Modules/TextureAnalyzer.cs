@@ -9,7 +9,7 @@ using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    class TextureAnalyzer : ITextureModuleAnalyzer
+    class TextureAnalyzer : TextureModuleAnalyzer
     {
         internal const string PAA0000 = nameof(PAA0000);
         internal const string PAA0001 = nameof(PAA0001);
@@ -119,12 +119,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        const string k_StreamingMipmapsSizeLimit = "TextureStreamingMipmapsSizeLimit";
-        const string k_SizeLimit                 = "TextureSizeLimit";
-
+        [DiagnosticParameter("TextureStreamingMipmapsSizeLimit", 4000)]
         int m_StreamingMipmapsSizeLimit;
 
-        public void Initialize(Module module)
+        [DiagnosticParameter("TextureSizeLimit", 2048)]
+        int m_SizeLimit;
+
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_TextureMipmapsNotEnabledDescriptor);
             module.RegisterDescriptor(k_TextureMipmapsEnabledDescriptor);
@@ -133,20 +134,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             module.RegisterDescriptor(k_TextureAnisotropicLevelDescriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-            m_StreamingMipmapsSizeLimit = diagnosticParams.GetParameter(k_StreamingMipmapsSizeLimit);
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            diagnosticParams.RegisterParameter(k_StreamingMipmapsSizeLimit, 4000);
-
-            // this is not used at this time
-            diagnosticParams.RegisterParameter(k_SizeLimit, 2048);
-        }
-
-        public IEnumerable<ReportItem> Analyze(TextureAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(TextureAnalysisContext context)
         {
             var assetPath = context.Importer.assetPath;
 

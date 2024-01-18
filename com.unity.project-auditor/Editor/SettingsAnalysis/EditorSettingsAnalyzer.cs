@@ -6,7 +6,7 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class EditorSettingsAnalyzer : ISettingsModuleAnalyzer
+    class EditorSettingsAnalyzer : SettingsModuleAnalyzer
     {
         internal const string PAS0035 = nameof(PAS0035);
         internal const string PAS0036 = nameof(PAS0036);
@@ -41,22 +41,13 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             }
         };
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_EnterPlayModeOptionsDescriptor);
             module.RegisterDescriptor(k_DomainReloadDescriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // no parameters to register.
-        }
-
-        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             if (k_EnterPlayModeOptionsDescriptor.IsVersionCompatible() &&
                 !EditorSettings.enterPlayModeOptionsEnabled)

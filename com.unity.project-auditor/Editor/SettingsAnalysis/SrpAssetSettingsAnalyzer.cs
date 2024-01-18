@@ -14,7 +14,7 @@ using UnityEngine.Rendering.HighDefinition;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class SrpAssetSettingsAnalyzer : ISettingsModuleAnalyzer
+    class SrpAssetSettingsAnalyzer : SettingsModuleAnalyzer
     {
         internal const string PAS1008 = nameof(PAS1008);
 
@@ -29,22 +29,12 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             Fixer = FixSrpBatcherSetting
         };
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_SRPBatcherSettingDescriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-            // settings module analyzers run only once so no need to cache settings parameters
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // no parameters to register.
-        }
-
-        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             return RenderPipelineUtils.AnalyzeAssets(context, Analyze);
         }

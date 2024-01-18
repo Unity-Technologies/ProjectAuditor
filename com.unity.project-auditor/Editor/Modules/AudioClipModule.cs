@@ -22,7 +22,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    class AudioClipModule : ModuleWithAnalyzers<IAudioClipModuleAnalyzer>
+    class AudioClipModule : ModuleWithAnalyzers<AudioClipModuleAnalyzer>
     {
         static readonly IssueLayout k_AudioClipLayout = new IssueLayout
         {

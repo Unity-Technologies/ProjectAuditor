@@ -9,8 +9,8 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
         public AssetImporter Importer;
     }
 
-    internal interface IMeshModuleAnalyzer : IModuleAnalyzer
+    internal abstract class MeshModuleAnalyzer : ModuleAnalyzer
     {
-        IEnumerable<ReportItem> Analyze(MeshAnalysisContext context);
+        public abstract IEnumerable<ReportItem> Analyze(MeshAnalysisContext context);
     }
 }

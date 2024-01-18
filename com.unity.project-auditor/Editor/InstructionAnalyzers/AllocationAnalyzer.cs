@@ -11,7 +11,7 @@ using Unity.ProjectAuditor.Editor.Modules;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    class AllocationAnalyzer : ICodeModuleInstructionAnalyzer
+    class AllocationAnalyzer : CodeModuleInstructionAnalyzer
     {
         internal const string PAC2002 = nameof(PAC2002);
         internal const string PAC2003 = nameof(PAC2003);
@@ -79,9 +79,9 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             OpCodes.Newarr
         };
 
-        public IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
+        public override IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_ObjectAllocationDescriptor);
             module.RegisterDescriptor(k_ClosureAllocationDescriptor);
@@ -89,16 +89,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             module.RegisterDescriptor(k_ParamArrayAllocationDescriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // no parameters to register.
-        }
-
-        public IssueBuilder Analyze(InstructionAnalysisContext context)
+        public override IssueBuilder Analyze(InstructionAnalysisContext context)
         {
             if (context.Instruction.OpCode == OpCodes.Call || context.Instruction.OpCode == OpCodes.Callvirt)
             {

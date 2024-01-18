@@ -11,7 +11,7 @@ using Module = Unity.ProjectAuditor.Editor.Core.Module;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class PlayerSettingsAnalyzer : ISettingsModuleAnalyzer
+    class PlayerSettingsAnalyzer : SettingsModuleAnalyzer
     {
         internal const string PAS0002 = nameof(PAS0002);
         internal const string PAS0029 = nameof(PAS0029);
@@ -97,7 +97,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             },
         };
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_AccelerometerDescriptor);
             module.RegisterDescriptor(k_SplashScreenDescriptor);
@@ -107,17 +107,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             module.RegisterDescriptor(k_LightmapStreamingEnabledDescriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-            // settings module analyzers run only once so no need to cache settings parameters
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // no parameters to register.
-        }
-
-        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             if (k_AccelerometerDescriptor.IsApplicable(context.Params) && IsAccelerometerEnabled())
             {

@@ -8,7 +8,7 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class StreamingAssetsFolderAnalyzer : ISettingsModuleAnalyzer
+    class StreamingAssetsFolderAnalyzer : SettingsModuleAnalyzer
     {
         internal const string PAA3002 = nameof(PAA3002);
 
@@ -24,24 +24,15 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             MessageFormat = "StreamingAssets folder contains {0} of data",
         };
 
-        const string k_StreamingAssetsFolderSizeLimit   = "StreamingAssetsFolderSizeLimit";
+        [DiagnosticParameter("StreamingAssetsFolderSizeLimit", 50)]
+        int m_FolderSizeLimit;
 
-        public void Initialize(Module module)
+        public override void Initialize(Module module)
         {
             module.RegisterDescriptor(k_StreamingAssetsFolderDescriptor);
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-            // settings module analyzers run only once so no need to cache settings parameters
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            diagnosticParams.RegisterParameter(k_StreamingAssetsFolderSizeLimit, 50);
-        }
-
-        public IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
+        public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             // StreamingAssets folder is checked once, AssetsModule might not be the best place this check
             if (k_StreamingAssetsFolderDescriptor.IsApplicable(context.Params))
@@ -52,7 +43,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             }
         }
 
-        static ReportItem AnalyzeStreamingAssets(AnalysisContext context)
+        ReportItem AnalyzeStreamingAssets(AnalysisContext context)
         {
             if (!Directory.Exists("Assets/StreamingAssets"))
                 return null;
@@ -65,8 +56,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 totalBytes += fileInfo.Length;
             }
 
-            var folderSizeLimitMB =
-                context.Params.DiagnosticParams.GetParameter(k_StreamingAssetsFolderSizeLimit);
+            var folderSizeLimitMB = m_FolderSizeLimit;
 
             if (totalBytes <= folderSizeLimitMB * 1024 * 1024)
                 return null;

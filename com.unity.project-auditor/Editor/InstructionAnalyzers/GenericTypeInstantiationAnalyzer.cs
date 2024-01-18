@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    class GenericTypeInstantiationAnalyzer : ICodeModuleInstructionAnalyzer
+    class GenericTypeInstantiationAnalyzer : CodeModuleInstructionAnalyzer
     {
         readonly OpCode[] m_OpCodes =
         {
@@ -18,22 +18,9 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             OpCodes.Newarr
         };
 
-        public IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
+        public override IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
 
-        public void Initialize(Module module)
-        {
-        }
-
-        public void CacheParameters(DiagnosticParams diagnosticParams)
-        {
-        }
-
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
-        {
-            // no parameters to register.
-        }
-
-        public IssueBuilder Analyze(InstructionAnalysisContext context)
+        public override IssueBuilder Analyze(InstructionAnalysisContext context)
         {
             return AnalyzeType(context, context.Instruction.OpCode == OpCodes.Newobj ? ((MethodReference)context.Instruction.Operand).DeclaringType : (TypeReference)context.Instruction.Operand);
         }

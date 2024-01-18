@@ -21,7 +21,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    class TextureModule : ModuleWithAnalyzers<ITextureModuleAnalyzer>
+    class TextureModule : ModuleWithAnalyzers<TextureModuleAnalyzer>
     {
         static readonly IssueLayout k_TextureLayout = new IssueLayout
         {

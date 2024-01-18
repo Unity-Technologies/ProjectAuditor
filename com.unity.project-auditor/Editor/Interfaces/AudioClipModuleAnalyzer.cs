@@ -9,8 +9,8 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
         public AudioImporter Importer;
     }
 
-    internal interface IAudioClipModuleAnalyzer : IModuleAnalyzer
+    internal abstract class AudioClipModuleAnalyzer : ModuleAnalyzer
     {
-        IEnumerable<ReportItem> Analyze(AudioClipAnalysisContext context);
+        public abstract IEnumerable<ReportItem> Analyze(AudioClipAnalysisContext context);
     }
 }
