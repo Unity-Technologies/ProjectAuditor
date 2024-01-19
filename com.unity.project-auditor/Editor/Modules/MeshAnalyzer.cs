@@ -53,49 +53,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override IEnumerable<ReportItem> Analyze(MeshAnalysisContext context)
         {
-            var assetPath = context.Importer.assetPath;
-            var modelImporter = context.Importer as ModelImporter;
-            var subAssets = AssetDatabase.LoadAllAssetsAtPath(assetPath);
-
-            foreach (var subAsset in subAssets)
+            var mesh = context.Mesh;
+            if (mesh.isReadable)
             {
-                var mesh = subAsset as Mesh;
-                if (mesh == null)
-                    continue;
+                yield return context.CreateIssue(IssueCategory.AssetIssue, k_MeshReadWriteEnabledDescriptor.Id, context.Name)
+                    .WithLocation(context.Importer.assetPath);
+            }
 
-                var meshName = mesh.name;
-                if (string.IsNullOrEmpty(meshName))
-                    meshName = Path.GetFileNameWithoutExtension(assetPath);
-
-                // TODO: the size returned by the profiler is not the exact size on the target platform. Needs to be fixed.
-                var size = Profiler.GetRuntimeMemorySizeLong(mesh);
-
-                yield return context.CreateInsight(IssueCategory.Mesh, meshName)
-                    .WithCustomProperties(
-                        new object[((int)MeshProperty.Num)]
-                        {
-                            mesh.vertexCount,
-                            mesh.triangles.Length / 3,
-                            modelImporter != null
-                            ? modelImporter.meshCompression
-                            : ModelImporterMeshCompression.Off,
-                            size
-                        })
-                    .WithLocation(new Location(assetPath));
-
-                if (mesh.isReadable)
-                {
-                    yield return context.CreateIssue(IssueCategory.AssetIssue, k_MeshReadWriteEnabledDescriptor.Id, meshName)
-                        .WithLocation(assetPath);
-                }
-
-                if (mesh.indexFormat == IndexFormat.UInt32 &&
-                    mesh.vertexCount <= 65535)
-                {
-                    yield return context.CreateIssue(IssueCategory.AssetIssue,
-                        k_Mesh32BitIndexFormatUsedDescriptor.Id, meshName)
-                        .WithLocation(assetPath);
-                }
+            if (mesh.indexFormat == IndexFormat.UInt32 &&
+                mesh.vertexCount <= 65535)
+            {
+                yield return context.CreateIssue(IssueCategory.AssetIssue,
+                    k_Mesh32BitIndexFormatUsedDescriptor.Id, context.Name)
+                    .WithLocation(context.Importer.assetPath);
             }
         }
     }

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Interfaces;
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 
@@ -68,6 +69,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             progress?.Start("Finding Textures", "Search in Progress...", assetPaths.Length);
 
+            var issues = new List<ReportItem>();
+
             foreach (var assetPath in assetPaths)
             {
                 if (progress?.IsCancelled ?? false)
@@ -88,6 +91,36 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 else
                     context.Name = context.Texture.name;
 
+#if PA_CAN_USE_COMPUTEMIPCHAINSIZE
+                var format = (TextureFormat)context.ImporterPlatformSettings.format;
+                if (context.ImporterPlatformSettings.format == TextureImporterFormat.Automatic)
+                {
+                    format = (TextureFormat)context.Importer.GetAutomaticFormat(context.Params.PlatformAsString);
+                }
+
+                context.Size = UnityEngine.Experimental.Rendering.GraphicsFormatUtility.ComputeMipChainSize(context.Texture.width, context.Texture.height, TextureUtils.GetTextureDepth(context.Texture), format, context.Texture.mipmapCount);
+#else
+                // This is not the correct size but we don't have access to the appropriate functionality on older versions to do much better without a lot more work.
+                context.Size = UnityEngine.Profiling.Profiler.GetRuntimeMemorySizeLong(context.Texture);
+#endif
+                var resolution = context.Texture.width + "x" + context.Texture.height;
+
+                issues.Add(context.CreateInsight(IssueCategory.Texture, context.Texture.name)
+                    .WithCustomProperties(
+                        new object[(int)TextureProperty.Num]
+                        {
+                            context.Importer.textureShape,
+                            context.Importer.textureType,
+                            context.ImporterPlatformSettings.format,
+                            context.ImporterPlatformSettings.textureCompression,
+                            context.Importer.mipmapEnabled,
+                            context.Importer.isReadable,
+                            resolution,
+                            context.Size,
+                            context.Importer.streamingMipmaps
+                        })
+                    .WithLocation(new Location(assetPath)));
+
                 foreach (var analyzer in analyzers)
                 {
                     analysisParams.OnIncomingIssues(analyzer.Analyze(context));
@@ -95,6 +128,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
                 progress?.Advance();
             }
+
+            if (issues.Count > 0)
+                context.Params.OnIncomingIssues(issues);
 
             progress?.Clear();
 

@@ -23,7 +23,6 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_TestAssetIssueInOverrideMethod;
         TestAsset m_TestAssetIssueInVirtualMethod;
         TestAsset m_TestAssetAnyApiInNamespace;
-        TestAsset m_TestAssetGenericInstantiation;
 
         [OneTimeSetUp]
         public void OneTimeSetUp()
@@ -202,18 +201,6 @@ class AnyApiInNamespace
     }
 }
 ");
-
-            m_TestAssetGenericInstantiation = new TestAsset("GenericInstantiation.cs", @"
-using System.Collections.Generic;
-class GenericInstantiation
-{
-    HashSet<string> m_GenericInstance;
-    void Dummy()
-    {
-        m_GenericInstance = new HashSet<string>();
-    }
-}
-");
             AnalyzeTestAssets();
         }
 
@@ -374,15 +361,6 @@ class GenericInstantiation
             Assert.NotNull(issue);
             var descriptor = issue.Id.GetDescriptor();
             Assert.AreEqual("System.Linq.*", descriptor.Title);
-        }
-
-        [Test]
-        public void CodeAnalysis_GenericInstantiation_IsReported()
-        {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAssetGenericInstantiation, IssueCategory.GenericInstance);
-
-            Assert.AreEqual(1, issues.Length);
-            Assert.AreEqual("'System.Collections.Generic.HashSet`1<System.String>' generic instance", issues[0].Description);
         }
 
         [Test]

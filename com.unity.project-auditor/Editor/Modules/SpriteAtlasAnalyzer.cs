@@ -34,13 +34,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override IEnumerable<ReportItem> Analyze(SpriteAtlasAnalysisContext context)
         {
-            var spriteAtlas = AssetDatabase.LoadAssetAtPath<SpriteAtlas>(context.AssetPath);
-
-            yield return context.CreateInsight(IssueCategory.SpriteAtlas, spriteAtlas.name)
-                .WithLocation(new Location(context.AssetPath));
-
             if (context.IsDescriptorEnabled(k_PoorUtilizationDescriptor))
             {
+                var spriteAtlas = AssetDatabase.LoadAssetAtPath<SpriteAtlas>(context.AssetPath);
                 var emptySpace = TextureUtils.GetEmptySpacePercentage(spriteAtlas);
                 if (emptySpace > m_EmptySpaceLimit)
                 {

@@ -11,6 +11,7 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
         public Texture Texture;
         public TextureImporter Importer;
         public TextureImporterPlatformSettings ImporterPlatformSettings;
+        public long Size;
     }
 
     internal abstract class TextureModuleAnalyzer : ModuleAnalyzer

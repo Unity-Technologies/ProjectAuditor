@@ -138,36 +138,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var assetPath = context.Importer.assetPath;
 
-#if PA_CAN_USE_COMPUTEMIPCHAINSIZE
-            var format = (TextureFormat)context.ImporterPlatformSettings.format;
-            if (context.ImporterPlatformSettings.format == TextureImporterFormat.Automatic)
-            {
-                format = (TextureFormat)context.Importer.GetAutomaticFormat(context.Params.PlatformAsString);
-            }
-
-            var size = UnityEngine.Experimental.Rendering.GraphicsFormatUtility.ComputeMipChainSize(context.Texture.width, context.Texture.height, TextureUtils.GetTextureDepth(context.Texture), format, context.Texture.mipmapCount);
-#else
-            // This is not the correct size but we don't have access to the appropriate functionality on older versions to do much better without a lot more work.
-            var size = Profiler.GetRuntimeMemorySizeLong(context.Texture);
-#endif
-            var resolution = context.Texture.width + "x" + context.Texture.height;
-
-            yield return context.CreateInsight(IssueCategory.Texture, context.Texture.name)
-                .WithCustomProperties(
-                    new object[(int)TextureProperty.Num]
-                    {
-                        context.Importer.textureShape,
-                        context.Importer.textureType,
-                        context.ImporterPlatformSettings.format,
-                        context.ImporterPlatformSettings.textureCompression,
-                        context.Importer.mipmapEnabled,
-                        context.Importer.isReadable,
-                        resolution,
-                        size,
-                        context.Importer.streamingMipmaps
-                    })
-                .WithLocation(new Location(assetPath));
-
             // diagnostics
             if (!context.Importer.mipmapEnabled && context.Importer.textureType == TextureImporterType.Default)
             {
@@ -191,7 +161,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithLocation(context.Importer.assetPath);
             }
 
-            if (context.Importer.mipmapEnabled && !context.Importer.streamingMipmaps && size > Mathf.Pow(m_StreamingMipmapsSizeLimit, 2))
+            if (context.Importer.mipmapEnabled && !context.Importer.streamingMipmaps && context.Size > Mathf.Pow(m_StreamingMipmapsSizeLimit, 2))
             {
                 yield return context.CreateIssue(IssueCategory.AssetIssue, k_TextureStreamingMipMapEnabledDescriptor.Id, context.Name)
                     .WithLocation(context.Importer.assetPath);

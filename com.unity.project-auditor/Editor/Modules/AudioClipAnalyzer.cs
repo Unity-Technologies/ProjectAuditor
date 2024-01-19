@@ -27,9 +27,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         internal const string PAA4010 = nameof(PAA4010);    // If MP3 is used. Vorbis is better
         internal const string PAA4011 = nameof(PAA4011);    // Source assets that aren’t .WAV or .AIFF. Other formats (.MP3, .OGG, etc.) are lossy
 
-        private const int k_StreamingBuffer = 64000;        // The per-instance streaming buffer, which Unity's FMOD implementation defaults to 64000.
-        private const int k_AudioClipManagedSize = 694;     // The managed AudioClip object size, as reported by Profiler.GetRuntimeMemorySizeLong().
-
         internal static readonly Descriptor k_AudioLongClipDoesNotStreamDescriptor = new Descriptor(
             PAA4000,
             "Audio: Long AudioClip is not set to Streaming",
@@ -272,73 +269,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         public override IEnumerable<ReportItem> Analyze(AudioClipAnalysisContext context)
         {
-            var assetPath = context.Importer.assetPath;
-
-            var sampleSettings = context.Importer.GetOverrideSampleSettings(context.Params.PlatformAsString);
-            var audioClip = AssetDatabase.LoadAssetAtPath<AudioClip>(assetPath);
-
-            // GET CLIP STATS
-
-            var clipName = Path.GetFileNameWithoutExtension(assetPath);
-            var origSize = (int)GetPropertyValue(context.Importer, "origSize");
-            var compSize = (int)GetPropertyValue(context.Importer, "compSize");
-
-            var runtimeSize = Profiler.GetRuntimeMemorySizeLong(audioClip);
-            // Profiler.GetRuntimeMemorySizeLong() has a habit of returning 694 bytes - that is, the size of the managed AudioClip object, but not
-            // the size of the native footprint of the AudioClip at runtime. So let's try calculating what we think that would be.
-            if (runtimeSize == k_AudioClipManagedSize)
-            {
-                // The decompression buffer is defined as "400ms of float sample data".
-                // 1 second of audio is (sizeof(float) * audioClip.frequency * audioClip.channels) bytes.
-                // So 400ms is 400 * ((sizeof(float) * audioClip.frequency * audioClip.channels) / 1000).
-                // We can simplify this to the following:
-                int decompressionBufferSize = (int)(1.6 * audioClip.frequency * audioClip.channels);
-
-                // NOTE: Actual runtime memory footprint at any given moment depends on the number of instances of an AudioClip that are currently playing.
-                // Each instance will need its own decompression buffer (if Streaming or CompressedInMemory) and streaming buffer (if Streaming)
-                // In static analysis, we can't calculate the maximum number of instances of a clip that could play simultaneously at runtime, so let's estimate it at its most likely value: 1.
-                switch (audioClip.loadType)
-                {
-                    case AudioClipLoadType.DecompressOnLoad:
-                        // Since the decompression buffer is only needed during loading, let's ignore it. Just calculate the size of the decompressed PCM data.
-                        runtimeSize += sizeof(float) * audioClip.samples * audioClip.channels;
-                        break;
-                    case AudioClipLoadType.CompressedInMemory:
-                        runtimeSize += compSize + decompressionBufferSize;
-                        break;
-                    case AudioClipLoadType.Streaming:
-                        runtimeSize += k_StreamingBuffer + decompressionBufferSize;
-                        break;
-                }
-            }
-
-            // REPORT FILE FOR AUDIOCLIP VIEW
-
-            var ts = new TimeSpan(0, 0, 0, 0, (int)(audioClip.length * 1000.0f));
-
-            yield return context.CreateInsight(IssueCategory.AudioClip, clipName)
-                .WithCustomProperties(
-                    new object[(int)AudioClipProperty.Num]
-                    {
-                        Formatting.FormatDurationWithMs(ts),
-                        origSize,
-                        compSize,
-                        runtimeSize,
-                        Formatting.FormatPercentage((float)compSize / (float)origSize, 2),
-                        sampleSettings.compressionFormat,
-                        Formatting.FormatHz(audioClip.frequency),
-                        context.Importer.forceToMono,
-                        context.Importer.loadInBackground,
-#if UNITY_2022_2_OR_NEWER
-                        sampleSettings.preloadAudioData,
-#else
-                        context.Importer.preloadAudioData,
-#endif
-                        sampleSettings.loadType,
-                    })
-                .WithLocation(assetPath);
-
-            // DIAGNOSTIC ISSUES
+            var clipName = context.Name;
+            var audioImporter = context.Importer;
+            var assetPath = audioImporter.assetPath;
+            var audioClip = context.AudioClip;
+            var sampleSettings = context.SampleSettings;
 
             bool isMobileTarget = (context.Params.Platform == BuildTarget.Android ||
                 context.Params.Platform == BuildTarget.iOS ||
@@ -358,7 +293,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 #else
             var preloadAudioData = context.Importer.preloadAudioData;
 #endif
-            if (runtimeSize > m_StreamingClipThresholdBytes && !isStreaming)
+            if (context.RuntimeSize > m_StreamingClipThresholdBytes && !isStreaming)
             {
                 yield return context.CreateIssue(
                     IssueCategory.AssetIssue, k_AudioLongClipDoesNotStreamDescriptor.Id, clipName)
@@ -388,7 +323,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 }
             }
 
-            if (runtimeSize > m_LongDecompressedClipThresholdBytes &&
+            if (context.RuntimeSize > m_LongDecompressedClipThresholdBytes &&
                 sampleSettings.loadType == AudioClipLoadType.DecompressOnLoad)
             {
                 yield return context.CreateIssue(
@@ -406,7 +341,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
 
             if (isMobileTarget &&
-                compSize > m_LongCompressedMobileClipThresholdBytes &&
+                context.ImportedSize > m_LongCompressedMobileClipThresholdBytes &&
                 sampleSettings.compressionFormat != AudioCompressionFormat.PCM &&
                 sampleSettings.compressionFormat != AudioCompressionFormat.ADPCM &&
                 audioClip.frequency >= 48000 &&
@@ -434,7 +369,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     .WithLocation(assetPath);
             }
 
-            if (!context.Importer.loadInBackground && compSize > m_LoadInBackGroundClipSizeThresholdBytes)
+            if (!context.Importer.loadInBackground && context.ImportedSize > m_LoadInBackGroundClipSizeThresholdBytes)
             {
                 yield return context.CreateIssue(
                     IssueCategory.AssetIssue, k_AudioLoadInBackgroundDisabledDescriptor.Id, clipName)
@@ -456,18 +391,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     IssueCategory.AssetIssue, k_AudioCompressedSourceAssetDescriptor.Id, clipName)
                     .WithLocation(assetPath);
             }
-        }
-
-        private static object GetPropertyValue(AssetImporter assetImporter, string propertyName)
-        {
-            Type objType = assetImporter.GetType();
-            PropertyInfo propInfo = objType.GetProperty(propertyName,
-                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-
-            if (propInfo == null)
-                throw new ArgumentOutOfRangeException("propertyName",
-                    string.Format("Couldn't find property {0} in type {1}", propertyName, objType.FullName));
-            return propInfo.GetValue(assetImporter, null);
         }
     }
 }
