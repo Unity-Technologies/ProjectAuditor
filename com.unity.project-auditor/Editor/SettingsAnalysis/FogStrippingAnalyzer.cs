@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using UnityEditor;
@@ -39,9 +39,9 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             MessageFormat = "Graphics: Fog Mode '{0}' shader variants are always included in the build"
         };
 
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_FogModeDescriptor);
+            registerDescriptor(k_FogModeDescriptor);
         }
 
         public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)

@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using UnityEditor;
@@ -62,12 +62,12 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             Platforms = new[] { BuildTarget.Android, BuildTarget.iOS, BuildTarget.Switch}
         };
 
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_URPAssetDescriptor);
-            module.RegisterDescriptor(k_HdrSettingDescriptor);
-            module.RegisterDescriptor(k_MsaaSampleCountSettingDescriptor);
-            module.RegisterDescriptor(k_CameraStopNanDescriptor);
+            registerDescriptor(k_URPAssetDescriptor);
+            registerDescriptor(k_HdrSettingDescriptor);
+            registerDescriptor(k_MsaaSampleCountSettingDescriptor);
+            registerDescriptor(k_CameraStopNanDescriptor);
         }
 
         public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)

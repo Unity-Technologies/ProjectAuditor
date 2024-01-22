@@ -4,17 +4,21 @@ using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
-    internal class IssueBuilder
+    // stephenm TODO: Document
+    public class IssueBuilder
     {
         ReportItem m_Issue;
 
+        // stephenm TODO: Document
         public static implicit operator ReportItem(IssueBuilder builder) => builder.m_Issue;
 
+        // stephenm TODO: Document
         public IssueBuilder(IssueCategory category, DescriptorId id, params object[] args)
         {
             m_Issue = new ReportItem(category, id, args);
         }
 
+        // stephenm TODO: Document
         public IssueBuilder(IssueCategory category, string description)
         {
             m_Issue = new ReportItem(category, description);
@@ -47,30 +51,35 @@ namespace Unity.ProjectAuditor.Editor.Core
             return this;
         }
 
+        // stephenm TODO: Document
         public IssueBuilder WithDescription(string description)
         {
             m_Issue.Description = description;
             return this;
         }
 
+        // stephenm TODO: Document
         public IssueBuilder WithDependencies(DependencyNode dependencies)
         {
             m_Issue.Dependencies = dependencies;
             return this;
         }
 
+        // stephenm TODO: Document
         public IssueBuilder WithLocation(Location location)
         {
             m_Issue.Location = location;
             return this;
         }
 
+        // stephenm TODO: Document
         public IssueBuilder WithLocation(string path, int line = 0)
         {
             m_Issue.Location = new Location(path, line);
             return this;
         }
 
+        // stephenm TODO: Document
         public IssueBuilder WithLogLevel(LogLevel logLevel)
         {
             switch (logLevel)
@@ -88,6 +97,7 @@ namespace Unity.ProjectAuditor.Editor.Core
             return this;
         }
 
+        // stephenm TODO: Document
         public IssueBuilder WithSeverity(Severity severity)
         {
             m_Issue.Severity = severity;

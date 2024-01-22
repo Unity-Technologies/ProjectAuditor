@@ -39,7 +39,7 @@ namespace Unity.ProjectAuditor.Editor.Core
                 if (type.IsAbstract)
                     continue;
                 var moduleAnalyzer = (ModuleAnalyzer)Activator.CreateInstance(type);
-                moduleAnalyzer.Initialize(this);
+                moduleAnalyzer.Initialize(RegisterDescriptor);
                 analyzers.Add((T)moduleAnalyzer);
             }
             m_Analyzers = analyzers.ToArray();

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
@@ -56,10 +57,10 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         public override IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
 
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_DebugLogIssueDescriptor);
-            module.RegisterDescriptor(k_DebugLogWarningIssueDescriptor);
+            registerDescriptor(k_DebugLogIssueDescriptor);
+            registerDescriptor(k_DebugLogWarningIssueDescriptor);
         }
 
         public override IssueBuilder Analyze(InstructionAnalysisContext context)

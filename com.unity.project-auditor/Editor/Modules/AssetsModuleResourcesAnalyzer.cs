@@ -37,10 +37,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             MessageFormat = "Asset '{0}' is a dependency of a Resources folder asset"
         };
 
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_AssetInResourcesFolderDescriptor);
-            module.RegisterDescriptor(k_AssetInResourcesFolderDependencyDescriptor);
+            registerDescriptor(k_AssetInResourcesFolderDescriptor);
+            registerDescriptor(k_AssetInResourcesFolderDependencyDescriptor);
         }
 
         public override IEnumerable<ReportItem> Analyze(AssetAnalysisContext context)

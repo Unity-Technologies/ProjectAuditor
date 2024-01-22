@@ -1,9 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using Unity.ProjectAuditor.Editor.Modules;
@@ -31,10 +31,10 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "Change the <b>Lit Shader Mode</b> in all HDRP Assets and all Cameras to either <b>Forward</b> or <b>Deferred</b>."
         );
 
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_AssetLitShaderModeBothOrMixed);
-            module.RegisterDescriptor(k_CameraLitShaderModeBothOrMixed);
+            registerDescriptor(k_AssetLitShaderModeBothOrMixed);
+            registerDescriptor(k_CameraLitShaderModeBothOrMixed);
         }
 
 #if PACKAGE_HDRP

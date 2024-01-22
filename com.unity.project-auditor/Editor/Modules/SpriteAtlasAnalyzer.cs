@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -27,9 +27,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
         [DiagnosticParameter("SpriteAtlasEmptySpaceLimit", 50)]
         int m_EmptySpaceLimit;
 
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_PoorUtilizationDescriptor);
+            registerDescriptor(k_PoorUtilizationDescriptor);
         }
 
         public override IEnumerable<ReportItem> Analyze(SpriteAtlasAnalysisContext context)

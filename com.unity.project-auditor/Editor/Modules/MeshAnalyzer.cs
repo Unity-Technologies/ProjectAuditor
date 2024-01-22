@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Unity.ProjectAuditor.Editor.Core;
@@ -39,16 +40,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
             DocumentationUrl = "https://docs.unity3d.com/Manual/FBXImporter-Model.html"
         };
 
-        [DiagnosticParameter("MeshVertexCountLimit", 5000)]
-        int m_VertexCountLimit;
+        // TODO: Uncomment these when it's time to re-implement vertex/triangle count analysis.
+        // [DiagnosticParameter("MeshVertexCountLimit", 5000)]
+        // int m_VertexCountLimit;
+        //
+        // [DiagnosticParameter("MeshTriangleCountLimit", 5000)]
+        // int m_TriangleCountLimit;
 
-        [DiagnosticParameter("MeshTriangleCountLimit", 5000)]
-        int m_TriangleCountLimit;
-
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_MeshReadWriteEnabledDescriptor);
-            module.RegisterDescriptor(k_Mesh32BitIndexFormatUsedDescriptor);
+            registerDescriptor(k_MeshReadWriteEnabledDescriptor);
+            registerDescriptor(k_Mesh32BitIndexFormatUsedDescriptor);
         }
 
         public override IEnumerable<ReportItem> Analyze(MeshAnalysisContext context)

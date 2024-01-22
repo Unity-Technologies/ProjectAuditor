@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -119,19 +119,19 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        [DiagnosticParameter("TextureStreamingMipmapsSizeLimit", 4000)]
+		[DiagnosticParameter("TextureStreamingMipmapsSizeLimit", 4000)]
         int m_StreamingMipmapsSizeLimit;
 
         [DiagnosticParameter("TextureSizeLimit", 2048)]
         int m_SizeLimit;
 
-        public override void Initialize(Module module)
+		public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_TextureMipmapsNotEnabledDescriptor);
-            module.RegisterDescriptor(k_TextureMipmapsEnabledDescriptor);
-            module.RegisterDescriptor(k_TextureReadWriteEnabledDescriptor);
-            module.RegisterDescriptor(k_TextureStreamingMipMapEnabledDescriptor);
-            module.RegisterDescriptor(k_TextureAnisotropicLevelDescriptor);
+            registerDescriptor(k_TextureMipmapsNotEnabledDescriptor);
+            registerDescriptor(k_TextureMipmapsEnabledDescriptor);
+            registerDescriptor(k_TextureReadWriteEnabledDescriptor);
+            registerDescriptor(k_TextureStreamingMipMapEnabledDescriptor);
+            registerDescriptor(k_TextureAnisotropicLevelDescriptor);
         }
 
         public override IEnumerable<ReportItem> Analyze(TextureAnalysisContext context)

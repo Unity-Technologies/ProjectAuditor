@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -251,20 +252,20 @@ namespace Unity.ProjectAuditor.Editor.Modules
         [DiagnosticParameter("LoadInBackGroundClipSizeThresholdBytes", 200 * 1024)]
         int m_LoadInBackGroundClipSizeThresholdBytes;
 
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_AudioLongClipDoesNotStreamDescriptor);
-            module.RegisterDescriptor(k_AudioShortClipStreamsDescriptor);
-            module.RegisterDescriptor(k_AudioStereoClipsOnMobileDescriptor);
-            module.RegisterDescriptor(k_AudioStereoClipWhichIsNotStreamingDescriptor);
-            module.RegisterDescriptor(k_AudioLongDecompressedClipDescriptor);
-            module.RegisterDescriptor(k_AudioCompressedInMemoryDescriptor);
-            module.RegisterDescriptor(k_AudioLargeCompressedMobileDescriptor);
-            module.RegisterDescriptor(k_Audio48kHzDescriptor);
-            module.RegisterDescriptor(k_AudioPreloadDescriptor);
-            module.RegisterDescriptor(k_AudioLoadInBackgroundDisabledDescriptor);
-            module.RegisterDescriptor(k_AudioMP3Descriptor);
-            module.RegisterDescriptor(k_AudioCompressedSourceAssetDescriptor);
+            registerDescriptor(k_AudioLongClipDoesNotStreamDescriptor);
+            registerDescriptor(k_AudioShortClipStreamsDescriptor);
+            registerDescriptor(k_AudioStereoClipsOnMobileDescriptor);
+            registerDescriptor(k_AudioStereoClipWhichIsNotStreamingDescriptor);
+            registerDescriptor(k_AudioLongDecompressedClipDescriptor);
+            registerDescriptor(k_AudioCompressedInMemoryDescriptor);
+            registerDescriptor(k_AudioLargeCompressedMobileDescriptor);
+            registerDescriptor(k_Audio48kHzDescriptor);
+            registerDescriptor(k_AudioPreloadDescriptor);
+            registerDescriptor(k_AudioLoadInBackgroundDisabledDescriptor);
+            registerDescriptor(k_AudioMP3Descriptor);
+            registerDescriptor(k_AudioCompressedSourceAssetDescriptor);
         }
 
         public override IEnumerable<ReportItem> Analyze(AudioClipAnalysisContext context)

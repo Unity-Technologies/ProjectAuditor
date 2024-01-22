@@ -265,7 +265,7 @@ namespace Unity.ProjectAuditor.Editor
             return m_CustomProperties != null ? m_CustomProperties.Length : 0;
         }
 
-        // stephenm TODO: The Get/SetCustomProperty methods need more explanation - like how do you find out what enum is used for a given ReportItem. Phase 2.
+        // stephenm TODO: The Get/SetCustomProperty methods need more explanation - like how do you find out what enum is used for a given ReportItem.
         /// <summary>
         /// Get a custom property string given an enum.
         /// </summary>

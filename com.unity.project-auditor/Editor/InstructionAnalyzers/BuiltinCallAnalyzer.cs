@@ -24,18 +24,18 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         public override IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
 
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
             var descriptors = DescriptorLoader.LoadFromJson(ProjectAuditor.s_DataPath, "ApiDatabase");
             foreach (var descriptor in descriptors)
             {
-                module.RegisterDescriptor(descriptor);
+                registerDescriptor(descriptor);
             }
 
             var methodDescriptors = descriptors.Where(
                 descriptor => !descriptor.Method.Equals("*") &&
                 !string.IsNullOrEmpty(descriptor.Type) &&
-                module.SupportsDescriptor(descriptor.Id));
+                descriptor.IsSupported());
 
             m_Descriptors = new Dictionary<string, List<Descriptor>>();
             foreach (var d in methodDescriptors)

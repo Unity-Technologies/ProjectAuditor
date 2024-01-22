@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -23,9 +23,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             DocumentationUrl = "https://docs.unity3d.com/Manual/SRPBatcher.html"
         };
 
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_SrpBatcherDescriptor);
+            registerDescriptor(k_SrpBatcherDescriptor);
         }
 
         public override IEnumerable<ReportItem> Analyze(ShaderAnalysisContext context)

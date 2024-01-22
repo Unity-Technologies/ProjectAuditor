@@ -1,12 +1,11 @@
 using System.Linq;
 using NUnit.Framework;
-using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Tests.Common;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    internal class MeshTests : TestFixtureBase
+    class MeshTests : TestFixtureBase
     {
         const string k_SmallMeshName = "SmallTestMesh";
         const string k_LargeMeshName = "LargeTestMesh";

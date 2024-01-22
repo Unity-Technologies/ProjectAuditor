@@ -5,7 +5,8 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Interfaces
 {
-    internal class MeshAnalysisContext : AnalysisContext
+    // stephenm TODO: Document
+    public class MeshAnalysisContext : AnalysisContext
     {
         public string Name;
         public Mesh Mesh;
@@ -13,6 +14,7 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
         public long Size;
     }
 
+    // stephenm TODO: Document
     internal abstract class MeshModuleAnalyzer : ModuleAnalyzer
     {
         public abstract IEnumerable<ReportItem> Analyze(MeshAnalysisContext context);

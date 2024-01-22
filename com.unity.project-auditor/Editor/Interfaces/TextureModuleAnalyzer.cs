@@ -5,7 +5,8 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Interfaces
 {
-    internal class TextureAnalysisContext : AnalysisContext
+    // stephenm TODO: Document
+    public class TextureAnalysisContext : AnalysisContext
     {
         public string Name;
         public Texture Texture;
@@ -14,6 +15,7 @@ namespace Unity.ProjectAuditor.Editor.Interfaces
         public long Size;
     }
 
+    // stephenm TODO: Document
     internal abstract class TextureModuleAnalyzer : ModuleAnalyzer
     {
         public abstract IEnumerable<ReportItem> Analyze(TextureAnalysisContext context);

@@ -3,6 +3,7 @@ using UnityEditor.PackageManager;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.Interfaces;
 using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor.Modules
@@ -15,7 +16,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    class PackagesModule : Module
+    class PackagesModule : ModuleWithAnalyzers<PackagesModuleAnalyzer>
     {
         static readonly IssueLayout k_PackageLayout = new IssueLayout
         {
@@ -30,32 +31,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        internal const string PAP0001 = nameof(PAP0001);
-        internal const string PAP0002 = nameof(PAP0002);
-
-        static readonly Descriptor k_RecommendPackageUpgrade = new Descriptor(
-            PAP0001,
-            "Newer recommended package version",
-            Areas.Quality,
-            "A newer recommended version of this package is available.",
-            "Update the package via Package Manager."
-        )
-        {
-            MessageFormat = "Package '{0}' could be updated from version '{1}' to '{2}'",
-            DefaultSeverity = Severity.Minor
-        };
-
-        static readonly Descriptor k_RecommendPackagePreView = new Descriptor(
-            PAP0002,
-            "Experimental/Preview packages",
-            Areas.Quality,
-            "Experimental or Preview packages are in the early stages of development and not yet ready for production.",
-            "Experimental packages should only be used for testing purposes and to give feedback to Unity."
-        )
-        {
-            MessageFormat = "Package '{0}' version '{1}' is a preview/experimental version"
-        };
-
         public override string Name => "Packages";
 
         public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
@@ -64,16 +39,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
             SettingsModule.k_IssueLayout
         };
 
-        public override void Initialize()
-        {
-            base.Initialize();
-
-            RegisterDescriptor(k_RecommendPackageUpgrade);
-            RegisterDescriptor(k_RecommendPackagePreView);
-        }
-
         public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
+            var analyzers = GetCompatibleAnalyzers(analysisParams);
+            if (analyzers.Length == 0)
+                return AnalysisResult.Success;
+
             var request = Client.List();
             while (!request.IsCompleted)
                 System.Threading.Thread.Sleep(10);
@@ -82,21 +53,33 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 return AnalysisResult.Failure;
             }
 
-            var context = new AnalysisContext()
+            var packageCount = request.Result.Count();
+            progress?.Start("Finding Packages", "Search in Progress...", packageCount);
+
+            var context = new PackageAnalysisContext
             {
                 Params = analysisParams
             };
 
             foreach (var package in request.Result)
             {
-                analysisParams.OnIncomingIssues(EnumerateInstalledPackages(context, package));
-                analysisParams.OnIncomingIssues(EnumeratePackageDiagnostics(context, package));
+                context.PackageInfo = package;
+
+                analysisParams.OnIncomingIssues(EnumerateInstalledPackages(context));
+
+                foreach (var analyzer in analyzers)
+                {
+                    analysisParams.OnIncomingIssues(analyzer.Analyze(context));
+                }
+
+                analysisParams.OnIncomingIssues(EnumerateInstalledPackages(context));
             }
             return AnalysisResult.Success;
         }
 
-        IEnumerable<ReportItem> EnumerateInstalledPackages(AnalysisContext context, UnityEditor.PackageManager.PackageInfo package)
+        IEnumerable<ReportItem> EnumerateInstalledPackages(PackageAnalysisContext context)
         {
+            var package = context.PackageInfo;
             var dependencies = package.dependencies.Select(d => d.name + " [" + d.version + "]").ToArray();
             var displayName = string.IsNullOrEmpty(package.displayName) ? package.name : package.displayName;
             var node = new PackageDependencyNode(displayName, dependencies);
@@ -109,29 +92,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 })
                 .WithDependencies(node)
                 .WithLocation(package.assetPath);
-        }
-
-        IEnumerable<ReportItem> EnumeratePackageDiagnostics(AnalysisContext context, UnityEditor.PackageManager.PackageInfo package)
-        {
-            // first check if any package is preview or experimental
-            if (package.version.Contains("pre") || package.version.Contains("exp"))
-            {
-                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_RecommendPackagePreView.Id, package.name, package.version)
-                    .WithLocation(package.assetPath);
-            }
-            else
-            {
-                // if not preview or experimental, check anyway if there is a recommended version available
-                var recommendedVersionString = PackageUtils.GetPackageRecommendedVersion(package);
-                if (!string.IsNullOrEmpty(package.version) && !string.IsNullOrEmpty(recommendedVersionString))
-                {
-                    if (!recommendedVersionString.Equals(package.version))
-                    {
-                        yield return context.CreateIssue(IssueCategory.ProjectSetting, k_RecommendPackageUpgrade.Id, package.name, package.version, recommendedVersionString)
-                            .WithLocation(package.assetPath);
-                    }
-                }
-            }
         }
     }
 }

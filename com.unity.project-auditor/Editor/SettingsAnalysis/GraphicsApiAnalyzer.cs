@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using UnityEditor;
@@ -50,11 +50,11 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             Platforms = new[] { BuildTarget.Android }
         };
 
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_OpenGLESAndMetalDescriptor);
-            module.RegisterDescriptor(k_MetalDescriptor);
-            module.RegisterDescriptor(k_VulkanDescriptor);
+            registerDescriptor(k_OpenGLESAndMetalDescriptor);
+            registerDescriptor(k_MetalDescriptor);
+            registerDescriptor(k_VulkanDescriptor);
         }
 
         public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)

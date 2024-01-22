@@ -81,12 +81,12 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         public override IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
 
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_ObjectAllocationDescriptor);
-            module.RegisterDescriptor(k_ClosureAllocationDescriptor);
-            module.RegisterDescriptor(k_ArrayAllocationDescriptor);
-            module.RegisterDescriptor(k_ParamArrayAllocationDescriptor);
+            registerDescriptor(k_ObjectAllocationDescriptor);
+            registerDescriptor(k_ClosureAllocationDescriptor);
+            registerDescriptor(k_ArrayAllocationDescriptor);
+            registerDescriptor(k_ParamArrayAllocationDescriptor);
         }
 
         public override IssueBuilder Analyze(InstructionAnalysisContext context)

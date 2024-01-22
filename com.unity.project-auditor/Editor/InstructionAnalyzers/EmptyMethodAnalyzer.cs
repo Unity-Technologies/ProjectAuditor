@@ -33,9 +33,9 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         public override IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
 
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_Descriptor);
+            registerDescriptor(k_Descriptor);
         }
 
         public override IssueBuilder Analyze(InstructionAnalysisContext context)

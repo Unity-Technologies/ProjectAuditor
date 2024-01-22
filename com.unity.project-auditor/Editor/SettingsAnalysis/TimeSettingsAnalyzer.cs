@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using Unity.ProjectAuditor.Editor.Modules;
@@ -28,10 +28,10 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "Consider reducing <b>Maximum Allowed Timestep</b> to a time that can be comfortably accommodated within your project's target frame rate."
         );
 
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_FixedTimestepDescriptor);
-            module.RegisterDescriptor(k_MaximumAllowedTimestepDescriptor);
+            registerDescriptor(k_FixedTimestepDescriptor);
+            registerDescriptor(k_MaximumAllowedTimestepDescriptor);
         }
 
         public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)

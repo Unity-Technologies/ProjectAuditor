@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
@@ -29,9 +30,9 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             Fixer = FixSrpBatcherSetting
         };
 
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_SRPBatcherSettingDescriptor);
+            registerDescriptor(k_SRPBatcherSettingDescriptor);
         }
 
         public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)

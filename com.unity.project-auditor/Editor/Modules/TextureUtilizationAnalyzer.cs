@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using Unity.ProjectAuditor.Editor.Utils;
@@ -53,14 +53,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
             MessageFormat = "Texture Atlas '{0}' has too much empty space ({1})"
         };
 
-        [DiagnosticParameter("TextureEmptySpaceLimit", 50)]
+		[DiagnosticParameter("TextureEmptySpaceLimit", 50)]
         int m_EmptySpaceLimit;
 
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_TextureSolidColorDescriptor);
-            module.RegisterDescriptor(k_TextureSolidColorNoFixerDescriptor);
-            module.RegisterDescriptor(k_TextureAtlasEmptyDescriptor);
+            registerDescriptor(k_TextureSolidColorDescriptor);
+            registerDescriptor(k_TextureSolidColorNoFixerDescriptor);
+            registerDescriptor(k_TextureAtlasEmptyDescriptor);
         }
 
         public override IEnumerable<ReportItem> Analyze(TextureAnalysisContext context)

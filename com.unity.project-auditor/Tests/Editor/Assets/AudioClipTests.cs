@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    internal class AudioClipTests : TestFixtureBase
+    class AudioClipTests : TestFixtureBase
     {
         byte[] m_VeryLongWavData;
         byte[] m_LongWavData;

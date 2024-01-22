@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Unity.ProjectAuditor.Editor.Core;
@@ -27,9 +28,9 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         [DiagnosticParameter("StreamingAssetsFolderSizeLimit", 50)]
         int m_FolderSizeLimit;
 
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_StreamingAssetsFolderDescriptor);
+            registerDescriptor(k_StreamingAssetsFolderDescriptor);
         }
 
         public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)

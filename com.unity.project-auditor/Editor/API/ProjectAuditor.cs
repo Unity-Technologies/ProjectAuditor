@@ -14,7 +14,7 @@ using UnityEditor.Build.Reporting;
 namespace Unity.ProjectAuditor.Editor
 {
     /// <summary>
-    /// The ProjectAuditor class is responsible for auditing the Unity project
+    /// The ProjectAuditor class is responsible for auditing the Unity project.
     /// </summary>
     public sealed class ProjectAuditor : IPostprocessBuildWithReport
     {

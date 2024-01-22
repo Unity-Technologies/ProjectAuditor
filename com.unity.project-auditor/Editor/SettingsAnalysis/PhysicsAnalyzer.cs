@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using UnityEngine;
@@ -18,9 +18,9 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "Un-tick all of the boxes except the ones that represent collisions that should be considered by the Physics system."
         );
 
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_DefaultLayerCollisionMatrixDescriptor);
+            registerDescriptor(k_DefaultLayerCollisionMatrixDescriptor);
         }
 
         public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)

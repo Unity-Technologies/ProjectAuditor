@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using Unity.ProjectAuditor.Editor.Modules;
@@ -50,11 +50,11 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             Platforms = new[] { BuildTarget.iOS }
         };
 
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_EngineCodeStrippingDescriptor);
-            module.RegisterDescriptor(k_AndroidManagedStrippingDescriptor);
-            module.RegisterDescriptor(k_iOSManagedStrippingDescriptor);
+            registerDescriptor(k_EngineCodeStrippingDescriptor);
+            registerDescriptor(k_AndroidManagedStrippingDescriptor);
+            registerDescriptor(k_iOSManagedStrippingDescriptor);
         }
 
         public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)

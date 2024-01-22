@@ -9,7 +9,7 @@ namespace Unity.ProjectAuditor.Editor.Core
     /// Represents a node in a dependency tree for reporting issues in the UI.
     /// This is used to represent call trees, and dependencies between assets, assemblies, or packages.
     /// </summary>
-    internal abstract class DependencyNode
+    public abstract class DependencyNode
     {
         /// <summary>
         /// A list of this node's children in the dependency tree

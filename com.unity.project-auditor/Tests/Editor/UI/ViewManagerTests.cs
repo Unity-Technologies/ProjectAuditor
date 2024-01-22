@@ -6,7 +6,7 @@ using Unity.ProjectAuditor.Editor.UI.Framework;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    public class ViewManagerTests : TestFixtureBase
+    class ViewManagerTests : TestFixtureBase
     {
         TestAsset m_TestScriptAsset;
 

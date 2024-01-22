@@ -1,12 +1,13 @@
+using System;
 using System.Reflection;
-using Module = Unity.ProjectAuditor.Editor.Core.Module;
+using Unity.ProjectAuditor.Editor.Diagnostic;
 
 namespace Unity.ProjectAuditor.Editor.Interfaces
 {
     // stephenm TODO: Make this public, for extensibility. And, I guess, move it to API. Phase 2.
     internal class ModuleAnalyzer
     {
-        public virtual void Initialize(Module module)
+        public virtual void Initialize(Action<Descriptor> action)
         {
         }
 

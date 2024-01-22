@@ -97,14 +97,14 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             },
         };
 
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_AccelerometerDescriptor);
-            module.RegisterDescriptor(k_SplashScreenDescriptor);
-            module.RegisterDescriptor(k_SpeakerModeDescriptor);
-            module.RegisterDescriptor(k_IL2CPPCompilerConfigurationMasterDescriptor);
-            module.RegisterDescriptor(k_IL2CPPCompilerConfigurationDebugDescriptor);
-            module.RegisterDescriptor(k_LightmapStreamingEnabledDescriptor);
+            registerDescriptor(k_AccelerometerDescriptor);
+            registerDescriptor(k_SplashScreenDescriptor);
+            registerDescriptor(k_SpeakerModeDescriptor);
+            registerDescriptor(k_IL2CPPCompilerConfigurationMasterDescriptor);
+            registerDescriptor(k_IL2CPPCompilerConfigurationDebugDescriptor);
+            registerDescriptor(k_LightmapStreamingEnabledDescriptor);
         }
 
         public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)

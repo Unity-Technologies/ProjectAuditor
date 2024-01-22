@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using UnityEngine;
@@ -58,13 +58,13 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             MessageFormat = "Quality: Texture streaming on Quality Level '{0}' is turned off"
         };
 
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_DefaultSettingsDescriptor);
-            module.RegisterDescriptor(k_UsingLowQualityTexturesDescriptor);
-            module.RegisterDescriptor(k_DefaultAsyncUploadTimeSliceDescriptor);
-            module.RegisterDescriptor(k_DefaultAsyncUploadBufferSizeSliceDescriptor);
-            module.RegisterDescriptor(k_TextureStreamingDisabledDescriptor);
+            registerDescriptor(k_DefaultSettingsDescriptor);
+            registerDescriptor(k_UsingLowQualityTexturesDescriptor);
+            registerDescriptor(k_DefaultAsyncUploadTimeSliceDescriptor);
+            registerDescriptor(k_DefaultAsyncUploadBufferSizeSliceDescriptor);
+            registerDescriptor(k_TextureStreamingDisabledDescriptor);
         }
 
         public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)

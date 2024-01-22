@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using UnityEditor;
@@ -41,10 +41,10 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             }
         };
 
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_EnterPlayModeOptionsDescriptor);
-            module.RegisterDescriptor(k_DomainReloadDescriptor);
+            registerDescriptor(k_EnterPlayModeOptionsDescriptor);
+            registerDescriptor(k_DomainReloadDescriptor);
         }
 
         public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)

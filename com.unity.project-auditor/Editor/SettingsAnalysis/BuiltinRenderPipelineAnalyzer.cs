@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using UnityEditor;
@@ -39,11 +39,11 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             "The current build target uses deferred rendering, as set in the <b>Rendering Path</b> settings in <b>Project Settings > Graphics > Tier Settings</b>. This can impact GPU performance in projects with simple rendering requirements.",
             "This rendering path is suitable for games with more complex rendering requirements - for instance, games that make uses of dynamic lighting or certain types of fullscreen post-processing effects. If the project doesn't make use of such rendering techniques, consider experimenting with changing <b>Rendering Path</b> to Forward to see whether doing so improves GPU rendering times.");
 
-        public override void Initialize(Module module)
+		public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_ShaderQualityDescriptor);
-            module.RegisterDescriptor(k_ForwardRenderingDescriptor);
-            module.RegisterDescriptor(k_DeferredRenderingDescriptor);
+            registerDescriptor(k_ShaderQualityDescriptor);
+            registerDescriptor(k_ForwardRenderingDescriptor);
+            registerDescriptor(k_DeferredRenderingDescriptor);
         }
 
         public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)

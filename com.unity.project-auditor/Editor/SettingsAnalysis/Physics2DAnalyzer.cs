@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Interfaces;
 using UnityEngine;
@@ -29,10 +29,10 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             MinimumVersion = "2020.2"
         };
 
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_DefaultLayerCollisionMatrixDescriptor);
-            module.RegisterDescriptor(k_SimulationModeDescriptor);
+            registerDescriptor(k_DefaultLayerCollisionMatrixDescriptor);
+            registerDescriptor(k_SimulationModeDescriptor);
         }
 
         public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)

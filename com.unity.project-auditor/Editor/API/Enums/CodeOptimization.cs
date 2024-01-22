@@ -4,7 +4,7 @@ using Newtonsoft.Json.Converters;
 namespace Unity.ProjectAuditor.Editor
 {
     /// <summary>
-    /// Options for selecting the code optimization level to be used during code analysis
+    /// Options for selecting the code optimization level to be used during code analysis.
     /// </summary>
     [JsonConverter(typeof(StringEnumConverter))]
     public enum CodeOptimization

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -65,15 +66,15 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 
         public override IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
 
-        public override void Initialize(Module module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_DescriptorSystemNet);
-            module.RegisterDescriptor(k_DescriptorSystemThreading);
-            module.RegisterDescriptor(k_DescriptorMicrophone);
+            registerDescriptor(k_DescriptorSystemNet);
+            registerDescriptor(k_DescriptorSystemThreading);
+            registerDescriptor(k_DescriptorMicrophone);
 
-            descriptorSystemNetSupported = module.SupportsDescriptor(k_DescriptorSystemNet.Id);
-            descriptorSystemThreadingSupported = module.SupportsDescriptor(k_DescriptorSystemThreading.Id);
-            descriptorMicrophoneSupported = module.SupportsDescriptor(k_DescriptorMicrophone.Id);
+            descriptorSystemNetSupported = k_DescriptorSystemNet.IsSupported();
+            descriptorSystemThreadingSupported = k_DescriptorSystemThreading.IsSupported();
+            descriptorMicrophoneSupported = k_DescriptorMicrophone.IsSupported();
         }
 
         public override IssueBuilder Analyze(InstructionAnalysisContext context)
