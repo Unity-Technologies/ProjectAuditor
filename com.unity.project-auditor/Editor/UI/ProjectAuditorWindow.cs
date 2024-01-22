@@ -136,8 +136,9 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     IssueCategory.BuildSummary
                 }
-            },
-            new Tab
+            }
+#if PA_SHOW_BUILD_DATA_TAB
+            , new Tab
             {
                 id = TabId.BuildData, name = "Build Data",
                 categories = new[]
@@ -147,7 +148,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     IssueCategory.BuildDataAudioClip,
                     IssueCategory.BuildDataSummary, IssueCategory.BuildDataDiagnostic
                 }
-            },
+            }
+#endif
         };
 
         AnalysisView activeView => m_ViewManager.GetActiveView();
