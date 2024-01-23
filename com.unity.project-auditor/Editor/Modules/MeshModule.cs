@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Interfaces;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Analytics;

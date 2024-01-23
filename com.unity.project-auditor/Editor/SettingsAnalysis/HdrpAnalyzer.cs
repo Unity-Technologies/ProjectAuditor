@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Unity.ProjectAuditor.Editor.Core;
+#if PACKAGE_HDRP
 using System.Linq;
-using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
-using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Interfaces;
-using Unity.ProjectAuditor.Editor.Modules;
+#endif
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {

@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Interfaces;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;

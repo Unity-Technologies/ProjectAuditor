@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using Unity.ProjectAuditor.Editor.Build;
 using UnityEditor;
@@ -152,7 +151,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                             logMessage,
                             depth + 1
                         })
-                        .WithSeverity(Diagnostic.Utils.LogTypeToSeverity(message.type));
+                        .WithSeverity(CoreUtils.LogTypeToSeverity(message.type));
                 }
             }
         }

@@ -4,12 +4,11 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
-using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.Core;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Unity.ProjectAuditor.Editor.Tests.Common
@@ -25,7 +24,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         protected AnalysisParams m_AnalysisParams;
         protected string m_AssemblyName = AssemblyInfo.DefaultAssemblyName;
         protected AndroidArchitecture m_OriginalTargetArchitecture;
-        protected List<Diagnostic.Rule> m_AdditionalRules = new List<Diagnostic.Rule>();
+        protected List<Rule> m_AdditionalRules = new List<Rule>();
 
         protected string m_SavedCompanyName;
         protected string m_SavedProductName;

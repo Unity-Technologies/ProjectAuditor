@@ -119,7 +119,6 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
             return assemblyInfo;
         }
 
-        // Known issue: packageResolvedPath is not available on 2018 so the path of package assets will remain Library/PackageCache/<package name>@version/...
         internal static string ResolveAssetPath(AssemblyInfo assemblyInfo, string path)
         {
             var fullPath = PathUtils.GetFullPath(path);

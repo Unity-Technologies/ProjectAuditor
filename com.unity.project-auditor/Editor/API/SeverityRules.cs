@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor

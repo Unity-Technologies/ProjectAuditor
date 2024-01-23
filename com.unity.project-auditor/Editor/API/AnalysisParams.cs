@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.Core;
 using UnityEditor;
 using UnityEngine;
 
@@ -144,7 +144,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="rules">Additional Rules to impose.</param>
         /// <returns>This AnalysisParams object, after adding the additional Rules.</returns>
-        public AnalysisParams WithAdditionalDiagnosticRules(List<Diagnostic.Rule> rules)
+        public AnalysisParams WithAdditionalDiagnosticRules(List<Rule> rules)
         {
             foreach (var rule in rules)
             {

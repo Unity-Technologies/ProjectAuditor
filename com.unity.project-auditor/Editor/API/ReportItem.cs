@@ -1,7 +1,6 @@
 using System;
 using Newtonsoft.Json;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor

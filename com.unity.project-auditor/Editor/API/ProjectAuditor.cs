@@ -4,8 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Utils; // Required for TypeCache in Unity 2018
+using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using Debug = UnityEngine.Debug;
 using UnityEditor.Build;

@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Interfaces;
-using Unity.ProjectAuditor.Editor.Utils; // Required for TypeCache in Unity 2018
 using UnityEditor;
 using UnityEngine;
 

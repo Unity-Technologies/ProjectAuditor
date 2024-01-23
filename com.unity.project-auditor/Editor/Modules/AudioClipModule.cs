@@ -4,7 +4,6 @@ using System.IO;
 using System.Reflection;
 using UnityEditor;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Interfaces;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 using UnityEngine.Profiling;

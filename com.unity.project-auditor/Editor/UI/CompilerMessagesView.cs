@@ -1,6 +1,5 @@
 using System.Linq;
 using Unity.ProjectAuditor.Editor.UI.Framework;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEditor;
 using UnityEngine;
 
