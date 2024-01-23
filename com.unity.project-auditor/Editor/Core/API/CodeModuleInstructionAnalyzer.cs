@@ -39,17 +39,17 @@ namespace Unity.ProjectAuditor.Editor.Core
         public abstract IReadOnlyCollection<OpCode> opCodes { get; }
 
         /// <summary>
-        /// Implement this method to detect Issues in a code instruction, and construct an IssueBuilder object with basic
-        /// information about a ReportItem object to describe the issue.
+        /// Implement this method to detect Issues in a code instruction, and construct a ReportItemBuilder object with
+        /// basic information about a ReportItem object to describe the issue.
         /// </summary>
         /// <param name="context">Context object containing information necessary to perform analysis</param>
-        /// <returns>An IssueBuilder containing a partially-constructed ReportItem</returns>
+        /// <returns>A ReportItemBuilder containing a partially-constructed ReportItem</returns>
         /// <remarks>
         /// When Instruction Analyzers detect an issue, they should call <seealso cref="AnalysisContext.CreateIssue"/>
         /// to begin creating an issue with an IssueCategory, a DescriptorId and any other relevant data. The Code Module
         /// will add further information including the DependencyNode, Location and assembly name and add the resulting
         /// ReportItem to the report.
         /// </remarks>
-        public abstract IssueBuilder Analyze(InstructionAnalysisContext context);
+        public abstract ReportItemBuilder Analyze(InstructionAnalysisContext context);
     }
 }

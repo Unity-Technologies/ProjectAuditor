@@ -447,14 +447,14 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     if (analyzer.opCodes.Contains(inst.OpCode))
                     {
                         Profiler.BeginSample("CodeModule " + analyzer.GetType().Name);
-                        var issueBuilder = analyzer.Analyze(context);
-                        if (issueBuilder != null)
+                        var reportItemBuilder = analyzer.Analyze(context);
+                        if (reportItemBuilder != null)
                         {
-                            issueBuilder.WithDependencies(callerNode); // set root
-                            issueBuilder.WithLocation(location);
-                            issueBuilder.WithCustomProperties(new object[(int)CodeProperty.Num] {assemblyInfo.Name});
+                            reportItemBuilder.WithDependencies(callerNode); // set root
+                            reportItemBuilder.WithLocation(location);
+                            reportItemBuilder.WithCustomProperties(new object[(int)CodeProperty.Num] {assemblyInfo.Name});
 
-                            onIssueFound(issueBuilder);
+                            onIssueFound(reportItemBuilder);
                         }
                         Profiler.EndSample();
                     }

@@ -85,7 +85,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             registerDescriptor(k_ParamArrayAllocationDescriptor);
         }
 
-        public override IssueBuilder Analyze(InstructionAnalysisContext context)
+        public override ReportItemBuilder Analyze(InstructionAnalysisContext context)
         {
             if (context.Instruction.OpCode == OpCodes.Call || context.Instruction.OpCode == OpCodes.Callvirt)
             {

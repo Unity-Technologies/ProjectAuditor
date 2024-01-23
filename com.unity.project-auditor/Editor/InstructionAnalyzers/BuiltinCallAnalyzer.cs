@@ -48,7 +48,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             m_NamespaceOrClassDescriptors = descriptors.Where(descriptor => descriptor.Method.Equals("*")).ToDictionary(d => d.Type);
         }
 
-        public override IssueBuilder Analyze(InstructionAnalysisContext context)
+        public override ReportItemBuilder Analyze(InstructionAnalysisContext context)
         {
             var callee = (MethodReference)context.Instruction.Operand;
             var description = string.Empty;

@@ -59,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             registerDescriptor(k_DebugLogWarningIssueDescriptor);
         }
 
-        public override IssueBuilder Analyze(InstructionAnalysisContext context)
+        public override ReportItemBuilder Analyze(InstructionAnalysisContext context)
         {
             var callee = (MethodReference)context.Instruction.Operand;
             var methodName = callee.Name;

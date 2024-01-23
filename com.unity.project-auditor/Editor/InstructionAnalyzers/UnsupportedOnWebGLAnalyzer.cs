@@ -75,7 +75,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             descriptorMicrophoneSupported = k_DescriptorMicrophone.IsSupported();
         }
 
-        public override IssueBuilder Analyze(InstructionAnalysisContext context)
+        public override ReportItemBuilder Analyze(InstructionAnalysisContext context)
         {
             var methodReference = (MethodReference)context.Instruction.Operand;
             if (descriptorSystemNetSupported && methodReference.DeclaringType.FullName.StartsWith("System.Net."))

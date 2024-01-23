@@ -35,7 +35,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             registerDescriptor(k_Descriptor);
         }
 
-        public override IssueBuilder Analyze(InstructionAnalysisContext context)
+        public override ReportItemBuilder Analyze(InstructionAnalysisContext context)
         {
             var type = (TypeReference)context.Instruction.Operand;
             if (type.IsGenericParameter)

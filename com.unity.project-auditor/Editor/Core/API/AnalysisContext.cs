@@ -19,26 +19,29 @@ namespace Unity.ProjectAuditor.Editor.Core
         public AnalysisParams Params;
 
         /// <summary>
-        /// Create an IssueBuilder for an Issue: a potential problem in the project, with an actionable recommendation to resolve it.
+        /// Create a ReportItemBuilder for an Issue: a potential problem in the project, with an actionable
+        /// recommendation to resolve it.
         /// </summary>
         /// <param name="category">Issue category</param>
         /// <param name="id">Descriptor ID</param>
         /// <param name="messageArgs">Arguments to be used in the message formatting</param>
-        /// <returns>The IssueBuilder, constructed with the specified category, descriptor ID and message arguments</returns>
-        public IssueBuilder CreateIssue(IssueCategory category, string id, params object[] messageArgs)
+        /// <returns>
+        /// The ReportItemBuilder, constructed with the specified category, descriptor ID and message arguments
+        /// </returns>
+        public ReportItemBuilder CreateIssue(IssueCategory category, string id, params object[] messageArgs)
         {
-            return new IssueBuilder(category, id, messageArgs);
+            return new ReportItemBuilder(category, id, messageArgs);
         }
 
         /// <summary>
-        /// Create an IssueBuilder for an Insight: A ReportItem collected for informational purposes.
+        /// Create a ReportItemBuilder for an Insight: A ReportItem collected for informational purposes.
         /// </summary>
         /// <param name="category">Issue category</param>
         /// <param name="description">User-friendly description</param>
-        /// <returns>The IssueBuilder, constructed with the specified category and description string</returns>
-        public IssueBuilder CreateInsight(IssueCategory category, string description)
+        /// <returns>The ReportItemBuilder, constructed with the specified category and description string</returns>
+        public ReportItemBuilder CreateInsight(IssueCategory category, string description)
         {
-            return new IssueBuilder(category, description);
+            return new ReportItemBuilder(category, description);
         }
 
         /// <summary>
