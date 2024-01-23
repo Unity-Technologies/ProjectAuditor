@@ -5,7 +5,7 @@
         "method": "main",
         "areas": ["CPU"],
         "description": "<b>Camera.main</b> property uses <b>FindGameObjectsWithTag()</b> internally and doesn't cache the result.",
-        "solution": "It is advised to cache and use the camera component obtained from Game object instead.",
+        "recommendation": "It is advised to cache and use the camera component obtained from Game object instead.",
         "maximumVersion": "2019.4.8"
     },
     {
@@ -14,7 +14,7 @@
         "method": "GetPixels",
         "areas": ["Memory"],
         "description": "<b>WebCamTexture.GetPixels()</b> allocates managed memory.",
-        "solution": "Use WebCamTexture.GetPixels32() instead."
+        "recommendation": "Use WebCamTexture.GetPixels32() instead."
     },
     {
         "id": "PAC0002",
@@ -22,7 +22,7 @@
         "method": "GetPixels32",
         "areas": ["Memory"],
         "description": "<b>WebCamTexture.GetPixels32()</b> allocates managed memory if a suitable array is not provided as a parameter.",
-        "solution": "Ensure that you pass an array of <b>Color32[]</b> to this API method for it to fill out, to avoid creating a new array every time the method is called."
+        "recommendation": "Ensure that you pass an array of <b>Color32[]</b> to this API method for it to fill out, to avoid creating a new array every time the method is called."
     },
     {
         "id": "PAC0003",
@@ -30,7 +30,7 @@
         "method": "CalculateFrustumPlanes",
         "areas": ["Memory"],
         "description": "Some versions of <b>GeometryUtility.CalculateFrustumPlanes()</b> allocate managed memory.",
-        "solution": "Ensure that you use the <b>CalculateFrustumPlanes(Matrix4x4 worldToProjectionMatrix, Plane[] planes)</b> version of this API method, in order to be able to pass a pre-allocated Array of Planes."
+        "recommendation": "Ensure that you use the <b>CalculateFrustumPlanes(Matrix4x4 worldToProjectionMatrix, Plane[] planes)</b> version of this API method, in order to be able to pass a pre-allocated Array of Planes."
     },
     {
         "id": "PAC0004",
@@ -38,7 +38,7 @@
         "method": "FindObjectsOfTypeAll",
         "areas": ["Memory"],
         "description": "<b>Resources.FindObjectsOfTypeAll()</b> allocates managed memory.",
-        "solution": "Use <b>Resources.FindObjectsOfTypeNonAlloc()</b> instead."
+        "recommendation": "Use <b>Resources.FindObjectsOfTypeNonAlloc()</b> instead."
     },
     {
         "id": "PAC0005",
@@ -46,7 +46,7 @@
         "method": "GetPixels",
         "areas": ["Memory"],
         "description": "<b>Texture2D.GetPixels()</b> allocates managed memory.",
-        "solution": "Use <b>Texture2D.GetRawTextureData()</b> instead. This method returns a NativeArray of pixel data, and so does not allocate managed memory."
+        "recommendation": "Use <b>Texture2D.GetRawTextureData()</b> instead. This method returns a NativeArray of pixel data, and so does not allocate managed memory."
     },
     {
         "id": "PAC0006",
@@ -54,7 +54,7 @@
         "method": "GetPixels32",
         "areas": ["Memory"],
         "description": "<b>Texture2D.GetPixels32()</b> allocates managed memory.",
-        "solution": "Use <b>Texture2D.GetRawTextureData()</b> instead. This method returns a NativeArray of pixel data, and so does not allocate managed memory."
+        "recommendation": "Use <b>Texture2D.GetRawTextureData()</b> instead. This method returns a NativeArray of pixel data, and so does not allocate managed memory."
     },
     {
         "id": "PAC0007",
@@ -62,7 +62,7 @@
         "method": "SweepTestAll",
         "areas": ["Memory"],
         "description": "<b>Rigidbody.SweepTestAll()</b> allocates managed memory.",
-        "solution": "Use <b>Rigidbody.SweepTestNonAlloc()</b> instead."
+        "recommendation": "Use <b>Rigidbody.SweepTestNonAlloc()</b> instead."
     },
     {
         "id": "PAC0008",
@@ -70,7 +70,7 @@
         "method": "RaycastAll",
         "areas": ["Memory"],
         "description": "<b>Physics.RaycastAll()</b> allocates managed memory.",
-        "solution": "Use <b>Physics.RaycastNonAlloc()</b> instead."
+        "recommendation": "Use <b>Physics.RaycastNonAlloc()</b> instead."
     },
     {
         "id": "PAC0009",
@@ -78,7 +78,7 @@
         "method": "CapsuleCastAll",
         "areas": ["Memory"],
         "description": "<b>Physics.CapsuleCastAll()</b> allocates managed memory.",
-        "solution": "Use <b>Physics.CapsuleCastNonAlloc()</b> instead."
+        "recommendation": "Use <b>Physics.CapsuleCastNonAlloc()</b> instead."
     },
     {
         "id": "PAC0010",
@@ -86,7 +86,7 @@
         "method": "SphereCastAll",
         "areas": ["Memory"],
         "description": "<b>Physics.SphereCastAll()</b> allocates managed memory.",
-        "solution": "Use <b>Physics.SphereCastNonAlloc()</b> instead."
+        "recommendation": "Use <b>Physics.SphereCastNonAlloc()</b> instead."
     },
     {
         "id": "PAC0011",
@@ -94,7 +94,7 @@
         "method": "BoxCastAll",
         "areas": ["Memory"],
         "description": "<b>Physics.BoxCastAll()</b> allocates managed memory.",
-        "solution": "Use <b>Physics.BoxCastNonAlloc()</b> instead."
+        "recommendation": "Use <b>Physics.BoxCastNonAlloc()</b> instead."
     },
     {
         "id": "PAC0012",
@@ -102,7 +102,7 @@
         "method": "OverlapCapsule",
         "areas": ["Memory"],
         "description": "<b>Physics.OverlapCapsule()</b> allocates managed memory.",
-        "solution": "Use <b>Physics.OverlapCapsuleNonAlloc()</b> instead."
+        "recommendation": "Use <b>Physics.OverlapCapsuleNonAlloc()</b> instead."
     },
     {
         "id": "PAC0013",
@@ -110,7 +110,7 @@
         "method": "OverlapSphere",
         "areas": ["Memory"],
         "description": "<b>Physics.OverlapSphere()</b> allocates managed memory.",
-        "solution": "Use <b>Physics.OverlapSphereNonAlloc()</b> instead."
+        "recommendation": "Use <b>Physics.OverlapSphereNonAlloc()</b> instead."
     },
     {
         "id": "PAC0014",
@@ -118,7 +118,7 @@
         "method": "OverlapBox",
         "areas": ["Memory"],
         "description": "<b>Physics.OverlapBox()</b> allocates managed memory.",
-        "solution": "Use <b>Physics.OverlapBoxNonAlloc()</b> instead."
+        "recommendation": "Use <b>Physics.OverlapBoxNonAlloc()</b> instead."
     },
     {
         "id": "PAC0015",
@@ -126,7 +126,7 @@
         "method": "LinecastAll",
         "areas": ["Memory"],
         "description": "<b>Physics2D.LinecastAll()</b> allocates managed memory.",
-        "solution": "Use <b>Physics2D.LinecastNonAlloc()</b> instead."
+        "recommendation": "Use <b>Physics2D.LinecastNonAlloc()</b> instead."
     },
     {
         "id": "PAC0016",
@@ -134,7 +134,7 @@
         "method": "RaycastAll",
         "areas": ["Memory"],
         "description": "<b>Physics2D.RaycastAll()</b> allocates managed memory.",
-        "solution": "Use <b>Physics2D.RaycastNonAlloc()</b> instead."
+        "recommendation": "Use <b>Physics2D.RaycastNonAlloc()</b> instead."
     },
     {
         "id": "PAC0017",
@@ -142,7 +142,7 @@
         "method": "CircleCastAll",
         "areas": ["Memory"],
         "description": "<b>Physics2D.CircleCastAll()</b> allocates managed memory.",
-        "solution": "Use <b>Physics2D.CircleCastNonAlloc()</b> instead."
+        "recommendation": "Use <b>Physics2D.CircleCastNonAlloc()</b> instead."
     },
     {
         "id": "PAC0018",
@@ -150,7 +150,7 @@
         "method": "BoxCastAll",
         "areas": ["Memory"],
         "description": "<b>Physics2D.BoxCastAll()</b> allocates managed memory.",
-        "solution": "Use <b>Physics2D.BoxCastNonAlloc()</b> instead."
+        "recommendation": "Use <b>Physics2D.BoxCastNonAlloc()</b> instead."
     },
     {
         "id": "PAC0019",
@@ -158,7 +158,7 @@
         "method": "CapsuleCastAll",
         "areas": ["Memory"],
         "description": "<b>Physics2D.CapsuleCastAll()</b> allocates managed memory.",
-        "solution": "Use <b>Physics2D.CapsuleCastNonAlloc()</b> instead."
+        "recommendation": "Use <b>Physics2D.CapsuleCastNonAlloc()</b> instead."
     },
     {
         "id": "PAC0020",
@@ -166,7 +166,7 @@
         "method": "GetRayIntersectionAll",
         "areas": ["Memory"],
         "description": "<b>Physics2D.GetRayIntersectionAll()</b> allocates managed memory.",
-        "solution": "Use <b>Physics2D.GetRayIntersectionNonAlloc()</b> instead."
+        "recommendation": "Use <b>Physics2D.GetRayIntersectionNonAlloc()</b> instead."
     },
     {
         "id": "PAC0021",
@@ -174,7 +174,7 @@
         "method": "OverlapPointAll",
         "areas": ["Memory"],
         "description": "<b>Physics2D.OverlapPointAll()</b> allocates managed memory.",
-        "solution": "Use <b>Physics2D.OverlapPointNonAlloc()</b> instead."
+        "recommendation": "Use <b>Physics2D.OverlapPointNonAlloc()</b> instead."
     },
     {
         "id": "PAC0022",
@@ -182,7 +182,7 @@
         "method": "OverlapCircleAll",
         "areas": ["Memory"],
         "description": "<b>Physics2D.OverlapCircleAll()</b> allocates managed memory.",
-        "solution": "Use <b>Physics2D.OverlapCircleNonAlloc()</b> instead."
+        "recommendation": "Use <b>Physics2D.OverlapCircleNonAlloc()</b> instead."
     },
     {
         "id": "PAC0023",
@@ -190,7 +190,7 @@
         "method": "OverlapBoxAll",
         "areas": ["Memory"],
         "description": "<b>Physics2D.OverlapBoxAll()</b> allocates managed memory.",
-        "solution": "Use <b>Physics2D.OverlapBoxNonAlloc()</b> instead."
+        "recommendation": "Use <b>Physics2D.OverlapBoxNonAlloc()</b> instead."
     },
     {
         "id": "PAC0024",
@@ -198,7 +198,7 @@
         "method": "OverlapAreaAll",
         "areas": ["Memory"],
         "description": "<b>Physics2D.OverlapAreaAll()</b> allocates managed memory.",
-        "solution": "Use <b>Physics2D.OverlapAreaNonAlloc()</b> instead."
+        "recommendation": "Use <b>Physics2D.OverlapAreaNonAlloc()</b> instead."
     },
     {
         "id": "PAC0025",
@@ -206,7 +206,7 @@
         "method": "OverlapCapsuleAll",
         "areas": ["Memory"],
         "description": "<b>Physics2D.OverlapCapsuleAll()</b> allocates managed memory.",
-        "solution": "Use <b>Physics2D.OverlapCapsuleNonAlloc()</b> instead."
+        "recommendation": "Use <b>Physics2D.OverlapCapsuleNonAlloc()</b> instead."
     },
     {
         "id": "PAC0026",
@@ -214,7 +214,7 @@
         "method": "GetComponentsInChildren",
         "areas": ["Memory"],
         "description": "<b>Component.GetComponentsInChildren()</b> allocates managed memory.",
-        "solution": "Ensure you are using one of the versions of <b>GameObject.GetComponentsInChildren()</b> which accepts a List<T> as a parameter and populates it with the components it finds."
+        "recommendation": "Ensure you are using one of the versions of <b>GameObject.GetComponentsInChildren()</b> which accepts a List<T> as a parameter and populates it with the components it finds."
     },
     {
         "id": "PAC0027",
@@ -222,7 +222,7 @@
         "method": "GetComponentsInParent",
         "areas": ["Memory"],
         "description": "<b>Component.GetComponentsInParent()</b> allocates managed memory.",
-        "solution": "Ensure you are using one of the versions of <b>GameObject.GetComponentsInParent()</b> which accepts a List<T> as a parameter and populates it with the components it finds."
+        "recommendation": "Ensure you are using one of the versions of <b>GameObject.GetComponentsInParent()</b> which accepts a List<T> as a parameter and populates it with the components it finds."
     },
     {
         "id": "PAC0028",
@@ -230,7 +230,7 @@
         "method": "GetComponentsInChildren",
         "areas": ["Memory"],
         "description": "Some versions of <b>GameObject.GetComponentsInChildren()</b> allocate managed memory.",
-        "solution": "Ensure you are using one of the versions of <b>GameObject.GetComponentsInChildren()</b> which accepts a List<T> as a parameter and populates it with the components it finds."
+        "recommendation": "Ensure you are using one of the versions of <b>GameObject.GetComponentsInChildren()</b> which accepts a List<T> as a parameter and populates it with the components it finds."
     },
     {
         "id": "PAC0029",
@@ -238,7 +238,7 @@
         "method": "GetComponentsInParent",
         "areas": ["Memory"],
         "description": "Some versions of <b>GameObject.GetComponentsInParent()</b> allocate managed memory.",
-        "solution": "Ensure you are using one of the versions of <b>GameObject.GetComponentsInParent()</b> which accepts a List<T> as a parameter and populates it with the components it finds."
+        "recommendation": "Ensure you are using one of the versions of <b>GameObject.GetComponentsInParent()</b> which accepts a List<T> as a parameter and populates it with the components it finds."
     },
     {
         "id": "PAC0030",
@@ -246,7 +246,7 @@
         "method": "OnTriggerStay",
         "areas": ["CPU"],
         "description": "<b>OnTriggerStay()</b> methods can detrimentally affect performance if they perform a lot of processing or if there are many Colliders which implement this method.",
-        "solution": "Profile CPU performance to look for bottlenecks, examine the contents of all <b>OnTriggerStay()</b> methods, and consider refactoring code to not use them."
+        "recommendation": "Profile CPU performance to look for bottlenecks, examine the contents of all <b>OnTriggerStay()</b> methods, and consider refactoring code to not use them."
     },
     {
         "id": "PAC0031",
@@ -254,7 +254,7 @@
         "method": "OnTriggerStay",
         "areas": ["CPU"],
         "description": "<b>OnTriggerStay()</b> methods can detrimentally affect performance if they perform a lot of processing or if there are many MonoBehaviours which implement this method.",
-        "solution": "Profile CPU performance to look for bottlenecks, examine the contents of all <b>OnTriggerStay()</b> methods, and consider refactoring code to not use them."
+        "recommendation": "Profile CPU performance to look for bottlenecks, examine the contents of all <b>OnTriggerStay()</b> methods, and consider refactoring code to not use them."
     },
     {
         "id": "PAC0032",
@@ -262,7 +262,7 @@
         "method": "OnTriggerStay2D",
         "areas": ["CPU"],
         "description": "<b>OnTriggerStay2D()</b> methods can detrimentally affect performance if they perform a lot of processing or if there are many Collider2Ds which implement this method.",
-        "solution": "Profile CPU performance to look for bottlenecks, examine the contents of all <b>OnTriggerStay2D()</b> methods, and consider refactoring code to not use them."
+        "recommendation": "Profile CPU performance to look for bottlenecks, examine the contents of all <b>OnTriggerStay2D()</b> methods, and consider refactoring code to not use them."
     },
     {
         "id": "PAC0033",
@@ -270,7 +270,7 @@
         "method": "OnTriggerStay2D",
         "areas": ["CPU"],
         "description": "<b>OnTriggerStay2D()</b> methods can detrimentally affect performance if they perform a lot of processing or if there are many MonoBehaviours which implement this method.",
-        "solution": "Profile CPU performance to look for bottlenecks, examine the contents of all <b>OnTriggerStay2D()</b> methods, and consider refactoring code to not use them."
+        "recommendation": "Profile CPU performance to look for bottlenecks, examine the contents of all <b>OnTriggerStay2D()</b> methods, and consider refactoring code to not use them."
     },
     {
         "id": "PAC0034",
@@ -278,7 +278,7 @@
         "method": "OnCollisionStay",
         "areas": ["CPU"],
         "description": "<b>OnCollisionStay()</b> methods can detrimentally affect performance if they perform a lot of processing or if there are many Colliders which implement this method.",
-        "solution": "Profile CPU performance to look for bottlenecks, examine the contents of all <b>OnCollisionStay()</b> methods, and consider refactoring code to not use them."
+        "recommendation": "Profile CPU performance to look for bottlenecks, examine the contents of all <b>OnCollisionStay()</b> methods, and consider refactoring code to not use them."
     },
     {
         "id": "PAC0035",
@@ -286,7 +286,7 @@
         "method": "OnCollisionStay",
         "areas": ["CPU"],
         "description": "<b>OnCollisionStay()</b> methods can detrimentally affect performance if they perform a lot of processing or if there are many MonoBehaviours which implement this method.",
-        "solution": "Profile CPU performance to look for bottlenecks, examine the contents of all <b>OnCollisionStay()</b> methods, and consider refactoring code to not use them."
+        "recommendation": "Profile CPU performance to look for bottlenecks, examine the contents of all <b>OnCollisionStay()</b> methods, and consider refactoring code to not use them."
     },
     {
         "id": "PAC0036",
@@ -294,7 +294,7 @@
         "method": "OnCollisionStay",
         "areas": ["CPU"],
         "description": "<b>OnCollisionStay()</b> methods can detrimentally affect performance if they perform a lot of processing or if there are many RigidBodies which implement this method.",
-        "solution": "Profile CPU performance to look for bottlenecks, examine the contents of all <b>OnCollisionStay()</b> methods, and consider refactoring code to not use them."
+        "recommendation": "Profile CPU performance to look for bottlenecks, examine the contents of all <b>OnCollisionStay()</b> methods, and consider refactoring code to not use them."
     },
     {
         "id": "PAC0037",
@@ -302,7 +302,7 @@
         "method": "LoadImage",
         "areas": ["Memory"],
         "description": "<b>ImageConversion.LoadImage()</b> defaults to maintaining a CPU-accessible copy of the image. This is a waste of memory if not needed.",
-        "solution": "If a CPU-accessible copy of the texture is not required, ensure that the markNonReadable flag passed into the method is set to true."
+        "recommendation": "If a CPU-accessible copy of the texture is not required, ensure that the markNonReadable flag passed into the method is set to true."
     },
     {
         "id": "PAC0039",
@@ -310,7 +310,7 @@
         "method": "material",
         "areas": ["GPU"],
         "description": "The <b>Renderer.material</b> property creates a unique copy of the Renderer's material. This breaks draw call batching and results in a higher number of draw calls, impacting rendering performance.",
-        "solution": "If possible, use <b>Renderer.sharedMaterial</b> instead."
+        "recommendation": "If possible, use <b>Renderer.sharedMaterial</b> instead."
     },
     {
         "id": "PAC0051",
@@ -318,7 +318,7 @@
         "method": "GetData",
         "areas": ["CPU"],
         "description": "<b>ComputeBuffer.GetData()</b> stalls the CPU until the GPU has finished accessing the buffer. This can lead to significant CPU performance problems.",
-        "solution": "Avoid reading back from ComputeBuffers if it is at all possible. If it's unavoidable, profile your project carefully and regularly to monitor the performance impact."
+        "recommendation": "Avoid reading back from ComputeBuffers if it is at all possible. If it's unavoidable, profile your project carefully and regularly to monitor the performance impact."
     },
     {
         "id": "PAC0052",
@@ -326,7 +326,7 @@
         "method": "SetPixels",
         "areas": ["CPU"],
         "description": "<b>Texture2D.SetPixels()</b> is slower than <b>Texture2D.SetPixels32()</b>.",
-        "solution": "Use <b>Texture2D.SetPixels32()</b>, <b>Texture2D.GetRawTextureData()</b>, or <b>Texture2D.Apply()</b> instead."
+        "recommendation": "Use <b>Texture2D.SetPixels32()</b>, <b>Texture2D.GetRawTextureData()</b>, or <b>Texture2D.Apply()</b> instead."
     },
     {
         "id": "PAC0053",
@@ -334,7 +334,7 @@
         "method": "SetPixels",
         "areas": ["CPU"],
         "description": "<b>Texture3D.SetPixels()</b> is slower than <b>Texture3D.SetPixels32()</b>.",
-        "solution": "Use <b>Texture3D.SetPixels32()</b> instead."
+        "recommendation": "Use <b>Texture3D.SetPixels32()</b> instead."
     },
     {
         "id": "PAC0054",
@@ -342,7 +342,7 @@
         "method": "SetPixels",
         "areas": ["CPU"],
         "description": "<b>Texture2DArray.SetPixels()</b> is slower than <b>Texture2DArray.SetPixels32()</b>.",
-        "solution": "Use <b>Texture2DArray.SetPixels32()</b> instead."
+        "recommendation": "Use <b>Texture2DArray.SetPixels32()</b> instead."
     },
     {
         "id": "PAC0055",
@@ -350,7 +350,7 @@
         "method": "SetPixels",
         "areas": ["CPU"],
         "description": "<b>CubemapArray.SetPixels()</b> is slower than <b>CubemapArray.SetPixels32()</b>.",
-        "solution": "Use <b>CubemapArray.SetPixels32()</b> instead."
+        "recommendation": "Use <b>CubemapArray.SetPixels32()</b> instead."
     },
     {
         "id": "PAC0056",
@@ -358,7 +358,7 @@
         "method": "SendMessage",
         "areas": ["CPU"],
         "description": "<b>GameObject.SendMessage()</b> is a very slow and CPU-intensive method.",
-        "solution": "Implement a custom system to replace SendMessage - get the components you want to send messages to and call methods directly on them."
+        "recommendation": "Implement a custom system to replace SendMessage - get the components you want to send messages to and call methods directly on them."
     },
     {
         "id": "PAC0057",
@@ -366,7 +366,7 @@
         "method": "SendMessage",
         "areas": ["CPU"],
         "description": "<b>Component.SendMessage()</b> is a very slow and CPU-intensive method.",
-        "solution": "Implement a custom system to replace SendMessage - get the components you want to send messages to and call methods directly on them."
+        "recommendation": "Implement a custom system to replace SendMessage - get the components you want to send messages to and call methods directly on them."
     },
     {
         "id": "PAC0058",
@@ -374,7 +374,7 @@
         "method": "OnGUI",
         "areas": ["CPU"],
         "description": "<b>OnGUI()</b> is used by the legacy Immediate Mode GUI (IMGUI), which is extremely CPU-intensive. If a single OnGUI() method is present in a project's code, IMGUI will initialize and consume CPU time.",
-        "solution": "Remove all <b>OnGUI()</b> methods from the project code."
+        "recommendation": "Remove all <b>OnGUI()</b> methods from the project code."
     },
     {
         "id": "PAC0059",
@@ -382,7 +382,7 @@
         "method": "corners",
         "areas": ["Memory"],
         "description": "The property <b>AI.NavMeshPath.corners</b> allocates managed memory.",
-        "solution": "Use <b>AI.NavMeshPath.GetCornersNonAlloc()</b> instead."
+        "recommendation": "Use <b>AI.NavMeshPath.GetCornersNonAlloc()</b> instead."
     },
     {
         "id": "PAC0060",
@@ -390,7 +390,7 @@
         "method": "parameters",
         "areas": ["Memory"],
         "description": "The property Animator.parameters allocates managed memory.",
-        "solution": "Use <b>Animator.GetParameter()</b> instead."
+        "recommendation": "Use <b>Animator.GetParameter()</b> instead."
     },
     {
         "id": "PAC0061",
@@ -398,7 +398,7 @@
         "method": "translationOffsets",
         "areas": ["Memory"],
         "description": "The property <b>Animations.ParentConstraint.translationOffsets</b> allocates managed memory.",
-        "solution": "Use <b>Animations.ParentConstraint.GetTranslationOffset()</b> instead."
+        "recommendation": "Use <b>Animations.ParentConstraint.GetTranslationOffset()</b> instead."
     },
     {
         "id": "PAC0062",
@@ -406,7 +406,7 @@
         "method": "rotationOffsets",
         "areas": ["Memory"],
         "description": "The property <b>Animations.ParentConstraint.rotationOffsets</b> allocates managed memory.",
-        "solution": "Use <b>Animations.ParentConstraint.GetRotationOffset()</b> instead."
+        "recommendation": "Use <b>Animations.ParentConstraint.GetRotationOffset()</b> instead."
     },
     {
         "id": "PAC0063",
@@ -414,7 +414,7 @@
         "method": "keys",
         "areas": ["Memory"],
         "description": "The property <b>AnimationCurve.keys</b> allocates managed memory.",
-        "solution": "Use <b>AnimationCurve.AddKey()</b>, <b>AnimationCurve.MoveKey()</b> or <b>AnimationCurve.RemoveKey()</b> instead."
+        "recommendation": "Use <b>AnimationCurve.AddKey()</b>, <b>AnimationCurve.MoveKey()</b> or <b>AnimationCurve.RemoveKey()</b> instead."
     },
     {
         "id": "PAC0066",
@@ -422,7 +422,7 @@
         "method": "allCameras",
         "areas": ["Memory"],
         "description": "The property <b>Camera.allCameras</b> allocates managed memory.",
-        "solution": "Use <b>Camera.GetAllCameras()</b> instead."
+        "recommendation": "Use <b>Camera.GetAllCameras()</b> instead."
     },
     {
         "id": "PAC0067",
@@ -430,7 +430,7 @@
         "method": "boneWeights",
         "areas": ["Memory"],
         "description": "The property <b>Mesh.boneWeights</b> allocates managed memory.",
-        "solution": "Use <b>Mesh.GetAllBoneWeights()</b> instead. This method returns a NativeArray of BoneWeight1, and so does not allocate managed memory."
+        "recommendation": "Use <b>Mesh.GetAllBoneWeights()</b> instead. This method returns a NativeArray of BoneWeight1, and so does not allocate managed memory."
     },
     {
         "id": "PAC0068",
@@ -438,7 +438,7 @@
         "method": "bindposes",
         "areas": ["Memory"],
         "description": "The property <b>Mesh.bindposes</b> allocates managed memory.",
-        "solution": "Use <b>Mesh.GetBindposes()</b> instead."
+        "recommendation": "Use <b>Mesh.GetBindposes()</b> instead."
     },
     {
         "id": "PAC0069",
@@ -446,7 +446,7 @@
         "method": "vertices",
         "areas": ["Memory"],
         "description": "The property <b>Mesh.vertices</b> allocates managed memory.",
-        "solution": "Use <b>Mesh.GetVertices()</b> instead."
+        "recommendation": "Use <b>Mesh.GetVertices()</b> instead."
     },
     {
         "id": "PAC0070",
@@ -454,7 +454,7 @@
         "method": "normals",
         "areas": ["Memory"],
         "description": "The property <b>Mesh.normals</b> allocates managed memory.",
-        "solution": "Use <b>Mesh.GetNormals()</b> instead."
+        "recommendation": "Use <b>Mesh.GetNormals()</b> instead."
     },
     {
         "id": "PAC0071",
@@ -462,7 +462,7 @@
         "method": "tangents",
         "areas": ["Memory"],
         "description": "The property <b>Mesh.tangents</b> allocates managed memory.",
-        "solution": "Use <b>Mesh.GetTangents()</b> instead."
+        "recommendation": "Use <b>Mesh.GetTangents()</b> instead."
     },
     {
         "id": "PAC0072",
@@ -470,7 +470,7 @@
         "method": "uv",
         "areas": ["Memory"],
         "description": "The property <b>Mesh.uv</b> allocates managed memory.",
-        "solution": "Use <b>Mesh.GetUVs()</b> instead."
+        "recommendation": "Use <b>Mesh.GetUVs()</b> instead."
     },
     {
         "id": "PAC0073",
@@ -478,7 +478,7 @@
         "method": "uv1",
         "areas": ["Memory"],
         "description": "The property <b>Mesh.uv1</b> allocates managed memory.",
-        "solution": "Use <b>Mesh.GetUVs()</b> instead."
+        "recommendation": "Use <b>Mesh.GetUVs()</b> instead."
     },
     {
         "id": "PAC0074",
@@ -486,7 +486,7 @@
         "method": "uv2",
         "areas": ["Memory"],
         "description": "The property <b>Mesh.uv2</b> allocates managed memory.",
-        "solution": "Use <b>Mesh.GetUVs()</b> instead."
+        "recommendation": "Use <b>Mesh.GetUVs()</b> instead."
     },
     {
         "id": "PAC0075",
@@ -494,7 +494,7 @@
         "method": "uv3",
         "areas": ["Memory"],
         "description": "The property <b>Mesh.uv3</b> allocates managed memory.",
-        "solution": "Use <b>Mesh.GetUVs()</b> instead."
+        "recommendation": "Use <b>Mesh.GetUVs()</b> instead."
     },
     {
         "id": "PAC0076",
@@ -502,7 +502,7 @@
         "method": "uv4",
         "areas": ["Memory"],
         "description": "The property <b>Mesh.uv4</b> allocates managed memory.",
-        "solution": "Use <b>Mesh.GetUVs()</b> instead."
+        "recommendation": "Use <b>Mesh.GetUVs()</b> instead."
     },
     {
         "id": "PAC0077",
@@ -510,7 +510,7 @@
         "method": "uv5",
         "areas": ["Memory"],
         "description": "The property <b>Mesh.uv5</b> allocates managed memory.",
-        "solution": "Use <b>Mesh.GetUVs()</b> instead."
+        "recommendation": "Use <b>Mesh.GetUVs()</b> instead."
     },
     {
         "id": "PAC0078",
@@ -518,7 +518,7 @@
         "method": "uv6",
         "areas": ["Memory"],
         "description": "The property <b>Mesh.uv6</b> allocates managed memory.",
-        "solution": "Use <b>Mesh.GetUVs()</b> instead."
+        "recommendation": "Use <b>Mesh.GetUVs()</b> instead."
     },
     {
         "id": "PAC0079",
@@ -526,7 +526,7 @@
         "method": "uv7",
         "areas": ["Memory"],
         "description": "The property <b>Mesh.uv7</b> allocates managed memory.",
-        "solution": "Use <b>Mesh.GetUVs()</b> instead."
+        "recommendation": "Use <b>Mesh.GetUVs()</b> instead."
     },
     {
         "id": "PAC0080",
@@ -534,7 +534,7 @@
         "method": "uv8",
         "areas": ["Memory"],
         "description": "The property <b>Mesh.uv8</b> allocates managed memory.",
-        "solution": "Use <b>Mesh.GetUVs()</b> instead."
+        "recommendation": "Use <b>Mesh.GetUVs()</b> instead."
     },
     {
         "id": "PAC0081",
@@ -542,7 +542,7 @@
         "method": "colors",
         "areas": ["Memory"],
         "description": "The property <b>Mesh.colors</b> allocates managed memory.",
-        "solution": "Use <b>Mesh.GetColors()</b> instead."
+        "recommendation": "Use <b>Mesh.GetColors()</b> instead."
     },
     {
         "id": "PAC0082",
@@ -550,7 +550,7 @@
         "method": "colors32",
         "areas": ["Memory"],
         "description": "The property <b>Mesh.colors32</b> allocates managed memory.",
-        "solution": "Use <b>Mesh.GetColors()</b> instead."
+        "recommendation": "Use <b>Mesh.GetColors()</b> instead."
     },
     {
         "id": "PAC0083",
@@ -558,7 +558,7 @@
         "method": "triangles",
         "areas": ["Memory"],
         "description": "The property <b>Mesh.triangles</b> allocates managed memory.",
-        "solution": "Use <b>Mesh.GetTriangles()</b> instead."
+        "recommendation": "Use <b>Mesh.GetTriangles()</b> instead."
     },
     {
         "id": "PAC0084",
@@ -566,7 +566,7 @@
         "method": "materials",
         "areas": ["Memory"],
         "description": "The property <b>Renderer.materials</b> allocates managed memory.",
-        "solution": "Use <b>Renderer.GetMaterials()</b> instead."
+        "recommendation": "Use <b>Renderer.GetMaterials()</b> instead."
     },
     {
         "id": "PAC0085",
@@ -574,7 +574,7 @@
         "method": "sharedMaterials",
         "areas": ["Memory"],
         "description": "The property <b>Renderer.sharedMaterials</b> allocates managed memory.",
-        "solution": "Use <b>Renderer.GetSharedMaterials()</b> instead."
+        "recommendation": "Use <b>Renderer.GetSharedMaterials()</b> instead."
     },
     {
         "id": "PAC0094",
@@ -582,7 +582,7 @@
         "method": "touches",
         "areas": ["Memory"],
         "description": "The property <b>Input.touches</b> allocates managed memory.",
-        "solution": "Use <b>Input.GetTouch()</b> instead."
+        "recommendation": "Use <b>Input.GetTouch()</b> instead."
     },
     {
         "id": "PAC0095",
@@ -590,7 +590,7 @@
         "method": "accelerationEvents",
         "areas": ["Memory"],
         "description": "The property <b>Input.accelerationEvents</b> allocates managed memory.",
-        "solution": "Use <b>Input.GetAccelerationEvent()</b> instead."
+        "recommendation": "Use <b>Input.GetAccelerationEvent()</b> instead."
     },
     {
         "id": "PAC0096",
@@ -598,7 +598,7 @@
         "method": "localNotifications",
         "areas": ["Memory"],
         "description": "The property <b>iOS.NotificationServices.localNotifications</b> allocates managed memory.",
-        "solution": "Use <b>iOS.NotificationServices.GetLocalNotification()</b> instead.",
+        "recommendation": "Use <b>iOS.NotificationServices.GetLocalNotification()</b> instead.",
         "maximumVersion": "2021.3",
         "platforms": ["iOS"]
     },
@@ -608,7 +608,7 @@
         "method": "remoteNotifications",
         "areas": ["Memory"],
         "description": "The property <b>iOS.NotificationServices.remoteNotifications</b> allocates managed memory.",
-        "solution": "Use <b>iOS.NotificationServices.GetRemoteNotification()</b> instead.",
+        "recommendation": "Use <b>iOS.NotificationServices.GetRemoteNotification()</b> instead.",
         "maximumVersion": "2021.3",
         "platforms": ["iOS"]
     },
@@ -618,7 +618,7 @@
         "method": "customStyles",
         "areas": ["Memory"],
         "description": "The property <b>GUISkin.customStyles</b> allocates managed memory.",
-        "solution": "Use <b>GUISkin.GetStyle()</b> or <b>GUISkin.FindStyle()</b> instead."
+        "recommendation": "Use <b>GUISkin.GetStyle()</b> or <b>GUISkin.FindStyle()</b> instead."
     },
     {
         "id": "PAC0103",
@@ -626,7 +626,7 @@
         "method": "contacts",
         "areas": ["Memory"],
         "description": "The property <b>Collision.contacts</b> allocates managed memory.",
-        "solution": "Use <b>Collision.GetContacts()</b> instead."
+        "recommendation": "Use <b>Collision.GetContacts()</b> instead."
     },
     {
         "id": "PAC0104",
@@ -634,7 +634,7 @@
         "method": "contacts",
         "areas": ["Memory"],
         "description": "The property <b>Collision2D.contacts</b> allocates managed memory.",
-        "solution": "Use <b>Collision2D.GetContacts()</b> instead."
+        "recommendation": "Use <b>Collision2D.GetContacts()</b> instead."
     },
     {
         "id": "PAC0110",
@@ -642,7 +642,7 @@
         "method": "treeInstances",
         "areas": ["Memory"],
         "description": "The property <b>TerrainData.treeInstances</b> allocates managed memory.",
-        "solution": "Use <b>TerrainData.GetTreeInstance()</b> instead."
+        "recommendation": "Use <b>TerrainData.GetTreeInstance()</b> instead."
     },
     {
         "id": "PAC0111",
@@ -650,7 +650,7 @@
         "method": "alphamapTextures",
         "areas": ["Memory"],
         "description": "The property <b>TerrainData.alphamapTextures</b> allocates managed memory.",
-        "solution": "Use <b>TerrainData.GetAlphamapTexture()</b> instead."
+        "recommendation": "Use <b>TerrainData.GetAlphamapTexture()</b> instead."
     },
     {
         "id": "PAC0112",
@@ -658,7 +658,7 @@
         "method": "characterInfo",
         "areas": ["Memory"],
         "description": "The property <b>Font.characterInfo</b> allocates managed memory.",
-        "solution": "Use <b>Font.GetCharacterInfo()</b> instead."
+        "recommendation": "Use <b>Font.GetCharacterInfo()</b> instead."
     },
     {
         "id": "PAC0115",
@@ -666,7 +666,7 @@
         "method": "GetCurrentAnimatorClipInfo",
         "areas": ["Memory"],
         "description": "<b>Animator.GetCurrentAnimatorClipInfo()</b> allocates managed memory.",
-        "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0116",
@@ -674,7 +674,7 @@
         "method": "GetBehaviours",
         "areas": ["Memory"],
         "description": "<b>Animator.GetBehaviours()</b> allocates managed memory.",
-        "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0117",
@@ -682,7 +682,7 @@
         "method": "LoadAssetWithSubAssets",
         "areas": ["Memory"],
         "description": "<b>AssetBundle.LoadAssetWithSubAssets()</b> allocates managed memory.",
-        "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0118",
@@ -690,7 +690,7 @@
         "method": "LoadAllAssets",
         "areas": ["Memory"],
         "description": "<b>AssetBundle.LoadAllAssets()</b> allocates managed memory.",
-        "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0119",
@@ -698,7 +698,7 @@
         "method": "GetAllAssetBundles",
         "areas": ["Memory"],
         "description": "<b>AssetBundleManifest.GetAllAssetBundles()</b> allocates managed memory.",
-        "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0120",
@@ -706,7 +706,7 @@
         "method": "LoadAll",
         "areas": ["Memory"],
         "description": "<b>Resources.LoadAll()</b> allocates managed memory.",
-        "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0121",
@@ -714,7 +714,7 @@
         "method": "PackTextures",
         "areas": ["Memory"],
         "description": "<b>Texture2D.PackTextures()</b> allocates managed memory.",
-        "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0122",
@@ -722,7 +722,7 @@
         "method": "GetPixels",
         "areas": ["Memory"],
         "description": "<b>Cubemap.GetPixels()</b> allocates managed memory.",
-        "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0123",
@@ -730,7 +730,7 @@
         "method": "GetPixels",
         "areas": ["Memory"],
         "description": "<b>Texture3D.GetPixels()</b> allocates managed memory.",
-        "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0124",
@@ -738,7 +738,7 @@
         "method": "GetPixels32",
         "areas": ["Memory"],
         "description": "<b>Texture3D.GetPixels32()</b> allocates managed memory.",
-        "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0125",
@@ -746,7 +746,7 @@
         "method": "GetPixels",
         "areas": ["Memory"],
         "description": "<b>Texture2DArray.GetPixels()</b> allocates managed memory.",
-        "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0126",
@@ -754,7 +754,7 @@
         "method": "GetPixels32",
         "areas": ["Memory"],
         "description": "<b>Texture2DArray.GetPixels32()</b> allocates managed memory.",
-        "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0127",
@@ -762,7 +762,7 @@
         "method": "GetPixels",
         "areas": ["Memory"],
         "description": "<b>CubemapArray.GetPixels()</b> allocates managed memory.",
-        "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0128",
@@ -770,7 +770,7 @@
         "method": "GetPixels32",
         "areas": ["Memory"],
         "description": "<b>CubemapArray.GetPixels32()</b> allocates managed memory.",
-        "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0129",
@@ -778,7 +778,7 @@
         "method": "FindObjectsOfType",
         "areas": ["CPU", "Memory"],
         "description": "<b>Object.FindObjectsOfType()</b> allocates managed memory and can be slow.",
-        "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0130",
@@ -786,7 +786,7 @@
         "method": "ComputeMD5Hash",
         "areas": ["Memory"],
         "description": "<b>Windows.Crypto.ComputeMD5Hash()</b> allocates managed memory.",
-        "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0131",
@@ -794,7 +794,7 @@
         "method": "ReadAllBytes",
         "areas": ["Memory"],
         "description": "<b>Windows.File.ReadAllBytes()</b> allocates managed memory.",
-        "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0132",
@@ -802,7 +802,7 @@
         "method": "EncodeToJPG",
         "areas": ["Memory"],
         "description": "<b>ImageConversion.EncodeToJPG()</b> allocates managed memory.",
-        "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0133",
@@ -810,7 +810,7 @@
         "method": "EncodeToEXR",
         "areas": ["Memory"],
         "description": "<b>ImageConversion.EncodeToEXR()</b> allocates managed memory.",
-        "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0134",
@@ -818,7 +818,7 @@
         "method": "EncodeToTGA",
         "areas": ["Memory"],
         "description": "<b>ImageConversion.EncodeToTGA()</b> allocates managed memory.",
-        "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0135",
@@ -826,7 +826,7 @@
         "method": "EncodeToPNG",
         "areas": ["Memory"],
         "description": "<b>ImageConversion.EncodeToPNG()</b> allocates managed memory.",
-        "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0136",
@@ -834,7 +834,7 @@
         "method": "Generate",
         "areas": ["Memory"],
         "description": "<b>U2D.SpriteShapeUtility.Generate()</b> allocates managed memory.",
-        "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used.",
+        "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used.",
         "minimumVersion": "2019.3"
     },
     {
@@ -843,7 +843,7 @@
         "method": "layers",
         "areas": ["Memory"],
         "description": "The property <b>AI.NavMeshTriangulation.layers</b> allocates managed memory.",
-        "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0139",
@@ -851,7 +851,7 @@
         "method": "events",
         "areas": ["Memory"],
         "description": "The property <b>AnimationClip.events</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0140",
@@ -859,7 +859,7 @@
         "method": "animationClips",
         "areas": ["Memory"],
         "description": "The property <b>AnimatorOverrideController.animationClips</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0141",
@@ -867,7 +867,7 @@
         "method": "MuscleName",
         "areas": ["Memory"],
         "description": "The property <b>HumanTrait.MuscleName</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0142",
@@ -875,7 +875,7 @@
         "method": "BoneName",
         "areas": ["Memory"],
         "description": "The property <b>HumanTrait.BoneName</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0143",
@@ -883,7 +883,7 @@
         "method": "animationClips",
         "areas": ["Memory"],
         "description": "The property <b>RuntimeAnimatorController.animationClips</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0144",
@@ -891,7 +891,7 @@
         "method": "allAssets",
         "areas": ["Memory"],
         "description": "The property <b>AssetBundleRequest.allAssets</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0145",
@@ -899,7 +899,7 @@
         "method": "devices",
         "areas": ["Memory"],
         "description": "The property <b>Microphone.devices</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0146",
@@ -907,7 +907,7 @@
         "method": "availableResolutions",
         "areas": ["Memory"],
         "description": "The property <b>WebCamDevice.availableResolutions</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0147",
@@ -915,7 +915,7 @@
         "method": "devices",
         "areas": ["Memory"],
         "description": "The property <b>WebCamTexture.devices</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0148",
@@ -923,7 +923,7 @@
         "method": "vertices",
         "areas": ["Memory"],
         "description": "The property <b>Cloth.vertices</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0149",
@@ -931,7 +931,7 @@
         "method": "normals",
         "areas": ["Memory"],
         "description": "The property <b>Cloth.normals</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0150",
@@ -939,7 +939,7 @@
         "method": "coefficients",
         "areas": ["Memory"],
         "description": "The property <b>Cloth.coefficients</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0151",
@@ -947,7 +947,7 @@
         "method": "capsuleColliders",
         "areas": ["Memory"],
         "description": "The property <b>Cloth.capsuleColliders</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0152",
@@ -955,7 +955,7 @@
         "method": "sphereColliders",
         "areas": ["Memory"],
         "description": "The property <b>Cloth.sphereColliders</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0153",
@@ -963,7 +963,7 @@
         "method": "layerCullDistances",
         "areas": ["Memory"],
         "description": "The property <b>Camera.layerCullDistances</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0154",
@@ -971,7 +971,7 @@
         "method": "reports",
         "areas": ["Memory"],
         "description": "The property CrashReport.reports allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0155",
@@ -979,7 +979,7 @@
         "method": "colorKeys",
         "areas": ["Memory"],
         "description": "The property <b>Gradient.colorKeys</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0156",
@@ -987,7 +987,7 @@
         "method": "alphaKeys",
         "areas": ["Memory"],
         "description": "The property <b>Gradient.alphaKeys</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0157",
@@ -995,7 +995,7 @@
         "method": "resolutions",
         "areas": ["Memory"],
         "description": "The property <b>Screen.resolutions</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0158",
@@ -1003,7 +1003,7 @@
         "method": "lightmaps",
         "areas": ["Memory"],
         "description": "The property <b>LightmapSettings.lightmaps</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0159",
@@ -1011,7 +1011,7 @@
         "method": "positions",
         "areas": ["Memory"],
         "description": "The property <b>LightProbes.positions</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0160",
@@ -1019,7 +1019,7 @@
         "method": "bakedProbes",
         "areas": ["Memory"],
         "description": "The property <b>LightProbes.bakedProbes</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0161",
@@ -1027,7 +1027,7 @@
         "method": "coefficients",
         "areas": ["Memory"],
         "description": "The property <b>LightProbes.coefficients</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0162",
@@ -1035,7 +1035,7 @@
         "method": "names",
         "areas": ["Memory"],
         "description": "The property <b>QualitySettings.names</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0163",
@@ -1043,7 +1043,7 @@
         "method": "shaderKeywords",
         "areas": ["Memory"],
         "description": "The property <b>Material.shaderKeywords</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0164",
@@ -1051,7 +1051,7 @@
         "method": "layerShadowCullDistances",
         "areas": ["Memory"],
         "description": "The property <b>Light.layerShadowCullDistances</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0165",
@@ -1059,7 +1059,7 @@
         "method": "colorRenderTargets",
         "areas": ["Memory"],
         "description": "The property <b>Rendering.RenderTargetBinding.colorRenderTargets</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0166",
@@ -1067,7 +1067,7 @@
         "method": "colorLoadActions",
         "areas": ["Memory"],
         "description": "The property <b>Rendering.RenderTargetBinding.colorLoadActions</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0167",
@@ -1075,7 +1075,7 @@
         "method": "colorStoreActions",
         "areas": ["Memory"],
         "description": "The property <b>Rendering.RenderTargetBinding.colorStoreActions</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0168",
@@ -1083,7 +1083,7 @@
         "method": "bones",
         "areas": ["Memory"],
         "description": "The property <b>SkinnedMeshRenderer.bones</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0169",
@@ -1091,7 +1091,7 @@
         "method": "probePositions",
         "areas": ["Memory"],
         "description": "The property <b>LightProbeGroup.probePositions</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0170",
@@ -1099,7 +1099,7 @@
         "method": "connections",
         "areas": ["Memory"],
         "description": "The property <b>Network.connections</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
         "maximumVersion": "2018.4"
     },
     {
@@ -1108,7 +1108,7 @@
         "method": "ip",
         "areas": ["Memory"],
         "description": "The property <b>HostData.ip</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
         "maximumVersion": "2018.4"
     },
     {
@@ -1117,7 +1117,7 @@
         "method": "layers",
         "areas": ["Memory"],
         "description": "The property <b>SortingLayer.layers</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0173",
@@ -1125,7 +1125,7 @@
         "method": "bytes",
         "areas": ["Memory"],
         "description": "The property <b>TextAsset.bytes</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0175",
@@ -1133,7 +1133,7 @@
         "method": "deviceToken",
         "areas": ["Memory"],
         "description": "The property <b>iOS.NotificationServices.deviceToken</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
         "maximumVersion": "2021.3",
         "platforms": ["iOS"]
     },
@@ -1143,7 +1143,7 @@
         "method": "scheduledLocalNotifications",
         "areas": ["Memory"],
         "description": "The property <b>iOS.NotificationServices.scheduledLocalNotifications</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
         "maximumVersion": "2021.3",
         "platforms": ["iOS"]
     },
@@ -1153,7 +1153,7 @@
         "method": "vertices",
         "areas": ["Memory"],
         "description": "The property <b>Sprite.vertices</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0178",
@@ -1161,7 +1161,7 @@
         "method": "triangles",
         "areas": ["Memory"],
         "description": "The property <b>Sprite.triangles</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0179",
@@ -1169,7 +1169,7 @@
         "method": "uv",
         "areas": ["Memory"],
         "description": "The property <b>Sprite.uv</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0180",
@@ -1177,7 +1177,7 @@
         "method": "friends",
         "areas": ["Memory"],
         "description": "The property <b>SocialPlatforms.ILocalUser.friends</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0181",
@@ -1185,7 +1185,7 @@
         "method": "scores",
         "areas": ["Memory"],
         "description": "The property <b>SocialPlatforms.ILeaderboard.scores</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0182",
@@ -1193,7 +1193,7 @@
         "method": "scaledBackgrounds",
         "areas": ["Memory"],
         "description": "The property <b>GUIStyleState.scaledBackgrounds</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0183",
@@ -1201,7 +1201,7 @@
         "method": "points",
         "areas": ["Memory"],
         "description": "The property <b>EdgeCollider2D.points</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0184",
@@ -1209,7 +1209,7 @@
         "method": "points",
         "areas": ["Memory"],
         "description": "The property <b>PolygonCollider2D.points</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0185",
@@ -1217,7 +1217,7 @@
         "method": "activeTerrains",
         "areas": ["Memory"],
         "description": "The property <b>Terrain.activeTerrains</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0186",
@@ -1225,7 +1225,7 @@
         "method": "detailPrototypes",
         "areas": ["Memory"],
         "description": "The property <b>TerrainData.detailPrototypes</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0187",
@@ -1233,7 +1233,7 @@
         "method": "treePrototypes",
         "areas": ["Memory"],
         "description": "The property <b>TerrainData.treePrototypes</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0188",
@@ -1241,7 +1241,7 @@
         "method": "splatPrototypes",
         "areas": ["Memory"],
         "description": "The property <b>TerrainData.splatPrototypes</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0189",
@@ -1249,7 +1249,7 @@
         "method": "terrainLayers",
         "areas": ["Memory"],
         "description": "The property <b>TerrainData.terrainLayers</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0190",
@@ -1257,7 +1257,7 @@
         "method": "animatedSprites",
         "areas": ["Memory"],
         "description": "The property <b>Tilemaps.TileAnimationData.animatedSprites</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0191",
@@ -1265,7 +1265,7 @@
         "method": "obsoleteNames",
         "areas": ["Memory"],
         "description": "The property <b>UIElements.UxmlAttributeDescription.obsoleteNames</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
         "minimumVersion": "2019.1"
     },
     {
@@ -1274,7 +1274,7 @@
         "method": "sectionData",
         "areas": ["Memory"],
         "description": "The property <b>Networking.IMultipartFormSection.sectionData</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0201",
@@ -1282,7 +1282,7 @@
         "method": "sectionData",
         "areas": ["Memory"],
         "description": "The property <b>Networking.MultipartFormDataSection.sectionData</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0202",
@@ -1290,7 +1290,7 @@
         "method": "sectionData",
         "areas": ["Memory"],
         "description": "The property <b>Networking.MultipartFormFileSection.sectionData</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0203",
@@ -1298,7 +1298,7 @@
         "method": "data",
         "areas": ["Memory"],
         "description": "The property <b>WWWForm.data</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0204",
@@ -1306,7 +1306,7 @@
         "method": "data",
         "areas": ["Memory"],
         "description": "The property Networking.DownloadHandler.data allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0208",
@@ -1314,7 +1314,7 @@
         "method": "data",
         "areas": ["Memory"],
         "description": "The property <b>Networking.UploadHandler.data</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0215",
@@ -1322,7 +1322,7 @@
         "method": "peers",
         "areas": ["Memory"],
         "description": "The property <b>Networking.NetworkMigrationManager.peers</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
         "maximumVersion": "2018.4"
     },
     {
@@ -1331,7 +1331,7 @@
         "method": "messageBuffer",
         "areas": ["Memory"],
         "description": "The property <b>Networking.NetworkServerSimple.messageBuffer</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used.",
         "maximumVersion": "2018.4"
     },
     {
@@ -1340,7 +1340,7 @@
         "method": "bytes",
         "areas": ["Memory"],
         "description": "The property <b>WWW.bytes</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0219",
@@ -1348,7 +1348,7 @@
         "method": "supportedDevices",
         "areas": ["Memory"],
         "description": "The property <b>XR.XRSettings.supportedDevices</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0220",
@@ -1356,7 +1356,7 @@
         "method": "Arguments",
         "areas": ["Memory"],
         "description": "The property <b>TestTools.Constraints.AllocatingGCMemoryConstraint.Arguments</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0221",
@@ -1364,7 +1364,7 @@
         "method": "include",
         "areas": ["Memory"],
         "description": "The property <b>TestTools.UnityPlatformAttribute.include</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0222",
@@ -1372,7 +1372,7 @@
         "method": "exclude",
         "areas": ["Memory"],
         "description": "The property <b>TestTools.UnityPlatformAttribute.exclude</b> allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
         "id": "PAC0223",
@@ -1380,7 +1380,7 @@
         "method": "tag",
         "areas": ["Memory"],
         "description": "The <b>GameObject.tag</b> property allocates managed memory.",
-        "solution": "Try to avoid getting this property in frequently-updated code. Prefer using <b>GameObject.CompareTag()</b> instead, as this does not result in managed allocations."
+        "recommendation": "Try to avoid getting this property in frequently-updated code. Prefer using <b>GameObject.CompareTag()</b> instead, as this does not result in managed allocations."
     },
     {
         "id": "PAC0224",
@@ -1388,7 +1388,7 @@
         "method": "Instantiate",
         "areas": ["CPU","Memory"],
         "description": "Creating Objects at runtime by calling <b>Object.Instantiate</b> can take a significant amount of CPU time and allocates managed memory.",
-        "solution": "Try to avoid calling <b>Object.Instantiate</b> in frequently-updated code. Consider implementing an Object Pool. The <b>ObjectPool</b> class is available from Unity 2021.1 as a convenience."
+        "recommendation": "Try to avoid calling <b>Object.Instantiate</b> in frequently-updated code. Consider implementing an Object Pool. The <b>ObjectPool</b> class is available from Unity 2021.1 as a convenience."
     },
     {
         "id": "PAC0225",
@@ -1396,7 +1396,7 @@
         "method": "AddComponent",
         "areas": ["CPU","Memory"],
         "description": "Adding components to GameObjects at runtime can take a significant amount of CPU time and allocates managed memory.",
-        "solution": "Try to avoid adding or removing components in frequently-updated code. Prefer instantiating GameObjects from Prefabs will all the necessary components instead."
+        "recommendation": "Try to avoid adding or removing components in frequently-updated code. Prefer instantiating GameObjects from Prefabs will all the necessary components instead."
     },
     {
       "id": "PAC0227",
@@ -1405,7 +1405,7 @@
       "areas": ["CPU"],
       "defaultSeverity": 3,
       "description": "<b>WarmupAllShaders</b> does not work properly on Metal, Vulkan or DX12. This might result in unexpected CPU spikes due to shader compilation.",
-      "solution": "Implement a shader pre-warming mechanism which renders a small triangle for each combination of vertex format and shader used at runtime. One way to achieve this is with the <b>UnityEngine.Experimental.Rendering.ShaderWarmup</b> API."
+      "recommendation": "Implement a shader pre-warming mechanism which renders a small triangle for each combination of vertex format and shader used at runtime. One way to achieve this is with the <b>UnityEngine.Experimental.Rendering.ShaderWarmup</b> API."
     },
     {
       "id": "PAC0228",
@@ -1414,7 +1414,7 @@
       "areas": ["CPU"],
       "defaultSeverity": 3,
       "description": "<b>WarmUp</b> does not work properly on Metal, Vulkan or DX12. This might result in unexpected CPU spikes due to shader compilation.",
-      "solution": "Implement a shader pre-warming mechanism which renders a small triangle for each combination of vertex format and shader variant used at runtime. One way to achieve this is with the <b>UnityEngine.Experimental.Rendering.ShaderWarmup</b> API."
+      "recommendation": "Implement a shader pre-warming mechanism which renders a small triangle for each combination of vertex format and shader variant used at runtime. One way to achieve this is with the <b>UnityEngine.Experimental.Rendering.ShaderWarmup</b> API."
     },
     {
       "id": "PAC0229",
@@ -1422,7 +1422,7 @@
       "method": "tag",
       "areas": ["Memory"],
       "description": "The <b>Component.tag</b> property allocates managed memory.",
-      "solution": "Try to avoid getting this property in frequently-updated code. Prefer using <b>CompareTag()</b> instead, as this does not result in managed allocations."
+      "recommendation": "Try to avoid getting this property in frequently-updated code. Prefer using <b>CompareTag()</b> instead, as this does not result in managed allocations."
     },
     {
       "id": "PAC0231",
@@ -1430,7 +1430,7 @@
       "method": "name",
       "areas": ["Memory"],
       "description": "The <b>Object.name</b> property allocates managed memory.",
-      "solution": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
+      "recommendation": "Try to avoid getting this property in frequently-updated code. Ideally, this property should only be used during initialisation, and the results should be cached if they need to be re-used."
     },
     {
       "id": "PAC1000",
@@ -1438,7 +1438,7 @@
       "method": "*",
       "areas": ["CPU","Memory"],
       "description": "Linq allocates large amounts of managed memory and exhibits poor CPU performance.",
-      "solution": "We strongly advise against using Linq in any frequently-updated code. Ban its usage from the project entirely, or confine it to initialization code and use it sparingly."
+      "recommendation": "We strongly advise against using Linq in any frequently-updated code. Ban its usage from the project entirely, or confine it to initialization code and use it sparingly."
     },
     {
       "id": "PAC1001",
@@ -1446,7 +1446,7 @@
       "method": "*",
       "areas": ["CPU"],
       "description": "Reflection is slow, and not generally considered performant enough for runtime code.",
-      "solution": "Remove code which relies on reflection, or minimise its usage, particularly outside of initialization."
+      "recommendation": "Remove code which relies on reflection, or minimise its usage, particularly outside of initialization."
     },
     {
       "id": "PAC1002",
@@ -1455,7 +1455,7 @@
       "areas": ["Memory"],
       "defaultSeverity": 5,
       "description": "String concatenation operations allocates managed memory.",
-      "solution": "Try to avoid concatenating strings in frequently-updated code. Prefer using a StringBuilder instead, as this minimizes managed allocations."
+      "recommendation": "Try to avoid concatenating strings in frequently-updated code. Prefer using a StringBuilder instead, as this minimizes managed allocations."
     },
     {
       "id": "PAC1003",
@@ -1463,7 +1463,7 @@
       "method": "Now",
       "areas": ["CPU"],
       "description": "<b>System.DateTime.Now</b> can take a lot of CPU time because it needs to figure out the current timezone and daylight saving time information.",
-      "solution": "Try to avoid using this method in frequently-updated code. Prefer UnityEngine.Time.time or, if precise time is needed, use DateTime.UtcNow."
+      "recommendation": "Try to avoid using this method in frequently-updated code. Prefer UnityEngine.Time.time or, if precise time is needed, use DateTime.UtcNow."
     },
     {
       "id": "PAC1004",
@@ -1471,7 +1471,7 @@
       "method": "GetAssemblies",
       "areas": ["CPU"],
       "description": "<b>System.AppDomain.GetAssemblies</b> can take a lot of CPU time.",
-      "solution": "Try to minimize calls to <b>System.AppDomain.GetAssemblies</b> by caching the returned assemblies. When possible, use <b>UnityEditor.TypeCache</b> for fast access to types, methods and fields."
+      "recommendation": "Try to minimize calls to <b>System.AppDomain.GetAssemblies</b> by caching the returned assemblies. When possible, use <b>UnityEditor.TypeCache</b> for fast access to types, methods and fields."
     },
     {
       "id": "PAC0232",
@@ -1479,7 +1479,7 @@
       "method": "FindAssets",
       "areas": ["CPU"],
       "description": "<b>UnityEditor.AssetDatabase.FindAssets</b> is a CPU-intensive operation and can slow down the Editor for long periods of time on large projects.",
-      "solution": "Try to minimize calls to <b>UnityEditor.AssetDatabase.FindAssets</b>."
+      "recommendation": "Try to minimize calls to <b>UnityEditor.AssetDatabase.FindAssets</b>."
     },
     {
       "id": "PAC0234",
@@ -1487,6 +1487,6 @@
       "method": "FindObjectOfType",
       "areas": ["CPU", "Memory"],
       "description": "<b>Object.FindObjectOfType()</b> allocates managed memory and can be slow.",
-      "solution": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
+      "recommendation": "Try to avoid calling this method in frequently-updated code. Ideally, this method should only be used during initialisation, and the results should be cached if they need to be re-used."
     }
 ]

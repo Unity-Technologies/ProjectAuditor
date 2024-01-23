@@ -33,7 +33,7 @@ namespace Unity.ProjectAuditor.Editor
         string[] m_CustomProperties;
 
         /// <summary>
-        /// Determines whether the issue was fixed. Only used for diagnostics.
+        /// Determines whether the Issue was fixed. Only used if the ReportItem represents an Issue.
         /// </summary>
         [JsonIgnore]
         [SerializeField]
@@ -136,7 +136,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Location of the item or diagnostic (read-only).
+        /// Location of the Insight or Issue (read-only).
         /// </summary>
         [JsonProperty("location")]
         public Location Location
@@ -167,7 +167,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Diagnostics-specific Severity (read-only).
+        /// Issue-specific Severity (read-only).
         /// </summary>
         [JsonIgnore]
         public Severity Severity
@@ -229,7 +229,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Checks whether this issue is a diagnostic.
+        /// Checks whether this ReportItem represents an Issue.
         /// </summary>
         /// <returns>True if the issue's descriptor ID is valid. Otherwise, returns false.</returns>
         public bool IsIssue()

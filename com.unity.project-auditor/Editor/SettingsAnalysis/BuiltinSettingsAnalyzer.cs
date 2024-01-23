@@ -5,7 +5,6 @@ using System.Reflection;
 using Unity.ProjectAuditor.Editor.Core;
 using UnityEditor.Macros;
 using UnityEngine;
-using Module = Unity.ProjectAuditor.Editor.Core.Module;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {

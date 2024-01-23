@@ -2,28 +2,41 @@ using System.Linq;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
-    // stephenm TODO: Document
+    /// <summary>
+    /// Provides methods to construct a <seealso cref="ReportItem"/> object for a ProjectReport.
+    /// </summary>
     public class IssueBuilder
     {
         ReportItem m_Issue;
 
-        // stephenm TODO: Document
+        /// <summary>Implicit conversion of IssueBuilder to ReportItem.</summary>
+        /// <param name="builder">An IssueBuilder to convert</param>
+        /// <returns>A ReportItem</returns>
         public static implicit operator ReportItem(IssueBuilder builder) => builder.m_Issue;
 
-        // stephenm TODO: Document
+        /// <summary>
+        /// Constructor for an object to build ReportItems representing Issues.
+        /// </summary>
+        /// <param name="category">The IssueCategory of the reported Issue</param>
+        /// <param name="id">Identifies the Descriptor object containing information about the Issue</param>
+        /// <param name="args">Arguments to be used in the message formatting</param>
         public IssueBuilder(IssueCategory category, DescriptorId id, params object[] args)
         {
             m_Issue = new ReportItem(category, id, args);
         }
 
-        // stephenm TODO: Document
+        /// <summary>
+        /// Constructor for an object to build ReportItems representing Insights.
+        /// </summary>
+        /// <param name="category">The IssueCategory of the reported Insight</param>
+        /// <param name="description">The primary descriptive string for this Insight</param>
         public IssueBuilder(IssueCategory category, string description)
         {
             m_Issue = new ReportItem(category, description);
         }
 
         /// <summary>
-        /// Initialize all custom properties to the same value
+        /// Initialize all custom properties to the same value.
         /// </summary>
         /// <param name="numProperties"> total number of custom properties </param>
         /// <param name="property"> value the properties will be set to </param>
@@ -36,7 +49,7 @@ namespace Unity.ProjectAuditor.Editor.Core
         }
 
         /// <summary>
-        /// Initialize custom properties
+        /// Initialize custom properties.
         /// </summary>
         /// <param name="properties"> Issue-specific properties </param>
         public IssueBuilder WithCustomProperties(object[] properties)
@@ -49,35 +62,56 @@ namespace Unity.ProjectAuditor.Editor.Core
             return this;
         }
 
-        // stephenm TODO: Document
+        /// <summary>
+        /// Adds a description string to the ReportItem being built.
+        /// </summary>
+        /// <param name="description">Description string to add</param>
+        /// <returns>The IssueBuilder object with the description string added</returns>
         public IssueBuilder WithDescription(string description)
         {
             m_Issue.Description = description;
             return this;
         }
 
-        // stephenm TODO: Document
+        /// <summary>
+        /// Adds a DependencyNode to the ReportItem being built.
+        /// </summary>
+        /// <param name="dependencies">The root DependencyNode of a dependency chain to add</param>
+        /// <returns>The IssueBuilder object with the DependencyNode added</returns>
         public IssueBuilder WithDependencies(DependencyNode dependencies)
         {
             m_Issue.Dependencies = dependencies;
             return this;
         }
 
-        // stephenm TODO: Document
+        /// <summary>
+        /// Adds a Location to the ReportItem being built.
+        /// </summary>
+        /// <param name="location">Location object describing where the specific item was found within the project</param>
+        /// <returns>The IssueBuilder object with the Location added</returns>
         public IssueBuilder WithLocation(Location location)
         {
             m_Issue.Location = location;
             return this;
         }
 
-        // stephenm TODO: Document
+        /// <summary>
+        /// Constructs a Location object and adds it to the ReportItem being built.
+        /// </summary>
+        /// <param name="path">File path within the project describing where the specific item was found</param>
+        /// <param name="line">A line number within the file</param>
+        /// <returns>The IssueBuilder object with the Location added</returns>
         public IssueBuilder WithLocation(string path, int line = 0)
         {
             m_Issue.Location = new Location(path, line);
             return this;
         }
 
-        // stephenm TODO: Document
+        /// <summary>
+        /// Adds a LogLevel to the ReportItem being built.
+        /// </summary>
+        /// <param name="logLevel">Log Level of the item</param>
+        /// <returns>The IssueBuilder object with the LogLevel added</returns>
         public IssueBuilder WithLogLevel(LogLevel logLevel)
         {
             switch (logLevel)
@@ -95,7 +129,11 @@ namespace Unity.ProjectAuditor.Editor.Core
             return this;
         }
 
-        // stephenm TODO: Document
+        /// <summary>
+        /// Adds a Severity to the ReportItem being built.
+        /// </summary>
+        /// <param name="severity">Severity of the item</param>
+        /// <returns>The IssueBuilder object with the LogLevel added</returns>
         public IssueBuilder WithSeverity(Severity severity)
         {
             m_Issue.Severity = severity;

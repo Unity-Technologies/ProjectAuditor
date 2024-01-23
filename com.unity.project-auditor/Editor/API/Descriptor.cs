@@ -2,6 +2,7 @@ using System;
 using Newtonsoft.Json;
 using Unity.ProjectAuditor.Editor.Core;
 using UnityEditor;
+using UnityEngine.Serialization;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -55,7 +56,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Recommendation to fix the issue.
         /// </summary>
-        public string Solution;
+        public string Recommendation;
 
         /// <summary>
         /// URL to documentation.
@@ -106,15 +107,15 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="title">A short human-readable 'name' for the issue</param>
         /// <param name="areas">The area(s) affected by this issue.</param>
         /// <param name="description">A description of the issue.</param>
-        /// <param name="solution">Advice on how to resolve the issue.</param>
-        public Descriptor(string id, string title, Areas areas, string description, string solution)
+        /// <param name="recommendation">Advice on how to resolve the issue.</param>
+        public Descriptor(string id, string title, Areas areas, string description, string recommendation)
         {
             Id = id;
             Title = title;
             Areas = areas;
             MessageFormat = string.Empty;
             Description = description;
-            Solution = solution;
+            Recommendation = recommendation;
 
             Type = string.Empty;
             Method = string.Empty;

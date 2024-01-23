@@ -7,7 +7,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         public override string Name => "Sprite Atlases";
 
-        public override IReadOnlyCollection<IssueLayout> SupportedLayouts  => new IssueLayout[]  { AssetsModule.k_IssueLayout };
+        public override IReadOnlyCollection<IssueLayout> SupportedLayouts  => new IssueLayout[] { AssetsModule.k_IssueLayout };
 
         public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {

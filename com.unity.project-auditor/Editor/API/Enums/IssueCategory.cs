@@ -34,7 +34,7 @@ namespace Unity.ProjectAuditor.Editor
         ShaderVariant,
 
         /// <summary>
-        /// Code diagnostic issues, discovered by static code analysis
+        /// Code Issues, discovered by static code analysis
         /// </summary>
         Code,
 

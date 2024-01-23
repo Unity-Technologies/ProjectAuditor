@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace Unity.ProjectAuditor.Editor
 {
     /// <summary>
-    /// Represents a rule which modifies the <seealso cref="Diagnostic.Severity"/> of an Issue <seealso cref="ReportItem"/>
+    /// Represents a rule which modifies the <seealso cref="Severity"/> of an Issue <seealso cref="ReportItem"/>
     /// or all of the ProjectIssues that share a <seealso cref="Descriptor"/>.
     /// </summary>
     [Serializable]

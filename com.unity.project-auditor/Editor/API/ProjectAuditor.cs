@@ -268,7 +268,6 @@ namespace Unity.ProjectAuditor.Editor
         /// </remarks>
         /// <param name="report">A custom category name.</param>
         /// <returns>A value representing the custom category.</returns>
-        // stephenm TODO: Make this public in API phase 2, and see the TODO in IssueCategory as well.
         internal static IssueCategory GetOrRegisterCategory(string name)
         {
             if (!s_CustomCategories.ContainsKey(name))

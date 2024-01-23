@@ -3,7 +3,6 @@ using System.IO;
 using Unity.ProjectAuditor.Editor.Core;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Analytics;
 using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.Modules

@@ -1,7 +1,7 @@
 <a name="CodeIssues"></a>
 # Code Issues View
 The Code Issues View reports all C# script-related Issues. For each Issue, this view also provides an explanation
-of the problem and a possible solution.
+of the problem and a recommended course of action to resolve the issue.
 
 <img src="images/code.png">
 

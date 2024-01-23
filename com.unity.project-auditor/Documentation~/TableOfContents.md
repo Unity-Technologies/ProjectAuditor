@@ -29,8 +29,9 @@
 * Build
   * [Build Size](BuildSize.md)
   * [Build Steps](BuildSteps.md)
-
-* [Scripting API Overview](./API.md)
+* Scripting
+  * [Scripting API Overview](./API.md)
+  * [Creating Custom Analyzers](./APICustomAnalyzers.md)
 * [Glossary](./Glossary.md)
 
 

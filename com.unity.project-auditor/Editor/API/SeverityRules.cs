@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor
 {
-    // Rules to specify the Severity of individual diagnostic issues.
+    // Rules to specify the Severity of individual Issues.
     // Project Auditor interacts with this to Ignore/Display issues, and it's exposed in the Settings window, but we don't need it in the API.
     // Users can simply construct a List<Rule> and pass it to AnalysisParams.WithAdditionalDiagnosticRules()
     [Serializable]

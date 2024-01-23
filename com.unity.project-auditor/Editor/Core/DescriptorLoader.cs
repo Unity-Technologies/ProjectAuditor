@@ -16,7 +16,7 @@ namespace Unity.ProjectAuditor.Editor.Core
                 if (string.IsNullOrEmpty(rawDescriptor.Id))
                     throw new Exception("Descriptor with null id loaded from " + name);
 
-                var desc = new Descriptor(rawDescriptor.Id, rawDescriptor.Title, rawDescriptor.Areas, rawDescriptor.Description, rawDescriptor.Solution)
+                var desc = new Descriptor(rawDescriptor.Id, rawDescriptor.Title, rawDescriptor.Areas, rawDescriptor.Description, rawDescriptor.Recommendation)
                 {
                     Type = rawDescriptor.Type ?? string.Empty,
                     Method = rawDescriptor.Method ?? string.Empty,

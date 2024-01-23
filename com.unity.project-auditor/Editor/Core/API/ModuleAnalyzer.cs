@@ -3,14 +3,41 @@ using System.Reflection;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
-    // stephenm TODO: Make this public, for extensibility. And, I guess, move it to API. Phase 2.
-    internal class ModuleAnalyzer
+    /// <summary>
+    /// Base class for all ModuleAnalyzers
+    /// </summary>
+    /// <remarks>
+    /// Inheriting directly from ModuleAnalyzer will not create an Analyzer that a Module will create or run. You should
+    /// inherit from one of the following classes, all of which declare Analyze() methods:
+    /// * <seealso cref="AnimationModuleAnalyzer"/>
+    /// * <seealso cref="AssetsModuleAnalyzer"/>
+    /// * <seealso cref="AudioClipModuleAnalyzer"/>
+    /// * <seealso cref="CodeModuleInstructionAnalyzer"/>
+    /// * <seealso cref="MeshModuleAnalyzer"/>
+    /// * <seealso cref="PackagesModuleAnalyzer"/>
+    /// * <seealso cref="SettingsModuleAnalyzer"/>
+    /// * <seealso cref="ShaderModuleAnalyzer"/>
+    /// * <seealso cref="SpriteAtlasModuleAnalyzer"/>
+    /// * <seealso cref="TextureModuleAnalyzer"/>
+    /// </remarks>
+    public class ModuleAnalyzer
     {
-        public virtual void Initialize(Action<Descriptor> action)
+        /// <summary>
+        /// Initializes the Analyzer
+        /// </summary>
+        /// <param name="registerDescriptor">An Action which the method can invoke to register an Issue Descriptor for later reporting</param>
+        /// <remarks>
+        /// Modules and their associated Analyzers are Initialized during the process of constructing the ProjectAuditor
+        /// object. The primary purpose of the Initialize method is to register Descriptors for any Issues which the
+        /// Analyzer can add to the report. Descriptors must be registered before they can be used to create Issues.
+        /// However, other initialization is allowed within this method if required - perhaps constructing and/or caching
+        /// data structures to optimize the Analyze() methods, which may be called many times during analysis.
+        /// </remarks>
+        public virtual void Initialize(Action<Descriptor> registerDescriptor)
         {
         }
 
-        public void CacheParameters(DiagnosticParams diagnosticParams)
+        internal void CacheParameters(DiagnosticParams diagnosticParams)
         {
             foreach (var field in this.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance))
             {
@@ -22,7 +49,7 @@ namespace Unity.ProjectAuditor.Editor.Core
             }
         }
 
-        public void RegisterParameters(DiagnosticParams diagnosticParams)
+        internal void RegisterParameters(DiagnosticParams diagnosticParams)
         {
             foreach (var field in this.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Instance))
             {

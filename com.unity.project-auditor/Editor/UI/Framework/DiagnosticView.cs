@@ -77,7 +77,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                             GUILayout.Width(LayoutSize.CopyToClipboardButtonSize),
                             GUILayout.Height(LayoutSize.CopyToClipboardButtonSize)))
                         {
-                            EditorInterop.CopyToClipboard(Formatting.StripRichTextTags(descriptor.Solution));
+                            EditorInterop.CopyToClipboard(Formatting.StripRichTextTags(descriptor.Recommendation));
                         }
                     }
                 }
@@ -94,7 +94,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             else
             {
-                GUILayout.TextArea(descriptor.Solution, SharedStyles.TextAreaWithDynamicSize,
+                GUILayout.TextArea(descriptor.Recommendation, SharedStyles.TextAreaWithDynamicSize,
                     GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
 

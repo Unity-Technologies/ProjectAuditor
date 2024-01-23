@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.Core;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
@@ -120,8 +119,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
 		[DiagnosticParameter("TextureStreamingMipmapsSizeLimit", 4000)]
         int m_StreamingMipmapsSizeLimit;
 
-        [DiagnosticParameter("TextureSizeLimit", 2048)]
-        int m_SizeLimit;
+        // [DiagnosticParameter("TextureSizeLimit", 2048)]
+        // int m_SizeLimit;
 
 		public override void Initialize(Action<Descriptor> registerDescriptor)
         {
@@ -136,7 +135,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
         {
             var assetPath = context.Importer.assetPath;
 
-            // diagnostics
             if (!context.Importer.mipmapEnabled && context.Importer.textureType == TextureImporterType.Default)
             {
                 yield return context.CreateIssue(IssueCategory.AssetIssue,

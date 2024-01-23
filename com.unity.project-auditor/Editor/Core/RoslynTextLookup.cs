@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Unity.ProjectAuditor.Editor.Utils;
+using UnityEngine.Serialization;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
@@ -13,19 +14,19 @@ namespace Unity.ProjectAuditor.Editor.Core
 #pragma warning disable 649 // Disable warning CS0649. The fields are assigned through Newtonsoft.Json
             public string id;
             public string description;
-            public string solution;
+            public string recommendation;
 #pragma warning restore 649
         }
 
         struct StringLookup
         {
             public string description;
-            public string solution;
+            public string recommendation;
 
-            public StringLookup(string description, string solution)
+            public StringLookup(string description, string recommendation)
             {
                 this.description = description;
-                this.solution = solution;
+                this.recommendation = recommendation;
             }
         }
 
@@ -40,7 +41,7 @@ namespace Unity.ProjectAuditor.Editor.Core
 
             foreach (var rawDescriptor in rawDescriptors)
             {
-                m_StringLookup[rawDescriptor.id] = new StringLookup(rawDescriptor.description, rawDescriptor.solution);
+                m_StringLookup[rawDescriptor.id] = new StringLookup(rawDescriptor.description, rawDescriptor.recommendation);
             }
         }
 
@@ -57,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor.Core
             if (m_StringLookup == null)
                 Initialize();
 
-            return m_StringLookup[id].solution;
+            return m_StringLookup[id].recommendation;
         }
     }
 }

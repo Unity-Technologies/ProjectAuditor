@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Unity.ProjectAuditor.Editor
 {
     /// <summary>
-    /// An unique identifier for a diagnostic descriptor. IDs must have exactly 3 upper case characters, followed by 4 digits.
+    /// An unique identifier for an Issue Descriptor. IDs must have exactly 3 upper case characters, followed by 4 digits.
     /// </summary>
     /// <remarks>
     /// <seealso cref="ReportItem"/>s representing Issues (as opposed to Insights: purely informational ProjectIssues) all contain a DescriptorId.
@@ -57,7 +57,7 @@ namespace Unity.ProjectAuditor.Editor
 
             if (string.IsNullOrEmpty(id))
             {
-                // No error message. This is valid when constructing non-diagnostic ProjectIssues
+                // No error message. This is valid when constructing ReportItems representing Insights.
                 m_AsInt = -1;
                 return;
             }

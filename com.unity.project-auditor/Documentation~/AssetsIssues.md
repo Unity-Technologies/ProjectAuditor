@@ -1,7 +1,7 @@
 <a name="AssetsIssues"></a>
 # Assets Issues View
 The Assets Issues View reports asset-related issues. For each issue, this view also provides an explanation
-of the problem and a possible solution.
+of the problem and a recommended course of action to resolve the issue.
 
 <img src="images/assets.png">
 

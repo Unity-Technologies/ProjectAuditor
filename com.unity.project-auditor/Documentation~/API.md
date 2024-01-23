@@ -58,7 +58,7 @@ var analysisParams = new AnalysisParams
 projectAuditor.AuditAsync(analysisParams);
 ```
 
-The `ProjectReport` object produced by Project Auditor's analysis can be saved as a JSON file (as demonstracted in the
+The `ProjectReport` object produced by Project Auditor's analysis can be saved as a JSON file (as demonstrated in the
 code examples above), or can be examined via its API. `ProjectReport` contains a `SessionInfo` object with information
 about the analysis session, including a copy of the `AnalysisParams` which Project Auditor used to configure the
 analysis. It also provides several methods to access the report's list of discovered `ReportItem`s. Each
@@ -82,5 +82,8 @@ described a type of issue - including its details and recommendation strings.
 var descriptor = reportItem.Id.GetDescriptor();
 Debug.Log($"Id: {reportItem.Id.ToString()}");
 Debug.Log($"Description: {descriptor.Description}");
-Debug.Log($"Solution: {descriptor.Solution}");
+Debug.Log($"Recommendation: {descriptor.Recommendation}");
 ```
+
+Project Auditor also provides an API for creating custom analyzers tailored to the needs of your project. See
+[Creating Custom Analyzers](APICustomAnalyzers.md) for further details.

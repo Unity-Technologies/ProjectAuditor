@@ -5,7 +5,6 @@ using UnityEditor;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
-    // stephenm TODO: Make this public (and move it to API) for extensibility. Phase 2.
     /// <summary>
     /// Project Auditor module base class. Any class derived from Module will be instantiated by ProjectAuditor and used to audit the project
     /// </summary>

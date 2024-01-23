@@ -224,7 +224,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 Assert.IsTrue(regExp.IsMatch(descriptor.Id), "Descriptor Id format is not valid: " + descriptor.Id);
                 Assert.IsFalse(string.IsNullOrEmpty(descriptor.Title), "Descriptor {0} has no Title", descriptor.Id);
                 Assert.IsFalse(string.IsNullOrEmpty(descriptor.Description), "Descriptor {0} has no Description", descriptor.Id);
-                Assert.IsFalse(string.IsNullOrEmpty(descriptor.Solution), "Descriptor {0} has no Solution", descriptor.Id);
+                Assert.IsFalse(string.IsNullOrEmpty(descriptor.Recommendation), "Descriptor {0} has no Recommendation", descriptor.Id);
                 Assert.AreNotEqual(Areas.None, descriptor.Areas);
             }
         }
@@ -239,11 +239,11 @@ namespace Unity.ProjectAuditor.EditorTests
                 var descriptor = id.GetDescriptor();
                 Assert.IsFalse(descriptor.Title.EndsWith("."), "Descriptor {0} string must not end with a full stop. String: {1}", descriptor.Id, descriptor.Title);
                 Assert.IsTrue(descriptor.Description.EndsWith("."), "Descriptor {0} string must end with a full stop. String: {1}", descriptor.Id, descriptor.Description);
-                Assert.IsTrue(descriptor.Solution.EndsWith("."), "Descriptor {0} string must end with a full stop. String: {1}", descriptor.Id, descriptor.Solution);
+                Assert.IsTrue(descriptor.Recommendation.EndsWith("."), "Descriptor {0} string must end with a full stop. String: {1}", descriptor.Id, descriptor.Recommendation);
                 Assert.IsFalse(descriptor.MessageFormat.EndsWith("."), "Descriptor {0} string must not end with a full stop. String: {1}", descriptor.Id, descriptor.MessageFormat);
 
                 CheckHtmlTags(descriptor.Description);
-                CheckHtmlTags(descriptor.Solution);
+                CheckHtmlTags(descriptor.Recommendation);
             }
         }
 

@@ -6,11 +6,11 @@ analysis target is the same as the current target platform in the
 [Build Settings](https://docs.unity3d.com/Manual/BuildSettings.html), but this can be changed to a different supported
 target platform in the Welcome View or by configuring an `AnalysisParams` object.
 
-**Analyzer:** A code class which analyzes a particular aspect of a Unity project. Project Auditor contains analyzers for
-each supported asset type, for Project Settings, and several analyzers to detect different kinds of issues in C#
-scripts. Analyzers are typically responsible for declaring and registering relevant `Descriptors` and
-`DiagnosticParams`, and typically implement an `Analyze()` method which detects Issues and Insights, and constructs and
-returns a collection of `ReportItem` objects which describe them.
+**Analyzer:** A code class which analyzes a particular aspect of a Unity project and constructs `ReportItems`
+representing any Issues which were discovered. Project Auditor contains analyzers for each supported asset type,
+for Project Settings, and several analyzers to detect different kinds of issues in C# scripts. Analyzers are typically
+responsible for declaring and registering relevant `Descriptors` and `DiagnosticParams`, and typically implement an
+`Analyze()` method to detect and report Issues.
 
 **Area:** An aspect of a Unity project which may be affected by an Issue. Areas include things like runtime CPU or GPU
 performance, memory footprints, build sizes, build times or iteration times. Not to be confused with Project Areas,
@@ -40,19 +40,20 @@ implemented.
 **Insight:** A report item discovered and reported by Project Auditor which is presented for informational purposes and
 not specifically actionable. Examples of insights include details about a single asset, a compiler message, or build
 step. Project Auditor presents filterable, sortable tables of insights as convenient ways to view and investigate some
-aspect of your project.
+aspect of your project. Insights are reported by Modules.
 
 **Issue:** A report item discovered and reported by Project Auditor which represents a potential problem in your
 project, which you may want to take action to address. Examples include calls to Unity APIs that are known to be slow or
-generate garbage, or suboptimal project settings or asset import settings.
+generate garbage, or suboptimal project settings or asset import settings. Issues are reported by Analyzers.
 
 **Report Item:** A term to refer to both Insights and Issues. In Project Auditor's code and API, items are represented
 by `ReportItem` objects. A `ReportItem` with a valid `DescriptorId` is an Issue. One without a valid `DescriptorId` is
 an Insight.
 
 **Module:** One of the static analysis tools provided by Project Auditor. Project Auditor creates and manages several
-Modules, each of which may create and run one or more Analyzers to generate Items. For more information on the areas
-covered by Project Auditor's Modules, see the [Configuration](Configuration.md) documentation.
+Modules, each of which reports a different category of Insights. Modules may also create and run one or more Analyzers
+to generate Report Items. For more information on the areas covered by Project Auditor's Modules, see the
+[Configuration](Configuration.md) documentation.
 
 **Project Auditor:** A suite of static analysis tools for Unity projects, in a package of the same name. Also, the name
 of a C# object which is created to actually perform the analysis and to return a Project Report.

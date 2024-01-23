@@ -52,7 +52,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             MessageFormat = "Texture Atlas '{0}' has too much empty space ({1})"
         };
 
-		[DiagnosticParameter("TextureEmptySpaceLimit", 50)]
+        [DiagnosticParameter("TextureEmptySpaceLimit", 50)]
         int m_EmptySpaceLimit;
 
         public override void Initialize(Action<Descriptor> registerDescriptor)

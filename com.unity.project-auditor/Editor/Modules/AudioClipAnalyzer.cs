@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.Core;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Profiling;
-using Module = Unity.ProjectAuditor.Editor.Core.Module;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {

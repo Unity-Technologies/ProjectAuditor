@@ -1,7 +1,7 @@
 <a name="ProjectSettings"></a>
 # Project Settings View
 The Project Settings view reports Issues found in the project's settings. For each issue, this view also provides an 
-explanation of the problem and a possible solution.
+explanation of the problem and a recommended course of action to resolve the issue.
 
 To open the Project Settings window, select **Edit > Project Settings...** from the main menu.  
 

@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor.Compilation;
 
 namespace Unity.ProjectAuditor.Editor.AssemblyUtils
