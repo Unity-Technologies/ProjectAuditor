@@ -97,11 +97,11 @@ class InternalClass
         public void TextFilter_Filename_Matches()
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit(new AnalysisParams
+            var report = projectAuditor.Audit(new AnalysisParams
             {
                 CompilationMode = CompilationMode.Player
             });
-            var issues = projectReport.FindByCategory(IssueCategory.Code);
+            var issues = report.FindByCategory(IssueCategory.Code);
             var stringFilter = new TextFilter
             {
                 ignoreCase = true,
@@ -116,11 +116,11 @@ class InternalClass
         public void TextFilter_RecursiveSearch_Matches()
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit(new AnalysisParams
+            var report = projectAuditor.Audit(new AnalysisParams
             {
                 CompilationMode = CompilationMode.Player
             });
-            var issues = projectReport.FindByCategory(IssueCategory.Code);
+            var issues = report.FindByCategory(IssueCategory.Code);
             var stringFilter = new TextFilter
             {
                 ignoreCase = false,

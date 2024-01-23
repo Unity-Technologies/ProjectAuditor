@@ -36,7 +36,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Improved AudioClip asset table
 * Clear table selection on unmuting issues
 * Move some data that should be user-configurable to UserPreferences
-* ProjectReport serialization files changed so that saved JSON is <= half the size it was before
+* Report serialization files changed so that saved JSON is <= half the size it was before
 * Configuration is now handled via a ProjectAuditorSettings class/asset
 * Refactored and documented public API to allow CI/CD integration
 * Refactored, exposed and documented API to allow the creation of custom ModuleAnalyzers

@@ -1,7 +1,7 @@
 namespace Unity.ProjectAuditor.Editor
 {
     /// <summary>
-    /// Identifiers for the results of analysis for a Module and for a whole ProjectReport
+    /// Identifiers for the results of analysis for a Module and for a whole Report
     /// </summary>
     public enum AnalysisResult
     {

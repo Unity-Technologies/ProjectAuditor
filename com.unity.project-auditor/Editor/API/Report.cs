@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 namespace Unity.ProjectAuditor.Editor
 {
     /// <summary>
-    /// Contains information about the session in which a <seealso cref="ProjectReport"/> was created.
+    /// Contains information about the session in which a <seealso cref="Report"/> was created.
     /// </summary>
     [Serializable]
     public class SessionInfo : AnalysisParams
@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.Editor
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="serializedParams">AnalysisParams object which was passed to ProjectAuditor to create the ProjectReport</param>
+        /// <param name="serializedParams">AnalysisParams object which was passed to ProjectAuditor to create the Report</param>
         public SessionInfo(AnalysisParams serializedParams)
             : base(serializedParams)
         {}
@@ -59,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor
         public string ProjectRevision;
 
         /// <summary>
-        /// The date and time at which the ProjectReport was created.
+        /// The date and time at which the Report was created.
         /// </summary>
         public string DateTime;
 
@@ -80,10 +80,10 @@ namespace Unity.ProjectAuditor.Editor
     }
 
     /// <summary>
-    /// ProjectReport contains a list of all issues found by ProjectAuditor.
+    /// Report contains a list of all issues found by ProjectAuditor.
     /// </summary>
     [Serializable]
-    public sealed class ProjectReport
+    public sealed class Report
     {
         const string k_CurrentVersion = "0.2";
 
@@ -91,7 +91,7 @@ namespace Unity.ProjectAuditor.Editor
         string m_Version = k_CurrentVersion;
 
         /// <summary>
-        /// File format version of the ProjectReport (read-only).
+        /// File format version of the Report (read-only).
         /// </summary>
         [JsonIgnore]
         public string Version
@@ -100,7 +100,7 @@ namespace Unity.ProjectAuditor.Editor
             internal set => m_Version = value;
         }
 
-        // stephenm TODO: ModuleInfo serializes to JSON but isn't accessible in any meaningful way if a script just has a ProjectReport object it wants to query. Figure out some API for this?
+        // stephenm TODO: ModuleInfo serializes to JSON but isn't accessible in any meaningful way if a script just has a Report object it wants to query. Figure out some API for this?
         // Keeping this internal for now. Exposing this means exposing IssueLayout, which means exposing PropertyDefinition, which to be useful means exposing every enum that can
         // be passed to PropertyTypeUtil.FromCustom() (basically one per view). I'd love to find a more elegant way to do this.
         [Serializable]
@@ -120,7 +120,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Contains information about the session in which this ProjectReport was created.
+        /// Contains information about the session in which this Report was created.
         /// </summary>
         [JsonProperty("sessionInfo")][SerializeField]
         public SessionInfo SessionInfo;
@@ -178,11 +178,11 @@ namespace Unity.ProjectAuditor.Editor
         public int NumTotalIssues => m_Issues.Count;
 
         // for serialization purposes only
-        internal ProjectReport()
+        internal Report()
         {}
 
         // for internal use only
-        internal ProjectReport(AnalysisParams analysisParams)
+        internal Report(AnalysisParams analysisParams)
         {
             SessionInfo = new SessionInfo(analysisParams)
             {
@@ -203,7 +203,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Checks whether the ProjectReport includes analysis for a given IssueCategory.
+        /// Checks whether the Report includes analysis for a given IssueCategory.
         /// </summary>
         /// <param name="category">The IssuesCategory to check</param>
         /// <returns>True if ProjectAuditor ran one or more Modules that reports issues of the specified IssueCategory. Otherwise, returns false.</returns>
@@ -296,7 +296,7 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Save the ProjectReport as a JSON file.
+        /// Save the Report as a JSON file.
         /// </summary>
         /// <param name="path">The file path at which to save the file</param>
         public void Save(string path)
@@ -311,13 +311,13 @@ namespace Unity.ProjectAuditor.Editor
         }
 
         /// <summary>
-        /// Load a ProjectReport from a JSON file at the specified path.
+        /// Load a Report from a JSON file at the specified path.
         /// </summary>
         /// <param name="path">File path of the report to load</param>
-        /// <returns>A loaded ProjectReport object</returns>
-        public static ProjectReport Load(string path)
+        /// <returns>A loaded Report object</returns>
+        public static Report Load(string path)
         {
-            return JsonConvert.DeserializeObject<ProjectReport>(File.ReadAllText(path), new JsonSerializerSettings
+            return JsonConvert.DeserializeObject<Report>(File.ReadAllText(path), new JsonSerializerSettings
             {
                 ObjectCreationHandling = ObjectCreationHandling.Replace
             });

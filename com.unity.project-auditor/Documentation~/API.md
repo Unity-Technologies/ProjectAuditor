@@ -14,10 +14,10 @@ public static class ProjectAuditorCI
     {
         string reportPath = "C:/Dev/MyProject/project-auditor-report.json"
         var projectAuditor = new ProjectAuditor();
-        var projectReport = projectAuditor.Audit();
-        projectReport.Save(reportPath);
+        var report = projectAuditor.Audit();
+        report.Save(reportPath);
         
-        var codeIssues = projectReport.GetIssues(IssueCategory.Code);
+        var codeIssues = report.GetIssues(IssueCategory.Code);
         Debug.Log($"Project Auditor found {codeIssues.Length} code issues");
     }
 }
@@ -29,7 +29,7 @@ For more information on how to run the Unity Editor via command line, please see
 [manual](https://docs.unity3d.com/Manual/EditorCommandLineArguments.html).
 
 The `ProjectAuditor` class provides the interface for running project analysis, via its `Audit()` and `AuditAsync()`
-methods, which return a `ProjectReport` object. In the code example above, `Audit()` does not take any configuration
+methods, which return a `Report` object. In the code example above, `Audit()` does not take any configuration
 parameters, which means it will create and use an `AnalysisParams` object with default values. This results in a full
 analysis of the project, targeting the currently-selected build platform and performing a "Player" code build.
 
@@ -51,15 +51,15 @@ var analysisParams = new AnalysisParams
   OnCompleted = (report) =>
   {
     Debug.Log($"Found {foundIssues} code issues");
-    projectReport.Save(reportPath);
+    report.Save(reportPath);
   }  
 };
 
 projectAuditor.AuditAsync(analysisParams);
 ```
 
-The `ProjectReport` object produced by Project Auditor's analysis can be saved as a JSON file (as demonstrated in the
-code examples above), or can be examined via its API. `ProjectReport` contains a `SessionInfo` object with information
+The `Report` object produced by Project Auditor's analysis can be saved as a JSON file (as demonstrated in the
+code examples above), or can be examined via its API. `Report` contains a `SessionInfo` object with information
 about the analysis session, including a copy of the `AnalysisParams` which Project Auditor used to configure the
 analysis. It also provides several methods to access the report's list of discovered `ReportItem`s. Each
 `ReportItem` represents a single Issue or Insight - all the data for a single item in one of the tables that are shown

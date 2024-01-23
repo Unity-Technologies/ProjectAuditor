@@ -8,7 +8,7 @@ namespace Unity.ProjectAuditor.Editor.Core
     {
         readonly StringBuilder m_StringBuilder = new StringBuilder();
 
-        public CsvExporter(ProjectReport report) : base(report) {}
+        public CsvExporter(Report report) : base(report) {}
 
         public override void WriteHeader(IssueLayout layout)
         {

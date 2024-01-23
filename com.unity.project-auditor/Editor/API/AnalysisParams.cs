@@ -65,7 +65,7 @@ namespace Unity.ProjectAuditor.Editor
         /// Notifies that all Modules completed their analysis.
         /// </summary>
         [JsonIgnore]
-        public Action<ProjectReport> OnCompleted;
+        public Action<Report> OnCompleted;
 
         /// <summary>
         /// Notifies that a Module completed its analysis.
@@ -86,7 +86,7 @@ namespace Unity.ProjectAuditor.Editor
 
         [JsonIgnore]
         [NonSerialized]
-        internal ProjectReport ExistingReport;
+        internal Report ExistingReport;
 
         [JsonIgnore]
         [NonSerialized]

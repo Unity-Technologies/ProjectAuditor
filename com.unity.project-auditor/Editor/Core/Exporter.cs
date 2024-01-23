@@ -6,11 +6,11 @@ namespace Unity.ProjectAuditor.Editor.Core
 {
     internal abstract class Exporter : IDisposable
     {
-        readonly ProjectReport m_Report;
+        readonly Report m_Report;
 
         protected StreamWriter m_StreamWriter;
 
-        protected Exporter(ProjectReport report)
+        protected Exporter(Report report)
         {
             m_Report = report;
         }

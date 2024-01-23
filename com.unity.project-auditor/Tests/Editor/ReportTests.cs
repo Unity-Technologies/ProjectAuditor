@@ -5,7 +5,7 @@ using Unity.ProjectAuditor.Editor.Tests.Common;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class ProjectReportTests : TestFixtureBase
+    class ReportTests : TestFixtureBase
     {
         readonly Descriptor m_Descriptor = new Descriptor
             (
@@ -38,30 +38,30 @@ class MyClass : MonoBehaviour
         }
 
         [Test]
-        public void ProjectReport_NewReport_IsValid()
+        public void Report_NewReport_IsValid()
         {
-            var projectReport = new ProjectReport(new AnalysisParams());
-            Assert.Zero(projectReport.NumTotalIssues);
-            Assert.Zero(projectReport.GetNumIssues(IssueCategory.Code));
-            Assert.Zero(projectReport.GetNumIssues(IssueCategory.ProjectSetting));
-            Assert.IsEmpty(projectReport.FindByCategory(IssueCategory.Code));
-            Assert.IsEmpty(projectReport.FindByCategory(IssueCategory.ProjectSetting));
+            var report = new Report(new AnalysisParams());
+            Assert.Zero(report.NumTotalIssues);
+            Assert.Zero(report.GetNumIssues(IssueCategory.Code));
+            Assert.Zero(report.GetNumIssues(IssueCategory.ProjectSetting));
+            Assert.IsEmpty(report.FindByCategory(IssueCategory.Code));
+            Assert.IsEmpty(report.FindByCategory(IssueCategory.ProjectSetting));
         }
 
         [Test]
-        public void ProjectReport_Issue_IsAdded()
+        public void Report_Issue_IsAdded()
         {
-            var projectReport = new ProjectReport(new AnalysisParams());
+            var report = new Report(new AnalysisParams());
 
-            projectReport.AddIssues(new[] { new ReportItem
+            report.AddIssues(new[] { new ReportItem
                                             (
                                                 IssueCategory.Texture,
                                                 "myTexture"
                                             ) }
             );
 
-            Assert.AreEqual(1, projectReport.NumTotalIssues);
-            Assert.AreEqual(1, projectReport.GetNumIssues(IssueCategory.Texture));
+            Assert.AreEqual(1, report.NumTotalIssues);
+            Assert.AreEqual(1, report.GetNumIssues(IssueCategory.Texture));
         }
     }
 }

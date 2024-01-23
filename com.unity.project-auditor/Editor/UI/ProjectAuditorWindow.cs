@@ -11,6 +11,7 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 using UnityEngine.Profiling;
+using UnityEngine.Serialization;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
@@ -75,7 +76,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] string m_AreaSelectionSummary;
         [SerializeField] string[] m_AssemblyNames;
         [SerializeField] string m_AssemblySelectionSummary;
-        [SerializeField] ProjectReport m_ProjectReport;
+        [SerializeField] Report m_Report;
         [SerializeField] AnalysisState m_AnalysisState = AnalysisState.Initializing;
         [SerializeField] ViewStates m_ViewStates = new ViewStates();
         [SerializeField] ViewManager m_ViewManager;
@@ -210,14 +211,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             // are we reloading from a valid state?
             if (currentState == AnalysisState.Valid &&
-                m_ProjectReport.IsValid())
+                m_Report.IsValid())
             {
                 m_ProjectAuditor = new ProjectAuditor();
 
                 InitializeViews(GetAllSupportedCategories(), ProjectAuditorSettings.instance.Rules, true);
 
                 Profiler.BeginSample("Views Update");
-                m_ViewManager.OnAnalysisRestored(m_ProjectReport);
+                m_ViewManager.OnAnalysisRestored(m_Report);
                 m_AnalysisState = currentState;
                 Profiler.EndSample();
             }
@@ -388,7 +389,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     bool hasAnyAnalyzedCategory = false;
                     foreach (var cat in tab.availableCategories)
                     {
-                        if (m_ProjectReport.HasCategory(cat))
+                        if (m_Report.HasCategory(cat))
                         {
                             hasAnyAnalyzedCategory = true;
                             break;
@@ -521,7 +522,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (m_ViewSelectionTreeView == null)
             {
                 m_ViewSelectionTreeView = new ViewSelectionTreeView(m_ViewSelectionTreeState, m_Tabs, m_ViewManager,
-                    m_ProjectReport);
+                    m_Report);
 
                 m_ViewSelectionTreeView.OnSelectedNonAnalyzedTab += OnSelectedNonAnalyzedTab;
             }
@@ -891,7 +892,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             m_ShouldRefresh = true;
             m_AnalysisState = AnalysisState.InProgress;
-            m_ProjectReport = null;
+            m_Report = null;
 
             m_ProjectAuditor = new ProjectAuditor();
 
@@ -917,7 +918,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     m_ShouldRefresh = true;
                     m_AnalysisState = AnalysisState.Completed;
 
-                    m_ProjectReport = report;
+                    m_Report = report;
                 }
             };
 
@@ -971,8 +972,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                         view.AddIssues(issues);
                     }
                 },
-                Platform = m_ProjectReport.SessionInfo.Platform,
-                ExistingReport = m_ProjectReport,
+                Platform = m_Report.SessionInfo.Platform,
+                ExistingReport = m_Report,
                 OnCompleted = report =>
                 {
                     if (!report.IsValid())
@@ -993,7 +994,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (summaryView != null)
             {
                 summaryView.Clear();
-                summaryView.AddIssues(m_ProjectReport.GetAllIssues());
+                summaryView.AddIssues(m_Report.GetAllIssues());
             }
         }
 
@@ -1004,7 +1005,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public void ClearShaderVariants()
         {
-            m_ProjectReport.ClearIssues(IssueCategory.ShaderVariant);
+            m_Report.ClearIssues(IssueCategory.ShaderVariant);
 
             m_ViewManager.ClearView(IssueCategory.ShaderVariant);
 
@@ -1028,7 +1029,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 if (m_LoadButtonAnalytic != null)
                     AnalyticsReporter.SendEvent(AnalyticsReporter.UIButton.Load, m_LoadButtonAnalytic);
                 if (m_AnalyzeButtonAnalytic != null)
-                    AnalyticsReporter.SendEventWithAnalyzeSummary(AnalyticsReporter.UIButton.Analyze, m_AnalyzeButtonAnalytic, m_ProjectReport);
+                    AnalyticsReporter.SendEventWithAnalyzeSummary(AnalyticsReporter.UIButton.Analyze, m_AnalyzeButtonAnalytic, m_Report);
 
                 // repaint once more to make status wheel disappear
                 Repaint();
@@ -1374,12 +1375,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                         {
                             bool exitGui = false;
                             var categoryIndex = (int)arg;
-                            if (m_ProjectReport == null)
+                            if (m_Report == null)
                                 return; // this happens from the summary view while the report is being generated
 
                             var category = m_Tabs[m_ActiveTabIndex]
                                 .availableCategories[categoryIndex];
-                            if (category != IssueCategory.Metadata && !m_ProjectReport.HasCategory(category))
+                            if (category != IssueCategory.Metadata && !m_Report.HasCategory(category))
                             {
                                 var displayName = m_ViewManager.GetView(category).Desc.DisplayName;
                                 if (!EditorUtility.DisplayDialog(ProjectAuditor.DisplayName,
@@ -1503,7 +1504,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         void UpdateAssemblyNames()
         {
             // update list of assembly names
-            var assemblyNames = m_ProjectReport.FindByCategory(IssueCategory.Assembly).Select(i => i.Description).ToArray();
+            var assemblyNames = m_Report.FindByCategory(IssueCategory.Assembly).Select(i => i.Description).ToArray();
             m_AssemblyNames = assemblyNames.Distinct().OrderBy(str => str).ToArray();
         }
 
@@ -1609,7 +1610,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 for (var i = 0; i < m_Tabs.Length; i++)
                 {
-                    GUI.enabled = m_ProjectReport != null;
+                    GUI.enabled = m_Report != null;
 
                     if (DrawTabButton(new GUIContent(m_Tabs[i].name), m_ActiveTabIndex == i,
                         tabButtonWidth, tabButtonHeight))
@@ -1619,7 +1620,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         var hasAnyCategories = false;
                         foreach (var category in tab.allCategories)
                         {
-                            if (m_ProjectReport.HasCategory(category))
+                            if (m_Report.HasCategory(category))
                             {
                                 hasAnyCategories = true;
                             }
@@ -1709,7 +1710,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             var path = EditorUtility.SaveFilePanel(k_SaveToFile, UserPreferences.LoadSavePath, "project-auditor-report.json", "json");
             if (path.Length != 0)
             {
-                m_ProjectReport.Save(path);
+                m_Report.Save(path);
                 UserPreferences.LoadSavePath = Path.GetDirectoryName(path);
 
                 EditorUtility.RevealInFinder(path);
@@ -1724,8 +1725,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             var path = EditorUtility.OpenFilePanel(k_LoadFromFile, UserPreferences.LoadSavePath, "json");
             if (path.Length != 0)
             {
-                m_ProjectReport = ProjectReport.Load(path);
-                if (m_ProjectReport.NumTotalIssues == 0)
+                m_Report = Report.Load(path);
+                if (m_Report.NumTotalIssues == 0)
                 {
                     EditorUtility.DisplayDialog(k_LoadFromFile, k_LoadingFailed, "Ok");
                     return;

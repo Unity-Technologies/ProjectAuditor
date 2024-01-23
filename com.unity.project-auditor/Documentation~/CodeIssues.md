@@ -15,7 +15,7 @@ to have an impact on runtime performance or memory management than code which ru
 ## Inverted call hierarchy
 This panel shows an inverted call hierarchy for the currently-selected Issue in the table. Expanding the tree reveals
 all of the methods which lead to the call site of the reported issue. The panel only shows an inverted call hierarchy
-if code analysis was performed during this Editor session - call hierarchies are not currently saved in Project Reports
+if code analysis was performed during this Editor session - call hierarchies are not currently saved in Reports
 for later viewing. If you see `<Missing Data: Please Analyze>` in this view, click the **Refresh** (&#x27F3;) button
 above the table to re-run code analysis.
 

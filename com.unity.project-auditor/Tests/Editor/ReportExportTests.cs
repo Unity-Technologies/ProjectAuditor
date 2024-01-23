@@ -10,7 +10,7 @@ using Unity.ProjectAuditor.Editor.Tests.Common;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class ProjectReportExportTests : TestFixtureBase
+    class ReportExportTests : TestFixtureBase
     {
 #pragma warning disable 0414
         TestAsset m_TestAsset;
@@ -32,7 +32,7 @@ class MyClass : MonoBehaviour
         }
 
         [Test]
-        public void ProjectReport_CodeIssues_AreExportedAndFormatted_CSV()
+        public void Report_CodeIssues_AreExportedAndFormatted_CSV()
         {
             var category = IssueCategory.Code;
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
@@ -56,7 +56,7 @@ class MyClass : MonoBehaviour
         }
 
         [Test]
-        public void ProjectReport_CodeIssues_AreExportedAndFormatted_HTML()
+        public void Report_CodeIssues_AreExportedAndFormatted_HTML()
         {
             var category = IssueCategory.Code;
             var path = string.Format("project-auditor-report-{0}.html", category.ToString()).ToLower();
@@ -154,7 +154,7 @@ class MyClass : MonoBehaviour
         }
 
         [Test]
-        public void ProjectReport_CodeIssues_AreFilteredAndExported_CSV()
+        public void Report_CodeIssues_AreFilteredAndExported_CSV()
         {
             var category = IssueCategory.Code;
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
@@ -181,7 +181,7 @@ class MyClass : MonoBehaviour
         }
 
         [Test]
-        public void ProjectReport_CodeIssues_AreFilteredAndExported_HTML()
+        public void Report_CodeIssues_AreFilteredAndExported_HTML()
         {
             var category = IssueCategory.Code;
             var path = string.Format("project-auditor-report-{0}.html", category.ToString()).ToLower();
@@ -273,7 +273,7 @@ class MyClass : MonoBehaviour
         }
 
         [Test]
-        public void ProjectReport_SettingsIssues_AreExportedAndFormatted_CSV()
+        public void Report_SettingsIssues_AreExportedAndFormatted_CSV()
         {
             var category = IssueCategory.ProjectSetting;
             var path = string.Format("project-auditor-report-{0}.csv", category.ToString()).ToLower();
@@ -302,7 +302,7 @@ class MyClass : MonoBehaviour
         }
 
         [Test]
-        public void ProjectReport_SettingsIssues_AreExportedAndFormatted_HTML()
+        public void Report_SettingsIssues_AreExportedAndFormatted_HTML()
         {
             var category = IssueCategory.ProjectSetting;
             var path = string.Format("project-auditor-report-{0}.html", category.ToString().ToLower());
@@ -399,7 +399,7 @@ class MyClass : MonoBehaviour
         IReadOnlyCollection<ReportItem> AnalyzeAndExport(IssueCategory category, string path, string format, Func<ReportItem, bool> predicate = null)
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit(new AnalysisParams
+            var report = projectAuditor.Audit(new AnalysisParams
             {
                 AssemblyNames = new[] { AssemblyInfo.DefaultAssemblyName },
                 Categories = new[] { category },
@@ -409,13 +409,13 @@ class MyClass : MonoBehaviour
             switch (format)
             {
                 case "csv":
-                    using (var exporter = new CsvExporter(projectReport))
+                    using (var exporter = new CsvExporter(report))
                     {
                         exporter.Export(path, category, predicate);
                     }
                     break;
                 case "html":
-                    using (var exporter = new HtmlExporter(projectReport))
+                    using (var exporter = new HtmlExporter(report))
                     {
                         exporter.Export(path, category, predicate);
                     }
@@ -426,7 +426,7 @@ class MyClass : MonoBehaviour
 
             Assert.True(File.Exists(path));
 
-            return projectReport.FindByCategory(category).Where(i => (predicate != null) ? predicate(i) : true).ToArray();
+            return report.FindByCategory(category).Where(i => (predicate != null) ? predicate(i) : true).ToArray();
         }
     }
 }

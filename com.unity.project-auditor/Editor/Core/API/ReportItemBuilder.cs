@@ -3,7 +3,7 @@ using System.Linq;
 namespace Unity.ProjectAuditor.Editor.Core
 {
     /// <summary>
-    /// Provides methods to construct a <seealso cref="ReportItem"/> object for a ProjectReport.
+    /// Provides methods to construct a <seealso cref="ReportItem"/> object for a Report.
     /// </summary>
     public class ReportItemBuilder
     {

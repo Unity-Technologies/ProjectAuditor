@@ -5,7 +5,7 @@ namespace Unity.ProjectAuditor.Editor.Core
 {
     class HtmlExporter : Exporter
     {
-        public HtmlExporter(ProjectReport report) : base(report) {}
+        public HtmlExporter(Report report) : base(report) {}
 
         public override void WriteHeader(IssueLayout layout)
         {

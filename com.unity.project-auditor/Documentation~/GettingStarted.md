@@ -25,9 +25,9 @@ In the top right corner of the window are buttons to perform the following actio
 
 <img src="images/window-buttons.png">
 
-* Load a Project Report from file
-* Save the current Project Report to a file
-* Discard the current Project Report and return to the Welcome View
+* Load a Report from file
+* Save the current Report to a file
+* Discard the current Report and return to the Welcome View
 * Open this package documentation in a browser window
 
 The rest of the Summary View contains high-level information about some of the Issues and Insights found in the project,

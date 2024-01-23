@@ -12,7 +12,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         readonly Tab[] m_Tabs;
         readonly ViewManager m_ViewManager;
-        readonly ProjectReport m_ProjectReport;
+        readonly Report m_Report;
 
         Dictionary<int, IssueCategory> m_ItemIdToCategory = new Dictionary<int, IssueCategory>();
         Dictionary<IssueCategory, TreeViewItem> m_CategoryToItem = new Dictionary<IssueCategory, TreeViewItem>();
@@ -27,12 +27,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public ViewSelectionTreeView(TreeViewState treeViewState, Tab[] tabs,
                                      ViewManager viewManager,
-                                     ProjectReport projectReport)
+                                     Report report)
             : base(treeViewState)
         {
             m_Tabs = tabs;
             m_ViewManager = viewManager;
-            m_ProjectReport = projectReport;
+            m_Report = report;
 
             m_NonAnalyzedIcon = Utility.GetIcon(Utility.IconType.AdditionalAnalysis, "Not Analyzed");
 
@@ -70,7 +70,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     var anyChildrenAnalyzed = false;
                     foreach (var childCategory in tab.availableCategories)
                     {
-                        if (m_ProjectReport.HasCategory(childCategory))
+                        if (m_Report.HasCategory(childCategory))
                         {
                             anyChildrenAnalyzed = true;
                             break;
@@ -136,7 +136,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             iconRect.width = k_NonAnalyzedIconWidth;
 
             // Only show parent items as non-analyzed, not children (= views / categories)
-            if (args.item.parent == m_RootItem && m_ProjectReport != null)
+            if (args.item.parent == m_RootItem && m_Report != null)
             {
                 if (NeedsAnalysis(args.item))
                 {
@@ -151,7 +151,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 foreach (var category in foundTab.availableCategories)
                 {
-                    if (!m_ProjectReport.HasCategory(category))
+                    if (!m_Report.HasCategory(category))
                     {
                         return true;
                     }
@@ -196,7 +196,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 // Leaf items select a view using their category
                 if (m_ItemIdToCategory.TryGetValue(item.id, out IssueCategory foundCategory))
                 {
-                    if (m_ProjectReport.HasCategory(foundCategory))
+                    if (m_Report.HasCategory(foundCategory))
                         m_ViewManager.ChangeView(foundCategory);
                     else
                         needsAnalysis = true;

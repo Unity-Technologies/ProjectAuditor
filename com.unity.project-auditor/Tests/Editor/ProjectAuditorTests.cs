@@ -87,25 +87,25 @@ namespace Unity.ProjectAuditor.EditorTests
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
 
             int numModules = 0;
-            ProjectReport projectReport = null;
+            Report report = null;
 
             projectAuditor.Audit(new AnalysisParams
             {
                 Categories = new[] { IssueCategory.ProjectSetting },
                 OnModuleCompleted = (analysisResult) => numModules++,
-                OnCompleted = report =>
+                OnCompleted = completedReport =>
                 {
-                    Assert.Null(projectReport);
-                    Assert.NotNull(report);
+                    Assert.Null(report);
+                    Assert.NotNull(completedReport);
 
-                    projectReport = report;
+                    report = completedReport;
                 },
                 CompilationMode = CompilationMode.Player
             });
 
             // we have 2 modules reporting ProjectSetting issues
             Assert.AreEqual(2, numModules);
-            Assert.NotNull(projectReport);
+            Assert.NotNull(report);
         }
 
         [Test]

@@ -88,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         /// <param name="progress"> Progress bar, if applicable </param>
         /// <returns> Generated report </returns>
-        public ProjectReport Audit(IProgress progress = null)
+        public Report Audit(IProgress progress = null)
         {
             return Audit(new AnalysisParams(), progress);
         }
@@ -99,22 +99,22 @@ namespace Unity.ProjectAuditor.Editor
         /// <param name="analysisParams"> Parameters to control the audit process </param>
         /// <param name="progress"> Progress bar, if applicable </param>
         /// <returns> Generated report </returns>
-        public ProjectReport Audit(AnalysisParams analysisParams, IProgress progress = null)
+        public Report Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
-            ProjectReport projectReport = null;
+            Report report = null;
 
-            analysisParams.OnCompleted += result => { projectReport = result; };
+            analysisParams.OnCompleted += result => { report = result; };
 
             AuditAsync(analysisParams, progress);
 
-            while (projectReport == null)
+            while (report == null)
                 Thread.Sleep(50);
-            return projectReport;
+            return report;
         }
 
         /// <summary>
         /// Performs asynchronous static analysis of the project, using the supplied analysis parameters.
-        /// Provide a callback to the `OnCompleted` Action in analysisParams to obtain the <seealso cref="ProjectReport"/> when analysis is completed.
+        /// Provide a callback to the `OnCompleted` Action in analysisParams to obtain the <seealso cref="Report"/> when analysis is completed.
         /// </summary>
         /// <param name="analysisParams"> Parameters to control the audit process </param>
         /// <param name="progress"> Progress bar, if applicable </param>
@@ -130,7 +130,7 @@ namespace Unity.ProjectAuditor.Editor
                     .ToArray();
             var report = analysisParams.ExistingReport;
             if (report == null)
-                report = new ProjectReport(analysisParams);
+                report = new Report(analysisParams);
             else
             {
                 // incremental analysis
@@ -245,9 +245,9 @@ namespace Unity.ProjectAuditor.Editor
 
         internal void DelayedPostBuildAudit()
         {
-            var projectReport = Audit();
+            var report = Audit();
 
-            var numIssues = projectReport.NumTotalIssues;
+            var numIssues = report.NumTotalIssues;
             if (numIssues > 0)
             {
                 if (UserPreferences.FailBuildOnIssues)

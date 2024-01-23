@@ -8,12 +8,12 @@ namespace Unity.ProjectAuditor.EditorTests
     internal class EditorCodeAnalysisTests
     {
         readonly Unity.ProjectAuditor.Editor.ProjectAuditor m_ProjectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-        ProjectReport m_ProjectReport;
+        Report m_Report;
 
         [OneTimeSetUp]
         public void EditorCodeAnalysisSetup()
         {
-            m_ProjectReport = m_ProjectAuditor.Audit(new AnalysisParams
+            m_Report = m_ProjectAuditor.Audit(new AnalysisParams
             {
                 CompilationMode = CompilationMode.Editor,
                 Categories = new[] { IssueCategory.Code }
@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void EditorCodeAnalysis_GetAssemblies_IsFound()
         {
-            var issues = m_ProjectReport.FindByCategory(IssueCategory.Code);
+            var issues = m_Report.FindByCategory(IssueCategory.Code);
             var codeIssue = issues.FirstOrDefault(i => i.Id.IsValid() &&
                 i.Id.GetDescriptor().Type.Equals("System.AppDomain") &&
                 i.Id.GetDescriptor().Method.Equals("GetAssemblies") &&
@@ -36,7 +36,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void EditorCodeAnalysis_FindAssets_IsFound()
         {
-            var issues = m_ProjectReport.FindByCategory(IssueCategory.Code);
+            var issues = m_Report.FindByCategory(IssueCategory.Code);
             var codeIssue = issues.FirstOrDefault(i => i.Id.IsValid() &&
                 i.Id.GetDescriptor().Type.Equals("UnityEditor.AssetDatabase") &&
                 i.Id.GetDescriptor().Method.Equals("FindAssets") &&

@@ -88,12 +88,12 @@ class MyClass
         public void AssemblyCompilation_Player_IsCompiled(CompilationMode mode, string methodName)
         {
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var projectReport = projectAuditor.Audit(new AnalysisParams
+            var report = projectAuditor.Audit(new AnalysisParams
             {
                 CompilationMode = mode
             });
 
-            var issues = projectReport.FindByCategory(IssueCategory.Code);
+            var issues = report.FindByCategory(IssueCategory.Code);
             var codeIssue = issues.FirstOrDefault(i => i.RelativePath.Equals(m_TestAsset.RelativePath));
 
             Assert.NotNull(codeIssue);

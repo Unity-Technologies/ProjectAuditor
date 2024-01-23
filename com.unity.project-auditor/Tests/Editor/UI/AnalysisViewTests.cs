@@ -47,19 +47,19 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void SummaryView_Displays_ReportInformation()
         {
-            var projectReport = (ProjectReport)m_PaWindow.GetType().
-                GetField("m_ProjectReport", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(m_PaWindow);
+            var report = (Report)m_PaWindow.GetType().
+                GetField("m_Report", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(m_PaWindow);
 
-            Assert.NotNull(projectReport);
+            Assert.NotNull(report);
 
-            var numOfIssues = projectReport.NumTotalIssues;
+            var numOfIssues = report.NumTotalIssues;
             Assert.Greater(numOfIssues, 0);
 
-            Assert.AreEqual(Application.unityVersion, projectReport.SessionInfo.UnityVersion);
-            Assert.AreEqual(Application.companyName, projectReport.SessionInfo.CompanyName);
-            Assert.AreEqual(Application.productName, projectReport.SessionInfo.ProjectName);
-            Assert.AreEqual(Editor.ProjectAuditor.PackageVersion, projectReport.SessionInfo.ProjectAuditorVersion);
-            Assert.AreEqual(Application.unityVersion, projectReport.SessionInfo.UnityVersion);
+            Assert.AreEqual(Application.unityVersion, report.SessionInfo.UnityVersion);
+            Assert.AreEqual(Application.companyName, report.SessionInfo.CompanyName);
+            Assert.AreEqual(Application.productName, report.SessionInfo.ProjectName);
+            Assert.AreEqual(Editor.ProjectAuditor.PackageVersion, report.SessionInfo.ProjectAuditorVersion);
+            Assert.AreEqual(Application.unityVersion, report.SessionInfo.UnityVersion);
         }
 
         [Order(1)]
@@ -87,15 +87,15 @@ namespace Unity.ProjectAuditor.EditorTests
 
         [Order(2)]
         [Test]
-        public void ProjectReports_CanBeSavedAndLoaded()
+        public void Reports_CanBeSavedAndLoaded()
         {
-            var projectReport = (ProjectReport)m_PaWindow.GetType().
-                GetField("m_ProjectReport", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(m_PaWindow);
+            var report = (Report)m_PaWindow.GetType().
+                GetField("m_Report", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(m_PaWindow);
 
-            projectReport.Save(m_Path);
-            var loadedReport = ProjectReport.Load(m_Path);
+            report.Save(m_Path);
+            var loadedReport = Report.Load(m_Path);
 
-            Assert.AreEqual(projectReport.NumTotalIssues, loadedReport.NumTotalIssues);
+            Assert.AreEqual(report.NumTotalIssues, loadedReport.NumTotalIssues);
         }
 
         [OneTimeTearDown]

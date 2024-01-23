@@ -56,9 +56,9 @@ to generate Report Items. For more information on the areas covered by Project A
 [Configuration](Configuration.md) documentation.
 
 **Project Auditor:** A suite of static analysis tools for Unity projects, in a package of the same name. Also, the name
-of a C# object which is created to actually perform the analysis and to return a Project Report.
+of a C# object which is created to actually perform the analysis and to return a Report.
 
-**Project Report:** An object which is output from Project Auditor's analysis process. It includes some information
+**Report:** An object which is output from Project Auditor's analysis process. It includes some information
 about how the analysis was configured, some high-level summary information, and a list of `ProjectIssues` detailing
 every issue and insight that was discovered by Project Auditor's analyzers.
 

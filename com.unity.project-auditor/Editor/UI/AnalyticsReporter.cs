@@ -309,11 +309,11 @@ namespace Unity.ProjectAuditor.Editor.UI
             return selectionsArray;
         }
 
-        static IssueStats[] GetScriptIssuesSummary(ProjectReport projectReport)
+        static IssueStats[] GetScriptIssuesSummary(Report report)
         {
             var statsDict = new Dictionary<string, IssueStats>();
 
-            var scriptIssues = projectReport.FindByCategory(IssueCategory.Code);
+            var scriptIssues = report.FindByCategory(IssueCategory.Code);
             foreach (var issue in scriptIssues)
             {
                 var id = issue.Id;
@@ -382,13 +382,13 @@ namespace Unity.ProjectAuditor.Editor.UI
             return false;
         }
 
-        public static bool SendEventWithAnalyzeSummary(UIButton uiButton, Analytic analytic, ProjectReport projectReport)
+        public static bool SendEventWithAnalyzeSummary(UIButton uiButton, Analytic analytic, Report report)
         {
             analytic.End();
 
             if (s_EnableAnalytics)
             {
-                var payload = GetScriptIssuesSummary(projectReport);
+                var payload = GetScriptIssuesSummary(report);
 
                 var uiButtonEvent = new ButtonEventWithIssueStats(GetEventName(uiButton), analytic, payload);
 

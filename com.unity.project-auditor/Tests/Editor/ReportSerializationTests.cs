@@ -10,12 +10,12 @@ using Unity.ProjectAuditor.Editor.Tests.Common;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class ProjectReportSerializationTests : TestFixtureBase
+    class ReportSerializationTests : TestFixtureBase
     {
         const string k_ReportPath = "report.json";
 
         [Test]
-        public void ProjectReportSerialization_Report_CanSaveAndLoad()
+        public void ReportSerialization_Report_CanSaveAndLoad()
         {
             Build();
 
@@ -23,7 +23,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             report.Save(k_ReportPath);
 
-            var loadedReport = ProjectReport.Load(k_ReportPath);
+            var loadedReport = Report.Load(k_ReportPath);
 
             Assert.AreEqual(report.Version, loadedReport.Version);
             Assert.AreEqual(report.SessionInfo.ProjectAuditorVersion, loadedReport.SessionInfo.ProjectAuditorVersion);
@@ -98,7 +98,7 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void ProjectReportSerialization_Report_CanSerialize()
+        public void ReportSerialization_Report_CanSerialize()
         {
             var report = m_ProjectAuditor.Audit(new AnalysisParams
             {
