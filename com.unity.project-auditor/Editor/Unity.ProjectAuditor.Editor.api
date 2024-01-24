@@ -10,13 +10,13 @@ namespace Unity.ProjectAuditor.Editor
         public CodeOptimization CodeOptimization = CodeOptimization.Release;
         public CompilationMode CompilationMode = CompilationMode.Player;
         public DiagnosticParams DiagnosticParams;
-        [Newtonsoft.Json.JsonIgnore] public System.Action<ProjectReport> OnCompleted;
+        [Newtonsoft.Json.JsonIgnore] public System.Action<Report> OnCompleted;
         [Newtonsoft.Json.JsonIgnore] public System.Action<System.Collections.Generic.IEnumerable<ReportItem>> OnIncomingIssues;
         [Newtonsoft.Json.JsonIgnore] public System.Action<AnalysisResult> OnModuleCompleted;
-        [Newtonsoft.Json.JsonConverter(typeof(Diagnostic.BuildTargetJsonConverter))] public UnityEditor.BuildTarget Platform { get; set; }
+        [Newtonsoft.Json.JsonConverter(typeof(Core.BuildTargetJsonConverter))] public UnityEditor.BuildTarget Platform { get; set; }
         public AnalysisParams(bool copyParamsFromGlobal = true) {}
         public AnalysisParams(AnalysisParams original) {}
-        public AnalysisParams WithAdditionalDiagnosticRules(System.Collections.Generic.List<Diagnostic.Rule> rules);
+        public AnalysisParams WithAdditionalDiagnosticRules(System.Collections.Generic.List<Rule> rules);
     }
 
     public enum AnalysisResult
@@ -25,6 +25,22 @@ namespace Unity.ProjectAuditor.Editor
         Failure = 2,
         InProgress = 0,
         Success = 1,
+    }
+
+    [Newtonsoft.Json.JsonConverter(typeof(Core.AreasJsonConverter))] [System.Flags] public enum Areas
+    {
+        All = 1023,
+        BuildSize = 1,
+        BuildTime = 2,
+        CPU = 4,
+        GPU = 8,
+        IterationTime = 16,
+        LoadTime = 32,
+        Memory = 64,
+        None = 0,
+        Quality = 128,
+        Requirement = 256,
+        Support = 512,
     }
 
     [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))] public enum CodeOptimization
@@ -41,11 +57,63 @@ namespace Unity.ProjectAuditor.Editor
         Player = 0,
     }
 
-    [System.AttributeUsage(System.AttributeTargets.Field)] public class DiagnosticParameterAttribute : System.Attribute
+    public abstract class DependencyNode
     {
-        public int DefaultValue { get; }
+        public Location Location;
+        protected System.Collections.Generic.List<DependencyNode> m_Children;
+        public bool PerfCriticalContext;
+        public bool HasChildren { get; }
+        public bool HasValidChildren { get; }
         public string Name { get; }
-        public DiagnosticParameterAttribute(string name, int defaultValue) {}
+        public int NumChildren { get; }
+        public string PrettyName { get; }
+        protected DependencyNode() {}
+        public void AddChild(DependencyNode child);
+        public void AddChildren(DependencyNode[] children);
+        public DependencyNode GetChild(int index = 0);
+        public abstract string GetName();
+        public abstract string GetPrettyName();
+        public abstract bool IsPerfCritical();
+        public void SortChildren();
+    }
+
+    public sealed class Descriptor : System.IEquatable<Descriptor>
+    {
+        public Areas Areas;
+        public Severity DefaultSeverity;
+        public string Description;
+        public string DocumentationUrl;
+        [Newtonsoft.Json.JsonIgnore] public System.Action<ReportItem, AnalysisParams> Fixer;
+        public string Id;
+        public bool IsEnabledByDefault = true;
+        public string MaximumVersion;
+        public string MessageFormat;
+        public string Method;
+        public string MinimumVersion;
+        [Newtonsoft.Json.JsonConverter(typeof(Core.BuildTargetJsonConverter))] public UnityEditor.BuildTarget[] Platforms;
+        public string Recommendation;
+        public string Title;
+        public string Type;
+        public string Value;
+        public Descriptor(string id, string title, Areas areas, string description, string recommendation) {}
+        public override bool Equals(object obj);
+        public bool Equals(Descriptor other);
+        public override int GetHashCode();
+    }
+
+    public struct DescriptorId : System.IEquatable<DescriptorId>
+    {
+        public DescriptorId(string id) {}
+        public int AsInt();
+        public string AsString();
+        public bool Equals(string other);
+        public bool Equals(DescriptorId other);
+        public Descriptor GetDescriptor();
+        public bool IsValid();
+        public static int op_Implicit(DescriptorId d);
+        public static string op_Implicit(DescriptorId d);
+        public static DescriptorId op_Implicit(string id);
+        public override string ToString();
     }
 
     public sealed class DiagnosticParams : UnityEngine.ISerializationCallbackReceiver
@@ -123,8 +191,8 @@ namespace Unity.ProjectAuditor.Editor
     {
         public int callbackOrder { get; }
         public ProjectAuditor() {}
-        public ProjectReport Audit(IProgress progress = default(IProgress));
-        public ProjectReport Audit(AnalysisParams analysisParams, IProgress progress = default(IProgress));
+        public Report Audit(IProgress progress = default(IProgress));
+        public Report Audit(AnalysisParams analysisParams, IProgress progress = default(IProgress));
         public void AuditAsync(AnalysisParams analysisParams, IProgress progress = default(IProgress));
         public void OnPostprocessBuild(UnityEditor.Build.Reporting.BuildReport report);
     }
@@ -134,7 +202,7 @@ namespace Unity.ProjectAuditor.Editor
         public void Save();
     }
 
-    public sealed class ProjectReport
+    public sealed class Report
     {
         [Newtonsoft.Json.JsonProperty(@"sessionInfo")] [UnityEngine.SerializeField] public SessionInfo SessionInfo;
         [Newtonsoft.Json.JsonIgnore] public int NumTotalIssues { get; }
@@ -146,7 +214,7 @@ namespace Unity.ProjectAuditor.Editor
         public int GetNumIssues(IssueCategory category);
         public bool HasCategory(IssueCategory category);
         public bool IsValid();
-        public static ProjectReport Load(string path);
+        public static Report Load(string path);
         public void Save(string path);
     }
 
@@ -156,12 +224,12 @@ namespace Unity.ProjectAuditor.Editor
         [Newtonsoft.Json.JsonProperty(@"properties")] public string[] CustomProperties { get; }
         [Newtonsoft.Json.JsonProperty(@"description")] public string Description { get; }
         [Newtonsoft.Json.JsonIgnore] public string Filename { get; }
-        [Newtonsoft.Json.JsonIgnore] public Diagnostic.DescriptorId Id { get; }
+        [Newtonsoft.Json.JsonIgnore] public DescriptorId Id { get; }
         [Newtonsoft.Json.JsonIgnore] public int Line { get; }
         [Newtonsoft.Json.JsonProperty(@"location")] public Location Location { get; }
         [Newtonsoft.Json.JsonIgnore] public LogLevel LogLevel { get; }
         [Newtonsoft.Json.JsonIgnore] public string RelativePath { get; }
-        [Newtonsoft.Json.JsonIgnore] public Diagnostic.Severity Severity { get; }
+        [Newtonsoft.Json.JsonIgnore] public Severity Severity { get; }
         public string GetCustomProperty<T>(T propertyEnum) where T : struct, new();
         public bool GetCustomPropertyBool<T>(T propertyEnum) where T : struct, new();
         public double GetCustomPropertyDouble<T>(T propertyEnum) where T : struct, new();
@@ -174,6 +242,15 @@ namespace Unity.ProjectAuditor.Editor
         public bool IsMajorOrCritical();
         public bool IsValid();
         public void SetCustomProperty<T>(T propertyEnum, object property) where T : struct, new();
+    }
+
+    public class Rule
+    {
+        [Newtonsoft.Json.JsonProperty(@"filter")] public string Filter;
+        [Newtonsoft.Json.JsonIgnore] public DescriptorId Id;
+        [Newtonsoft.Json.JsonProperty(@"severity")] public Severity Severity;
+        public Rule() {}
+        public override int GetHashCode();
     }
 
     public class SessionInfo : AnalysisParams
@@ -191,73 +268,6 @@ namespace Unity.ProjectAuditor.Editor
         public SessionInfo() {}
         public SessionInfo(AnalysisParams serializedParams) {}
     }
-}
-
-namespace Unity.ProjectAuditor.Editor.Diagnostic
-{
-    [Newtonsoft.Json.JsonConverter(typeof(AreasJsonConverter))] [System.Flags] public enum Areas
-    {
-        All = 1023,
-        BuildSize = 1,
-        BuildTime = 2,
-        CPU = 4,
-        GPU = 8,
-        IterationTime = 16,
-        LoadTime = 32,
-        Memory = 64,
-        None = 0,
-        Quality = 128,
-        Requirement = 256,
-        Support = 512,
-    }
-
-    public sealed class Descriptor : System.IEquatable<Descriptor>
-    {
-        public Areas Areas;
-        public Severity DefaultSeverity;
-        public string Description;
-        public string DocumentationUrl;
-        [Newtonsoft.Json.JsonIgnore] public System.Action<ReportItem, AnalysisParams> Fixer;
-        public string Id;
-        public bool IsEnabledByDefault = true;
-        public string MaximumVersion;
-        public string MessageFormat;
-        public string Method;
-        public string MinimumVersion;
-        [Newtonsoft.Json.JsonConverter(typeof(BuildTargetJsonConverter))] public UnityEditor.BuildTarget[] Platforms;
-        public string Solution;
-        public string Title;
-        public string Type;
-        public string Value;
-        public Descriptor(string id, string title, Areas areas, string description, string solution) {}
-        public override bool Equals(object obj);
-        public bool Equals(Descriptor other);
-        public override int GetHashCode();
-    }
-
-    public struct DescriptorId : System.IEquatable<DescriptorId>
-    {
-        public DescriptorId(string id) {}
-        public int AsInt();
-        public string AsString();
-        public bool Equals(string other);
-        public bool Equals(DescriptorId other);
-        public Descriptor GetDescriptor();
-        public bool IsValid();
-        public static int op_Implicit(DescriptorId d);
-        public static string op_Implicit(DescriptorId d);
-        public static DescriptorId op_Implicit(string id);
-        public override string ToString();
-    }
-
-    public class Rule
-    {
-        [Newtonsoft.Json.JsonProperty(@"filter")] public string Filter;
-        [Newtonsoft.Json.JsonIgnore] public DescriptorId Id;
-        [Newtonsoft.Json.JsonProperty(@"severity")] public Severity Severity;
-        public Rule() {}
-        public override int GetHashCode();
-    }
 
     [Newtonsoft.Json.JsonConverter(typeof(Newtonsoft.Json.Converters.StringEnumConverter))] public enum Severity
     {
@@ -271,5 +281,172 @@ namespace Unity.ProjectAuditor.Editor.Diagnostic
         Moderate = 4,
         None = 6,
         Warning = 4,
+    }
+}
+
+namespace Unity.ProjectAuditor.Editor.Core
+{
+    public class AnalysisContext
+    {
+        public AnalysisParams Params;
+        public AnalysisContext() {}
+        public ReportItemBuilder CreateInsight(IssueCategory category, string description);
+        public ReportItemBuilder CreateIssue(IssueCategory category, string id, params object[] messageArgs);
+        public bool IsDescriptorEnabled(Descriptor descriptor);
+    }
+
+    public abstract class AnimationModuleAnalyzer : ModuleAnalyzer
+    {
+        protected AnimationModuleAnalyzer() {}
+    }
+
+    public class AssetAnalysisContext : AnalysisContext
+    {
+        public string AssetPath;
+        public AssetAnalysisContext() {}
+    }
+
+    public abstract class AssetsModuleAnalyzer : ModuleAnalyzer
+    {
+        protected AssetsModuleAnalyzer() {}
+        public abstract System.Collections.Generic.IEnumerable<ReportItem> Analyze(AssetAnalysisContext context);
+    }
+
+    public class AudioClipAnalysisContext : AnalysisContext
+    {
+        public UnityEngine.AudioClip AudioClip;
+        public long ImportedSize;
+        public UnityEditor.AudioImporter Importer;
+        public string Name;
+        public long RuntimeSize;
+        public UnityEditor.AudioImporterSampleSettings SampleSettings;
+        public AudioClipAnalysisContext() {}
+    }
+
+    public abstract class AudioClipModuleAnalyzer : ModuleAnalyzer
+    {
+        protected AudioClipModuleAnalyzer() {}
+        public abstract System.Collections.Generic.IEnumerable<ReportItem> Analyze(AudioClipAnalysisContext context);
+    }
+
+    public abstract class CodeModuleInstructionAnalyzer : ModuleAnalyzer
+    {
+        public abstract System.Collections.Generic.IReadOnlyCollection<Mono.Cecil.Cil.OpCode> opCodes { get; }
+        protected CodeModuleInstructionAnalyzer() {}
+        public abstract ReportItemBuilder Analyze(InstructionAnalysisContext context);
+    }
+
+    [System.AttributeUsage(System.AttributeTargets.Field)] public class DiagnosticParameterAttribute : System.Attribute
+    {
+        public int DefaultValue { get; }
+        public string Name { get; }
+        public DiagnosticParameterAttribute(string name, int defaultValue) {}
+    }
+
+    public class InstructionAnalysisContext : AnalysisContext
+    {
+        public Mono.Cecil.Cil.Instruction Instruction;
+        public Mono.Cecil.MethodDefinition MethodDefinition;
+        public InstructionAnalysisContext() {}
+    }
+
+    public class MeshAnalysisContext : AnalysisContext
+    {
+        public UnityEditor.AssetImporter Importer;
+        public UnityEngine.Mesh Mesh;
+        public string Name;
+        public long Size;
+        public MeshAnalysisContext() {}
+    }
+
+    public abstract class MeshModuleAnalyzer : ModuleAnalyzer
+    {
+        protected MeshModuleAnalyzer() {}
+        public abstract System.Collections.Generic.IEnumerable<ReportItem> Analyze(MeshAnalysisContext context);
+    }
+
+    public class ModuleAnalyzer
+    {
+        public ModuleAnalyzer() {}
+        public virtual void Initialize(System.Action<Descriptor> registerDescriptor);
+    }
+
+    public class PackageAnalysisContext : AnalysisContext
+    {
+        public UnityEditor.PackageManager.PackageInfo PackageInfo;
+        public PackageAnalysisContext() {}
+    }
+
+    public abstract class PackagesModuleAnalyzer : ModuleAnalyzer
+    {
+        protected PackagesModuleAnalyzer() {}
+        public abstract System.Collections.Generic.IEnumerable<ReportItem> Analyze(PackageAnalysisContext context);
+    }
+
+    public class ReportItemBuilder
+    {
+        public ReportItemBuilder(IssueCategory category, string description) {}
+        public ReportItemBuilder(IssueCategory category, DescriptorId id, params object[] args) {}
+        public static ReportItem op_Implicit(ReportItemBuilder builder);
+        public ReportItemBuilder WithCustomProperties(object[] properties);
+        public ReportItemBuilder WithCustomProperties(int numProperties, object property);
+        public ReportItemBuilder WithDependencies(DependencyNode dependencies);
+        public ReportItemBuilder WithDescription(string description);
+        public ReportItemBuilder WithLocation(Location location);
+        public ReportItemBuilder WithLocation(string path, int line = 0);
+        public ReportItemBuilder WithLogLevel(LogLevel logLevel);
+        public ReportItemBuilder WithSeverity(Severity severity);
+    }
+
+    public class SettingsAnalysisContext : AnalysisContext
+    {
+        public SettingsAnalysisContext() {}
+    }
+
+    public abstract class SettingsModuleAnalyzer : ModuleAnalyzer
+    {
+        protected SettingsModuleAnalyzer() {}
+        public abstract System.Collections.Generic.IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context);
+    }
+
+    public class ShaderAnalysisContext : AnalysisContext
+    {
+        public string AssetPath;
+        public UnityEngine.Shader Shader;
+        public ShaderAnalysisContext() {}
+    }
+
+    public abstract class ShaderModuleAnalyzer : ModuleAnalyzer
+    {
+        protected ShaderModuleAnalyzer() {}
+        public abstract System.Collections.Generic.IEnumerable<ReportItem> Analyze(ShaderAnalysisContext context);
+    }
+
+    public class SpriteAtlasAnalysisContext : AnalysisContext
+    {
+        public string AssetPath;
+        public SpriteAtlasAnalysisContext() {}
+    }
+
+    public abstract class SpriteAtlasModuleAnalyzer : ModuleAnalyzer
+    {
+        protected SpriteAtlasModuleAnalyzer() {}
+        public abstract System.Collections.Generic.IEnumerable<ReportItem> Analyze(SpriteAtlasAnalysisContext context);
+    }
+
+    public class TextureAnalysisContext : AnalysisContext
+    {
+        public UnityEditor.TextureImporter Importer;
+        public UnityEditor.TextureImporterPlatformSettings ImporterPlatformSettings;
+        public string Name;
+        public long Size;
+        public UnityEngine.Texture Texture;
+        public TextureAnalysisContext() {}
+    }
+
+    public abstract class TextureModuleAnalyzer : ModuleAnalyzer
+    {
+        protected TextureModuleAnalyzer() {}
+        public abstract System.Collections.Generic.IEnumerable<ReportItem> Analyze(TextureAnalysisContext context);
     }
 }

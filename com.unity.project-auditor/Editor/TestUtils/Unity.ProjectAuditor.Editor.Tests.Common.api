@@ -19,7 +19,7 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
     public abstract class TestFixtureBase
     {
-        protected System.Collections.Generic.List<Unity.ProjectAuditor.Editor.Diagnostic.Rule> m_AdditionalRules;
+        protected System.Collections.Generic.List<Rule> m_AdditionalRules;
         protected AnalysisParams m_AnalysisParams;
         protected string m_AssemblyName;
         protected string m_BuildPath;
