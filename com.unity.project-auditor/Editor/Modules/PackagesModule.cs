@@ -68,8 +68,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 {
                     analysisParams.OnIncomingIssues(analyzer.Analyze(context));
                 }
-
-                analysisParams.OnIncomingIssues(EnumerateInstalledPackages(context));
             }
             return AnalysisResult.Success;
         }
