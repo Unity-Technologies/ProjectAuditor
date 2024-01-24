@@ -4,7 +4,6 @@ using Mono.Cecil.Cil;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
-
     /// <summary>
     /// A context object passed by CodeModule to a CodeModuleInstructionAnalyzer's Analyze() method.
     /// </summary>

@@ -116,13 +116,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-		[DiagnosticParameter("TextureStreamingMipmapsSizeLimit", 4000)]
+        [DiagnosticParameter("TextureStreamingMipmapsSizeLimit", 4000)]
         int m_StreamingMipmapsSizeLimit;
 
         // [DiagnosticParameter("TextureSizeLimit", 2048)]
         // int m_SizeLimit;
 
-		public override void Initialize(Action<Descriptor> registerDescriptor)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
             registerDescriptor(k_TextureMipmapsNotEnabledDescriptor);
             registerDescriptor(k_TextureMipmapsEnabledDescriptor);

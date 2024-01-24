@@ -54,10 +54,10 @@ class MyClass : MonoBehaviour
             var report = new Report(new AnalysisParams());
 
             report.AddIssues(new[] { new ReportItem
-                                            (
-                                                IssueCategory.Texture,
-                                                "myTexture"
-                                            ) }
+                                     (
+                                         IssueCategory.Texture,
+                                         "myTexture"
+                                     ) }
             );
 
             Assert.AreEqual(1, report.NumTotalIssues);

@@ -92,8 +92,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                                 mesh.vertexCount,
                                 mesh.triangles.Length / 3,
                                 modelImporter != null
-                                    ? modelImporter.meshCompression
-                                    : ModelImporterMeshCompression.Off,
+                                ? modelImporter.meshCompression
+                                : ModelImporterMeshCompression.Off,
                                 size
                             })
                         .WithLocation(new Location(assetPath)));
