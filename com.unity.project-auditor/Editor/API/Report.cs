@@ -292,6 +292,8 @@ namespace Unity.ProjectAuditor.Editor
         /// <returns>True is none of the issues in the report have a null description string. Otherwise returns false.</returns>
         public bool IsValid()
         {
+            if (m_ModuleInfos.Count == 0)
+                return false;
             return m_Issues.All(i => i.IsValid()) && m_ModuleInfos.All(m => m.result != AnalysisResult.Cancelled);
         }
 
