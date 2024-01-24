@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEditor.PackageManager;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
+using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
@@ -42,15 +43,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (analyzers.Length == 0)
                 return AnalysisResult.Success;
 
-            var request = Client.List();
-            while (!request.IsCompleted)
-                System.Threading.Thread.Sleep(10);
-            if (request.Status == StatusCode.Failure)
-            {
-                return AnalysisResult.Failure;
-            }
+            var packages = PackageUtils.GetClientPackages();
+            var packageCount = packages.Length;
 
-            var packageCount = request.Result.Count();
             progress?.Start("Finding Packages", "Search in Progress...", packageCount);
 
             var context = new PackageAnalysisContext
@@ -58,7 +53,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 Params = analysisParams
             };
 
-            foreach (var package in request.Result)
+            foreach (var package in packages)
             {
                 context.PackageInfo = package;
 
