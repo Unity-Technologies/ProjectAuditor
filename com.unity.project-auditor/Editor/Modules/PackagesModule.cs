@@ -55,6 +55,11 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
             foreach (var package in packages)
             {
+                if (progress?.IsCancelled ?? false)
+                    return AnalysisResult.Cancelled;
+
+                progress?.Advance(package.displayName);
+
                 context.PackageInfo = package;
 
                 analysisParams.OnIncomingIssues(EnumerateInstalledPackages(context));
@@ -64,6 +69,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     analysisParams.OnIncomingIssues(analyzer.Analyze(context));
                 }
             }
+
+            progress?.Clear();
             return AnalysisResult.Success;
         }
 
