@@ -137,7 +137,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
                         step.name,
                         depth
                     })
-                    .WithSeverity(Severity.Info);
+                    .WithSeverity(Severity.Hidden);
 
                 foreach (var message in step.messages)
                 {

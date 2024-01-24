@@ -340,10 +340,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 {
                     case PropertyType.LogLevel:
                     {
-                        var icon = Utility.GetLogLevelIcon(issue.LogLevel);
-                        if (icon != null)
+                        if (issue.Severity != Severity.Hidden)
                         {
-                            EditorGUI.LabelField(cellRect, icon, labelStyle);
+                            var icon = Utility.GetLogLevelIcon(issue.LogLevel);
+                            if (icon != null)
+                            {
+                                EditorGUI.LabelField(cellRect, icon, labelStyle);
+                            }
                         }
                     }
                     break;

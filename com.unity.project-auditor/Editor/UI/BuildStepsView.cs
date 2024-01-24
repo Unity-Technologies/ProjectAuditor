@@ -1,11 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using Unity.ProjectAuditor.Editor.Modules;
-using Unity.ProjectAuditor.Editor.Utils;
-using UnityEditor;
-using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.UI
 {
