@@ -22,41 +22,9 @@ namespace Unity.ProjectAuditor.Editor
         /// </summary>
         public int callbackOrder => 1;  // We want LastBuildReportProvider to update its cached report before we run analysis.
 
-        internal static string s_DataPath => PackagePath + "/Data";
-        internal const string k_CanonicalPackagePath = "Packages/" + k_PackageName;
-
-        internal const string k_PackageName = "com.unity.project-auditor";
+        internal static string s_DataPath => ProjectAuditorPackage.Path + "/Data";
 
         internal const string DisplayName = "Project Auditor";
-
-        internal static string PackagePath
-        {
-            get
-            {
-                if (!string.IsNullOrEmpty(s_CachedPackagePath))
-                    return s_CachedPackagePath;
-
-                if (PackageUtils.IsClientPackage(k_PackageName))
-                    s_CachedPackagePath = k_CanonicalPackagePath;
-                else
-                {
-                    var paths = AssetDatabase.FindAssets("t:asmdef", new string[] { "Packages" }).Select(AssetDatabase.GUIDToAssetPath);
-                    var asmDefPath = paths.FirstOrDefault(path => path.EndsWith("Unity.ProjectAuditor.Editor.asmdef"));
-                    s_CachedPackagePath = PathUtils.GetDirectoryName(PathUtils.GetDirectoryName(asmDefPath));
-                }
-                return s_CachedPackagePath;
-            }
-        }
-
-        internal static string PackageVersion
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(s_CachedPackageVersion))
-                    s_CachedPackageVersion = PackageUtils.GetClientPackageVersion(k_PackageName);
-                return s_CachedPackageVersion;
-            }
-        }
 
         internal static string ProjectPath
         {
@@ -68,8 +36,6 @@ namespace Unity.ProjectAuditor.Editor
             }
         }
 
-        static string s_CachedPackagePath;
-        static string s_CachedPackageVersion;
         static string s_CachedProjectPath;
         static readonly Dictionary<string, IssueCategory> s_CustomCategories = new Dictionary<string, IssueCategory>();
 

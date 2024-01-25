@@ -372,7 +372,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         static Texture2D LoadIcon(string iconName)
         {
-            return AssetDatabase.LoadAssetAtPath<Texture2D>($"{ProjectAuditor.PackagePath}/Editor/Icons/{iconName}.png");
+            return AssetDatabase.LoadAssetAtPath<Texture2D>($"{ProjectAuditorPackage.Path}/Editor/Icons/{iconName}.png");
         }
 
         public static Texture2D MakeColorTexture(Color col)

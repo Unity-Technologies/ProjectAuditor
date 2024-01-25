@@ -58,7 +58,7 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual(Application.unityVersion, report.SessionInfo.UnityVersion);
             Assert.AreEqual(Application.companyName, report.SessionInfo.CompanyName);
             Assert.AreEqual(Application.productName, report.SessionInfo.ProjectName);
-            Assert.AreEqual(Editor.ProjectAuditor.PackageVersion, report.SessionInfo.ProjectAuditorVersion);
+            Assert.AreEqual(ProjectAuditorPackage.Version, report.SessionInfo.ProjectAuditorVersion);
             Assert.AreEqual(Application.unityVersion, report.SessionInfo.UnityVersion);
         }
 

@@ -58,13 +58,13 @@ namespace Unity.ProjectAuditor.EditorTests
 
         [Test]
         [TestCase("Test Framework", "com.unity.test-framework", PackageSource.Registry, new[] { "com.unity.ext.nunit", "com.unity.modules.imgui", "com.unity.modules.jsonserialize"})]
-        [TestCase("Project Auditor", Editor.ProjectAuditor.k_PackageName, PackageSource.LocalTarball, new string[] { "com.unity.nuget.mono-cecil" })]
+        [TestCase("Project Auditor", ProjectAuditorPackage.Name, PackageSource.LocalTarball, new string[] { "com.unity.nuget.mono-cecil" })]
         [TestCase("Audio", "com.unity.modules.audio", PackageSource.BuiltIn)]
         public void Package_Installed_IsReported(string description, string name, PackageSource source, string[] dependencies = null)
         {
             var installedPackages = Analyze(IssueCategory.Package);
-            if (name.Equals(Editor.ProjectAuditor.k_PackageName) &&
-                !PackageUtils.IsClientPackage(Editor.ProjectAuditor.k_PackageName))
+            if (name.Equals(ProjectAuditorPackage.Name) &&
+                !ProjectAuditorPackage.IsLocal)
             {
                 return;
             }

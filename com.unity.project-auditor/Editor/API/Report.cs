@@ -186,7 +186,7 @@ namespace Unity.ProjectAuditor.Editor
         {
             SessionInfo = new SessionInfo(analysisParams)
             {
-                ProjectAuditorVersion = ProjectAuditor.PackageVersion,
+                ProjectAuditorVersion = ProjectAuditorPackage.Version,
 
                 ProjectId = Application.cloudProjectId,
                 ProjectName = Application.productName,

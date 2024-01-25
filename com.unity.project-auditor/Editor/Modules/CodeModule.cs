@@ -175,9 +175,9 @@ namespace Unity.ProjectAuditor.Editor.Modules
             var roslynAnalyzerAssets = AssetDatabase.FindAssets("l:RoslynAnalyzer").Select(AssetDatabase.GUIDToAssetPath).ToList();
 
             // find all roslyn analyzers packaged with Project Auditor
-            if (Directory.Exists($"{ProjectAuditor.PackagePath}/RoslynAnalyzers"))
+            if (Directory.Exists($"{ProjectAuditorPackage.Path}/RoslynAnalyzers"))
             {
-                var assetPaths = AssetDatabase.FindAssets("", new[] { $"{ProjectAuditor.PackagePath}/RoslynAnalyzers" }).Select(AssetDatabase.GUIDToAssetPath);
+                var assetPaths = AssetDatabase.FindAssets("", new[] { $"{ProjectAuditorPackage.Path}/RoslynAnalyzers" }).Select(AssetDatabase.GUIDToAssetPath);
                 foreach (var assetPath in assetPaths)
                 {
                     if (assetPath.EndsWith(".dll"))
