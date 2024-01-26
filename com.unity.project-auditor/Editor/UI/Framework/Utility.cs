@@ -17,6 +17,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Major,
             Moderate,
             Minor,
+            Ignored,
 
             Help,
             Refresh,
@@ -34,7 +35,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             WhiteCheckMark,
             GreenCheckMark,
             CopyToClipboard,
-            AdditionalAnalysis
+            AdditionalAnalysis,
+            FoldoutExpanded,
+            FoldoutFolded
         }
 
         // Log level
@@ -47,6 +50,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static readonly string k_MajorIconName = "Major";
         static readonly string k_ModerateIconName = "Moderate";
         static readonly string k_MinorIconName = "Minor";
+        static readonly string k_IgnoredIconName = "Ignored";
 
         static readonly string k_HelpIconName = "_Help";
         static readonly string k_RefreshIconName = "Refresh";
@@ -67,14 +71,19 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static readonly string k_IgnoredIssuesLabel = " Ignored Issues";
         static readonly string k_CopyToClipboardIconName = "CopyToClipboard";
         static readonly string k_AdditionalAnalysisIconName = "AdditionalAnalysis";
+        static readonly string k_FoldoutExpandedIconName = "ClassicFoldoutArrow-Open";
+        static readonly string k_FoldoutFoldedIconName = "ClassicFoldoutArrow-Close";
 
         static Texture2D s_CriticalIcon;
         static Texture2D s_MajorIcon;
         static Texture2D s_ModerateIcon;
+        static Texture2D s_MinorIcon;
+        static Texture2D s_IgnoredIcon;
+
         static Texture2D s_CopyToClipboardIcon;
         static Texture2D s_AdditionalAnalysisIcon;
-
-        static Texture2D s_MinorIcon;
+        static Texture2D s_FoldoutExpandedIcon;
+        static Texture2D s_FoldoutFoldedIcon;
 
         static GUIContent[] s_StatusWheel;
 
@@ -251,6 +260,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     if (s_MinorIcon == null)
                         s_MinorIcon = LoadIcon(k_MinorIconName);
                     return EditorGUIUtility.TrIconContent(s_MinorIcon, tooltip);
+                case IconType.Ignored:
+                    if (string.IsNullOrEmpty(tooltip))
+                        tooltip = "Ignored";
+                    if (s_IgnoredIcon == null)
+                        s_IgnoredIcon = LoadIcon(k_IgnoredIconName);
+                    return EditorGUIUtility.TrIconContent(s_IgnoredIcon, tooltip);
+
                 case IconType.CopyToClipboard:
                     if (string.IsNullOrEmpty(tooltip))
                         tooltip = "Copy to Clipboard";
@@ -263,6 +279,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     if (s_AdditionalAnalysisIcon == null)
                         s_AdditionalAnalysisIcon = LoadIcon(k_AdditionalAnalysisIconName);
                     return EditorGUIUtility.TrIconContent(s_AdditionalAnalysisIcon, tooltip);
+                case IconType.FoldoutExpanded:
+                    if (s_FoldoutExpandedIcon == null)
+                        s_FoldoutExpandedIcon = LoadIcon(k_FoldoutExpandedIconName);
+                    return EditorGUIUtility.TrIconContent(s_FoldoutExpandedIcon);
+                case IconType.FoldoutFolded:
+                    if (s_FoldoutFoldedIcon == null)
+                        s_FoldoutFoldedIcon = LoadIcon(k_FoldoutFoldedIconName);
+                    return EditorGUIUtility.TrIconContent(s_FoldoutFoldedIcon);
 
                 case IconType.Hierarchy:
                     return EditorGUIUtility.TrIconContent(k_HierarchyIconName, tooltip);
@@ -312,6 +336,21 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
+        public static GUIContent GetSeverityIcon(Severity severity)
+        {
+            switch (severity)
+            {
+                case Severity.Critical:
+                    return GetIcon(IconType.Critical);
+                case Severity.Major:
+                    return GetIcon(IconType.Major);
+                case Severity.Moderate:
+                    return GetIcon(IconType.Moderate);
+                default:
+                    return GetIcon(IconType.Minor);
+            }
+        }
+
         public static GUIContent GetSeverityIconWithText(Severity severity)
         {
             switch (severity)
@@ -332,6 +371,31 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     if (s_CriticalIcon == null)
                         s_CriticalIcon = LoadIcon(k_CriticalIconName);
                     return EditorGUIUtility.TrTextContentWithIcon("Critical", s_CriticalIcon);
+                default:
+                    return EditorGUIUtility.TrTextContentWithIcon("Unknown", MessageType.None);
+            }
+        }
+
+        public static GUIContent GetSeverityIconWithCustomText(Severity severity, string text)
+        {
+            switch (severity)
+            {
+                case Severity.Minor:
+                    if (s_MinorIcon == null)
+                        s_MinorIcon = LoadIcon(k_MinorIconName);
+                    return EditorGUIUtility.TrTextContentWithIcon(text, s_MinorIcon);
+                case Severity.Moderate:
+                    if (s_ModerateIcon == null)
+                        s_ModerateIcon = LoadIcon(k_ModerateIconName);
+                    return EditorGUIUtility.TrTextContentWithIcon(text, s_ModerateIcon);
+                case Severity.Major:
+                    if (s_MajorIcon == null)
+                        s_MajorIcon = LoadIcon(k_MajorIconName);
+                    return EditorGUIUtility.TrTextContentWithIcon(text, s_MajorIcon);
+                case Severity.Critical:
+                    if (s_CriticalIcon == null)
+                        s_CriticalIcon = LoadIcon(k_CriticalIconName);
+                    return EditorGUIUtility.TrTextContentWithIcon(text, s_CriticalIcon);
                 default:
                     return EditorGUIUtility.TrTextContentWithIcon("Unknown", MessageType.None);
             }

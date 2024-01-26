@@ -65,7 +65,13 @@ namespace Unity.ProjectAuditor.Editor.UI
         // UI
         TreeViewSelection m_AreaSelection;
         TreeViewSelection m_AssemblySelection;
+        List<string> m_DefaultAssemblies;
+
+        internal List<string> DefaultAssemblies => m_DefaultAssemblies;
+
         Draw2D m_Draw2D;
+
+        internal Draw2D Draw2D => m_Draw2D;
 
         Areas m_SelectedAreas;
 
@@ -140,11 +146,15 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] int m_ActiveTabIndex = 0;
         int m_TabButtonControlID;
 
+#if PA_DRAW_TABS_VERTICALLY
         [SerializeField] TreeViewState m_ViewSelectionTreeState;
         ViewSelectionTreeView m_ViewSelectionTreeView;
+#endif
 
         [SerializeField] bool m_IsNonAnalyzedViewSelected;
         [SerializeField] Tab m_SelectedNonAnalyzedTab;
+
+        Vector2 m_PreviousWindowSize;
 
         public bool Match(ReportItem issue)
         {
@@ -261,6 +271,10 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 m_IsNonAnalyzedViewSelected = false;
 
+#if PA_DRAW_TABS_VERTICALLY
+                m_ViewSelectionTreeView.SelectItemByCategory(viewDesc.Category);
+#endif
+
                 Repaint();
             };
 
@@ -282,6 +296,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 AnalyticsReporter.SendEventWithSelectionSummary(AnalyticsReporter.UIButton.Mute,
                     analytic, issues);
+
+                m_ViewManager.GetView(IssueCategory.Metadata)?.MarkDirty();
             };
 
             m_ViewManager.OnSelectedIssuesDisplayRequested = issues =>
@@ -290,6 +306,13 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 AnalyticsReporter.SendEventWithSelectionSummary(
                     AnalyticsReporter.UIButton.Unmute, analytic, issues);
+
+                m_ViewManager.GetView(IssueCategory.Metadata)?.MarkDirty();
+            };
+
+            m_ViewManager.OnSelectedIssuesQuickFixRequested = issues =>
+            {
+                m_ViewManager.GetView(IssueCategory.Metadata)?.MarkDirty();
             };
 
             m_ViewManager.OnAnalysisRequested += category =>
@@ -309,7 +332,14 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_ViewManager.Create(rules, m_ViewStates, null, this);
 
             InitializeTabs(!initialize);
+
+#if PA_DRAW_TABS_VERTICALLY
             InitializeViewSelection(!initialize);
+#endif
+
+            var summary = m_ViewManager.GetView(IssueCategory.Metadata);
+            if (summary is SummaryView summaryView)
+                summaryView.m_ProjectAuditorWindow = this;
 
             Profiler.EndSample();
         }
@@ -377,6 +407,22 @@ namespace Unity.ProjectAuditor.Editor.UI
                     }
                 }
             }
+        }
+
+        internal void GotoNonAnalyzedCategory(IssueCategory category)
+        {
+#if PA_DRAW_TABS_VERTICALLY
+            m_ViewSelectionTreeView.SelectNonAnalyzedCategory(category);
+#else
+            foreach (var tab in m_Tabs)
+            {
+                if (tab.availableCategories.Contains(category))
+                {
+                    OnSelectedNonAnalyzedTab(tab);
+                    break;
+                }
+            }
+#endif
         }
 
         public void OnSelectedNonAnalyzedTab(Tab selectedTab)
@@ -504,6 +550,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
+#if PA_DRAW_TABS_VERTICALLY
         void InitializeViewSelection(bool reload)
         {
             if (!reload)
@@ -532,6 +579,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_ViewSelectionTreeView.OnGUI(rect);
         }
 
+#endif
+
         [InitializeOnLoadMethod]
         static void OnLoad()
         {
@@ -540,7 +589,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 Category = IssueCategory.Metadata,
                 DisplayName = "Summary",
                 MenuOrder = -1,
-                ShowInfoPanel = true,
+                ShowInfoPanel = false,
                 Type = typeof(SummaryView),
                 AnalyticsEventId = (int)AnalyticsReporter.UIButton.Summary
             });
@@ -945,7 +994,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             GUIUtility.ExitGUI();
         }
 
-        void AuditCategories(IssueCategory[] categories)
+        internal void AuditCategories(IssueCategory[] categories)
         {
             // a module might report more categories than requested so we need to make sure we clean up the views accordingly
             var modules = categories.SelectMany(m_ProjectAuditor.GetModules).ToArray();
@@ -1333,7 +1382,43 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void DrawPanels()
         {
+            if (activeView.ShowVerticalScrollView)
+            {
+                float widthDifference = 0f;
+                if (Event.current.type == EventType.Repaint)
+                {
+                    // If window size changes and user still holds the mouse button we won't generally get another
+                    // following repaint event. "LastVerticalScrollViewSize" is one repaint behind, so here we correct
+                    // that width to correctly clip GL rendering within the scroll view area.
+
+                    if (m_PreviousWindowSize != position.size)
+                        widthDifference = position.size.x - m_PreviousWindowSize.x;
+                    m_PreviousWindowSize = position.size;
+                }
+
+                activeView.VerticalScrollViewPos = EditorGUILayout.BeginScrollView(activeView.VerticalScrollViewPos,
+                    false, true, GUIStyle.none,
+                    GUI.skin.verticalScrollbar, GUI.skin.scrollView);
+
+                Rect clipRect = new Rect(activeView.VerticalScrollViewPos.x, activeView.VerticalScrollViewPos.y,
+                    activeView.LastVerticalScrollViewSize.x - GUI.skin.verticalScrollbar.fixedWidth + widthDifference - 1f,
+                    activeView.LastVerticalScrollViewSize.y);
+                m_Draw2D.SetClipRect(clipRect);
+            }
+
             DrawReport();
+
+            if (activeView.ShowVerticalScrollView)
+            {
+                EditorGUILayout.EndScrollView();
+                m_Draw2D.ClearClipRect();
+
+                if (Event.current.type == EventType.Repaint)
+                {
+                    var rectSize = GUILayoutUtility.GetLastRect().size;
+                    activeView.LastVerticalScrollViewSize = new Vector2(rectSize.x, rectSize.y);
+                }
+            }
         }
 
         void DrawStatusBar()
@@ -1427,15 +1512,29 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             GUILayout.Space(2);
 
-            using (new GUILayout.HorizontalScope(GUI.skin.box))
+            using (new GUILayout.VerticalScope(GUI.skin.box))
             {
-                GUILayout.Label(activeView.Description, GUILayout.MinWidth(360), GUILayout.ExpandWidth(true));
+                using (new GUILayout.HorizontalScope())
+                {
+                    GUILayout.Space(4);
+
+                    GUILayout.Label(activeView.Desc.DisplayName, SharedStyles.MediumTitleLabel);
+                }
+
+                GUILayout.Space(8);
+
+                using (new GUILayout.HorizontalScope())
+                {
+                    GUILayout.Space(4);
+
+                    GUILayout.Label(activeView.Description, GUILayout.MinWidth(360), GUILayout.ExpandWidth(true));
 
 #if !PA_DRAW_TABS_VERTICALLY
-                DrawTabViewSelection();
+                    DrawTabViewSelection();
 #endif
 
-                GUILayout.FlexibleSpace();
+                    GUILayout.FlexibleSpace();
+                }
             }
 
             activeView.DrawTopPanel(false);
@@ -1542,6 +1641,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 compiledAssemblies = compiledAssemblies.Where(a =>
                     !AssemblyInfoProvider.IsReadOnlyAssembly(a)).ToArray();
                 m_AssemblySelection.selection.AddRange(compiledAssemblies);
+
+                if (m_DefaultAssemblies == null)
+                    m_DefaultAssemblies = new List<string>(m_AssemblySelection.selection.Count);
+
+                m_DefaultAssemblies.AddRange(m_AssemblySelection.selection);
 
                 if (!m_AssemblySelection.selection.Any())
                 {

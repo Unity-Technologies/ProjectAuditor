@@ -40,6 +40,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         int m_SortPropertyIndex = -1;
         bool m_SortAscending = true;
 
+        Vector2 m_VerticalScrollViewPos;
+        Vector2 m_LastVerticalScrollViewSize;
+
         public ViewDescriptor Desc => m_Desc;
 
         public virtual string Description => $"A list of {m_Desc.DisplayName} found in the project.";
@@ -54,6 +57,20 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             get { return m_ViewManager; }
         }
+
+        public Vector2 VerticalScrollViewPos
+        {
+            get => m_VerticalScrollViewPos;
+            set => m_VerticalScrollViewPos = value;
+        }
+
+        public Vector2 LastVerticalScrollViewSize
+        {
+            get => m_LastVerticalScrollViewSize;
+            set => m_LastVerticalScrollViewSize = value;
+        }
+
+        public virtual bool ShowVerticalScrollView => false;
 
         public AnalysisView(ViewManager viewManager)
         {

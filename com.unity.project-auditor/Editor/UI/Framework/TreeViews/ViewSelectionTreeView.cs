@@ -81,6 +81,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     {
                         // Increase the id anyway, so item ids stay same once we add more children later
                         id += tab.availableCategories.Length;
+
+                        // Map the sub categories to the tab (top-level) item
+                        foreach (var cat in tab.availableCategories)
+                        {
+                            m_CategoryToItem.Add(cat, tabItem);
+                        }
+
                         continue;
                     }
 
@@ -145,7 +152,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        private bool NeedsAnalysis(TreeViewItem item)
+        bool NeedsAnalysis(TreeViewItem item)
         {
             if (m_ItemIdToTab.TryGetValue(item.id, out Tab foundTab))
             {
@@ -163,7 +170,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return true;
         }
 
-        private void CheckNewSelection()
+        void CheckNewSelection()
         {
             var selection = GetSelection();
 
@@ -177,7 +184,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        private void OnNewSelection(TreeViewItem item, bool changeView, bool expandItem)
+        internal void SelectNonAnalyzedCategory(IssueCategory categoryToSelect)
+        {
+            var item = m_CategoryToItem[categoryToSelect];
+
+            OnNewSelection(item, true, false);
+        }
+
+        void OnNewSelection(TreeViewItem item, bool changeView, bool expandItem)
         {
             if (expandItem)
             {
@@ -219,7 +233,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        private void SelectItem(TreeViewItem item, bool changeView = false, bool expandItem = true)
+        void SelectItem(TreeViewItem item, bool changeView = false, bool expandItem = true)
         {
             m_CurrentlySelectedItemID = item.id;
 

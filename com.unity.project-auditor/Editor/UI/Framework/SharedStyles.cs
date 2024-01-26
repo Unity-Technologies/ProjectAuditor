@@ -20,6 +20,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static GUIStyle s_TextAreaWithDynamicSize;
 
         static GUIStyle s_TitleLabel;
+        static GUIStyle s_MediumTitleLabel;
         static GUIStyle s_LargeLabel;
         static GUIStyle s_WhiteLargeLabel;
 
@@ -27,11 +28,22 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static GUIStyle s_RowAlternateDark;
         static GUIStyle s_RowLight;
         static GUIStyle s_RowAlternateLight;
+        static GUIStyle s_RowDarkBackground;
+        static GUIStyle s_RowLightBackground;
+        static GUIStyle s_RowDarkBackgroundAlternate;
+        static GUIStyle s_RowLightBackgroundAlternate;
 
         static GUIStyle s_TabButtonDark;
         static GUIStyle s_TabButtonLight;
         static GUIStyle s_TabBackgroundDark;
         static GUIStyle s_TabBackgroundLight;
+        static GUIStyle s_TabHoverButtonDark;
+        static GUIStyle s_TabHoverButtonLight;
+
+        static GUIStyle s_MiniPulldown;
+
+        public static GUIStyle s_DarkTextBoxBackground;
+        public static GUIStyle s_LightTextBoxBackground;
 
         static readonly Color k_TabBottomActiveColor = new Color(0.23f, 0.55f, 0.82f, 1);
         static readonly Color k_TabBottomHoverDarkModeColor = new Color(0.9f, 0.9f, 0.9f, 1);
@@ -75,6 +87,85 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     }
 
                     return s_TabButtonLight;
+                }
+            }
+        }
+
+        public static GUIStyle TabHoverButton
+        {
+            get
+            {
+                if (IsDarkMode)
+                {
+                    if (s_TabHoverButtonDark == null || s_TabHoverButtonDark.normal.background == null
+                        || s_TabHoverButtonDark.hover.background == null || s_TabHoverButtonDark.active.background == null)
+                    {
+                        var darkBackground = Utility.MakeColorTexture(new Color(0.173f, 0.173f, 0.173f, 1));
+                        var lightBackground = Utility.MakeColorTexture(new Color(0.25f, 0.25f, 0.25f, 1));
+                        var activatedBackground = Utility.MakeColorTexture(new Color(0.4f, 0.4f, 0.4f, 1));
+
+                        s_TabHoverButtonDark = new GUIStyle()
+                        {
+                            normal = { background = darkBackground, textColor = Color.white },
+                            hover = { background = lightBackground, textColor = Color.white },
+                            active = { background = activatedBackground, textColor = Color.white },
+                            margin = new RectOffset(0, 0, 0, 0),
+                            alignment = TextAnchor.MiddleCenter
+                        };
+                    }
+
+                    return s_TabHoverButtonDark;
+                }
+                else
+                {
+                    if (s_TabHoverButtonLight == null || s_TabHoverButtonLight.hover.background == null
+                        || s_TabHoverButtonLight.active.background == null)
+                    {
+                        var lightBackground = Utility.MakeColorTexture(new Color(0.85f, 0.85f, 0.85f, 1));
+                        var activatedBackground = Utility.MakeColorTexture(new Color(0.95f, 0.95f, 0.95f, 1));
+
+                        s_TabHoverButtonLight = new GUIStyle()
+                        {
+                            normal = { textColor = Color.black },
+                            hover = { background = lightBackground, textColor = Color.black },
+                            active = { background = activatedBackground, textColor = Color.black },
+                            margin = new RectOffset(0, 0, 0, 0),
+                            alignment = TextAnchor.MiddleCenter
+                        };
+                    }
+
+                    return s_TabHoverButtonLight;
+                }
+            }
+        }
+
+        public static GUIStyle TextBoxBackground
+        {
+            get
+            {
+                if (IsDarkMode)
+                {
+                    if (s_DarkTextBoxBackground == null || s_DarkTextBoxBackground.normal.background == null)
+                    {
+                        var darkBackgroundTex = Utility.MakeColorTexture(new Color(0.173f, 0.173f, 0.173f, 1));
+
+                        s_DarkTextBoxBackground = new GUIStyle()
+                        {
+                            normal = { background = darkBackgroundTex },
+                            border = new RectOffset(2, 2, 2, 2),
+                        };
+                    }
+
+                    return s_DarkTextBoxBackground;
+                }
+                else
+                {
+                    if (s_LightTextBoxBackground == null)
+                    {
+                        s_LightTextBoxBackground = new GUIStyle();
+                    }
+
+                    return s_LightTextBoxBackground;
                 }
             }
         }
@@ -263,6 +354,20 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
+        public static GUIStyle MediumTitleLabel
+        {
+            get
+            {
+                if (s_MediumTitleLabel == null)
+                {
+                    s_MediumTitleLabel = new GUIStyle(EditorStyles.boldLabel);
+                    s_MediumTitleLabel.fontSize = 20;
+                    s_MediumTitleLabel.fixedHeight = 30;
+                }
+                return s_MediumTitleLabel;
+            }
+        }
+
         public static GUIStyle LargeLabel
         {
             get
@@ -374,6 +479,77 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                     return s_RowAlternateLight;
                 }
+            }
+        }
+
+
+        public static GUIStyle RowBackground
+        {
+            get
+            {
+                if (IsDarkMode)
+                {
+                    if (s_RowDarkBackground == null || s_RowDarkBackground.normal.background == null)
+                    {
+                        s_RowDarkBackground = new GUIStyle(GUIStyle.none)
+                        {
+                            normal = { background = Utility.MakeColorTexture(new Color(0.22f, 0.22f, 0.22f, 1.0f)) }
+                        };
+                    }
+
+                    return s_RowDarkBackground;
+                }
+                else
+                {
+                    return GUIStyle.none;
+                }
+            }
+        }
+
+        public static GUIStyle RowBackgroundAlternate
+        {
+            get
+            {
+                if (IsDarkMode)
+                {
+                    if (s_RowDarkBackgroundAlternate == null || s_RowDarkBackgroundAlternate.normal.background == null)
+                    {
+                        s_RowDarkBackgroundAlternate = new GUIStyle(GUIStyle.none)
+                        {
+                            normal = { background = Utility.MakeColorTexture(new Color(0.275f, 0.275f, 0.275f, 1.0f)) }
+                        };
+                    }
+
+                    return s_RowDarkBackgroundAlternate;
+                }
+                else
+                {
+                    if (s_RowLightBackgroundAlternate == null || s_RowLightBackgroundAlternate.normal.background == null)
+                    {
+                        s_RowLightBackgroundAlternate = new GUIStyle(GUIStyle.none)
+                        {
+                            normal = { background = Utility.MakeColorTexture(new Color(0.729f, 0.729f, 0.729f, 1.0f)) }
+                        };
+                    }
+
+                    return s_RowLightBackgroundAlternate;
+                }
+            }
+        }
+
+        public static GUIStyle MiniPulldown
+        {
+            get
+            {
+                if (s_MiniPulldown == null)
+                {
+                    s_MiniPulldown = new GUIStyle(EditorStyles.miniPullDown)
+                    {
+                        alignment = TextAnchor.MiddleCenter,
+                    };
+                }
+
+                return s_MiniPulldown;
             }
         }
     }
