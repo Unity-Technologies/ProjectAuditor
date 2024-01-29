@@ -1,3 +1,5 @@
+//#define PA_WELCOME_VIEW_OPTIONS
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -26,22 +28,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             Valid
         }
 
-        [Flags]
-        enum ProjectAreaFlags
-        {
-            None = 0,
-            Code = 1 << 0,
-            ProjectSettings = 1 << 1,
-            Assets = 1 << 2,
-            Shaders = 1 << 3,
-            Build = 1 << 4,
-
-            // this is just helper enum to display All instead of Every
-            All = ~None
-        }
-
-        const ProjectAreaFlags k_ProjectAreaDefaultFlags = ProjectAreaFlags.All;
-
         static readonly string[] AreaNames = Enum.GetNames(typeof(Areas)).Where(a => a != "None" && a != "All").ToArray();
         static ProjectAuditorWindow s_Instance;
 
@@ -55,8 +41,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        GUIContent[] m_PlatformContents;
-        BuildTarget[] m_SupportedBuildTargets;
         ProjectAuditor m_ProjectAuditor;
         bool m_ShouldRefresh;
         AnalyticsReporter.Analytic m_AnalyzeButtonAnalytic;
@@ -76,9 +60,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         Areas m_SelectedAreas;
 
         // Serialized fields
-        [SerializeField] BuildTarget m_Platform = BuildTarget.NoTarget;
-        [SerializeField] CompilationMode m_CompilationMode = CompilationMode.Player;
-        [SerializeField] ProjectAreaFlags m_SelectedProjectAreas = k_ProjectAreaDefaultFlags;
         [SerializeField] string m_AreaSelectionSummary;
         [SerializeField] string[] m_AssemblyNames;
         [SerializeField] string m_AssemblySelectionSummary;
@@ -86,6 +67,14 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] AnalysisState m_AnalysisState = AnalysisState.Initializing;
         [SerializeField] ViewStates m_ViewStates = new ViewStates();
         [SerializeField] ViewManager m_ViewManager;
+
+#if PA_WELCOME_VIEW_OPTIONS
+        [SerializeField] ProjectAreaFlags m_SelectedProjectAreas = ProjectAreaFlags.All;
+        BuildTarget[] m_SupportedBuildTargets;
+        GUIContent[] m_PlatformContents;
+        [SerializeField] BuildTarget m_Platform = BuildTarget.NoTarget;
+        [SerializeField] CompilationMode m_CompilationMode = CompilationMode.Player;
+#endif
 
         [SerializeField]
         Tab[] m_Tabs =
@@ -200,18 +189,22 @@ namespace Unity.ProjectAuditor.Editor.UI
             var currentState = m_AnalysisState;
             m_AnalysisState = AnalysisState.Initializing;
 
+#if PA_WELCOME_VIEW_OPTIONS
+
             var buildTargets = Enum.GetValues(typeof(BuildTarget)).Cast<BuildTarget>();
             var supportedBuildTargets = buildTargets.Where(bt =>
                 BuildPipeline.IsBuildTargetSupported(BuildPipeline.GetBuildTargetGroup(bt), bt)).ToList();
             supportedBuildTargets.Sort((t1, t2) => String.Compare(t1.ToString(), t2.ToString(), StringComparison.Ordinal));
+
             m_SupportedBuildTargets = supportedBuildTargets.ToArray();
+
             m_PlatformContents = m_SupportedBuildTargets
                 .Select(t => new GUIContent(t.ToString())).ToArray();
 
             // if platform is not selected or supported, fallback to active build target
             if (m_Platform == BuildTarget.NoTarget || !BuildPipeline.IsBuildTargetSupported(BuildPipeline.GetBuildTargetGroup(m_Platform), m_Platform))
                 m_Platform = EditorUserBuildSettings.activeBuildTarget;
-
+#endif
             AnalyticsReporter.EnableAnalytics();
 
             Profiler.BeginSample("Update Selections");
@@ -948,8 +941,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             var analysisParams = new AnalysisParams
             {
                 Categories = GetSelectedCategories(),
-                CompilationMode = m_CompilationMode,
-                Platform = m_Platform,
+                Platform = GetSelectedAnalysisPlatform(),
+                CompilationMode =  GetSelectedCompilationMode(),
+
                 OnIncomingIssues = issues =>
                 {
                     // add batch of issues
@@ -1013,7 +1007,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             var analysisParams = new AnalysisParams
             {
                 Categories = actualCategories,
-                CompilationMode = m_CompilationMode,
+                Platform = m_Report.SessionInfo.Platform,
+                CompilationMode =  GetSelectedCompilationMode(),
+                ExistingReport = m_Report,
                 OnIncomingIssues = issues =>
                 {
                     foreach (var view in views)
@@ -1021,8 +1017,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                         view.AddIssues(issues);
                     }
                 },
-                Platform = m_Report.SessionInfo.Platform,
-                ExistingReport = m_Report,
                 OnCompleted = report =>
                 {
                     if (!report.IsValid())
@@ -1097,18 +1091,49 @@ namespace Unity.ProjectAuditor.Editor.UI
             return m_SelectedAreas.ToString();
         }
 
+        BuildTarget GetSelectedAnalysisPlatform()
+        {
+#if PA_WELCOME_VIEW_OPTIONS
+                return m_Platform;
+#else
+            var platform = UserPreferences.AnalysisTargetPlatform;
+
+            // if platform is not selected or supported, fallback to active build target
+            if (platform == BuildTarget.NoTarget ||
+                !BuildPipeline.IsBuildTargetSupported(BuildPipeline.GetBuildTargetGroup(platform), platform))
+                platform = EditorUserBuildSettings.activeBuildTarget;
+
+            return platform;
+#endif
+        }
+
+        CompilationMode GetSelectedCompilationMode()
+        {
+#if PA_WELCOME_VIEW_OPTIONS
+                return m_CompilationMode;
+#else
+            return UserPreferences.CompilationMode;
+#endif
+        }
+
         IssueCategory[] GetSelectedCategories()
         {
+#if PA_WELCOME_VIEW_OPTIONS
+            var selectedCategories = m_SelectedProjectAreas;
+#else
+            var selectedCategories = UserPreferences.ProjectAreasToAnalyze;
+
+#endif
             var requestedCategories = new List<IssueCategory>(new[] {IssueCategory.Metadata});
-            if (m_SelectedProjectAreas.HasFlag(ProjectAreaFlags.Code))
+            if (selectedCategories.HasFlag(ProjectAreaFlags.Code))
                 requestedCategories.AddRange(GetTabCategories(TabId.Code));
-            if (m_SelectedProjectAreas.HasFlag(ProjectAreaFlags.ProjectSettings))
+            if (selectedCategories.HasFlag(ProjectAreaFlags.ProjectSettings))
                 requestedCategories.AddRange(GetTabCategories(TabId.Settings));
-            if (m_SelectedProjectAreas.HasFlag(ProjectAreaFlags.Assets))
+            if (selectedCategories.HasFlag(ProjectAreaFlags.Assets))
                 requestedCategories.AddRange(GetTabCategories(TabId.Assets));
-            if (m_SelectedProjectAreas.HasFlag(ProjectAreaFlags.Shaders))
+            if (selectedCategories.HasFlag(ProjectAreaFlags.Shaders))
                 requestedCategories.AddRange(GetTabCategories(TabId.Shaders));
-            if (m_SelectedProjectAreas.HasFlag(ProjectAreaFlags.Build))
+            if (selectedCategories.HasFlag(ProjectAreaFlags.Build))
                 requestedCategories.AddRange(GetTabCategories(TabId.Build));
 
             return requestedCategories.ToArray();
@@ -1330,6 +1355,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             using (new EditorGUILayout.VerticalScope(GUILayout.MaxWidth(500)))
             {
+#if PA_WELCOME_VIEW_OPTIONS
                 EditorGUILayout.LabelField(Contents.ConfigurationsTitle, SharedStyles.LargeLabel);
 
                 EditorGUILayout.Space();
@@ -1343,14 +1369,18 @@ namespace Unity.ProjectAuditor.Editor.UI
                 m_CompilationMode = (CompilationMode)EditorGUILayout.EnumPopup(Contents.CompilationModeSelection, m_CompilationMode);
 
                 GUILayout.Space(16);
-
+#endif
                 using (new EditorGUILayout.HorizontalScope())
                 {
                     const int height = 30;
 
                     GUILayout.FlexibleSpace();
-
-                    using (new EditorGUI.DisabledScope(m_SelectedProjectAreas == ProjectAreaFlags.None))
+#if PA_WELCOME_VIEW_OPTIONS
+                    var projectAreas = m_SelectedProjectAreas;
+#else
+                    var projectAreas = UserPreferences.ProjectAreasToAnalyze;
+#endif
+                    using (new EditorGUI.DisabledScope(projectAreas == ProjectAreaFlags.None))
                     {
                         if (GUILayout.Button(Contents.AnalyzeButton, GUILayout.Width(100), GUILayout.Height(height)))
                         {
@@ -1664,7 +1694,15 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
             {
-                GUILayout.Label(Utility.GetPlatformIcon(BuildPipeline.GetBuildTargetGroup(m_Platform)), SharedStyles.IconLabel, GUILayout.Width(AnalysisView.ToolbarIconSize));
+#if PA_WELCOME_VIEW_OPTIONS
+                var analysisTarget = m_Platform;
+#else
+                var analysisTarget = m_Report.SessionInfo.Platform;
+#endif
+                GUILayout.Label(
+                    Utility.GetPlatformIcon(BuildPipeline.GetBuildTargetGroup(analysisTarget)),
+                    SharedStyles.IconLabel,
+                    GUILayout.Width(AnalysisView.ToolbarIconSize));
 
                 if (m_AnalysisState == AnalysisState.InProgress)
                 {
@@ -1905,12 +1943,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             public static readonly GUIContent AnalyzeButton =
                 new GUIContent("Start Analysis", "Analyze Project and list all issues found.");
-            public static readonly GUIContent ProjectAreaSelection =
-                new GUIContent("Project Areas", $"Select project areas to analyze.");
-            public static readonly GUIContent PlatformSelection =
-                new GUIContent("Platform", "Select the target platform.");
-            public static readonly GUIContent CompilationModeSelection =
-                new GUIContent("Compilation Mode", "Select the compilation mode.");
 
             public static readonly GUIContent SaveButton = Utility.GetIcon(Utility.IconType.Save, "Save current report to json file");
             public static readonly GUIContent LoadButton = Utility.GetIcon(Utility.IconType.Load, "Load report from json file");
@@ -1950,8 +1982,6 @@ Once the project is analyzed, {ProjectAuditor.DisplayName} displays a summary wi
 "
             );
 
-            public static readonly GUIContent ConfigurationsTitle = new GUIContent("Configurations");
-
             public static readonly GUIContent Clear = new GUIContent("Clear");
             public static readonly GUIContent Refresh = new GUIContent("Refresh");
 
@@ -1959,6 +1989,18 @@ Once the project is analyzed, {ProjectAuditor.DisplayName} displays a summary wi
 
             public static readonly string AnalyzeInfoText = "{0} analysis is not yet included in this report. Run analysis now?";
             public static readonly string AnalyzeButtonText = "Start {0} Analysis";
+
+#if PA_WELCOME_VIEW_OPTIONS
+            public static readonly GUIContent ConfigurationsTitle = new GUIContent("Configurations");
+
+            public static readonly GUIContent ProjectAreaSelection =
+                new GUIContent("Project Areas", $"Select project areas to analyze.");
+
+            public static readonly GUIContent PlatformSelection =
+                new GUIContent("Platform", "Select the target platform.");
+            public static readonly GUIContent CompilationModeSelection =
+                new GUIContent("Compilation Mode", "Select the compilation mode.");
+#endif
         }
     }
 }

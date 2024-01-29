@@ -28,9 +28,13 @@ namespace Unity.ProjectAuditor.EditorTests
                 m_PaWindow.Focus();
                 m_PaWindow.Repaint();
 
-                var flagsValue = 1 << 0 | 1 << 1 | 1 << 2 | 1 << 3 | 1 << 4;
+                var flagsValue = ProjectAreaFlags.All; //1 << 0 | 1 << 1 | 1 << 2 | 1 << 3 | 1 << 4;
+#if PA_WELCOME_VIEW_OPTIONS
                 m_PaWindow.GetType()
                     .GetField("m_SelectedProjectAreas", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(m_PaWindow, flagsValue);
+#else
+                UserPreferences.ProjectAreasToAnalyze = flagsValue;
+#endif
                 MethodInfo method = ProjectAuditorWindow.Instance.GetType().GetMethod("Analyze",
 
                     BindingFlags.NonPublic | BindingFlags.Instance);
@@ -64,7 +68,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
         [Order(1)]
         [Test]
-        public void ChangView_SuccessfullyChangesDisplayedCategory()
+        public void ChangeView_SuccessfullyChangesDisplayedCategory()
         {
             var viewManager = (ViewManager)m_PaWindow.GetType().
                 GetField("m_ViewManager", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(m_PaWindow);
