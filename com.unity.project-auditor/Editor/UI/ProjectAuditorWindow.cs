@@ -1694,11 +1694,22 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
             {
+                var analysisTarget = BuildTarget.NoTarget;
+                
+                if (m_Report != null && m_Report.SessionInfo != null)
+                {
+                    analysisTarget = m_Report.SessionInfo.Platform;
+                }
+
+                if (analysisTarget == BuildTarget.NoTarget)
+                {
 #if PA_WELCOME_VIEW_OPTIONS
-                var analysisTarget = m_Platform;
+                    analysisTarget = m_Platform;
 #else
-                var analysisTarget = m_Report.SessionInfo.Platform;
+                    analysisTarget = GetSelectedAnalysisPlatform();
 #endif
+                }
+
                 GUILayout.Label(
                     Utility.GetPlatformIcon(BuildPipeline.GetBuildTargetGroup(analysisTarget)),
                     SharedStyles.IconLabel,
