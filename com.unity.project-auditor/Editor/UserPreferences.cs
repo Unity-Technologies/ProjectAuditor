@@ -115,12 +115,6 @@ namespace Unity.ProjectAuditor.Editor
             set => EditorPrefs.SetBool(MakeKey(nameof(FailBuildOnIssues)), value);
         }
 
-        public static bool DeveloperMode
-        {
-            get => EditorPrefs.GetBool(MakeKey(nameof(DeveloperMode)), false);
-            set => EditorPrefs.SetBool(MakeKey(nameof(DeveloperMode)), value);
-        }
-
         public static bool PrettifyJsonOutput
         {
             get => EditorPrefs.GetBool(MakeKey(nameof(PrettifyJsonOutput)), k_PrettifyJSONOutputDefault);

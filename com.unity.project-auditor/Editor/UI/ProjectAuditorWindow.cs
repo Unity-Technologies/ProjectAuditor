@@ -784,7 +784,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 AnalyticsEventId = (int)AnalyticsReporter.UIButton.AvatarMasks
             });
 
-            if (UserPreferences.DeveloperMode)
+            if (ProjectAuditorPackage.IsLocal)
             {
                 ViewDescriptor.Register(new ViewDescriptor
                 {

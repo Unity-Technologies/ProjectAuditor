@@ -486,7 +486,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             EditorGUI.BeginChangeCheck();
 
-            if (UserPreferences.DeveloperMode && m_Desc.ShowDependencyView)
+            if (ProjectAuditorPackage.IsLocal && m_Desc.ShowDependencyView)
             {
                 // this is only available in developer mode because it is still too slow at the moment
                 m_TextFilter.searchDependencies = EditorGUILayout.ToggleLeft("Dependencies (slow)",
