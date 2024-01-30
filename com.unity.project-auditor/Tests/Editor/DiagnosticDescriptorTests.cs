@@ -33,6 +33,36 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
+        [TestCase("ABC00001")]  // Too long
+        [TestCase("ABC001")]    // Too short
+        [TestCase("@BC0001")]   // First char not alpha
+        [TestCase("AbC0001")]   // Second char not alpha
+        [TestCase("AB[0001")]   // Third char not alpha
+        [TestCase("ABCD001")]   // Fourth char not numeric
+        [TestCase("ABC0/01")]   // Fifth char not numeric
+        [TestCase("ABC00:1")]   // Sixth char not numeric
+        [TestCase("ABC000 ")]   // Seventh char not numeric
+        public void DiagnosticDescriptor_DescriptorId_RejectsInvalidStrings(string id)
+        {
+            const string k_ErrorString = "Invalid ID string supplied to DescriptorId";
+            LogAssert.Expect(LogType.Error, k_ErrorString);
+            Assert.False(new DescriptorId(id).IsValid());
+        }
+
+        [Test]
+        public void DiagnosticDescriptor_DescriptorId_EmptyStringIsInvalidId()
+        {
+            // No error log in this case because it's a valid thing to do, but it still construct an invalid Id.
+            Assert.False(new DescriptorId("").IsValid()); // Empty string
+        }
+
+        [Test]
+        public void DiagnosticDescriptor_DescriptorId_AcceptsValidString()
+        {
+            Assert.True(new DescriptorId("ABC0001").IsValid());
+        }
+
+        [Test]
         public void DiagnosticDescriptor_Comparison_Works()
         {
             var a = new Descriptor

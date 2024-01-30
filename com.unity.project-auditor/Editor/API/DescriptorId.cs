@@ -44,9 +44,6 @@ namespace Unity.ProjectAuditor.Editor
         /// <returns>The DescriptorId in string form.</returns>
         public override string ToString() => m_AsString;
 
-        // ID must be a whole word (\b), beginning with exactly 3 uppercase letters ([A-Z]{3}), followed by exactly 4 digits (\d{4})
-        static readonly Regex s_RegEx = new Regex(@"\b[A-Z]{3}\d{4}\b");
-
         /// <summary>
         /// Constructor
         /// </summary>
@@ -62,7 +59,9 @@ namespace Unity.ProjectAuditor.Editor
                 return;
             }
 
-            if (!s_RegEx.IsMatch(id))
+            // ID must be exactly 7 characters, beginning with exactly 3 uppercase letters, followed by exactly 4 digits
+            if (id.Length != 7 || id[0] < 'A' || id[0] > 'Z' || id[1] < 'A' || id[1] > 'Z' || id[2] < 'A' || id[2] > 'Z' ||
+                id[3] < '0' || id[3] > '9' || id[4] < '0' || id[4] > '9' || id[5] < '0' || id[5] > '9' || id[6] < '0' || id[6] > '9')
             {
                 Debug.LogError("Invalid ID string supplied to DescriptorId");
                 m_AsInt = -1;
@@ -131,7 +130,7 @@ namespace Unity.ProjectAuditor.Editor
         private static int HashDescriptorString(string id)
         {
             var characters = (short)((char)(id[0] - 'A') << 10 | (char)(id[1] - 'A') << 5 | (char)(id[2] - 'A'));
-            var numerical = UInt16.Parse(id.Substring(3));
+            var numerical = (id[3] - '0') * 1000 + (id[4] - '0') * 100 + (id[5] - '0') * 10 + (id[6] - '0');
             return characters << 16 | numerical;
         }
     }

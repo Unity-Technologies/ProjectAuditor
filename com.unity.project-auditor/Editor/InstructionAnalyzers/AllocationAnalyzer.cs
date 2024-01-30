@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
@@ -93,7 +94,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 if (callee.HasParameters)
                 {
                     var lastParam = callee.Parameters.Last();
-                    if (lastParam.HasCustomAttributes && lastParam.CustomAttributes.Any(a => a.AttributeType.FullName.GetHashCode() == k_ParamArrayAtributeHashCode))
+                    if (lastParam.HasCustomAttributes && lastParam.CustomAttributes.Any(a => a.AttributeType.FastFullName().GetHashCode() == k_ParamArrayAtributeHashCode))
                     {
                         return context.CreateIssue(IssueCategory.Code, k_ParamArrayAllocationDescriptor.Id, lastParam.ParameterType.Name, lastParam.Name);
                     }
@@ -108,14 +109,14 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                 if (typeReference.IsValueType)
                     return null;
 
-                var isClosure = typeReference.Name.StartsWith("<>c__DisplayClass");
+                var isClosure = typeReference.Name.StartsWith("<>c__DisplayClass", StringComparison.Ordinal);
                 if (isClosure)
                 {
                     return context.CreateIssue(IssueCategory.Code, k_ClosureAllocationDescriptor.Id, context.MethodDefinition.DeclaringType.Name, context.MethodDefinition.Name);
                 }
                 else
                 {
-                    return context.CreateIssue(IssueCategory.Code, k_ObjectAllocationDescriptor.Id, typeReference.FullName);
+                    return context.CreateIssue(IssueCategory.Code, k_ObjectAllocationDescriptor.Id, typeReference.FastFullName());
                 }
             }
             else // OpCodes.Newarr

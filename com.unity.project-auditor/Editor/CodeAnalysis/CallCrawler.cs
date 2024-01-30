@@ -56,7 +56,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 
         public void Add(CallInfo callInfo)
         {
-            var key = callInfo.Callee.FullName;
+            var key = callInfo.Callee.FastFullName();
             List<CallInfo> calls;
             if (!m_BucketedCalls.TryGetValue(key, out calls))
             {
@@ -118,7 +118,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                         continue;
                     }
 
-                    var callerName = call.Caller.FullName;
+                    var callerName = call.Caller.FastFullName();
                     var hierarchy = new CallTreeNode(call.Caller)
                     {
                         Location = call.Location, PerfCriticalContext = call.IsPerfCriticalContext

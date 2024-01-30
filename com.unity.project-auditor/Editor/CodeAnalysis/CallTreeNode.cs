@@ -56,10 +56,10 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                     else
                     {
                         // handle example: System.Int32 DelegateTest/<>c::<Update>b__1_0()
-                        methodStartIndex = MethodFullName.LastIndexOf("<") + 1;
+                        methodStartIndex = MethodFullName.LastIndexOf("<", StringComparison.Ordinal) + 1;
                         if (methodStartIndex > 0)
                         {
-                            length = MethodFullName.LastIndexOf(">") - methodStartIndex;
+                            length = MethodFullName.LastIndexOf(">", StringComparison.Ordinal) - methodStartIndex;
                             PrettyMethodName = MethodFullName.Substring(methodStartIndex, length) + ".(anonymous)";
                         }
                     }

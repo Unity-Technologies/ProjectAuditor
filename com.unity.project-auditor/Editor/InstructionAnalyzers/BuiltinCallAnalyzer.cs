@@ -58,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             var declaringType = callee.DeclaringType;
 
             // first check if type name, then namespace, then method/property name
-            if (m_NamespaceOrClassDescriptors.TryGetValue(declaringType.FullName, out descriptor))
+            if (m_NamespaceOrClassDescriptors.TryGetValue(declaringType.FastFullName(), out descriptor))
             {
                 description = string.Format("'{0}.{1}' usage", declaringType, methodName);
             }
@@ -68,7 +68,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             }
             else
             {
-                if (methodName.StartsWith("get_"))
+                if (methodName.StartsWith("get_", StringComparison.Ordinal))
                     methodName = methodName.Substring("get_".Length);
 
                 List<Descriptor> descriptors;

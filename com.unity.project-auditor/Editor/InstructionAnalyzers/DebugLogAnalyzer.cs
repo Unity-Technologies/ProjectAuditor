@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
 using UnityEngine;
 
@@ -65,7 +66,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             var methodName = callee.Name;
             var declaringType = callee.DeclaringType;
 
-            if (k_TypeHashCode != declaringType.FullName.GetHashCode())
+            if (k_TypeHashCode != declaringType.FastFullName().GetHashCode())
                 return null;
 
             // second check on module name which requires resolving the type

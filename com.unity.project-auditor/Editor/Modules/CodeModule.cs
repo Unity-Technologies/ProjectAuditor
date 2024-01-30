@@ -122,6 +122,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
         };
 
         List<OpCode> m_OpCodes;
+        List<CodeModuleInstructionAnalyzer>[] m_OpCodeAnalyzers = new List<CodeModuleInstructionAnalyzer>[ushort.MaxValue];
 
         Thread m_AssemblyAnalysisThread;
 
@@ -159,6 +160,24 @@ namespace Unity.ProjectAuditor.Editor.Modules
             {
                 Params = analysisParams
             };
+
+            var compatibleAnalyzers = GetCompatibleAnalyzers(analysisParams);
+            for (var i = 0; i < m_OpCodeAnalyzers.Length; i++)
+            {
+                m_OpCodeAnalyzers[i] = null;
+            }
+            foreach (var opCode in m_OpCodes)
+            {
+                var opCodeAnalyzers = new List<CodeModuleInstructionAnalyzer>();
+                foreach (var analyzer in compatibleAnalyzers)
+                {
+                    if (analyzer.opCodes.Contains(opCode))
+                    {
+                        opCodeAnalyzers.Add(analyzer);
+                    }
+                }
+                m_OpCodeAnalyzers[(ushort)opCode.Value] = opCodeAnalyzers;
+            }
 
             var precompiledAssemblies = AssemblyInfoProvider.GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.All)
                 .Select(assemblyPath => (ReportItem)context.CreateInsight(IssueCategory.PrecompiledAssembly, Path.GetFileNameWithoutExtension(assemblyPath))
@@ -363,54 +382,82 @@ namespace Unity.ProjectAuditor.Editor.Modules
             using (var assembly = AssemblyDefinition.ReadAssembly(assemblyInfo.Path,
                 new ReaderParameters {ReadSymbols = true, AssemblyResolver = assemblyResolver, MetadataResolver = new MetadataResolverWithCache(assemblyResolver)}))
             {
-                foreach (var methodDefinition in MonoCecilHelper.AggregateAllTypeDefinitions(assembly.MainModule.Types)
-                         .SelectMany(t => t.Methods))
+                foreach (var typeDefinition in MonoCecilHelper.AggregateAllTypeDefinitions(assembly.MainModule.Types))
                 {
-                    if (!methodDefinition.HasBody)
-                        continue;
+                    Profiler.BeginSample(typeDefinition.Name);
+                    Profiler.BeginSample("CodeModule.IsPerformanceCriticalType");
+                    var isPerformanceCriticalType = IsPerformanceCriticalType(typeDefinition);
+                    Profiler.EndSample();
+                    foreach (var methodDefinition in typeDefinition.Methods)
+                    {
+                        if (!methodDefinition.HasBody)
+                            continue;
 
-                    // workaround for long analysis times when Burst is installed
-                    if (methodDefinition.DeclaringType.FullName.StartsWith("Unity.Burst.Editor.BurstDisassembler"))
-                        continue;
+                        // workaround for long analysis times when Burst is installed
+                        if (methodDefinition.DeclaringType.FullName.StartsWith("Unity.Burst.Editor.BurstDisassembler"))
+                            continue;
 
-                    AnalyzeMethodBody(assemblyInfo, methodDefinition, onCallFound, onIssueFound);
+                        if (!methodDefinition.DebugInformation.HasSequencePoints)
+                            continue;
+
+                        var isPerformanceCriticalContext = isPerformanceCriticalType && IsPerformanceCriticalMethod(methodDefinition);
+
+                        AnalyzeMethodBody(assemblyInfo, methodDefinition, isPerformanceCriticalContext, onCallFound, onIssueFound);
+                    }
+                    Profiler.EndSample();
                 }
             }
 
             Profiler.EndSample();
         }
 
-        void AnalyzeMethodBody(AssemblyInfo assemblyInfo, MethodDefinition caller, Action<CallInfo> onCallFound, Action<ReportItem> onIssueFound)
+        void AnalyzeMethodBody(AssemblyInfo assemblyInfo, MethodDefinition caller, bool perfCriticalContext, Action<CallInfo> onCallFound, Action<ReportItem> onIssueFound)
         {
-            if (!caller.DebugInformation.HasSequencePoints)
-                return;
-
             Profiler.BeginSample("CodeModule.AnalyzeMethodBody");
-
-            Profiler.BeginSample("CodeModule.IsPerformanceCriticalContext");
-            var perfCriticalContext = IsPerformanceCriticalContext(caller);
-            Profiler.EndSample();
 
             var callerNode = new CallTreeNode(caller)
             {
                 PerfCriticalContext = perfCriticalContext
             };
 
-            var instructions = caller.Body.Instructions.Where(i => m_OpCodes.Contains(i.OpCode));
-            foreach (var inst in instructions)
+            var sequencePoints = caller.DebugInformation.SequencePoints;
+            var lastSequencePointIndex = 0;
+            var instructions = caller.Body.Instructions;
+            for (var i = 0; i < instructions.Count; i++)
             {
-                SequencePoint s = null;
-                for (var i = inst; i != null; i = i.Previous)
+                var inst = instructions[i];
+
+                // if issues wont be reported and the call crawler doesnt care about this instruction, immediately skip to the next one
+                if (onIssueFound == null && !(inst.OpCode == OpCodes.Call || inst.OpCode == OpCodes.Callvirt))
                 {
-                    s = caller.DebugInformation.GetSequencePoint(i);
-                    if (s != null)
+                    continue;
+                }
+
+                // early out if we have no analyzers and the call crawler doesnt care
+                var analyzers = m_OpCodeAnalyzers[(ushort)inst.OpCode.Value];
+                if (analyzers == null && !(inst.OpCode == OpCodes.Call || inst.OpCode == OpCodes.Callvirt))
+                {
+                    continue;
+                }
+
+                // instructions and sequence points are in offset order
+                // any sequence points earlier than the last one used can be skipped
+                SequencePoint s = null;
+                for (var j = lastSequencePointIndex; j < sequencePoints.Count; j++)
+                {
+                    var potentialPoint = sequencePoints[j];
+                    if (inst.Offset < potentialPoint.Offset)
+                    {
                         break;
+                    }
+                    s = potentialPoint;
+                    lastSequencePointIndex = j;
                 }
 
                 Location location = null;
                 if (s != null)
                 {
-                    location = new Location(AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, s.Document.Url), s.IsHidden ? 0 : s.StartLine);
+                    location = new Location(() => AssemblyInfoProvider.ResolveAssetPath(assemblyInfo, s.Document.Url), s.IsHidden ? 0 : s.StartLine);
                     callerNode.Location = location;
                 }
                 else
@@ -430,8 +477,8 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     Profiler.EndSample();
                 }
 
-                // skip analyzers if we are not interested in reporting issues
-                if (onIssueFound == null)
+                // skip analyzers if we are not interested in reporting issues, or have no analyzers
+                if (onIssueFound == null || analyzers == null)
                     continue;
 
                 var context = new InstructionAnalysisContext
@@ -440,24 +487,22 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     MethodDefinition = caller
                 };
 
-                Profiler.BeginSample("CodeModule.Analyzing " + inst.OpCode.Name);
+                Profiler.BeginSample(inst.OpCode.Name);
 
-                // TODO: Replace GetAnalyzers() with GetCompatibleAnalyzers() and move to Audit()
-                foreach (var analyzer in GetAnalyzers())
-                    if (analyzer.opCodes.Contains(inst.OpCode))
+                foreach (var analyzer in analyzers)
+                {
+                    Profiler.BeginSample(analyzer.GetType().Name);
+                    var reportItemBuilder = analyzer.Analyze(context);
+                    if (reportItemBuilder != null)
                     {
-                        Profiler.BeginSample("CodeModule " + analyzer.GetType().Name);
-                        var reportItemBuilder = analyzer.Analyze(context);
-                        if (reportItemBuilder != null)
-                        {
-                            reportItemBuilder.WithDependencies(callerNode); // set root
-                            reportItemBuilder.WithLocation(location);
-                            reportItemBuilder.WithCustomProperties(new object[(int)CodeProperty.Num] {assemblyInfo.Name});
+                        reportItemBuilder.WithDependencies(callerNode); // set root
+                        reportItemBuilder.WithLocation(location);
+                        reportItemBuilder.WithCustomProperties(new object[(int)CodeProperty.Num] {assemblyInfo.Name});
 
-                            onIssueFound(reportItemBuilder);
-                        }
-                        Profiler.EndSample();
+                        onIssueFound(reportItemBuilder);
                     }
+                    Profiler.EndSample();
+                }
                 Profiler.EndSample();
             }
             Profiler.EndSample();
@@ -540,14 +585,23 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return LogLevel.Info;
         }
 
-        static bool IsPerformanceCriticalContext(MethodDefinition methodDefinition)
+        static bool IsPerformanceCriticalType(TypeDefinition typeDef)
         {
-            if (MonoBehaviourAnalysis.IsMonoBehaviour(methodDefinition.DeclaringType) &&
-                MonoBehaviourAnalysis.IsMonoBehaviourUpdateMethod(methodDefinition))
+            if (MonoBehaviourAnalysis.IsMonoBehaviour(typeDef))
                 return true;
 #if PACKAGE_ENTITIES
-            if (ComponentSystemAnalysis.IsComponentSystem(methodDefinition.DeclaringType) &&
-                ComponentSystemAnalysis.IsOnUpdateMethod(methodDefinition))
+            if (ComponentSystemAnalysis.IsComponentSystem(typeDef))
+                return true;
+#endif
+            return false;
+        }
+
+        static bool IsPerformanceCriticalMethod(MethodDefinition methodDefinition)
+        {
+            if (MonoBehaviourAnalysis.IsMonoBehaviourUpdateMethod(methodDefinition))
+                return true;
+#if PACKAGE_ENTITIES
+            if (ComponentSystemAnalysis.IsOnUpdateMethod(methodDefinition))
                 return true;
 #endif
             return false;

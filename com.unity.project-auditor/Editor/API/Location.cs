@@ -2,6 +2,7 @@ using System;
 using Newtonsoft.Json;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Unity.ProjectAuditor.Editor
 {
@@ -9,10 +10,11 @@ namespace Unity.ProjectAuditor.Editor
     /// Represents the location of a reported issue.
     /// </summary>
     [Serializable]
-    public class Location
+    public class Location : ISerializationCallbackReceiver
     {
         [SerializeField] int m_Line;
         [SerializeField] string m_Path; // path relative to the project folder
+        Func<string> m_PathGenerator;
 
         /// <summary>
         /// File extension
@@ -24,7 +26,7 @@ namespace Unity.ProjectAuditor.Editor
             {
                 if (m_Extension == null)
                 {
-                    m_Extension = System.IO.Path.GetExtension(m_Path) ?? string.Empty;
+                    m_Extension = System.IO.Path.GetExtension(Path) ?? string.Empty;
                     if (m_Extension.StartsWith("."))
                         m_Extension = m_Extension.Substring(1);
                 }
@@ -42,7 +44,7 @@ namespace Unity.ProjectAuditor.Editor
             get
             {
                 if (m_Filename == null)
-                    m_Filename = string.IsNullOrEmpty(m_Path) ? string.Empty : System.IO.Path.GetFileName(m_Path);
+                    m_Filename = string.IsNullOrEmpty(Path) ? string.Empty : System.IO.Path.GetFileName(Path);
                 return m_Filename;
             }
         }
@@ -79,7 +81,7 @@ namespace Unity.ProjectAuditor.Editor
         /// Checks whether the location is valid
         /// </summary>
         /// <value>True if the location is valid</value>
-        public bool IsValid => !string.IsNullOrEmpty(m_Path);
+        public bool IsValid => !string.IsNullOrEmpty(Path);
 
         /// <summary>
         /// Line number
@@ -91,16 +93,27 @@ namespace Unity.ProjectAuditor.Editor
         /// Full path
         /// </summary>
         [JsonIgnore]
-        public string Path => m_Path ?? string.Empty;
+        public string Path
+        {
+            get
+            {
+                if (m_Path == null && m_PathGenerator != null)
+                {
+                    m_Path = m_PathGenerator.Invoke().Replace($"{ProjectAuditor.ProjectPath}/", string.Empty);
+                }
+                m_PathGenerator = null;
+                return m_Path ?? string.Empty;
+            }
+        }
 
         [JsonProperty("path")]
         internal string PathForJson
         {
             get
             {
-                if (string.IsNullOrEmpty(m_Path))
+                if (string.IsNullOrEmpty(Path))
                     return null;
-                return m_Path.Replace(EditorApplication.applicationContentsPath,
+                return Path.Replace(EditorApplication.applicationContentsPath,
                     "UNITY_PATH/Data");
             }
             set
@@ -140,11 +153,32 @@ namespace Unity.ProjectAuditor.Editor
             m_Line = line;
         }
 
+        internal Location(Func<string> pathGenerator, int line)
+        {
+            if (pathGenerator != null)
+                m_PathGenerator = pathGenerator;
+            m_Line = line;
+        }
+
         string GetFormattedPath(string path)
         {
             if (path.EndsWith(".cs"))
                 return $"{path}:{m_Line}";
             return path;
+        }
+
+
+        public void OnBeforeSerialize()
+        {
+            if (m_Path == null && m_PathGenerator != null)
+            {
+                m_Path = m_PathGenerator.Invoke().Replace($"{ProjectAuditor.ProjectPath}/", string.Empty);
+            }
+            m_PathGenerator = null;
+        }
+
+        public void OnAfterDeserialize()
+        {
         }
     }
 }
