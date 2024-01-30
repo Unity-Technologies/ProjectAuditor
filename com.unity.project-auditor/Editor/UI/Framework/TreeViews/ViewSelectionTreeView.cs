@@ -70,7 +70,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     var anyChildrenAnalyzed = false;
                     foreach (var childCategory in tab.availableCategories)
                     {
-                        if (m_Report.HasCategory(childCategory))
+                        if (m_Report != null && m_Report.HasCategory(childCategory))
                         {
                             anyChildrenAnalyzed = true;
                             break;

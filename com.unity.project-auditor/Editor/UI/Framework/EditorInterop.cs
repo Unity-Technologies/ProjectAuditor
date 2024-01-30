@@ -81,5 +81,11 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 ProjectWindowUtil.ShowCreatedAsset(obj);
             }
         }
+
+        public static void OpenProjectAuditorPreferences()
+        {
+            var window = UserPreferences.OpenPreferencesWindow();
+            window.Repaint();
+        }
     }
 }

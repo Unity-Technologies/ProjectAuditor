@@ -1,5 +1,9 @@
 # About Project Auditor
-Project Auditor is a suite of static analysis tools for Unity projects. Whilst profiling tools such as the [Unity Profiler](https://docs.unity3d.com/Manual/Profiler.html), [Frame Debugger](https://docs.unity3d.com/Manual/frame-debugger-window.html), [Memory Profiler](https://docs.unity3d.com/Packages/com.unity.memoryprofiler@latest) and [Profile Analyzer](https://docs.unity3d.com/Packages/com.unity.performance.profile-analyzer@latest) help you to understand the runtime performance of your project by recording data at runtime, Project Auditor reports insights and issues about the scripts, assets and settings in your project without ever needing to run it. Issues are reported alongside actionable advice based on best practices gathered by Unity consultants and engineers. 
+Project Auditor is a suite of static analysis tools for Unity projects. Whilst profiling tools such as the
+[Unity Profiler](https://docs.unity3d.com/Manual/Profiler.html), [Frame Debugger](https://docs.unity3d.com/Manual/frame-debugger-window.html), [Memory Profiler](https://docs.unity3d.com/Packages/com.unity.memoryprofiler@latest) and [Profile Analyzer](https://docs.unity3d.com/Packages/com.unity.performance.profile-analyzer@latest) help you to understand
+the runtime performance of your project by recording data at runtime, Project Auditor reports insights and issues about
+the scripts, assets and settings in your project without ever needing to run it. Issues are reported alongside
+actionable advice based on best practices gathered by Unity consultants and engineers. 
 
 After analyzing your project, Project Auditor produces a report that includes the following:
 
@@ -13,11 +17,12 @@ Project Auditor is compatible with Unity versions from 2020.3 to the latest [Lon
 
 <!--- TODO REMOVE THIS DISCLAIMER AS WE APPROACH RELEASE -->
 ## Disclaimer
-This package is available as an experimental package, so it is not ready for production use. The features and documentation in this package might change before it is verified for release. 
+This package is available as an experimental package, so it is not ready for production use. The features and
+documentation in this package might change before it is verified for release. 
 
 ## Installation
-
-To install this package, refer to the instructions that match your Unity Editor version. In either case, when prompted for the package name, use `com.unity.project-auditor`. 
+To install this package, refer to the instructions that match your Unity Editor version. In either case, when prompted
+for the package name, use `com.unity.project-auditor`. 
 
 ### Version 2021.1 and later
 
@@ -54,11 +59,9 @@ Mono.Cecil.
 ## How to use
 In the Unity Editor, the Project Auditor window can be opened via **Window > Analysis > Project Auditor**.
 
-<!--- TODO - change this if we switch navigation from tabs to a sidebar -->
-The initial view contains configuration options to control the project areas which will be analyzed, the target platform
-for analysis, Click the Analyze button to perform analysis, or the load button to load a previously-saved Project
-Report. You will be shown the Summary View for the report. From here, you can click an area tab and select a _View_ from
-the drop-down menu to review the list of insights or potential issues to determine whether they are actual problems in
+Click the **Start Analysis** button to perform analysis, or the load button to load a previously-saved
+Project Report. You will be shown the Summary View for the report. From here, you can select a _View_ from the left
+navigation panel to review the list of insights or potential issues to determine whether they are actual problems in
 your project. Every View provides:
 
 * A series of filters to narrow down the visible list of issues
@@ -73,14 +76,15 @@ For information on a specific view, check the corresponding page linked to the l
 [Table of Contents](./TableOfContents.md)
 
 ## Document revision history
-| Date             | Reason                                                         |
-|------------------|----------------------------------------------------------------|
-| **Jan 12, 2024** | Full documentation pass prior to 0.11.0 release.               |
-| **Mar 9, 2023**  | Added table of contents and updated installation instructions. |
-| **Mar 11, 2022** | Updated links to view-specific pages.                          |
-| **Jul 23, 2021** | Added view-specific pages.                                     |
-| **Apr 9, 2021**  | Updated index page with more detail.                           |
-| **Feb 15, 2021** | Updated documentation.                                         |
-| **Oct 16, 2020** | Added information about command line execution.                |
-| **May 21, 2020** | Expanded *Using Project Auditor* section.                      |
-| **Dec 4, 2019**  | First draft.                                                   |
+| Date             | Reason                                                                   |
+|------------------|--------------------------------------------------------------------------|
+| **Jan 29, 2024** | Revision including the new welcome screen, configuration and navigation. |
+| **Jan 12, 2024** | Full documentation pass prior to 0.11.0 release.                         |
+| **Mar 9, 2023**  | Added table of contents and updated installation instructions.           |
+| **Mar 11, 2022** | Updated links to view-specific pages.                                    |
+| **Jul 23, 2021** | Added view-specific pages.                                               |
+| **Apr 9, 2021**  | Updated index page with more detail.                                     |
+| **Feb 15, 2021** | Updated documentation.                                                   |
+| **Oct 16, 2020** | Added information about command line execution.                          |
+| **May 21, 2020** | Expanded *Using Project Auditor* section.                                |
+| **Dec 4, 2019**  | First draft.                                                             |

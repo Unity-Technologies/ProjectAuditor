@@ -26,8 +26,8 @@ namespace Unity.ProjectAuditor.Editor
 
     internal static class UserPreferences
     {
-        static readonly string k_PreferencesKey = "Preferences/Analysis/Project Auditor";
         public static string Path => k_PreferencesKey;
+        static readonly string k_PreferencesKey = "Preferences/Analysis/Project Auditor";
 
         static readonly string k_EditorPrefsPrefix = "ProjectAuditor";
 
@@ -60,23 +60,6 @@ namespace Unity.ProjectAuditor.Editor
 
         static BuildTarget[] s_SupportedBuildTargets;
         static GUIContent[] s_PlatformContents;
-
-        static UserPreferences()
-        {
-            var buildTargets = Enum.GetValues(typeof(BuildTarget)).Cast<BuildTarget>();
-            var supportedBuildTargets = buildTargets.Where(bt =>
-                BuildPipeline.IsBuildTargetSupported(BuildPipeline.GetBuildTargetGroup(bt), bt)).ToList();
-            supportedBuildTargets.Sort((t1, t2) =>
-                String.Compare(t1.ToString(), t2.ToString(), StringComparison.Ordinal));
-
-            // Add at the beginning of the list, after sorting the other options
-            supportedBuildTargets.Insert(0, BuildTarget.NoTarget);
-
-            s_SupportedBuildTargets = supportedBuildTargets.ToArray();
-
-            s_PlatformContents = s_SupportedBuildTargets
-                .Select(t => new GUIContent((t == BuildTarget.NoTarget) ? "Use Build Settings" : t.ToString())).ToArray();
-        }
 
         /// <summary>
         /// If enabled, ProjectAuditor will re-run the BuildReport analysis every time the project is built.
@@ -160,6 +143,28 @@ namespace Unity.ProjectAuditor.Editor
 
 #endif
 
+        static UserPreferences()
+        {
+            var buildTargets = Enum.GetValues(typeof(BuildTarget)).Cast<BuildTarget>();
+            var supportedBuildTargets = buildTargets.Where(bt =>
+                BuildPipeline.IsBuildTargetSupported(BuildPipeline.GetBuildTargetGroup(bt), bt)).ToList();
+            supportedBuildTargets.Sort((t1, t2) =>
+                String.Compare(t1.ToString(), t2.ToString(), StringComparison.Ordinal));
+
+            // Add at the beginning of the list, after sorting the other options
+            supportedBuildTargets.Insert(0, BuildTarget.NoTarget);
+
+            s_SupportedBuildTargets = supportedBuildTargets.ToArray();
+
+            s_PlatformContents = s_SupportedBuildTargets
+                .Select(t => new GUIContent((t == BuildTarget.NoTarget) ? "Use Build Settings" : t.ToString())).ToArray();
+        }
+
+        public static EditorWindow OpenPreferencesWindow()
+        {
+            return SettingsService.OpenUserPreferences(k_PreferencesKey);
+        }
+
         [SettingsProvider]
         internal static SettingsProvider CreatePreferencesProvider()
         {
@@ -190,6 +195,14 @@ namespace Unity.ProjectAuditor.Editor
             ProjectAreasToAnalyze = (ProjectAreaFlags)EditorGUILayout.EnumFlagsField(ProjectAreaSelection, ProjectAreasToAnalyze, GUILayout.ExpandWidth(true));
 
             var selectedTarget = Array.IndexOf(s_SupportedBuildTargets, AnalysisTargetPlatform);
+
+            // AnalysisTargetPlatform is not supported in this Unity Editor. Perhaps it was selected in a different Editor version.
+            // Reset it to "Use Build Settings"
+            if (selectedTarget < 0)
+            {
+                selectedTarget = 0;
+            }
+
             selectedTarget = EditorGUILayout.Popup(PlatformSelection, selectedTarget, s_PlatformContents);
             AnalysisTargetPlatform = s_SupportedBuildTargets[selectedTarget];
 

@@ -10,6 +10,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static GUIStyle s_Foldout;
         static GUIStyle s_BoldLabel;
         static GUIStyle s_IconLabel;
+        static GUIStyle s_IconLabelLeft;
         static GUIStyle s_Label;
         static GUIStyle s_LabelWithRichtext;
         static GUIStyle s_LinkLabel;
@@ -18,6 +19,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static GUIStyle s_LabelWithDynamicSize;
         static GUIStyle s_LabelDarkWithDynamicSize;
         static GUIStyle s_TextAreaWithDynamicSize;
+        static GUIStyle s_WelcomeTextArea;
 
         static GUIStyle s_TitleLabel;
         static GUIStyle s_MediumTitleLabel;
@@ -242,6 +244,20 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
+        public static GUIStyle IconLabelLeft
+        {
+            get
+            {
+                if (s_IconLabelLeft == null)
+                    s_IconLabelLeft = new GUIStyle(EditorStyles.label)
+                    {
+                        alignment = TextAnchor.MiddleLeft,
+                        wordWrap = false
+                    };
+                return s_IconLabelLeft;
+            }
+        }
+
         public static GUIStyle Label
         {
             get
@@ -337,6 +353,23 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
 
                 return s_TextAreaWithDynamicSize;
+            }
+        }
+
+        public static GUIStyle WelcomeTextArea
+        {
+            get
+            {
+                if (s_WelcomeTextArea == null)
+                {
+                    s_WelcomeTextArea = new GUIStyle(EditorStyles.label);
+                    s_WelcomeTextArea.fontSize = 14;
+                    s_WelcomeTextArea.richText = true;
+                    s_WelcomeTextArea.wordWrap = true;
+                    s_WelcomeTextArea.alignment = TextAnchor.UpperCenter;
+                }
+
+                return s_WelcomeTextArea;
             }
         }
 

@@ -74,8 +74,7 @@ repository.
 `IssueCategory`.
 
 **Welcome View:** The initial View shown when the Project Auditor is initially opened, or when a report is discarded to 
-create a new one. Includes some options for configuring analysis. See [Welcome View](./WelcomeView.md) and
-[Configuring Project Auditor analysis](Configuration.md) for more information.
+create a new one.
 
 
 

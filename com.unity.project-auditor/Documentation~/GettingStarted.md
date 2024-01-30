@@ -7,10 +7,10 @@ To open the Project Auditor window in Unity, go to **Window > Analysis > Project
 
 <img src="images/window-menu.png">
 
-Once the Project Auditor window is opened, simply press Analyze to generate a report. By default, Project Auditor runs
-all supported modules, however, this behavior can be customized by selecting the desired modules before running the
-analysis. Alternatively, it is possible to load a previously saved report (json format) by clicking on the **Import**
-button next to **Analyze**.
+Once the Project Auditor window is opened, simply press **Start Analysis** to generate a report. By default, Project
+Auditor runs all supported modules. However, this behavior can be customized in the Project Auditor Preferences window
+by selecting the desired modules before starting analysis. Alternatively, it is possible to load a previously saved
+report (json format) by clicking on the **Load Report** button on the Toolbar.
 
 For more information on configuring analysis, see [Configuring Project Auditor analysis](Configuration.md).
 
@@ -21,45 +21,46 @@ Once the analysis completes, Project Auditor will show a [Summary View](SummaryV
 
 <img src="images/summary.png">
 
-In the top right corner of the window are buttons to perform the following actions, from left to right:
+On the window's toolbar are buttons to perform the following actions, from left to right:
 
 <img src="images/window-buttons.png">
 
-* Load a Report from file
+* Discard the current Report and return to the Welcome View to perform a new analysis
 * Save the current Report to a file
-* Discard the current Report and return to the Welcome View
+* Load a Report from file
+* Open a feedback form in a browser window to let Project Auditor's developers know what you think about it
 * Open this package documentation in a browser window
 
 The rest of the Summary View contains high-level information about some of the Issues and Insights found in the project,
 and about the analysis session and project itself.
 
-<!--- TODO Reword this if we change the navigation controls -->
-Click on one of the blue text items to go directly to the corresponding View, or navigate by clicking on one of the tabs
-and then selecting a View from the drop-down menu. All of the Views are a little different, but let's look at the Code
+Click on one of the buttons to the right of the window to go to the corresponding View, or navigate by clicking a view
+in the navigation panel on the left. All of the Views are a little different, but let's look at the Code
 Issues View in Code tab as an example:
 
 <img src="images/overview.png">
 
 The sections of this screen are labelled as follows:
 
-* **A:** [View selection dropdown](#view-selection-dropdown) <!--- TODO Reword this if we change the navigation controls -->
+* **A:** [Navigation panel](#navigation-panel)
 * **B:** [Information panel](#information-panel)
 * **C:** [View filter panel](#view-filter-panel)
 * **D:** [Table view controls](#table-view-controls)
-* **E:** [Issue/insight table](#issueinsight-table)
+* **E:** [Report item table](#report-item-table)
 * **F:** [Selected item detail panel](#selected-item-detail-panel)
 * **G:** [Selected item context](#selected-item-context)
 * **H:** [Font size slider](#font-size-slider)
 
-<!--- TODO Reword this if we change the navigation controls -->
-## View selection dropdown
-Many of the tabs contain a number of different Views, each of which displays a different sub-set of the data related to
-the tab. Select the required View from the drop-down menu near the top of the window.
+## Navigation panel
+Project Auditor's analyzers are grouped into a number of project areas, each of which contains multiple different Views.
+Each View displays a different sub-set of the data related to the project area. Select the required View from the
+navigation panel to the left of the window.
 
 Some of these Views display _Issues_, and some display _Insights_. Issues are potential problems in your project that
-could impact one or more areas of runtime performance or iteration times. They are typically listed with the View name
-"Issues". Insights Views provide information about your project in a way that might not be easy to see otherwise - for
-example, a list of all Textures in your project along with their import settings and file size. 
+could impact one or more areas of runtime performance or iteration times. They are typically listed at the top of the
+list of Views within a particular project area. Insights Views provide information about your project in a way that
+might not be easy to see otherwise - for example, a list of all Textures in your project along with their import
+settings and file size. 
 
 ## Information panel
 Check this panel for useful information about the best way to interact with the current View. Some Views require
@@ -118,7 +119,7 @@ This bar of buttons can be found above the Issue/Insight table in every View. Fr
 | **Ignored Issues**      | Click to toggle. When the eye icon is shown, ignored issues are displayed, greyed out. When the eye icon is crossed-out, ignored issues are hidden.                                                                                                                                                                                                              |
 | **Export**              | Export the issues in the table to a comma-separated value (.csv) file, suitable for importing into a spreadsheet or a custom tool. Clicking the drop-down button shows options to export all issues in the current view (**All**), only the issues that are visible with the current filter settings (**Filtered**), or only the selected issues (**Selected**). |
 
-## Issue/Insight table
+## Report item table
 The table is the heart of every View. It's where the View's Issues or Insights are displayed. Each View's tables has
 slightly different columns, depending on the information being displayed. All tables can be sorted by any column, by
 clicking on that column's header. Columns can be resized as required. Right-clicking on the column headers shows a menu

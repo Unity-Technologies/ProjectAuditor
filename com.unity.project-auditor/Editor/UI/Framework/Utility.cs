@@ -19,6 +19,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Minor,
             Ignored,
 
+            Feedback,
             Help,
             Refresh,
             Settings,
@@ -52,6 +53,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static readonly string k_MinorIconName = "Minor";
         static readonly string k_IgnoredIconName = "Ignored";
 
+        static readonly string k_FeedbackIconName = "ChatCircleText";
         static readonly string k_HelpIconName = "_Help";
         static readonly string k_RefreshIconName = "Refresh";
         static readonly string k_SettingsIconName = "Settings";
@@ -84,6 +86,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static Texture2D s_AdditionalAnalysisIcon;
         static Texture2D s_FoldoutExpandedIcon;
         static Texture2D s_FoldoutFoldedIcon;
+
+        static Texture2D s_FeedbackIcon;
 
         static GUIContent[] s_StatusWheel;
 
@@ -210,11 +214,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return $"BuildSettings.{platformName}.Small";
         }
 
-        public static GUIContent GetPlatformIcon(BuildTargetGroup buildTargetGroup)
+        public static GUIContent GetPlatformIconWithName(BuildTargetGroup buildTargetGroup)
         {
             var iconName = GetPlatformIconName(buildTargetGroup);
-
-            return EditorGUIUtility.IconContent(iconName);
+            return EditorGUIUtility.TrTextContentWithIcon(buildTargetGroup.ToString(), iconName);
         }
 
         public static GUIContent GetIcon(IconType iconType, string tooltip = null)
@@ -298,6 +301,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     return EditorGUIUtility.TrIconContent(k_DownloadIconName, tooltip);
                 case IconType.View:
                     return EditorGUIUtility.TrIconContent(k_ViewIconName, tooltip);
+                case IconType.Feedback:
+                    if (string.IsNullOrEmpty(tooltip))
+                        tooltip = "Open feedback form";
+                    if (s_FeedbackIcon == null)
+                        s_FeedbackIcon = LoadIcon(k_FeedbackIconName);
+                    return EditorGUIUtility.TrIconContent(s_FeedbackIcon, tooltip);
                 case IconType.Help:
                     return EditorGUIUtility.TrIconContent(k_HelpIconName, tooltip);
                 case IconType.Refresh:
@@ -316,6 +325,17 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     return EditorGUIUtility.TrIconContent(k_WhiteCheckMarkIconName, tooltip);
                 case IconType.GreenCheckMark:
                     return EditorGUIUtility.TrIconContent(k_GreenCheckMarkIconName, tooltip);
+            }
+
+            return null;
+        }
+
+        public static GUIContent GetIconWithText(IconType iconType, string displayName, string tooltip = null)
+        {
+            switch (iconType)
+            {
+                case IconType.Refresh:
+                    return EditorGUIUtility.TrTextContentWithIcon(displayName, tooltip, k_RefreshIconName);
             }
 
             return null;

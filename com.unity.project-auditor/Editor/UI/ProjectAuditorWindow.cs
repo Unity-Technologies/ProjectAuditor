@@ -1,4 +1,6 @@
 //#define PA_WELCOME_VIEW_OPTIONS
+//#define PA_DRAW_LOGO
+#define PA_DRAW_TABS_VERTICALLY
 
 using System;
 using System.Collections.Generic;
@@ -212,14 +214,15 @@ namespace Unity.ProjectAuditor.Editor.UI
             UpdateAssemblySelection();
             Profiler.EndSample();
 
+            if(m_ProjectAuditor == null)
+                m_ProjectAuditor = new ProjectAuditor();
+
+            InitializeViews(GetAllSupportedCategories(), ProjectAuditorSettings.instance.Rules, true);
+
             // are we reloading from a valid state?
             if (currentState == AnalysisState.Valid &&
                 m_Report.IsValid())
             {
-                m_ProjectAuditor = new ProjectAuditor();
-
-                InitializeViews(GetAllSupportedCategories(), ProjectAuditorSettings.instance.Rules, true);
-
                 Profiler.BeginSample("Views Update");
                 m_ViewManager.OnAnalysisRestored(m_Report);
                 m_AnalysisState = currentState;
@@ -460,25 +463,22 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             using (new EditorGUILayout.VerticalScope())
             {
+                DrawToolbar();
+
                 if (m_AnalysisState != AnalysisState.Initializing && m_AnalysisState != AnalysisState.Initialized)
                 {
-                    DrawToolbar();
-
 #if !PA_DRAW_TABS_VERTICALLY
                     DrawTabs();
 #endif
                 }
 
-                if (IsAnalysisValid())
+                using (new EditorGUILayout.HorizontalScope())
                 {
-                    using (new EditorGUILayout.HorizontalScope())
-                    {
 #if PA_DRAW_TABS_VERTICALLY
-                        using (new EditorGUILayout.VerticalScope())
-                        {
-                            DrawViewSelection();
-                        }
+                    DrawViewSelection();
 #endif
+                    if (IsAnalysisValid())
+                    {
 
                         if (!m_IsNonAnalyzedViewSelected)
                         {
@@ -497,10 +497,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                             DrawAnalysisPanel();
                         }
                     }
-                }
-                else
-                {
-                    DrawHome();
+                    else
+                    {
+                        DrawHome();
+                    }
                 }
             }
         }
@@ -555,21 +555,29 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void DrawViewSelection()
         {
-            if (m_ViewSelectionTreeState == null)
+            using (new EditorGUI.DisabledScope(m_AnalysisState != AnalysisState.Valid))
             {
-                m_ViewSelectionTreeState = new TreeViewState();
+                using (new EditorGUILayout.VerticalScope())
+                {
+                    if (m_ViewSelectionTreeState == null)
+                    {
+                        m_ViewSelectionTreeState = new TreeViewState();
+                    }
+
+                    if (m_ViewSelectionTreeView == null)
+                    {
+                        m_ViewSelectionTreeView = new ViewSelectionTreeView(m_ViewSelectionTreeState, m_Tabs,
+                            m_ViewManager,
+                            m_Report);
+
+                        m_ViewSelectionTreeView.OnSelectedNonAnalyzedTab += OnSelectedNonAnalyzedTab;
+                    }
+
+                    var rect = EditorGUILayout.GetControlRect(GUILayout.Width(180), GUILayout.ExpandHeight(true));
+
+                    m_ViewSelectionTreeView.OnGUI(rect);
+                }
             }
-            if (m_ViewSelectionTreeView == null)
-            {
-                m_ViewSelectionTreeView = new ViewSelectionTreeView(m_ViewSelectionTreeState, m_Tabs, m_ViewManager,
-                    m_Report);
-
-                m_ViewSelectionTreeView.OnSelectedNonAnalyzedTab += OnSelectedNonAnalyzedTab;
-            }
-
-            var rect = EditorGUILayout.GetControlRect(GUILayout.Width(180), GUILayout.ExpandHeight(true));
-
-            m_ViewSelectionTreeView.OnGUI(rect);
         }
 
 #endif
@@ -962,6 +970,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                     m_AnalysisState = AnalysisState.Completed;
 
                     m_Report = report;
+
+#if PA_DRAW_TABS_VERTICALLY
+                    InitializeViewSelection(true);
+#endif
                 }
             };
 
@@ -1334,66 +1346,145 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void DrawHome()
         {
+#if PA_DRAW_LOGO
+            if (Contents.s_ProjectAuditorLogo == null)
+            {
+                Contents.s_ProjectAuditorLogo = AssetDatabase.LoadAssetAtPath<Texture2D>($"{Contents.IconsPath}/AuditorLogo.png");
+            }
+
+            if (Contents.s_LogoSkin == null)
+            {
+                Contents.s_LogoSkin = AssetDatabase.LoadAssetAtPath<GUISkin>($"{Contents.IconsPath}/LogoSkin.guiskin");
+            }
+#endif
+
+            const int k_SpacingHeight = 24;
+
+            // Darkish grey box filling the window
             EditorGUILayout.BeginVertical(GUI.skin.box, GUILayout.ExpandHeight(true), GUILayout.ExpandWidth(true));
 
-            EditorGUILayout.Space();
-
-            EditorGUILayout.LabelField(Contents.WelcomeTextTitle, SharedStyles.TitleLabel);
-
-            EditorGUILayout.Space();
-            EditorGUILayout.Space();
-
-            EditorGUILayout.LabelField(Contents.WelcomeText, SharedStyles.TextAreaWithDynamicSize);
-
-            EditorGUILayout.Space();
-            EditorGUILayout.Space();
-
-            DrawHorizontalLine();
-
-            EditorGUILayout.Space();
-            EditorGUILayout.Space();
-
-            using (new EditorGUILayout.VerticalScope(GUILayout.MaxWidth(500)))
+            // Draw centered in the window, with equal space to the left and right
+            using (new EditorGUILayout.HorizontalScope())
             {
-#if PA_WELCOME_VIEW_OPTIONS
-                EditorGUILayout.LabelField(Contents.ConfigurationsTitle, SharedStyles.LargeLabel);
+                GUILayout.FlexibleSpace();
 
-                EditorGUILayout.Space();
-
-                m_SelectedProjectAreas = (ProjectAreaFlags)EditorGUILayout.EnumFlagsField(Contents.ProjectAreaSelection, m_SelectedProjectAreas, GUILayout.ExpandWidth(true));
-
-                var selectedTarget = Array.IndexOf(m_SupportedBuildTargets, m_Platform);
-                selectedTarget = EditorGUILayout.Popup(Contents.PlatformSelection, selectedTarget, m_PlatformContents);
-                m_Platform = m_SupportedBuildTargets[selectedTarget];
-
-                m_CompilationMode = (CompilationMode)EditorGUILayout.EnumPopup(Contents.CompilationModeSelection, m_CompilationMode);
-
-                GUILayout.Space(16);
-#endif
-                using (new EditorGUILayout.HorizontalScope())
+                // Begin drawing top to bottom
+                using (new EditorGUILayout.VerticalScope(GUILayout.ExpandWidth(true)))
                 {
-                    const int height = 30;
-
                     GUILayout.FlexibleSpace();
+
+#if PA_DRAW_LOGO
+                    // Logo
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        GUILayout.FlexibleSpace();
+
+                        var oldSkin = GUI.skin;
+                        GUI.skin = Contents.s_LogoSkin;
+                        GUILayout.Box(Contents.s_ProjectAuditorLogo, "texture", GUILayout.MaxWidth(100));
+                        GUI.skin = oldSkin;
+
+                        GUILayout.FlexibleSpace();
+                    }
+#endif
+
+                    // Title
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        GUILayout.FlexibleSpace();
+                        EditorGUILayout.LabelField(Contents.WelcomeTextTitle, SharedStyles.TitleLabel, GUILayout.MinWidth(348));
+                        GUILayout.FlexibleSpace();
+                    }
+
+                    EditorGUILayout.Space(k_SpacingHeight);
+
+                    // Intro text
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        GUILayout.FlexibleSpace();
+                        EditorGUILayout.LabelField(Contents.WelcomeText, SharedStyles.WelcomeTextArea);
+                        GUILayout.FlexibleSpace();
+                    }
+
+                    EditorGUILayout.Space(k_SpacingHeight);
+
+    #if PA_WELCOME_VIEW_OPTIONS
+                    using (new EditorGUILayout.HorizontalScope())
+                    {
+                        GUILayout.FlexibleSpace();
+                        using (new EditorGUILayout.VerticalScope(GUILayout.MaxWidth(500)))
+                        {
+                            EditorGUILayout.LabelField(Contents.ConfigurationsTitle, SharedStyles.LargeLabel);
+
+                            EditorGUILayout.Space();
+
+                            m_SelectedProjectAreas = (ProjectAreaFlags)EditorGUILayout.EnumFlagsField(
+                                Contents.ProjectAreaSelection, m_SelectedProjectAreas, GUILayout.ExpandWidth(true));
+
+                            var selectedTarget = Array.IndexOf(m_SupportedBuildTargets, m_Platform);
+                            selectedTarget = EditorGUILayout.Popup(Contents.PlatformSelection, selectedTarget,
+                                m_PlatformContents);
+                            m_Platform = m_SupportedBuildTargets[selectedTarget];
+
+                            m_CompilationMode =
+                                (CompilationMode)EditorGUILayout.EnumPopup(Contents.CompilationModeSelection,
+                                    m_CompilationMode);
+
+                            GUILayout.Space(16);
+                        }
+                        GUILayout.FlexibleSpace();
+                    }
+#endif
+
 #if PA_WELCOME_VIEW_OPTIONS
                     var projectAreas = m_SelectedProjectAreas;
 #else
                     var projectAreas = UserPreferences.ProjectAreasToAnalyze;
 #endif
-                    using (new EditorGUI.DisabledScope(projectAreas == ProjectAreaFlags.None))
+
+                    using (new EditorGUILayout.HorizontalScope())
                     {
-                        if (GUILayout.Button(Contents.AnalyzeButton, GUILayout.Width(100), GUILayout.Height(height)))
+                        GUILayout.FlexibleSpace();
+
+                        const int k_ButtonWidth = 120;
+
+                        // Preferences button
+                        if (GUILayout.Button("Preferences", SharedStyles.LinkLabel, GUILayout.Width(k_ButtonWidth), GUILayout.Height(30)))
                         {
-                            Analyze();
-                            GUIUtility.ExitGUI();
+                            EditorInterop.OpenProjectAuditorPreferences();
                         }
+
+                        // Analyze button
+                        using (new EditorGUI.DisabledScope(projectAreas == ProjectAreaFlags.None))
+                        {
+                            if (GUILayout.Button(Contents.AnalyzeButton, GUILayout.Width(k_ButtonWidth), GUILayout.Height(30)))
+                            {
+                                Analyze();
+                                GUIUtility.ExitGUI();
+                            }
+                        }
+                        GUILayout.FlexibleSpace();
                     }
 
-                    if (GUILayout.Button(Contents.LoadButton, GUILayout.Width(40), GUILayout.Height(height)))
+                    EditorGUILayout.Space(k_SpacingHeight);
+
+                    DrawHorizontalLine();
+
+                    EditorGUILayout.Space(k_SpacingHeight);
+
+                    using (new EditorGUILayout.HorizontalScope())
                     {
-                        LoadReport();
+                        GUILayout.FlexibleSpace();
+                        EditorGUILayout.HelpBox(Contents.FeedbackBoxText, MessageType.Info);
+                        GUILayout.FlexibleSpace();
                     }
+
+                    GUILayout.FlexibleSpace();
+                    GUILayout.FlexibleSpace();
+                    GUILayout.FlexibleSpace();
                 }
+
+                GUILayout.FlexibleSpace();
             }
 
             EditorGUILayout.EndVertical();
@@ -1695,7 +1786,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             using (new EditorGUILayout.HorizontalScope(EditorStyles.toolbar))
             {
                 var analysisTarget = BuildTarget.NoTarget;
-                
+
                 if (m_Report != null && m_Report.SessionInfo != null)
                 {
                     analysisTarget = m_Report.SessionInfo.Platform;
@@ -1710,10 +1801,11 @@ namespace Unity.ProjectAuditor.Editor.UI
 #endif
                 }
 
+                GUILayout.Label("Platform: ", SharedStyles.Label, GUILayout.Width(55));
+
                 GUILayout.Label(
-                    Utility.GetPlatformIcon(BuildPipeline.GetBuildTargetGroup(analysisTarget)),
-                    SharedStyles.IconLabel,
-                    GUILayout.Width(AnalysisView.ToolbarIconSize));
+                    Utility.GetPlatformIconWithName(BuildPipeline.GetBuildTargetGroup(analysisTarget)),
+                    SharedStyles.IconLabelLeft);
 
                 if (m_AnalysisState == AnalysisState.InProgress)
                 {
@@ -1723,20 +1815,12 @@ namespace Unity.ProjectAuditor.Editor.UI
                 EditorGUILayout.Space();
 
                 // right-end buttons
+                const int discardButtonWidth = 110;
+                const int loadSaveButtonWidth = 40;
+
                 using (new EditorGUI.DisabledScope(m_AnalysisState != AnalysisState.Valid))
                 {
-                    const int loadSaveButtonWidth = 60;
-                    if (GUILayout.Button(Contents.LoadButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
-                    {
-                        LoadReport();
-                    }
-
-                    if (GUILayout.Button(Contents.SaveButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
-                    {
-                        SaveReport();
-                    }
-
-                    if (GUILayout.Button(Contents.DiscardButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
+                    if (GUILayout.Button(Contents.DiscardButton, EditorStyles.toolbarButton, GUILayout.Width(discardButtonWidth)))
                     {
                         if (EditorUtility.DisplayDialog(k_Discard, k_DiscardQuestion, "Ok", "Cancel"))
                         {
@@ -1744,7 +1828,20 @@ namespace Unity.ProjectAuditor.Editor.UI
                             m_AnalysisState = AnalysisState.Initialized;
                         }
                     }
+
+                    if (GUILayout.Button(Contents.SaveButton, EditorStyles.toolbarButton,
+                            GUILayout.Width(loadSaveButtonWidth)))
+                    {
+                        SaveReport();
+                    }
                 }
+
+                if (GUILayout.Button(Contents.LoadButton, EditorStyles.toolbarButton, GUILayout.Width(loadSaveButtonWidth)))
+                {
+                    LoadReport();
+                }
+
+                Utility.DrawHelpButton(Contents.FeedbackButton, k_FeedbackFormUrl);
 
                 Utility.DrawHelpButton(Contents.HelpButton, Documentation.GetPageUrl("index"));
             }
@@ -1938,6 +2035,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         const string k_SaveToFile = "Save report to json file";
         const string k_Discard = "Discard current report";
         const string k_DiscardQuestion = "The current report will be lost. Are you sure?";
+        const string k_FeedbackFormUrl = "https://forms.gle/dfoJZBMtHYYQMZmE8";
 
         // UI styles and layout
         static class LayoutSize
@@ -1957,8 +2055,9 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             public static readonly GUIContent SaveButton = Utility.GetIcon(Utility.IconType.Save, "Save current report to json file");
             public static readonly GUIContent LoadButton = Utility.GetIcon(Utility.IconType.Load, "Load report from json file");
-            public static readonly GUIContent DiscardButton = Utility.GetIcon(Utility.IconType.Trash, "Discard the current report.");
+            public static readonly GUIContent DiscardButton = EditorGUIUtility.TrTextContentWithIcon("New Analysis", "Discard the current report and return to the Welcome view.", "Refresh");
 
+            public static readonly GUIContent FeedbackButton = Utility.GetIcon(Utility.IconType.Feedback, "Send feedback to the Project Auditor team");
             public static readonly GUIContent HelpButton = Utility.GetIcon(Utility.IconType.Help, "Open Manual (in a web browser)");
             public static readonly GUIContent PreferencesMenuItem = EditorGUIUtility.TrTextContent("Preferences", $"Open User Preferences for {ProjectAuditor.DisplayName}");
 
@@ -1976,22 +2075,22 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             public static readonly GUIContent FiltersFoldout = new GUIContent("Filters", "Filtering Criteria");
 
+#if PA_DRAW_LOGO
+            public static GUISkin s_LogoSkin;
+            public static Texture2D s_ProjectAuditorLogo;
+            public static readonly string IconsPath = $"{ProjectAuditorPackage.Path}/Editor/Icons";
+#endif
+
             public static readonly GUIContent WelcomeTextTitle = new GUIContent($"Welcome to {ProjectAuditor.DisplayName}");
 
             public static readonly GUIContent WelcomeText = new GUIContent(
-                $@"
-{ProjectAuditor.DisplayName} is a suite of static analysis tools that analyzes scripts, assets, settings, and build reports of your Unity project and produces a report that includes:
-
-• <b>Code Issues</b>: a list of possible problems that might affect performance, memory usage, Editor iteration times, and other areas.
-• <b>Asset Issues</b>: Assets with import settings or file organization that may impact startup times, runtime memory usage or performance.
-• <b>Project Settings Issues</b>: a list of possible problems that might affect performance, memory and other areas.
-• <b>Build Report Insights</b>: How long each step of the last clean build took, and what assets were included in it.
-
-To Analyze the project, click on <b>Start Analysis</b>.
-
-Once the project is analyzed, {ProjectAuditor.DisplayName} displays a summary with high-level information. From here, click on a tab representing an area you're interested in, and then select a View from the drop-down menu to see a list of issues or insights.
-"
+                $@"{ProjectAuditor.DisplayName} is a suite of static analysis tools that examine assets, settings and scripts to
+enable users to optimize their Unity Project. It produces a report that highlights issues in
+Code and Settings, insights about the latest Build Report, information about Assets, and
+provides recommendations on how to improve."
             );
+
+            public static readonly string FeedbackBoxText = "Your opinion matters! Click \"Send Feedback\" in the top menu to help us enhance the tool.";
 
             public static readonly GUIContent Clear = new GUIContent("Clear");
             public static readonly GUIContent Refresh = new GUIContent("Refresh");
