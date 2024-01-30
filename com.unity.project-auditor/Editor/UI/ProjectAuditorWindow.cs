@@ -1094,7 +1094,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         BuildTarget GetSelectedAnalysisPlatform()
         {
 #if PA_WELCOME_VIEW_OPTIONS
-                return m_Platform;
+            return m_Platform;
 #else
             var platform = UserPreferences.AnalysisTargetPlatform;
 
@@ -1110,7 +1110,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         CompilationMode GetSelectedCompilationMode()
         {
 #if PA_WELCOME_VIEW_OPTIONS
-                return m_CompilationMode;
+            return m_CompilationMode;
 #else
             return UserPreferences.CompilationMode;
 #endif
