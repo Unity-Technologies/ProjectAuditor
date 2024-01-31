@@ -167,7 +167,6 @@ namespace Unity.ProjectAuditor.Editor
             return path;
         }
 
-
         public void OnBeforeSerialize()
         {
             if (m_Path == null && m_PathGenerator != null)

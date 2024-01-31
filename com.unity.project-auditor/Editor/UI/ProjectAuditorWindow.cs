@@ -214,7 +214,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             UpdateAssemblySelection();
             Profiler.EndSample();
 
-            if(m_ProjectAuditor == null)
+            if (m_ProjectAuditor == null)
                 m_ProjectAuditor = new ProjectAuditor();
 
             InitializeViews(GetAllSupportedCategories(), ProjectAuditorSettings.instance.Rules, true);
@@ -479,7 +479,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 #endif
                     if (IsAnalysisValid())
                     {
-
                         if (!m_IsNonAnalyzedViewSelected)
                         {
                             using (new EditorGUILayout.VerticalScope())
@@ -1830,7 +1829,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     }
 
                     if (GUILayout.Button(Contents.SaveButton, EditorStyles.toolbarButton,
-                            GUILayout.Width(loadSaveButtonWidth)))
+                        GUILayout.Width(loadSaveButtonWidth)))
                     {
                         SaveReport();
                     }
