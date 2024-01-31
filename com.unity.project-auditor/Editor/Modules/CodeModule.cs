@@ -97,17 +97,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         };
 
-        static readonly IssueLayout k_GenericIssueLayout = new IssueLayout
-        {
-            Category = IssueCategory.GenericInstance,
-            Properties = new[]
-            {
-                new PropertyDefinition { Type = PropertyType.Description, Name = "Generic Type"},
-                new PropertyDefinition { Type = PropertyType.Filename, Name = "Filename", LongName = "Filename and line number"},
-                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(CodeProperty.Assembly), Format = PropertyFormat.String, Name = "Assembly", LongName = "Managed Assembly name" }
-            }
-        };
-
         static readonly IssueLayout k_DomainReloadIssueLayout = new IssueLayout
         {
             Category = IssueCategory.DomainReload,
@@ -137,7 +126,6 @@ namespace Unity.ProjectAuditor.Editor.Modules
             k_AssemblyLayout,
             k_PrecompiledAssemblyLayout,
             k_CompilerMessageLayout,
-            k_GenericIssueLayout,
             k_DomainReloadIssueLayout
         };
 
@@ -275,13 +263,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
                 foundIssues.RemoveAll(i => i.Id.IsValid() &&
                     !i.Id.GetDescriptor().IsApplicable(analysisParams));
 
-                var diagnostics = foundIssues.Where(i => i.Category != IssueCategory.GenericInstance).ToList();
                 Profiler.BeginSample("CodeModule.Audit.BuildCallHierarchies");
                 compilationPipeline.Dispose();
-                callCrawler.BuildCallHierarchies(diagnostics, bar);
+                callCrawler.BuildCallHierarchies(foundIssues, bar);
                 Profiler.EndSample();
 
-                foreach (var d in diagnostics)
+                foreach (var d in foundIssues)
                 {
                     // bump severity if issue is found in a hot-path
                     if (!d.IsMajorOrCritical() && d.Dependencies != null && d.Dependencies.PerfCriticalContext)

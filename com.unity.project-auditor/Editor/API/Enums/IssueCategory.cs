@@ -44,11 +44,6 @@ namespace Unity.ProjectAuditor.Editor
         CodeCompilerMessage,
 
         /// <summary>
-        /// Instances of generic data types found in code. Reported because excessive use of generics can contribute to increased memory usage for IL2CPP metadata.
-        /// </summary>
-        GenericInstance,
-
-        /// <summary>
         /// Issues relating to project settings
         /// </summary>
         ProjectSetting,

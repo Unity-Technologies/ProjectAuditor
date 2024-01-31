@@ -795,21 +795,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 ViewDescriptor.Register(new ViewDescriptor
                 {
-                    Category = IssueCategory.GenericInstance,
-                    DisplayName = "Generics",
-                    MenuLabel = "Experimental/Generic Types Instantiation",
-                    MenuOrder = 90,
-                    ShowAssemblySelection = true,
-                    ShowDependencyView = true,
-                    ShowFilters = true,
-                    DependencyViewGuiContent = new GUIContent("Inverted Call Hierarchy", "Expand the tree to see all of the methods which lead to the call site of a selected issue."),
-                    GetAssemblyName = issue => issue.GetCustomProperty(CodeProperty.Assembly),
-                    OnOpenIssue = EditorInterop.OpenTextFile<TextAsset>,
-                    AnalyticsEventId = (int)AnalyticsReporter.UIButton.Generics
-                });
-
-                ViewDescriptor.Register(new ViewDescriptor
-                {
                     Category = IssueCategory.PrecompiledAssembly,
                     DisplayName = "Precompiled Assemblies",
                     MenuLabel = "Experimental/Precompiled Assemblies",
