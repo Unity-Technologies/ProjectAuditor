@@ -409,18 +409,15 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public void DrawTopPanel(bool drawDescription = true)
+        public void DrawTopPanel()
         {
+            if (!m_Desc.ShowInfoPanel)
+                return;
+
             using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandWidth(true)))
             {
-                if (drawDescription)
-                    EditorGUILayout.LabelField(Description);
-
                 // Add a bit of space to improve readability
                 EditorGUILayout.Space();
-
-                if (!m_Desc.ShowInfoPanel)
-                    return;
 
                 m_ViewStates.info = Utility.BoldFoldout(m_ViewStates.info, Contents.InfoFoldout);
                 if (m_ViewStates.info)

@@ -1642,7 +1642,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
             }
 
-            activeView.DrawTopPanel(false);
+            activeView.DrawTopPanel();
 
             if (activeView.IsValid())
             {
