@@ -21,11 +21,15 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public static void EnableAnalytics()
         {
+#if PA_OLD_ANALYTICS_API
             var result = EditorAnalytics.RegisterEventWithLimit(
                 k_EventTopicName, k_MaxEventsPerHour, k_MaxEventItems, k_VendorKey, k_EventVersion);
 
             if (result == AnalyticsResult.Ok)
                 s_EnableAnalytics = true;
+#else
+            // TODO
+#endif
         }
 
         public enum UIButton
@@ -345,9 +349,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (s_EnableAnalytics)
             {
                 var uiButtonEvent = new ProjectAuditorEvent(GetEventName(uiButton), analytic);
-
+#if PA_OLD_ANALYTICS_API
                 var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent, k_EventVersion);
                 return (result == AnalyticsResult.Ok);
+#else
+                // TODO
+#endif
             }
             return false;
         }
@@ -359,9 +366,12 @@ namespace Unity.ProjectAuditor.Editor.UI
             if (s_EnableAnalytics)
             {
                 var uiButtonEvent = new ProjectAuditorEventWithKeyValues(GetEventName(uiButton), analytic, payload);
-
+#if PA_OLD_ANALYTICS_API
                 var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent, k_EventVersion);
                 return (result == AnalyticsResult.Ok);
+#else
+                // TODO
+#endif
             }
             return false;
         }
@@ -376,8 +386,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 var uiButtonEvent = new ButtonEventWithIssueStats(GetEventName(uiButton), analytic, payload);
 
+#if PA_OLD_ANALYTICS_API
                 var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent, k_EventVersion);
                 return (result == AnalyticsResult.Ok);
+#else
+                // TODO
+#endif
             }
             return false;
         }
@@ -392,8 +406,12 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                 var uiButtonEvent = new ButtonEventWithIssueStats(GetEventName(uiButton), analytic, payload);
 
+#if PA_OLD_ANALYTICS_API
                 var result = EditorAnalytics.SendEventWithLimit(k_EventTopicName, uiButtonEvent, k_EventVersion);
                 return (result == AnalyticsResult.Ok);
+#else
+                // TODO
+#endif
             }
             return false;
         }
