@@ -11,7 +11,17 @@
   },
   {
     "id": "UDR0003",
-    "description": "This script contains one or more static events, but not all of the delegates are subscribed to the event are explicitly unsubscribed when leaving Play Mode. If Domain Reload is disabled to facilitate faster entering/exiting Play Mode, the event may end up with multiple duplicate registered delegates.",
-    "recommendation": "Unsubscribe callbacks from static events when they are no longer needed. This could be in a <b>MonoBehaviour.OnApplicationQuit()</b> or <b>MonoBehaviour.OnDestroy()</b> method, for example."
+    "description": "This script contains a static delegate which is registered to a static event, but the analyzer can't guarantee that the delegate is explicitly unsubscribed when leaving Play Mode. If Domain Reload is disabled to facilitate faster entering/exiting Play Mode, the event may end up with multiple duplicate registered delegates.",
+    "recommendation": "Unsubscribe callbacks from static events when they are no longer needed. For static delegates, the safest place to unsubscribe is a method with a <b>[RuntimeInitializeOnLoadMethod]</b> attribute."
+  },
+  {
+    "id": "UDR0004",
+    "description": "This script contains a non-static delegate which is registered to a static event, but the analyzer can't guarantee that the delegate is explicitly unsubscribed when leaving Play Mode. If Domain Reload is disabled to facilitate faster entering/exiting Play Mode, the event may end up with multiple duplicate registered delegates.",
+    "recommendation": "Unsubscribe callbacks from static events when they are no longer needed. For non-static delegates, the safest place to unsubscribe is in a <b>MonoBehaviour.OnDestroy()</b> method."
+  },
+  {
+    "id": "UDR0005",
+    "description": "This script contains a non-static delegate which is registered to a static event, but no corresponding <b>MonoBehaviour.OnDestroy()</b> method in which to unsubscribe when leaving Play Mode. If Domain Reload is disabled to facilitate faster entering/exiting Play Mode, the event may end up with multiple duplicate registered delegates.",
+    "recommendation": "Unsubscribe callbacks from static events when they are no longer needed. For non-static delegates, the safest place to unsubscribe is in a <b>MonoBehaviour.OnDestroy()</b> method."
   }
 ]
