@@ -126,7 +126,7 @@ namespace Unity.ProjectAuditor.EditorTests
 
             QualitySettings.streamingMipmapsActive = mipmapsActive;
 
-            Assert.True(issues.Any(i => i.Location.Path.Equals("Project/Quality/" + settingsName)));
+            Assert.True(issues.Any(i => i.Location.Path.Equals("Project/Quality")));
         }
 
         [Test]
