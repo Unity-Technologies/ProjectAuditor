@@ -34,13 +34,11 @@ namespace Unity.ProjectAuditor.Editor.Core
                 if (type.IsAbstract)
                     continue;
                 var module = Activator.CreateInstance(type) as Module;
-                if (module.IsSupported)
+
+                foreach (var layout in module.SupportedLayouts)
                 {
-                    foreach (var layout in module.SupportedLayouts)
-                    {
-                        if (layout.Category == category)
-                            return layout;
-                    }
+                    if (layout.Category == category)
+                        return layout;
                 }
             }
             return null;

@@ -52,9 +52,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
             foreach (var tab in m_Tabs)
             {
-                if (tab.availableCategories == null || tab.availableCategories.Length == 0)
-                    continue;
-
                 var tabItem = new TreeViewItem { id = id++, displayName = tab.name };
 
                 if (!m_RootItem.hasChildren)
@@ -65,10 +62,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 m_ItemIdToTab.Add(tabItem.id, tab);
 
                 // Only add child items if there's more than one view. Otherwise this item represents the only view.
-                if (tab.availableCategories.Length > 1)
+                if (tab.categories.Length > 1)
                 {
                     var anyChildrenAnalyzed = false;
-                    foreach (var childCategory in tab.availableCategories)
+                    foreach (var childCategory in tab.categories)
                     {
                         if (m_Report != null && m_Report.HasCategory(childCategory))
                         {
@@ -80,10 +77,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     if (!anyChildrenAnalyzed)
                     {
                         // Increase the id anyway, so item ids stay same once we add more children later
-                        id += tab.availableCategories.Length;
+                        id += tab.categories.Length;
 
                         // Map the sub categories to the tab (top-level) item
-                        foreach (var cat in tab.availableCategories)
+                        foreach (var cat in tab.categories)
                         {
                             m_CategoryToItem.Add(cat, tabItem);
                         }
@@ -91,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         continue;
                     }
 
-                    foreach (var cat in tab.availableCategories)
+                    foreach (var cat in tab.categories)
                     {
                         var view = m_ViewManager.GetView(cat);
                         if (view != null)
@@ -107,8 +104,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                 }
                 else
                 {
-                    m_ItemIdToCategory.Add(tabItem.id, tab.availableCategories[0]);
-                    m_CategoryToItem.Add(tab.availableCategories[0], tabItem);
+                    m_ItemIdToCategory.Add(tabItem.id, tab.categories[0]);
+                    m_CategoryToItem.Add(tab.categories[0], tabItem);
                 }
             }
 
@@ -156,7 +153,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             if (m_ItemIdToTab.TryGetValue(item.id, out Tab foundTab))
             {
-                foreach (var category in foundTab.availableCategories)
+                foreach (var category in foundTab.categories)
                 {
                     if (!m_Report.HasCategory(category))
                     {

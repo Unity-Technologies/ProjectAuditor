@@ -24,15 +24,6 @@ namespace Unity.ProjectAuditor.EditorTests
         }
 
         [Test]
-        public void BuildReport_IsSupported()
-        {
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
-            var module = projectAuditor.GetModule<BuildReportModule>();
-            var isSupported = module.IsSupported;
-            Assert.True(isSupported);
-        }
-
-        [Test]
         public void BuildReport_Files_AreReported()
         {
             var issues = AnalyzeBuild(IssueCategory.BuildFile, i => i.RelativePath.Equals(m_TestAsset.RelativePath));

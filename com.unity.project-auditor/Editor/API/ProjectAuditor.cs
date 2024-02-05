@@ -121,7 +121,7 @@ namespace Unity.ProjectAuditor.Editor
             }
 
             var requestedModules = categories.SelectMany(GetModules).Distinct().ToArray();
-            var supportedModules = requestedModules.Where(m => m != null && m.IsSupported && CoreUtils.SupportsPlatform(m.GetType(), platform)).ToArray();
+            var supportedModules = requestedModules.Where(m => m != null && CoreUtils.SupportsPlatform(m.GetType(), platform)).ToArray();
 
             var numModules = supportedModules.Length;
             if (numModules == 0)
@@ -241,31 +241,9 @@ namespace Unity.ProjectAuditor.Editor
             return s_CustomCategories[name];
         }
 
-        internal T GetModule<T>() where T : Module
-        {
-            foreach (var module in m_Modules)
-            {
-                if (module is T)
-                    return (T)module;
-            }
-
-            return null;
-        }
-
-        internal Module GetModule(Type t)
-        {
-            foreach (var module in m_Modules)
-            {
-                if (module.GetType() == t)
-                    return module;
-            }
-
-            return null;
-        }
-
         internal Module[] GetModules(IssueCategory category)
         {
-            return m_Modules.Where(a => a.IsSupported && a.SupportedLayouts.FirstOrDefault(l => l.Category == category) != null).ToArray();
+            return m_Modules.Where(a => a.SupportedLayouts.FirstOrDefault(l => l.Category == category) != null).ToArray();
         }
 
         /// <summary>
@@ -316,7 +294,7 @@ namespace Unity.ProjectAuditor.Editor
         // Only used for testing
         internal bool IsModuleSupported(IssueCategory category)
         {
-            return m_Modules.Any(a => a.IsSupported && a.SupportedLayouts.FirstOrDefault(l => l.Category == category) != null);
+            return m_Modules.Any(a => a.SupportedLayouts.FirstOrDefault(l => l.Category == category) != null);
         }
 
         // Only used for testing

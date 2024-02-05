@@ -22,8 +22,6 @@ namespace Unity.ProjectAuditor.Editor.Core
             get { return SupportedLayouts.Select(l => l.Category).ToArray(); }
         }
 
-        public virtual bool IsSupported => true;
-
         public IReadOnlyCollection<DescriptorId> SupportedDescriptorIds => m_Ids != null ? m_Ids.ToArray() : Array.Empty<DescriptorId>();
 
         public abstract IReadOnlyCollection<IssueLayout> SupportedLayouts

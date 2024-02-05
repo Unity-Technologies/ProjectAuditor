@@ -117,7 +117,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Rule_Test_CanBeAddedAndRemoved()
         {
-            var settingsAuditor = m_ProjectAuditor.GetModule<SettingsModule>();
+            var settingsAuditor = new SettingsModule();
             var ids = settingsAuditor.SupportedDescriptorIds;
             var rules = new SeverityRules();
             var firstID = ids.FirstOrDefault();

@@ -19,12 +19,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         public string name;
 
         public IssueCategory[] categories;
-        public Type[] modules;
-        public IssueCategory[] excludedModuleCategories;
 
-        public IssueCategory[] allCategories;
-        public IssueCategory[] availableCategories;
         public int currentCategoryIndex;
+#if !PA_DRAW_TABS_VERTICALLY
         public Utility.DropdownItem[] dropdown;
+#endif
     }
 }

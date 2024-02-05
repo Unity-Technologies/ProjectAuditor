@@ -83,14 +83,14 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             new Tab
             {
-                id = TabId.Summary, name = "Summary", allCategories = new[] { IssueCategory.Metadata }
+                id = TabId.Summary, name = "Summary", categories = new[] { IssueCategory.Metadata }
             },
             new Tab
             {
                 id = TabId.Code, name = "Code",
-                modules = new[]
+                categories = new[]
                 {
-                    typeof(CodeModule)
+                    IssueCategory.Code, IssueCategory.Assembly, IssueCategory.PrecompiledAssembly, IssueCategory.CodeCompilerMessage, IssueCategory.DomainReload
                 }
             },
             new Tab
@@ -104,13 +104,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             new Tab
             {
                 id = TabId.Shaders, name = "Shaders",
-                modules = new[]
+                categories = new[]
                 {
-                    typeof(ShadersModule)
-                },
-                excludedModuleCategories = new[]
-                {
-                    IssueCategory.AssetIssue
+                    IssueCategory.Shader, IssueCategory.ShaderVariant, IssueCategory.ComputeShaderVariant, IssueCategory.ShaderCompilerMessage, IssueCategory.Material
                 }
             },
             new Tab
@@ -121,13 +117,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             new Tab
             {
                 id = TabId.Build, name = "Build",
-                modules = new[]
+                categories = new[]
                 {
-                    typeof(BuildReportModule)
-                },
-                excludedModuleCategories = new[]
-                {
-                    IssueCategory.BuildSummary
+                    IssueCategory.BuildFile, IssueCategory.BuildStep
                 }
             },
         };
@@ -214,10 +206,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             UpdateAssemblySelection();
             Profiler.EndSample();
 
-            if (m_ProjectAuditor == null)
-                m_ProjectAuditor = new ProjectAuditor();
-
-            InitializeViews(GetAllSupportedCategories(), ProjectAuditorSettings.instance.Rules, true);
+            InitializeViews(ProjectAuditorSettings.instance.Rules, true);
 
             // are we reloading from a valid state?
             if (currentState == AnalysisState.Valid &&
@@ -243,12 +232,22 @@ namespace Unity.ProjectAuditor.Editor.UI
             wantsMouseMove = true;
         }
 
-        void InitializeViews(IssueCategory[] categories, SeverityRules rules, bool reload)
+        void InitializeViews(SeverityRules rules, bool reload)
         {
             var initialize = m_ViewManager == null || !reload;
 
             if (initialize)
             {
+                // Get all supported categories
+                List<IssueCategory> supportedCategories = new List<IssueCategory>();
+                foreach (var tab in m_Tabs)
+                {
+                    supportedCategories.AddRange(GetTabCategories(tab));
+                }
+
+                var categories = supportedCategories.Distinct();
+
+                // Get all the ViewDescriptors that match the supported categories, and sort them by MenuOrder
                 var viewDescriptors = ViewDescriptor.GetAll()
                     .Where(descriptor => categories.Contains(descriptor.Category)).ToArray();
                 Array.Sort(viewDescriptors, (a, b) => a.MenuOrder.CompareTo(b.MenuOrder));
@@ -353,7 +352,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void RefreshTabCategories(Tab tab, bool reload)
         {
-            List<IssueCategory> availableCategories = new List<IssueCategory>();
+#if !PA_DRAW_TABS_VERTICALLY
             var dropDownItems = new List<Utility.DropdownItem>();
             var categoryIndex = 0;
 
@@ -374,28 +373,24 @@ namespace Unity.ProjectAuditor.Editor.UI
                     Enabled = true,
                     UserData = categoryIndex++
                 });
-
-                availableCategories.Add(cat);
             }
 
             if (dropDownItems.Count > 1)
                 tab.dropdown = dropDownItems.ToArray();
             else
                 tab.dropdown = null;
-
-            tab.availableCategories = availableCategories.ToArray();
-
+#endif
             if (!reload)
                 tab.currentCategoryIndex = 0;
         }
 
-        void SyncTabOnViewChange(IssueCategory newCatagory)
+        void SyncTabOnViewChange(IssueCategory newCategory)
         {
             for (int tabIndex = 0; tabIndex < m_Tabs.Length; ++tabIndex)
             {
-                for (int categoryIndex = 0; categoryIndex < m_Tabs[tabIndex].availableCategories.Length; ++categoryIndex)
+                for (int categoryIndex = 0; categoryIndex < m_Tabs[tabIndex].categories.Length; ++categoryIndex)
                 {
-                    if (m_Tabs[tabIndex].availableCategories[categoryIndex] == newCatagory)
+                    if (m_Tabs[tabIndex].categories[categoryIndex] == newCategory)
                     {
                         m_ActiveTabIndex = tabIndex;
                         m_Tabs[m_ActiveTabIndex].currentCategoryIndex = categoryIndex;
@@ -412,7 +407,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 #else
             foreach (var tab in m_Tabs)
             {
-                if (tab.availableCategories.Contains(category))
+                if (tab.categories.Contains(category))
                 {
                     OnSelectedNonAnalyzedTab(tab);
                     break;
@@ -429,7 +424,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 if (tab == selectedTab)
                 {
                     bool hasAnyAnalyzedCategory = false;
-                    foreach (var cat in tab.availableCategories)
+                    foreach (var cat in tab.categories)
                     {
                         if (m_Report.HasCategory(cat))
                         {
@@ -441,7 +436,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     if (!hasAnyAnalyzedCategory)
                     {
                         // Change view anyway, even if overridden, to get into a proper view state, not the previous view
-                        m_ViewManager.ChangeView(tab.availableCategories[0]);
+                        m_ViewManager.ChangeView(tab.categories[0]);
 
                         // Override view to show info and analyze button
                         m_IsNonAnalyzedViewSelected = true;
@@ -504,7 +499,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
-        private void DrawAnalysisPanel()
+        // Draw the panel that appears when you click on a tab that has not yet been analyzed.
+        void DrawAnalysisPanel()
         {
             using (new EditorGUILayout.VerticalScope(GUI.skin.box, GUILayout.ExpandHeight(true)))
             {
@@ -928,7 +924,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_AnalysisState = AnalysisState.InProgress;
             m_Report = null;
 
-            m_ProjectAuditor = new ProjectAuditor();
+            if(m_ProjectAuditor == null)
+                m_ProjectAuditor = new ProjectAuditor();
 
             var analysisParams = new AnalysisParams
             {
@@ -961,7 +958,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
             };
 
-            InitializeViews(GetAllSupportedCategories(), analysisParams.Rules, false);
+            InitializeViews(analysisParams.Rules, false);
 
             m_ProjectAuditor.AuditAsync(analysisParams, new ProgressBar());
         }
@@ -974,18 +971,11 @@ namespace Unity.ProjectAuditor.Editor.UI
                 Repaint();
         }
 
-        void AuditSingleModule<T>() where T : Module
-        {
-            var module = m_ProjectAuditor.GetModule<T>();
-            if (!module.IsSupported)
-                return;
-
-            AuditCategories(module.Categories);
-            GUIUtility.ExitGUI();
-        }
-
         internal void AuditCategories(IssueCategory[] categories)
         {
+            if(m_ProjectAuditor == null)
+                m_ProjectAuditor = new ProjectAuditor();
+
             // a module might report more categories than requested so we need to make sure we clean up the views accordingly
             var modules = categories.SelectMany(m_ProjectAuditor.GetModules).ToArray();
             var actualCategories = modules.SelectMany(m => m.Categories).Distinct().ToArray();
@@ -1039,7 +1029,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         public void AnalyzeShaderVariants()
         {
-            AuditSingleModule<ShadersModule>();
+            AuditCategories(GetTabCategories(TabId.Shaders));
+            GUIUtility.ExitGUI();
         }
 
         public void ClearShaderVariants()
@@ -1135,18 +1126,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             return requestedCategories.ToArray();
         }
 
-        IssueCategory[] GetAllSupportedCategories()
-        {
-            List<IssueCategory> allTabCategories = new List<IssueCategory>();
-            foreach (var tab in m_Tabs)
-            {
-                var categories = GetTabCategories(tab);
-                allTabCategories.AddRange(categories);
-            }
-
-            return allTabCategories.Distinct().ToArray();
-        }
-
         IssueCategory[] GetTabCategories(TabId tabId)
         {
             return GetTabCategories(m_Tabs.First(t => t.id == tabId));
@@ -1154,37 +1133,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         IssueCategory[] GetTabCategories(Tab tab)
         {
-            if (tab.allCategories != null && tab.allCategories.Length > 0)
-                return tab.allCategories;
-
-            if (tab.modules != null && tab.modules.Length > 0)
-            {
-                List<IssueCategory> categories = new List<IssueCategory>();
-
-                foreach (var moduleType in tab.modules)
-                {
-                    var module = m_ProjectAuditor.GetModule(moduleType);
-
-                    if (module == null)
-                        continue;
-
-                    var tabValue = tab;
-
-                    var moduleCategories = module.SupportedLayouts
-                        .Where(l => tabValue.excludedModuleCategories == null || tabValue.excludedModuleCategories.Contains(l.Category) == false)
-                        .Select(l => l.Category);
-
-                    categories.AddRange(moduleCategories);
-                }
-
-                tab.allCategories = categories.Distinct().ToArray();
-            }
-            else
-            {
-                tab.allCategories = tab.categories;
-            }
-
-            return tab.allCategories;
+            return tab.categories;
         }
 
         void DrawAssemblyFilter()
@@ -1552,6 +1501,7 @@ namespace Unity.ProjectAuditor.Editor.UI
             }
         }
 
+#if !PA_DRAW_TABS_VERTICALLY
         void DrawTabViewSelection()
         {
             // Sub categories dropdown, if there's more than one view
@@ -1569,7 +1519,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                                 return; // this happens from the summary view while the report is being generated
 
                             var category = m_Tabs[m_ActiveTabIndex]
-                                .availableCategories[categoryIndex];
+                                .categories[categoryIndex];
                             if (category != IssueCategory.Metadata && !m_Report.HasCategory(category))
                             {
                                 var displayName = m_ViewManager.GetView(category).Desc.DisplayName;
@@ -1582,7 +1532,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                                     category == IssueCategory.Mesh
                                     || category == IssueCategory.AudioClip)
                                 {
-                                    List<IssueCategory> categories = new List<IssueCategory>();
+                                    var categories = new List<IssueCategory>();
 
                                     // For asset categories, analyze all asset categories as a workaround:
                                     // That way after the prompt above (which won't appear again for other asset categories!),
@@ -1612,6 +1562,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
             }
         }
+#endif
 
         void DrawReport()
         {
@@ -1852,7 +1803,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         var tab = m_Tabs[i];
 
                         var hasAnyCategories = false;
-                        foreach (var category in tab.allCategories)
+                        foreach (var category in tab.categories)
                         {
                             if (m_Report.HasCategory(category))
                             {
@@ -1866,8 +1817,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                         }
                         else
                         {
-                            if (tab.availableCategories.Length > tab.currentCategoryIndex)
-                                m_ViewManager.ChangeView(tab.availableCategories[tab.currentCategoryIndex]);
+                            if (tab.categories.Length > tab.currentCategoryIndex)
+                                m_ViewManager.ChangeView(tab.categories[tab.currentCategoryIndex]);
                         }
                     }
 
@@ -1883,7 +1834,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 var tab = m_Tabs[tabToAudit];
 
                 // Change view anyway, even if overridden, to get into a proper view state, not the previous view
-                m_ViewManager.ChangeView(tab.availableCategories[0]);
+                m_ViewManager.ChangeView(tab.categories[0]);
 
                 // Override view to show info and analyze button
                 m_IsNonAnalyzedViewSelected = true;
@@ -1966,7 +1917,8 @@ namespace Unity.ProjectAuditor.Editor.UI
                     return;
                 }
 
-                m_ProjectAuditor = new ProjectAuditor();
+                if(m_ProjectAuditor == null)
+                    m_ProjectAuditor = new ProjectAuditor();
 
                 m_LoadButtonAnalytic =  AnalyticsReporter.BeginAnalytic();
                 m_AnalysisState = AnalysisState.Valid;
