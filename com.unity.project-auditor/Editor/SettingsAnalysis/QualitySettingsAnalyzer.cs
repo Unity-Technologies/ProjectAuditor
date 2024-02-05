@@ -57,6 +57,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             MessageFormat = "Quality: Texture streaming on Quality Level '{0}' is turned off"
         };
 
+        static readonly string k_QualityLocation = "Project/Quality";
+
         public override void Initialize(Action<Descriptor> registerDescriptor)
         {
             registerDescriptor(k_DefaultSettingsDescriptor);
@@ -71,25 +73,25 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             if (IsUsingDefaultSettings())
             {
                 yield return context.CreateIssue(IssueCategory.ProjectSetting, k_DefaultSettingsDescriptor.Id)
-                    .WithLocation("Project/Quality");
+                    .WithLocation(k_QualityLocation);
             }
 
             if (IsUsingLowQualityTextures())
             {
                 yield return context.CreateIssue(IssueCategory.ProjectSetting, k_UsingLowQualityTexturesDescriptor.Id)
-                    .WithLocation("Project/Quality");
+                    .WithLocation(k_QualityLocation);
             }
 
             if (IsDefaultAsyncUploadTimeSlice())
             {
                 yield return context.CreateIssue(IssueCategory.ProjectSetting, k_DefaultAsyncUploadTimeSliceDescriptor.Id)
-                    .WithLocation("Project/Quality");
+                    .WithLocation(k_QualityLocation);
             }
 
             if (IsDefaultAsyncUploadBufferSize())
             {
                 yield return context.CreateIssue(IssueCategory.ProjectSetting, k_DefaultAsyncUploadBufferSizeSliceDescriptor.Id)
-                    .WithLocation("Project/Quality");
+                    .WithLocation(k_QualityLocation);
             }
 
             if (GetTextureStreamingDisabledQualityLevelsIndex().Count != 0)
@@ -100,7 +102,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                     var levelName = QualitySettings.names[levelIndex];
                     yield return context.CreateIssue(IssueCategory.ProjectSetting, k_TextureStreamingDisabledDescriptor.Id, levelName)
                         .WithCustomProperties(new object[] {levelIndex})
-                        .WithLocation("Project/Quality/" + levelName);
+                        .WithLocation(k_QualityLocation);
                 }
             }
         }
