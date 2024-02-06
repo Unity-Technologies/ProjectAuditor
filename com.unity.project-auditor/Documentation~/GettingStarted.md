@@ -28,7 +28,6 @@ On the window's toolbar are buttons to perform the following actions, from left 
 * Discard the current Report and return to the Welcome View to perform a new analysis
 * Save the current Report to a file
 * Load a Report from file
-* Open a feedback form in a browser window to let Project Auditor's developers know what you think about it
 * Open this package documentation in a browser window
 
 The rest of the Summary View contains high-level information about some of the Issues and Insights found in the project,

@@ -19,7 +19,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Minor,
             Ignored,
 
-            Feedback,
             Help,
             Refresh,
             Settings,
@@ -53,7 +52,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static readonly string k_MinorIconName = "Minor";
         static readonly string k_IgnoredIconName = "Ignored";
 
-        static readonly string k_FeedbackIconName = "ChatCircleText";
         static readonly string k_HelpIconName = "_Help";
         static readonly string k_RefreshIconName = "Refresh";
         static readonly string k_SettingsIconName = "Settings";
@@ -86,8 +84,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static Texture2D s_AdditionalAnalysisIcon;
         static Texture2D s_FoldoutExpandedIcon;
         static Texture2D s_FoldoutFoldedIcon;
-
-        static Texture2D s_FeedbackIcon;
 
         static GUIContent[] s_StatusWheel;
 
@@ -301,12 +297,6 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     return EditorGUIUtility.TrIconContent(k_DownloadIconName, tooltip);
                 case IconType.View:
                     return EditorGUIUtility.TrIconContent(k_ViewIconName, tooltip);
-                case IconType.Feedback:
-                    if (string.IsNullOrEmpty(tooltip))
-                        tooltip = "Open feedback form";
-                    if (s_FeedbackIcon == null)
-                        s_FeedbackIcon = LoadIcon(k_FeedbackIconName);
-                    return EditorGUIUtility.TrIconContent(s_FeedbackIcon, tooltip);
                 case IconType.Help:
                     return EditorGUIUtility.TrIconContent(k_HelpIconName, tooltip);
                 case IconType.Refresh:

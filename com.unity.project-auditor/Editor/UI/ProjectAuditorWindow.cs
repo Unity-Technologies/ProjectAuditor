@@ -1403,15 +1403,6 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     DrawHorizontalLine();
 
-                    EditorGUILayout.Space(k_SpacingHeight);
-
-                    using (new EditorGUILayout.HorizontalScope())
-                    {
-                        GUILayout.FlexibleSpace();
-                        EditorGUILayout.HelpBox(Contents.FeedbackBoxText, MessageType.Info);
-                        GUILayout.FlexibleSpace();
-                    }
-
                     GUILayout.FlexibleSpace();
                     GUILayout.FlexibleSpace();
                     GUILayout.FlexibleSpace();
@@ -1776,8 +1767,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                     LoadReport();
                 }
 
-                Utility.DrawHelpButton(Contents.FeedbackButton, k_FeedbackFormUrl);
-
                 Utility.DrawHelpButton(Contents.HelpButton, Documentation.GetPageUrl("index"));
             }
         }
@@ -1971,7 +1960,6 @@ namespace Unity.ProjectAuditor.Editor.UI
         const string k_SaveToFile = "Save report to json file";
         const string k_Discard = "Discard current report";
         const string k_DiscardQuestion = "The current report will be lost. Are you sure?";
-        const string k_FeedbackFormUrl = "https://forms.gle/dfoJZBMtHYYQMZmE8";
 
         // UI styles and layout
         static class LayoutSize
@@ -1993,7 +1981,6 @@ namespace Unity.ProjectAuditor.Editor.UI
             public static readonly GUIContent LoadButton = Utility.GetIcon(Utility.IconType.Load, "Load report from json file");
             public static readonly GUIContent DiscardButton = EditorGUIUtility.TrTextContentWithIcon("New Analysis", "Discard the current report and return to the Welcome view.", "Refresh");
 
-            public static readonly GUIContent FeedbackButton = Utility.GetIcon(Utility.IconType.Feedback, "Send feedback to the Project Auditor team");
             public static readonly GUIContent HelpButton = Utility.GetIcon(Utility.IconType.Help, "Open Manual (in a web browser)");
             public static readonly GUIContent PreferencesMenuItem = EditorGUIUtility.TrTextContent("Preferences", $"Open User Preferences for {ProjectAuditor.DisplayName}");
 
@@ -2025,8 +2012,6 @@ enable users to optimize their Unity Project. It produces a report that highligh
 Code and Settings, insights about the latest Build Report, information about Assets, and
 provides recommendations on how to improve."
             );
-
-            public static readonly string FeedbackBoxText = "Your opinion matters! Click \"Send Feedback\" in the top menu to help us enhance the tool.";
 
             public static readonly GUIContent Clear = new GUIContent("Clear");
             public static readonly GUIContent Refresh = new GUIContent("Refresh");
