@@ -125,6 +125,14 @@ namespace Unity.ProjectAuditor.Editor
         [JsonProperty("sessionInfo")][SerializeField]
         public SessionInfo SessionInfo;
 
+        /// <summary>
+        /// A name to display along with the Report, configurable by the user.
+        /// </summary>
+        public string DisplayName;
+
+        [JsonProperty("needsSaving")][SerializeField]
+        internal bool NeedsSaving;
+
         [JsonProperty("moduleMetadata")][SerializeField]
         List<ModuleInfo> m_ModuleInfos = new List<ModuleInfo>();
 

@@ -78,6 +78,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         [SerializeField] CompilationMode m_CompilationMode = CompilationMode.Player;
 #endif
 
+        static readonly string k_ReportAutoSaveFilename = "projectauditor-report-autosave.json";
+
         [SerializeField]
         Tab[] m_Tabs =
         {
@@ -221,6 +223,8 @@ namespace Unity.ProjectAuditor.Editor.UI
             {
                 m_ActiveTabIndex = 0;
                 m_AnalysisState = AnalysisState.Initialized;
+
+                TryLoadAutosavedReport();
             }
 
             m_Draw2D = new Draw2D("Unlit/ProjectAuditor");
@@ -924,7 +928,9 @@ namespace Unity.ProjectAuditor.Editor.UI
             m_AnalysisState = AnalysisState.InProgress;
             m_Report = null;
 
-            if (m_ProjectAuditor == null)
+            var reportDisplayName = Application.productName + "_" + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
+
+            if(m_ProjectAuditor == null)
                 m_ProjectAuditor = new ProjectAuditor();
 
             var analysisParams = new AnalysisParams
@@ -951,6 +957,10 @@ namespace Unity.ProjectAuditor.Editor.UI
                     m_AnalysisState = AnalysisState.Completed;
 
                     m_Report = report;
+                    m_Report.DisplayName = reportDisplayName;
+                    m_Report.NeedsSaving = true;
+
+                    AutosaveReport();
 
 #if PA_DRAW_TABS_VERTICALLY
                     InitializeViewSelection(true);
@@ -973,7 +983,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         internal void AuditCategories(IssueCategory[] categories)
         {
-            if (m_ProjectAuditor == null)
+            if(m_ProjectAuditor == null)
                 m_ProjectAuditor = new ProjectAuditor();
 
             // a module might report more categories than requested so we need to make sure we clean up the views accordingly
@@ -1014,6 +1024,10 @@ namespace Unity.ProjectAuditor.Editor.UI
 
                     m_ShouldRefresh = true;
                     m_AnalysisState = AnalysisState.Completed;
+
+                    m_Report.NeedsSaving = true;
+
+                    EditorApplication.delayCall += AutosaveReport;
                 }
             };
 
@@ -1553,7 +1567,6 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
             }
         }
-
 #endif
 
         void DrawReport()
@@ -1567,6 +1580,20 @@ namespace Unity.ProjectAuditor.Editor.UI
                     GUILayout.Space(4);
 
                     GUILayout.Label(activeView.Desc.DisplayName, SharedStyles.MediumTitleLabel);
+
+                    if (activeView != null && activeView.Desc.Category == IssueCategory.Metadata && m_Report != null)
+                    {
+                        GUILayout.Label(" | ", SharedStyles.MediumTitleLabel);
+
+                        GUILayout.Label(m_Report.DisplayName, SharedStyles.MediumTitleLabel);
+
+                        if (m_Report != null && m_Report.NeedsSaving)
+                        {
+                            GUILayout.Label("*", SharedStyles.MediumTitleLabel);
+                        }
+                    }
+
+                    GUILayout.FlexibleSpace();
                 }
 
                 GUILayout.Space(8);
@@ -1739,7 +1766,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     GUILayout.Label(Utility.GetIcon(Utility.IconType.StatusWheel), SharedStyles.IconLabel, GUILayout.Width(AnalysisView.ToolbarIconSize));
                 }
 
-                EditorGUILayout.Space();
+                GUILayout.FlexibleSpace();
 
                 // right-end buttons
                 const int discardButtonWidth = 110;
@@ -1749,10 +1776,13 @@ namespace Unity.ProjectAuditor.Editor.UI
                 {
                     if (GUILayout.Button(Contents.DiscardButton, EditorStyles.toolbarButton, GUILayout.Width(discardButtonWidth)))
                     {
-                        if (EditorUtility.DisplayDialog(k_Discard, k_DiscardQuestion, "Ok", "Cancel"))
+                        if (!m_Report.NeedsSaving ||
+                            EditorUtility.DisplayDialog(k_Discard, k_DiscardQuestion, "Discard", "Cancel"))
                         {
                             m_ActiveTabIndex = 0;
                             m_AnalysisState = AnalysisState.Initialized;
+
+                            DeleteAutosave();
                         }
                     }
 
@@ -1882,10 +1912,14 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         void SaveReport()
         {
-            var path = EditorUtility.SaveFilePanel(k_SaveToFile, UserPreferences.LoadSavePath, "project-auditor-report.json", "json");
+            var path = EditorUtility.SaveFilePanel(k_SaveToFile, UserPreferences.LoadSavePath, m_Report.DisplayName, "json");
             if (path.Length != 0)
             {
+                m_Report.NeedsSaving = false;
+
                 m_Report.Save(path);
+                AutosaveReport();
+
                 UserPreferences.LoadSavePath = Path.GetDirectoryName(path);
 
                 EditorUtility.RevealInFinder(path);
@@ -1900,33 +1934,74 @@ namespace Unity.ProjectAuditor.Editor.UI
             var path = EditorUtility.OpenFilePanel(k_LoadFromFile, UserPreferences.LoadSavePath, "json");
             if (path.Length != 0)
             {
-                m_Report = Report.Load(path);
-                if (m_Report.NumTotalIssues == 0)
-                {
-                    EditorUtility.DisplayDialog(k_LoadFromFile, k_LoadingFailed, "Ok");
-                    return;
-                }
-
-                if (m_ProjectAuditor == null)
-                    m_ProjectAuditor = new ProjectAuditor();
-
-                m_LoadButtonAnalytic =  AnalyticsReporter.BeginAnalytic();
-                m_AnalysisState = AnalysisState.Valid;
-                UserPreferences.LoadSavePath = Path.GetDirectoryName(path);
-                m_ViewManager = null; // make sure ViewManager is reinitialized
-
-                OnEnable();
-
-                UpdateAssemblyNames();
-                UpdateAssemblySelection();
-
-                m_ViewManager.MarkViewColumnWidthsAsDirty();
-
-                // switch to summary view after loading
-                m_ViewManager.ChangeView(IssueCategory.Metadata);
+                LoadReportFromFile(path);
             }
 
             GUIUtility.ExitGUI();
+        }
+
+        void LoadReportFromFile(string path)
+        {
+            m_Report = Report.Load(path);
+            if (m_Report.NumTotalIssues == 0)
+            {
+                EditorUtility.DisplayDialog(k_LoadFromFile, k_LoadingFailed, "Ok");
+                return;
+            }
+
+            if(m_ProjectAuditor == null)
+                m_ProjectAuditor = new ProjectAuditor();
+
+            m_LoadButtonAnalytic = AnalyticsReporter.BeginAnalytic();
+            m_AnalysisState = AnalysisState.Valid;
+            UserPreferences.LoadSavePath = Path.GetDirectoryName(path);
+            m_ViewManager = null; // make sure ViewManager is reinitialized
+
+            OnEnable();
+
+            UpdateAssemblyNames();
+            UpdateAssemblySelection();
+
+            m_ViewManager.MarkViewColumnWidthsAsDirty();
+
+            // switch to summary view after loading
+            m_ViewManager.ChangeView(IssueCategory.Metadata);
+        }
+
+        string GetAutosaveFilename()
+        {
+            string assetsPath = Application.dataPath;
+            string projectPath = Directory.GetParent(assetsPath).FullName;
+            string libraryPath = Path.Combine(projectPath, "Library");
+
+            return Path.Combine(libraryPath, k_ReportAutoSaveFilename);
+        }
+
+        void AutosaveReport()
+        {
+            m_Report.Save(GetAutosaveFilename());
+        }
+
+        void TryLoadAutosavedReport()
+        {
+            var filename = GetAutosaveFilename();
+
+            if (!File.Exists(filename))
+            {
+                return;
+            }
+
+            LoadReportFromFile(filename);
+        }
+
+        void DeleteAutosave()
+        {
+            var filename = GetAutosaveFilename();
+
+            if (File.Exists(filename))
+            {
+                File.Delete(filename);
+            }
         }
 
         public void AddItemsToMenu(GenericMenu menu)
@@ -1959,8 +2034,8 @@ namespace Unity.ProjectAuditor.Editor.UI
         const string k_LoadFromFile = "Load from file";
         const string k_LoadingFailed = "Loading report from file was unsuccessful.";
         const string k_SaveToFile = "Save report to json file";
-        const string k_Discard = "Discard current report";
-        const string k_DiscardQuestion = "The current report will be lost. Are you sure?";
+        const string k_Discard = "Start New Analysis";
+        const string k_DiscardQuestion = "If you start a new analysis, the current report will be discarded.";
 
         // UI styles and layout
         static class LayoutSize

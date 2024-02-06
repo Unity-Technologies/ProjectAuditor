@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 ### Added
+* Autosave feature keeps current report persistent upon closing Project Auditor
+* Summary UI shows a report's display name with star indicator for an unsaved report
+* Requester when a report is unsaved and user clicks "New Analysis" button
 * Display/Ignore All buttons
 * Copy-to-Clipboard buttons to Details and Recommendations
 * Vertical scrollbar to Details and Recommendations
