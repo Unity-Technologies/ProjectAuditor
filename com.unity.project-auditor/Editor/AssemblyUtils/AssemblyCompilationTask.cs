@@ -93,6 +93,10 @@ namespace Unity.ProjectAuditor.Editor.AssemblyUtils
                             OnCompilationFinished(new AssemblyCompilationResult
                             {
                                 AssemblyName = m_AssemblyName,
+                                AssemblyPath = AssemblyPath,
+                                DependentAssemblyNames = m_Dependencies.Select(d => d.m_AssemblyName).ToArray(),
+                                DurationInMs = 0,
+                                Messages = m_Messages,
                                 Status = m_CompilationStatus
                             });
                         }
