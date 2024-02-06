@@ -47,7 +47,8 @@ namespace Unity.ProjectAuditor.EditorTests
 
 #pragma warning disable 0414
         TestAsset m_ShaderResource;
-        TestAsset m_PlayerLogResource;
+        TestAsset m_PlayerLogResourceOldUnityVersion;
+        TestAsset m_PlayerLogResourceNewUnityVersion;
         TestAsset m_PlayerLogWithNoCompilationResource;
         TestAsset m_EditorShaderResource;
 
@@ -144,7 +145,7 @@ namespace Unity.ProjectAuditor.EditorTests
                 }
             }");
 
-            m_PlayerLogResource = new TestAsset("player.log", @"
+            m_PlayerLogResourceOldUnityVersion = new TestAsset("player.log", @"
 02-10 17:36:20.945  6554  6816 D Unity   : Compiled shader: Custom/MyTestShader,1, pass: MyTestShader/Pass, stage: vertex, keywords <no keywords>
 02-10 17:36:20.945  6554  6816 D Unity   : Compiled shader: Custom/MyTestShader,1, pass: MyTestShader/Pass, stage: fragment, keywords <no keywords>
 02-10 17:36:20.945  6554  6816 D Unity   : Compiled shader: Custom/MyTestShader,1, pass: MyTestShader/Pass, stage: vertex, keywords KEYWORD_A
@@ -152,6 +153,16 @@ namespace Unity.ProjectAuditor.EditorTests
 02-10 17:36:20.945  6554  6816 D Unity   :
 02-10 17:36:20.945  6554  6816 D Unity   : Compiled shader: Custom/MyTestShader,1, pass: <unnamed>, stage: vertex, keywords KEYWORD_A
 02-10 17:36:20.945  6554  6816 D Unity   : Compiled shader: Custom/MyTestShader,1, pass: unnamed, stage: fragment, keywords KEYWORD_A
+            ");
+
+            m_PlayerLogResourceNewUnityVersion = new TestAsset("player.log", @"
+02-10 17:36:20.945  6554  6816 D Unity   : Uploaded shader variant to the GPU driver: Custom/MyTestShader,1, pass: MyTestShader/Pass, stage: vertex, keywords <no keywords>
+02-10 17:36:20.945  6554  6816 D Unity   : Uploaded shader variant to the GPU driver: Custom/MyTestShader,1, pass: MyTestShader/Pass, stage: fragment, keywords <no keywords>
+02-10 17:36:20.945  6554  6816 D Unity   : Uploaded shader variant to the GPU driver: Custom/MyTestShader,1, pass: MyTestShader/Pass, stage: vertex, keywords KEYWORD_A
+02-10 17:36:20.945  6554  6816 D Unity   : Uploaded shader variant to the GPU driver: Custom/MyTestShader,1, pass: MyTestShader/Pass, stage: pixel, keywords KEYWORD_A
+02-10 17:36:20.945  6554  6816 D Unity   :
+02-10 17:36:20.945  6554  6816 D Unity   : Uploaded shader variant to the GPU driver: Custom/MyTestShader,1, pass: <unnamed>, stage: vertex, keywords KEYWORD_A
+02-10 17:36:20.945  6554  6816 D Unity   : Uploaded shader variant to the GPU driver: Custom/MyTestShader,1, pass: unnamed, stage: fragment, keywords KEYWORD_A
             ");
 
 
@@ -532,6 +543,25 @@ Shader ""Custom/SRPBatchCompatible""
         }
 
         [Test]
+        [TestCase(true)]
+        [TestCase(false)]
+        public void ShadersAnalysis_PlayerLogParsing_ReportsVariants(bool isOldVersion)
+        {
+            ShadersModule.ClearBuildData(); // clear previously built variants, if any
+            var allVariants = AnalyzeBuild(IssueCategory.ShaderVariant);
+            ShadersModule.ClearBuildData(); // cleanup
+
+            var variants = allVariants
+                .Where(i => i.Description.Equals(k_ShaderName) && i.Category == IssueCategory.ShaderVariant).ToArray();
+            Assert.Positive(variants.Length);
+
+            var logAsset = isOldVersion ? m_PlayerLogResourceOldUnityVersion : m_PlayerLogResourceNewUnityVersion;
+
+            var result = ShadersModule.ParsePlayerLog(logAsset.RelativePath, variants);
+            Assert.That(result, Is.EqualTo(ParseLogResult.Success), "No compiled shader variants found in player log.");
+        }
+
+        [Test]
         public void ShadersAnalysis_UnusedVariants_AreReported()
         {
             ShadersModule.ClearBuildData(); // clear previously built variants, if any
@@ -541,8 +571,7 @@ Shader ""Custom/SRPBatchCompatible""
             var variants = allVariants.Where(i => i.Description.Equals(k_ShaderName) && i.Category == IssueCategory.ShaderVariant).ToArray();
             Assert.Positive(variants.Length);
 
-            var result = ShadersModule.ParsePlayerLog(m_PlayerLogResource.RelativePath, variants);
-
+            var result = ShadersModule.ParsePlayerLog(m_PlayerLogResourceOldUnityVersion.RelativePath, variants);
             Assert.That(result, Is.EqualTo(ParseLogResult.Success), "No compiled shader variants found in player log.");
 
             var shaderCompilerPlatforms = variants.Select(v => v.GetCustomProperty(ShaderVariantProperty.Platform)).Distinct().ToArray();
