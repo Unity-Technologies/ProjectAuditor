@@ -807,6 +807,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             return ParseLogResult.Success;
         }
 
+        // Older Unity versions use the first string in their log, new versions use the second.
+        // Rather than trying to identify the specific version when the change occurred, we'll just check both.
+        static readonly string[] k_CompiledShaderPrefixes = { "Compiled shader: ", "Uploaded shader variant to the GPU driver: " };
+
         static string[] GetCompiledShaderLines(string logFile)
         {
             var compilationLines = new List<string>();
@@ -817,10 +821,16 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     string line;
                     while ((line = file.ReadLine()) != null)
                     {
-                        const string prefix = "Compiled shader: ";
-                        var compilationLogIndex = line.IndexOf(prefix, StringComparison.Ordinal);
-                        if (compilationLogIndex >= 0)
-                            compilationLines.Add(line.Substring(compilationLogIndex + prefix.Length));
+                        for (int i = 0; i < k_CompiledShaderPrefixes.Length; ++i)
+                        {
+                            var compilationLogIndex = line.IndexOf(k_CompiledShaderPrefixes[i], StringComparison.Ordinal);
+                            if (compilationLogIndex >= 0)
+                            {
+                                compilationLines.Add(
+                                    line.Substring(compilationLogIndex + k_CompiledShaderPrefixes[i].Length));
+                                break;
+                            }
+                        }
                     }
                 }
                 return compilationLines.ToArray();
