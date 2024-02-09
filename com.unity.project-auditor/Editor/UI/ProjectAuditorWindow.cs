@@ -960,7 +960,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                     m_Report.DisplayName = reportDisplayName;
                     m_Report.NeedsSaving = true;
 
-                    AutosaveReport();
+                    EditorApplication.delayCall += AutosaveReport;
 
 #if PA_DRAW_TABS_VERTICALLY
                     InitializeViewSelection(true);
