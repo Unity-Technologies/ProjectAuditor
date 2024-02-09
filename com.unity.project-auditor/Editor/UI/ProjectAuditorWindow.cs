@@ -917,7 +917,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         bool IsAnalysisValid()
         {
-            return m_AnalysisState != AnalysisState.Initializing && m_AnalysisState != AnalysisState.Initialized;
+            return m_AnalysisState != AnalysisState.Initializing && m_AnalysisState != AnalysisState.Initialized && m_AnalysisState != AnalysisState.InProgress;
         }
 
         void Analyze()
@@ -1402,7 +1402,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                         }
 
                         // Analyze button
-                        using (new EditorGUI.DisabledScope(projectAreas == ProjectAreaFlags.None))
+                        using (new EditorGUI.DisabledScope(projectAreas == ProjectAreaFlags.None || m_AnalysisState == AnalysisState.InProgress))
                         {
                             if (GUILayout.Button(Contents.AnalyzeButton, GUILayout.Width(k_ButtonWidth), GUILayout.Height(30)))
                             {
