@@ -1971,9 +1971,8 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         string GetAutosaveFilename()
         {
-            string assetsPath = Application.dataPath;
-            string projectPath = Directory.GetParent(assetsPath).FullName;
-            string libraryPath = Path.Combine(projectPath, "Library");
+            var projectPath = ProjectAuditor.ProjectPath;
+            var libraryPath = Path.Combine(projectPath, "Library");
 
             return Path.Combine(libraryPath, k_ReportAutoSaveFilename);
         }
