@@ -930,7 +930,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
             var reportDisplayName = Application.productName + "_" + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
 
-            if(m_ProjectAuditor == null)
+            if (m_ProjectAuditor == null)
                 m_ProjectAuditor = new ProjectAuditor();
 
             var analysisParams = new AnalysisParams
@@ -983,7 +983,7 @@ namespace Unity.ProjectAuditor.Editor.UI
 
         internal void AuditCategories(IssueCategory[] categories)
         {
-            if(m_ProjectAuditor == null)
+            if (m_ProjectAuditor == null)
                 m_ProjectAuditor = new ProjectAuditor();
 
             // a module might report more categories than requested so we need to make sure we clean up the views accordingly
@@ -1567,6 +1567,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 }
             }
         }
+
 #endif
 
         void DrawReport()
@@ -1949,7 +1950,7 @@ namespace Unity.ProjectAuditor.Editor.UI
                 return;
             }
 
-            if(m_ProjectAuditor == null)
+            if (m_ProjectAuditor == null)
                 m_ProjectAuditor = new ProjectAuditor();
 
             m_LoadButtonAnalytic = AnalyticsReporter.BeginAnalytic();
