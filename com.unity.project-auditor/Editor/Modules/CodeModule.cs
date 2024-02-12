@@ -141,7 +141,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (m_Ids == null)
                 throw new Exception("Descriptors Database not initialized.");
 
-            if (UserPreferences.AnalyzeInBackground && m_AssemblyAnalysisThread != null)
+            if (m_AssemblyAnalysisThread != null)
                 m_AssemblyAnalysisThread.Join();
 
             var context = new AnalysisContext()
@@ -302,23 +302,13 @@ namespace Unity.ProjectAuditor.Editor.Modules
             if (progress?.IsCancelled ?? false)
                 return AnalysisResult.Cancelled;
 
-            var enableBackgroundAnalysis = UserPreferences.AnalyzeInBackground;
+            // second phase: analyze all remaining assemblies, in a separate thread
+            m_AssemblyAnalysisThread = new Thread(() =>
+                AnalyzeAssemblies(readOnlyAssemblyInfos, analysisParams.AssemblyNames, assemblyDirectories, onCallFound, onIssueFoundInternal, onCompleteInternal));
+            m_AssemblyAnalysisThread.Name = "Assembly Analysis";
+            m_AssemblyAnalysisThread.Priority = ThreadPriority.BelowNormal;
+            m_AssemblyAnalysisThread.Start();
 
-            // second phase: analyze all remaining assemblies, in a separate thread if enableBackgroundAnalysis is enabled
-            if (enableBackgroundAnalysis)
-            {
-                m_AssemblyAnalysisThread = new Thread(() =>
-                    AnalyzeAssemblies(readOnlyAssemblyInfos, analysisParams.AssemblyNames, assemblyDirectories, onCallFound, onIssueFoundInternal, onCompleteInternal));
-                m_AssemblyAnalysisThread.Name = "Assembly Analysis";
-                m_AssemblyAnalysisThread.Priority = ThreadPriority.BelowNormal;
-                m_AssemblyAnalysisThread.Start();
-            }
-            else
-            {
-                Profiler.BeginSample("CodeModule.Audit.AnalysisReadOnly");
-                AnalyzeAssemblies(readOnlyAssemblyInfos, analysisParams.AssemblyNames, assemblyDirectories, onCallFound, onIssueFoundInternal, onCompleteInternal, progress);
-                Profiler.EndSample();
-            }
             Profiler.EndSample();
 
             if (progress?.IsCancelled ?? false)

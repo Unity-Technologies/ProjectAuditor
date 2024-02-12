@@ -52,11 +52,6 @@ how to treat those compiled assemblies. The default option is **Player**. The op
 | Editor Play Mode   | Analysis will be performed on the assemblies which are used in Play Mode. Because these assemblies are cached by the Editor, Project Auditor skips the compilation step which speeds up analysis. The analyzed code may not be completely representative of the code that would appear in a Player build, but may be a reasonable approximation for many purposes. |
 | Editor             | Analysis will be performed only on Editor code assemblies. Select this option to analyze custom Editor code, including the contents of packages.                                                                                                                                                                                                                   |
 
-#### Analyze in Background
-Code analysis can be one of the more time-consuming aspects of Project Auditor's analysis. If this option is selected,
-Project Auditor will show the Summary View and allow navigation around non-code-related Views whilst code analysis is
-completed in the background. A spinner icon on the toolbar indicates when code analysis is being performed.
-
 #### Use Roslyn Analyzers
 Project Auditor supports Roslyn analyzers, including one that reports issues impacting domain reload times. Roslyn
 analyzers can slow down the code compilation step of the analysis process, so this option can be used to disable Roslyn

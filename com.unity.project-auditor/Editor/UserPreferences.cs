@@ -38,9 +38,6 @@ namespace Unity.ProjectAuditor.Editor
         static readonly GUIContent CompilationModeSelection =
             new GUIContent("Compilation Mode", "Select the compilation mode.");
 
-        static readonly string k_AnalysisInBackgroundLabel = "Analyze in Background";
-        static readonly bool k_AnalysisInBackgroundDefault = true;
-
         static readonly string k_UseRoslynAnalyzersLabel = "Use Roslyn Analyzers";
         static readonly bool k_UseRoslynAnalyzersDefault = false;
 
@@ -68,16 +65,6 @@ namespace Unity.ProjectAuditor.Editor
         {
             get => EditorPrefs.GetBool(MakeKey(nameof(AnalyzeAfterBuild)), k_AnalyzeAfterBuildDefault);
             set => EditorPrefs.SetBool(MakeKey(nameof(AnalyzeAfterBuild)), value);
-        }
-
-
-        /// <summary>
-        /// If enabled, ProjectAuditor will try to partially analyze the project in the background.
-        /// </summary>
-        public static bool AnalyzeInBackground
-        {
-            get => EditorPrefs.GetBool(MakeKey(nameof(AnalyzeInBackground)), k_AnalysisInBackgroundDefault);
-            set => EditorPrefs.SetBool(MakeKey(nameof(AnalyzeInBackground)), value);
         }
 
         /// <summary>
@@ -210,7 +197,6 @@ namespace Unity.ProjectAuditor.Editor
 
             GUILayout.Space(10f);
 #endif
-            AnalyzeInBackground = EditorGUILayout.Toggle(k_AnalysisInBackgroundLabel, AnalyzeInBackground);
             UseRoslynAnalyzers = EditorGUILayout.Toggle(k_UseRoslynAnalyzersLabel, UseRoslynAnalyzers);
             LogTimingsInfo = EditorGUILayout.Toggle(k_LogTimingsInfoLabel, LogTimingsInfo);
 

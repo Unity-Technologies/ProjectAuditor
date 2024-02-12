@@ -29,7 +29,6 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
         protected string m_SavedCompanyName;
         protected string m_SavedProductName;
         bool m_SavedBakeCollisionMeshes;
-        bool m_SavedAnalyzeInBackground;
         bool m_SavedAnalyzeAfterBuild;
 
         protected ReportItem[] m_ReportItems;
@@ -50,9 +49,6 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
         protected TestFixtureBase()
         {
-            m_SavedAnalyzeInBackground = UserPreferences.AnalyzeInBackground;
-            UserPreferences.AnalyzeInBackground = false;
-
             m_SavedAnalyzeAfterBuild = UserPreferences.AnalyzeAfterBuild;
             UserPreferences.AnalyzeAfterBuild = false;
 
@@ -97,7 +93,6 @@ namespace Unity.ProjectAuditor.Editor.Tests.Common
 
             CleanupBuild();
 
-            UserPreferences.AnalyzeInBackground = m_SavedAnalyzeInBackground;
             UserPreferences.AnalyzeAfterBuild = m_SavedAnalyzeAfterBuild;
         }
 
