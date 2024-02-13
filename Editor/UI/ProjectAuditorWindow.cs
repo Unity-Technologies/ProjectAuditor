@@ -791,19 +791,17 @@ namespace Unity.ProjectAuditor.Editor.UI
                 AnalyticsEventId = (int)AnalyticsReporter.UIButton.AvatarMasks
             });
 
-            if (ProjectAuditorPackage.IsLocal)
+            ViewDescriptor.Register(new ViewDescriptor
             {
-                ViewDescriptor.Register(new ViewDescriptor
-                {
-                    Category = IssueCategory.PrecompiledAssembly,
-                    DisplayName = "Precompiled Assemblies",
-                    MenuLabel = "Experimental/Precompiled Assemblies",
-                    MenuOrder = 91,
-                    ShowFilters = true,
-                    OnOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
-                    AnalyticsEventId = (int)AnalyticsReporter.UIButton.PrecompiledAssemblies
-                });
-            }
+                Category = IssueCategory.PrecompiledAssembly,
+                DisplayName = "Precompiled Assemblies",
+                MenuLabel = "Experimental/Precompiled Assemblies",
+                MenuOrder = 91,
+                ShowFilters = true,
+                OnOpenIssue = EditorInterop.FocusOnAssetInProjectWindow,
+                AnalyticsEventId = (int)AnalyticsReporter.UIButton.PrecompiledAssemblies
+            });
+
             ViewDescriptor.Register(new ViewDescriptor
             {
                 Category = IssueCategory.Assembly,

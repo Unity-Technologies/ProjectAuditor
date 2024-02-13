@@ -482,14 +482,14 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             m_Table.searchString = m_TextFilter.searchString;
 
             EditorGUI.BeginChangeCheck();
-
-            if (ProjectAuditorPackage.IsLocal && m_Desc.ShowDependencyView)
+#if PA_DEVELOPER_MODE
+            if (m_Desc.ShowDependencyView)
             {
                 // this is only available in developer mode because it is still too slow at the moment
                 m_TextFilter.searchDependencies = EditorGUILayout.ToggleLeft("Dependencies (slow)",
                     m_TextFilter.searchDependencies, GUILayout.Width(160));
             }
-
+#endif
             if (EditorGUI.EndChangeCheck())
                 MarkDirty();
 
