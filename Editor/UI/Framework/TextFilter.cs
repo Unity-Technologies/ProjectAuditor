@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
 
-namespace Unity.ProjectAuditor.Editor
+namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
-    internal class TextFilter : IProjectIssueFilter
+    internal class TextFilter : IIssueFilter
     {
         public bool ignoreCase = true;
         public bool searchDependencies = false;
@@ -20,26 +20,26 @@ namespace Unity.ProjectAuditor.Editor
             {
                 foreach (var propertyDefinition in propertyDefinitions)
                 {
-                    if (propertyDefinition.format != PropertyFormat.String)
+                    if (propertyDefinition.Format != PropertyFormat.String)
                         continue;
-                    if (!PropertyTypeUtil.IsCustom(propertyDefinition.type))
+                    if (!PropertyTypeUtil.IsCustom(propertyDefinition.Type))
                         continue;
-                    indices.Add(PropertyTypeUtil.ToCustomIndex(propertyDefinition.type));
+                    indices.Add(PropertyTypeUtil.ToCustomIndex(propertyDefinition.Type));
                 }
             }
             searchablePropertyIndices = indices.ToArray();
         }
 
-        public bool Match(ProjectIssue issue)
+        public bool Match(ReportItem issue)
         {
             if (string.IsNullOrEmpty(searchString))
                 return true;
 
             // return true if the issue matches the any of the following string search criteria
-            if (MatchesSearch(issue.description))
+            if (MatchesSearch(issue.Description))
                 return true;
 
-            if (MatchesSearch(issue.filename))
+            if (MatchesSearch(issue.Filename))
                 return true;
 
             foreach (var customPropertyIndex in searchablePropertyIndices)
@@ -48,7 +48,7 @@ namespace Unity.ProjectAuditor.Editor
                     return true;
             }
 
-            var dependencies = issue.dependencies;
+            var dependencies = issue.Dependencies;
             if (dependencies != null)
             {
                 if (MatchesSearch(dependencies, searchDependencies))
@@ -61,8 +61,7 @@ namespace Unity.ProjectAuditor.Editor
 
         bool MatchesSearch(string text)
         {
-            return !string.IsNullOrEmpty(text) &&
-                text.IndexOf(searchString, ignoreCase ? StringComparison.CurrentCultureIgnoreCase : StringComparison.CurrentCulture) >= 0;
+            return text.IndexOf(searchString, ignoreCase ? StringComparison.CurrentCultureIgnoreCase : StringComparison.CurrentCulture) >= 0;
         }
 
         bool MatchesSearch(DependencyNode node, bool recursive)
@@ -73,11 +72,11 @@ namespace Unity.ProjectAuditor.Editor
             var callTreeNode = node as CallTreeNode;
             if (callTreeNode != null)
             {
-                if (MatchesSearch(callTreeNode.typeName) || MatchesSearch(callTreeNode.methodName))
+                if (MatchesSearch(callTreeNode.PrettyTypeName) || MatchesSearch(callTreeNode.PrettyMethodName))
                     return true;
             }
             if (recursive)
-                for (var i = 0; i < node.GetNumChildren(); i++)
+                for (var i = 0; i < node.NumChildren; i++)
                 {
                     if (MatchesSearch(node.GetChild(i), true))
                         return true;

@@ -1,15 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using Unity.ProjectAuditor.Editor.Build;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
-using UnityEditor.Callbacks;
-using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
@@ -33,17 +29,17 @@ namespace Unity.ProjectAuditor.Editor.Modules
     {
         Duration = 0,
         Message,
+        Depth,
         Num
     }
 
-    class BuildReportModule : ProjectAuditorModule
+    class BuildReportModule : Module
     {
-        internal interface IBuildReportProvider
+        class BuildAnalysisContext : AnalysisContext
         {
-            BuildReport GetBuildReport(BuildTarget platform);
+            public BuildReport Report;
         }
 
-#if BUILD_REPORT_API_SUPPORT
         const string k_KeyBuildPath = "Path";
         const string k_KeyPlatform = "Platform";
         const string k_KeyResult = "Result";
@@ -53,128 +49,122 @@ namespace Unity.ProjectAuditor.Editor.Modules
         const string k_KeyTotalTime = "Total Time";
         const string k_KeyTotalSize = "Total Size";
         const string k_Unknown = "Unknown";
-#endif
 
         static readonly IssueLayout k_MetaDataLayout = new IssueLayout
         {
-            category = IssueCategory.BuildSummary,
-            properties = new[]
+            Category = IssueCategory.BuildSummary,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Key" }
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Key" }
             }
         };
 
         static readonly IssueLayout k_FileLayout = new IssueLayout
         {
-            category = IssueCategory.BuildFile,
-            properties = new[]
+            Category = IssueCategory.BuildFile,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Source Asset"},
-                new PropertyDefinition { type = PropertyType.FileType, name = "File Type", longName = "File Extension"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.ImporterType), format = PropertyFormat.String, name = "Importer Type"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.RuntimeType), format = PropertyFormat.String, name = "Runtime Type", defaultGroup = true},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.Size), format = PropertyFormat.Bytes, name = "Size", longName = "Size in the Build"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.SizePercent), format = PropertyFormat.Percentage, name = "Size % (of Data)", longName = "Percentage of the total data size"},
-                new PropertyDefinition { type = PropertyType.Path, name = "Path", hidden = true},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.BuildFile), format = PropertyFormat.String, name = "Build File"}
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Source Asset", MaxAutoWidth = 500},
+                new PropertyDefinition { Type = PropertyType.FileType, Name = "File Type", LongName = "File Extension"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.ImporterType), Format = PropertyFormat.String, Name = "Importer Type"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.RuntimeType), Format = PropertyFormat.String, Name = "Runtime Type", IsDefaultGroup = true},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.Size), Format = PropertyFormat.Bytes, Name = "Size", LongName = "Size in the Build"},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.SizePercent), Format = PropertyFormat.Percentage, Name = "Size % (of Data)", LongName = "Percentage of the total data size"},
+                new PropertyDefinition { Type = PropertyType.Path, Name = "Path", IsHidden = true},
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildReportFileProperty.BuildFile), Format = PropertyFormat.String, Name = "Build File", MaxAutoWidth = 500 }
             }
         };
 
         static readonly IssueLayout k_StepLayout = new IssueLayout
         {
-            category = IssueCategory.BuildStep,
-            properties = new[]
+            Category = IssueCategory.BuildStep,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.LogLevel},
-                new PropertyDefinition { type = PropertyType.Description, name = "Build Step"},
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(BuildReportStepProperty.Duration), format = PropertyFormat.String, name = "Duration"}
+                new PropertyDefinition { Type = PropertyType.LogLevel, Name = "Log Level"},
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Build Step", MaxAutoWidth = 500 },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(BuildReportStepProperty.Duration), Format = PropertyFormat.String, Name = "Duration"}
             },
-            hierarchy = true
+            IsHierarchy = true
         };
 
-        static IBuildReportProvider s_BuildReportProvider;
-        static IBuildReportProvider s_DefaultBuildReportProvider = new LastBuildReportProvider();
+        internal static LastBuildReportProvider BuildReportProvider = new LastBuildReportProvider();
 
-        internal static IBuildReportProvider BuildReportProvider
-        {
-            get => s_BuildReportProvider != null ? s_BuildReportProvider : s_DefaultBuildReportProvider;
-            set => s_BuildReportProvider = value;
-        }
+        public override string Name => "Build Report";
 
-        internal static IBuildReportProvider DefaultBuildReportProvider => s_BuildReportProvider;
-
-        public override string name => "Build Report";
-
-#if !BUILD_REPORT_API_SUPPORT
-        public override bool isSupported => false;
-#endif
-
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_MetaDataLayout,
             k_FileLayout,
             k_StepLayout
         };
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
-#if BUILD_REPORT_API_SUPPORT
-            var buildReport = BuildReportProvider.GetBuildReport(projectAuditorParams.platform);
+            var buildReport = BuildReportProvider.GetBuildReport(analysisParams.Platform);
             if (buildReport != null)
             {
-                projectAuditorParams.onIncomingIssues(new[]
+                var context = new BuildAnalysisContext()
                 {
-                    NewMetaData(k_KeyBuildPath, buildReport.summary.outputPath),
-                    NewMetaData(k_KeyPlatform, buildReport.summary.platform),
-                    NewMetaData(k_KeyResult, buildReport.summary.result),
-                    NewMetaData(k_KeyStartTime, Formatting.FormatDateTime(buildReport.summary.buildStartedAt)),
-                    NewMetaData(k_KeyEndTime, Formatting.FormatDateTime(buildReport.summary.buildEndedAt)),
-                    NewMetaData(k_KeyTotalTime, Formatting.FormatDuration(buildReport.summary.totalTime)),
-                    NewMetaData(k_KeyTotalSize, Formatting.FormatSize(buildReport.summary.totalSize)),
+                    Report = buildReport
+                };
+
+                analysisParams.OnIncomingIssues(new[]
+                {
+                    NewMetaData(context, k_KeyBuildPath, buildReport.summary.outputPath),
+                    NewMetaData(context, k_KeyPlatform, buildReport.summary.platform),
+                    NewMetaData(context, k_KeyResult, buildReport.summary.result),
+                    NewMetaData(context, k_KeyStartTime, Formatting.FormatDateTime(buildReport.summary.buildStartedAt)),
+                    NewMetaData(context, k_KeyEndTime, Formatting.FormatDateTime(buildReport.summary.buildEndedAt)),
+                    NewMetaData(context, k_KeyTotalTime, Formatting.FormatDuration(buildReport.summary.totalTime)),
+                    NewMetaData(context, k_KeyTotalSize, Formatting.FormatSize(buildReport.summary.totalSize)),
                 });
-                projectAuditorParams.onIncomingIssues(AnalyzeBuildSteps(buildReport));
-                projectAuditorParams.onIncomingIssues(AnalyzePackedAssets(buildReport));
+
+                analysisParams.OnIncomingIssues(AnalyzeBuildSteps(context));
+                analysisParams.OnIncomingIssues(AnalyzePackedAssets(context));
             }
-#endif
-            projectAuditorParams.onModuleCompleted?.Invoke();
+            return AnalysisResult.Success;
         }
 
-#if BUILD_REPORT_API_SUPPORT
-        IEnumerable<ProjectIssue> AnalyzeBuildSteps(BuildReport buildReport)
+        IEnumerable<ReportItem> AnalyzeBuildSteps(BuildAnalysisContext context)
         {
-            foreach (var step in buildReport.steps)
+            foreach (var step in context.Report.steps)
             {
                 var depth = step.depth;
-                yield return ProjectIssue.Create(IssueCategory.BuildStep, step.name)
+                yield return context.CreateInsight(IssueCategory.BuildStep, step.name)
                     .WithCustomProperties(new object[(int)BuildReportStepProperty.Num]
                     {
                         Formatting.FormatDuration(step.duration),
-                        step.name
+                        step.name,
+                        depth
                     })
-                    .WithDepth(depth)
-                    .WithSeverity(Severity.Info);
+                    .WithSeverity(Severity.Hidden);
 
                 foreach (var message in step.messages)
                 {
                     var logMessage = message.content;
                     var description = new StringReader(logMessage).ReadLine(); // only take first line
-                    yield return ProjectIssue.Create(IssueCategory.BuildStep, description)
+                    yield return context.CreateInsight(IssueCategory.BuildStep, description)
                         .WithCustomProperties(new object[(int)BuildReportStepProperty.Num]
                         {
                             0,
-                            logMessage
+                            logMessage,
+                            depth + 1
                         })
-                        .WithDepth(depth + 1)
-                        .WithSeverity(Diagnostic.Utils.LogTypeToSeverity(message.type));
+                        .WithSeverity(CoreUtils.LogTypeToSeverity(message.type));
                 }
             }
         }
 
-        IEnumerable<ProjectIssue> AnalyzePackedAssets(BuildReport buildReport)
+        IEnumerable<ReportItem> AnalyzePackedAssets(BuildAnalysisContext context)
         {
-            var dataSize = buildReport.packedAssets.SelectMany(p => p.contents).Sum(c => (long)c.packedSize);
+            ulong dataSize = 0;
+            foreach (var packedAsset in context.Report.packedAssets)
+            {
+                foreach (var assetInfo in packedAsset.contents)
+                    dataSize += assetInfo.packedSize;
+            }
 
-            foreach (var packedAsset in buildReport.packedAssets)
+            foreach (var packedAsset in context.Report.packedAssets)
             {
                 // note that there can be several entries for each source asset (for example, a prefab can reference a Texture, a Material and a shader)
                 foreach (var content in packedAsset.contents)
@@ -184,12 +174,12 @@ namespace Unity.ProjectAuditor.Editor.Modules
                     var assetImporter = AssetImporter.GetAtPath(assetPath);
                     var description = string.IsNullOrEmpty(assetPath) ? k_Unknown : Path.GetFileNameWithoutExtension(assetPath);
 
-                    yield return ProjectIssue.Create(IssueCategory.BuildFile, description)
+                    yield return context.CreateInsight(IssueCategory.BuildFile, description)
                         .WithLocation(assetPath)
                         .WithCustomProperties(new object[(int)BuildReportFileProperty.Num]
                         {
-                            assetImporter != null ? assetImporter.GetType().FullName : k_Unknown,
-                            content.type,
+                            assetImporter != null ? assetImporter.GetType().Name : k_Unknown,
+                            content.type.Name,
                             content.packedSize,
                             Math.Round((double)content.packedSize / dataSize, 4),
                             packedAsset.shortPath
@@ -198,12 +188,10 @@ namespace Unity.ProjectAuditor.Editor.Modules
             }
         }
 
-        ProjectIssue NewMetaData(string key, object value)
+        ReportItem NewMetaData(BuildAnalysisContext context, string key, object value)
         {
-            return ProjectIssue.Create(IssueCategory.BuildSummary, key)
+            return context.CreateInsight(IssueCategory.BuildSummary, key)
                 .WithCustomProperties(new object[(int)BuildReportMetaData.Num] { value });
         }
-
-#endif
     }
 }

@@ -4,39 +4,39 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
-using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
     class CustomAuditor// : IAuditor
     {
-        private readonly Descriptor m_Descriptor =
-            new Descriptor("666", "This is a test descriptor", Area.CPU, "description", "solution");
+        private readonly Descriptor k_Descriptor =
+            new Descriptor("TDD0000", "This is a test descriptor", Areas.CPU, "description", "recommendation");
 
         readonly IssueLayout m_Layout = new IssueLayout
         {
-            category = IssueCategory.Code,
-            properties = new[]
+            Category = IssueCategory.Code,
+            Properties = new[]
             {
-                new PropertyDefinition {type = PropertyType.Description }
+                new PropertyDefinition {Type = PropertyType.Description }
             }
         };
 
-        public IEnumerable<Descriptor> GetDescriptors()
-        {
-            yield return m_Descriptor;
-        }
+        // public IEnumerable<Descriptor> GetDescriptors()
+        // {
+        //     yield return m_Descriptor;
+        // }
 
         public IEnumerable<IssueLayout> GetLayouts()
         {
             yield return m_Layout;
         }
 
-        public void Initialize(ProjectAuditorConfig config)
+        [OneTimeSetUp]
+        public void OneTimeSetUp()
         {
+            DescriptorLibrary.RegisterDescriptor(k_Descriptor.Id, k_Descriptor);
         }
 
         public void Reload(string path)
@@ -47,9 +47,9 @@ namespace Unity.ProjectAuditor.EditorTests
         {
         }
 
-        public void Audit(Action<ProjectIssue> onIssueFound, Action onComplete, IProgress progress = null)
+        public void Audit(Action<ReportItem> onIssueFound, Action onComplete, IProgress progress = null)
         {
-            onIssueFound(new ProjectIssue(IssueCategory.Code, m_Descriptor, "This is a test issue"));
+            onIssueFound(new ReportItem(IssueCategory.Code, k_Descriptor.Id, "This is a test issue"));
             onComplete();
         }
     }
@@ -60,7 +60,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Module_BuiltinTypes_Exist()
         {
-            var types = TypeCache.GetTypesDerivedFrom(typeof(ProjectAuditorModule));
+            var types = TypeCache.GetTypesDerivedFrom(typeof(Module));
 
             Assert.NotNull(types.FirstOrDefault(type => type == typeof(CodeModule)));
             Assert.NotNull(types.FirstOrDefault(type => type == typeof(SettingsModule)));
@@ -81,7 +81,7 @@ namespace Unity.ProjectAuditor.EditorTests
             var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
             var report = projectAuditor.Audit();
             var issues = report.FindByCategory(IssueCategory.Code);
-            Assert.NotNull(issues.FirstOrDefault(i => i.description.Equals("This is a test issue")));
+            Assert.NotNull(issues.FirstOrDefault(i => i.Description.Equals("This is a test issue")));
         }
     }
 }

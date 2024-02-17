@@ -7,13 +7,21 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     class IssueTableItem : TreeViewItem
     {
         public readonly string GroupName;
-        public readonly ProjectIssue ProjectIssue;
+        public readonly ReportItem ReportItem;
+
+        public int NumVisibleChildren;
+
+        public virtual string DisplayName
+        {
+            get => displayName;
+            set => displayName = value;
+        }
 
         public IssueTableItem(int id, int depth, string displayName,
-                              ProjectIssue projectIssue, string groupName = null) : base(id, depth, displayName)
+                              ReportItem reportItem, string groupName = null) : base(id, depth, displayName)
         {
             GroupName = groupName;
-            ProjectIssue = projectIssue;
+            ReportItem = reportItem;
         }
 
         public IssueTableItem(int id, int depth, string groupName) : base(id, depth)
@@ -23,21 +31,21 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public bool IsGroup()
         {
-            return (ProjectIssue == null);
+            return (ReportItem == null);
         }
 
         public string GetDisplayName()
         {
             if (IsGroup())
                 return displayName;
-            return ProjectIssue.description;
+            return ReportItem.Description;
         }
 
-        public bool Find(ProjectIssue issue)
+        public bool Find(ReportItem issue)
         {
-            if (ProjectIssue == issue)
+            if (ReportItem == issue)
                 return true;
-            return children != null && children.FirstOrDefault(child => (child as IssueTableItem).ProjectIssue == issue) != null;
+            return children != null && children.FirstOrDefault(child => (child as IssueTableItem).ReportItem == issue) != null;
         }
     }
 }

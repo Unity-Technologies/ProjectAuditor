@@ -1,10 +1,10 @@
+using System;
 using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
+using UnityEngine.Rendering;
 
-namespace Unity.ProjectAuditor.Editor.Modules
+namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
     enum FogStripping
     {
@@ -19,54 +19,54 @@ namespace Unity.ProjectAuditor.Editor.Modules
         ExponentialSquared
     }
 
-    class FogStrippingAnalyzer : ISettingsModuleAnalyzer
+    class FogStrippingAnalyzer : SettingsModuleAnalyzer
     {
         internal const string PAS1003 = nameof(PAS1003);
 
         static readonly Descriptor k_FogModeDescriptor = new Descriptor(
             PAS1003,
-            "Graphics: Fog Shader Variant Stripping",
-            new[] {Area.BuildSize},
-            "FogMode shader variants are always built. Forcing Fog shader variants to be built can increase the build size.",
-            "To reduce the number of shader variants, change <b>Edit ➔ Project Settings ➔ Graphics ➔ Fog Modes</b> to <b>Automatic</b> or disable <b>Linear/Exponential/Exponential Squared</b>.")
+            "Graphics: Fog Mode is enabled",
+            Areas.BuildSize,
+            "<b>Fog Modes</b> in Graphics Settings are set to build all fog shader variants for this fog mode. Forcing Fog shader variants to be built can increase the build size.",
+            "Change <b>Project Settings > Graphics > Fog Modes</b> to <b>Automatic</b> or disable <b>Linear/Exponential/Exponential Squared</b>. This should reduce the number of shader variants generated for fog effects.")
         {
-            fixer = (issue =>
+            Fixer = (issue, analysisParams) =>
             {
                 RemoveFogStripping();
-            }),
+            },
 
-            messageFormat = "Graphics: FogMode '{0}' shader variants is always included in the build"
+            MessageFormat = "Graphics: Fog Mode '{0}' shader variants are always included in the build"
         };
 
-        public void Initialize(ProjectAuditorModule module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_FogModeDescriptor);
+            registerDescriptor(k_FogModeDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
+        public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             if (IsFogModeEnabled(FogMode.Linear))
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor, FogMode.Linear)
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_FogModeDescriptor.Id, FogMode.Linear)
                     .WithLocation("Project/Graphics");
             }
 
             if (IsFogModeEnabled(FogMode.Exponential))
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor, FogMode.Exponential)
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_FogModeDescriptor.Id, FogMode.Exponential)
                     .WithLocation("Project/Graphics");
             }
 
             if (IsFogModeEnabled(FogMode.ExponentialSquared))
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_FogModeDescriptor, FogMode.ExponentialSquared)
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_FogModeDescriptor.Id, FogMode.ExponentialSquared)
                     .WithLocation("Project/Graphics");
             }
         }
 
         internal static bool IsFogModeEnabled(FogMode fogMode)
         {
-            var graphicsSettings = GraphicsSettingsProxy.GetGraphicsSettings();
+            var graphicsSettings = GraphicsSettings.GetGraphicsSettings();
             var serializedObject = new SerializedObject(graphicsSettings);
 
             if (FogStripping.Automatic == (FogStripping)serializedObject.FindProperty("m_FogStripping").enumValueIndex)
@@ -89,7 +89,7 @@ namespace Unity.ProjectAuditor.Editor.Modules
 
         internal static void RemoveFogStripping()
         {
-            var graphicsSettings = GraphicsSettingsProxy.GetGraphicsSettings();
+            var graphicsSettings = GraphicsSettings.GetGraphicsSettings();
             var serializedObject = new SerializedObject(graphicsSettings);
 
             serializedObject.FindProperty("m_FogStripping").enumValueIndex = (int)FogStripping.Automatic;

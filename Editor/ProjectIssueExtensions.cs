@@ -1,85 +1,85 @@
 using System;
 using System.Runtime.CompilerServices;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 
 namespace Unity.ProjectAuditor.Editor
 {
+    // Extension methods for ProjectIssues which don't form part of the API: Used in UI, Tests, and HTML/CSV exporters
     internal static class ProjectIssueExtensions
     {
         internal const string k_NotAvailable = "N/A";
 
-        public static string GetContext(this ProjectIssue issue)
-        {
-            if (issue.dependencies == null)
-                return string.Empty;
+        // -2 because we're not interested in "None" or "All"
+        static readonly int s_NumAreaEnumValues = Enum.GetNames(typeof(Areas)).Length - 2;
 
-            var root = issue.dependencies;
-            return root.name;
+        public static string GetContext(this ReportItem issue)
+        {
+            if (issue.Dependencies == null)
+                return issue.RelativePath;
+
+            var root = issue.Dependencies;
+            return root.Name;
         }
 
-        public static string GetProperty(this ProjectIssue issue, PropertyType propertyType)
+        public static string GetProperty(this ReportItem issue, PropertyType propertyType)
         {
             switch (propertyType)
             {
                 case PropertyType.LogLevel:
-                    return issue.logLevel.ToString();
+                    return issue.LogLevel.ToString();
                 case PropertyType.Severity:
-                    return issue.severity.ToString();
-                case PropertyType.Area:
-                    return issue.descriptor.GetAreasSummary();
+                    return issue.Severity.ToString();
+                case PropertyType.Areas:
+                    return issue.Id.GetDescriptor().GetAreasSummary();
                 case PropertyType.FileType:
-                    if (issue.location == null)
+                    if (issue.Location == null)
                         return k_NotAvailable;
-                    var ext = issue.location.Extension;
-                    if (ext.StartsWith("."))
-                        ext = ext.Substring(1);
-                    return ext;
+                    return issue.Location.Extension;
                 case PropertyType.Description:
-                    return issue.description;
+                    return issue.Description;
                 case PropertyType.Descriptor:
-                    return issue.descriptor.title;
+                    return issue.Id.GetDescriptor().Title;
                 case PropertyType.Filename:
-                    if (string.IsNullOrEmpty(issue.filename))
+                    if (string.IsNullOrEmpty(issue.Filename))
                         return k_NotAvailable;
-                    return issue.location.FormattedFilename;
+                    return issue.Location.FormattedFilename;
                 case PropertyType.Path:
-                    if (string.IsNullOrEmpty(issue.relativePath))
+                    if (string.IsNullOrEmpty(issue.RelativePath))
                         return k_NotAvailable;
-                    return issue.location.FormattedPath;
+                    return issue.Location.FormattedPath;
                 case PropertyType.Directory:
-                    if (string.IsNullOrEmpty(issue.relativePath))
+                    if (string.IsNullOrEmpty(issue.RelativePath))
                         return k_NotAvailable;
-                    return PathUtils.GetDirectoryName(issue.location.Path);
+                    return PathUtils.GetDirectoryName(issue.Location.Path);
                 case PropertyType.Platform:
-                    return issue.descriptor.GetPlatformsSummary();
+                    return issue.Id.GetDescriptor().GetPlatformsSummary();
                 default:
                     var propertyIndex = propertyType - PropertyType.Num;
                     return issue.GetCustomProperty(propertyIndex);
             }
         }
 
-        public static string GetPropertyGroup(this ProjectIssue issue, PropertyDefinition propertyDefinition)
+        public static string GetPropertyGroup(this ReportItem issue, PropertyDefinition propertyDefinition)
         {
-            switch (propertyDefinition.type)
+            switch (propertyDefinition.Type)
             {
                 case PropertyType.Filename:
-                    if (string.IsNullOrEmpty(issue.filename))
+                    if (string.IsNullOrEmpty(issue.Filename))
                         return k_NotAvailable;
-                    return issue.location.Filename;
+                    return issue.Location.Filename;
                 case PropertyType.Path:
-                    if (string.IsNullOrEmpty(issue.relativePath))
+                    if (string.IsNullOrEmpty(issue.RelativePath))
                         return k_NotAvailable;
-                    return issue.location.Path;
+                    return issue.Location.Path;
                 default:
-                    if (propertyDefinition.format != PropertyFormat.String)
-                        return string.Format("{0}: {1}", propertyDefinition.name, issue.GetProperty(propertyDefinition.type));
-                    return issue.GetProperty(propertyDefinition.type);
+                    if (propertyDefinition.Format != PropertyFormat.String)
+                        return string.Format("{0}: {1}", propertyDefinition.Name, issue.GetProperty(propertyDefinition.Type));
+                    return issue.GetProperty(propertyDefinition.Type);
             }
         }
 
-        internal static int CompareTo(this ProjectIssue issueA, ProjectIssue issueB, PropertyType propertyType)
+        internal static int CompareTo(this ReportItem issueA, ReportItem issueB, PropertyType propertyType)
         {
             if (issueA == null && issueB == null)
                 return 0;
@@ -90,27 +90,33 @@ namespace Unity.ProjectAuditor.Editor
 
             switch (propertyType)
             {
+                case PropertyType.LogLevel:
+                    return issueA.LogLevel.CompareTo(issueB.LogLevel);
                 case PropertyType.Severity:
-                    return issueA.severity.CompareTo(issueB.severity);
-                case PropertyType.Area:
-                    var areasA = issueA.descriptor.areas;
-                    var areasB = issueB.descriptor.areas;
-                    var minLength = Math.Min(areasA.Length, areasB.Length);
+                    return issueA.Severity.CompareTo(issueB.Severity);
+                case PropertyType.Areas:
+                    var areasA = (int)issueA.Id.GetDescriptor().Areas;
+                    var areasB = (int)issueB.Id.GetDescriptor().Areas;
 
-                    for (var i = 0; i < minLength; i++)
+                    if (areasA == areasB)
+                        return 0;
+
+                    // Sort according to differences in the least significant bit
+                    // (i.e. the smallest enum value, which is the one that comes first alphabetically)
+                    for (int i = 0; i < s_NumAreaEnumValues; ++i)
                     {
-                        var ca = string.CompareOrdinal(areasA[i], areasB[i]);
-                        if (ca != 0)
-                            return ca;
+                        var mask = 1 << i;
+                        var c = (areasB & mask) - (areasA & mask);
+                        if (c != 0)
+                            return c;
                     }
-
-                    return areasA.Length.CompareTo(areasB.Length);
+                    return 0;
                 case PropertyType.Description:
-                    return string.CompareOrdinal(issueA.description, issueB.description);
+                    return string.CompareOrdinal(issueA.Description, issueB.Description);
                 case PropertyType.FileType:
                 {
-                    var pathA = issueA.relativePath;
-                    var pathB = issueB.relativePath;
+                    var pathA = issueA.RelativePath;
+                    var pathB = issueB.RelativePath;
 
                     var extAIndex = PathUtils.GetExtensionIndexFromPath(pathA);
                     var extBIndex = PathUtils.GetExtensionIndexFromPath(pathB);
@@ -119,8 +125,8 @@ namespace Unity.ProjectAuditor.Editor
                 }
                 case PropertyType.Filename:
                 {
-                    var pathA = issueA.relativePath;
-                    var pathB = issueB.relativePath;
+                    var pathA = issueA.RelativePath;
+                    var pathB = issueB.RelativePath;
 
                     var filenameAIndex = PathUtils.GetFilenameIndexFromPath(pathA);
                     var filenameBIndex = PathUtils.GetFilenameIndexFromPath(pathB);
@@ -129,16 +135,16 @@ namespace Unity.ProjectAuditor.Editor
 
                     // If it's the same filename, see if the lines are different
                     if (cf == 0)
-                        return issueA.line.CompareTo(issueB.line);
+                        return issueA.Line.CompareTo(issueB.Line);
 
                     return cf;
                 }
                 case PropertyType.Path:
-                    var cp = string.CompareOrdinal(issueA.relativePath ?? string.Empty, issueB.relativePath ?? string.Empty);
+                    var cp = string.CompareOrdinal(issueA.RelativePath ?? string.Empty, issueB.RelativePath ?? string.Empty);
 
                     // If it's the same path, see if the lines are different
                     if (cp == 0)
-                        return issueA.line.CompareTo(issueB.line);
+                        return issueA.Line.CompareTo(issueB.Line);
 
                     return cp;
                 default:

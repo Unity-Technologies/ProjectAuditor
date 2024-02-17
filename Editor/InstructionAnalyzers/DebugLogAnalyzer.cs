@@ -1,16 +1,15 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Modules;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    class DebugLogAnalyzer : ICodeModuleInstructionAnalyzer
+    class DebugLogAnalyzer : CodeModuleInstructionAnalyzer
     {
         static readonly int k_ModuleHashCode = "UnityEngine.CoreModule.dll".GetHashCode();
         static readonly int k_TypeHashCode = "UnityEngine.Debug".GetHashCode();
@@ -23,26 +22,28 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             (
             PAC0192,
             "Debug.Log / Debug.LogFormat",
-            Area.CPU,
-            "<b>Debug.Log</b> methods cause slowdowns, especially if used frequently.",
-            "Instead of removing code an option is to strip this code on release builds by using scripting symbols for conditional compilation (#if ... #endif) or the <b>ConditionalAttribute</b> on a method where you call this. When logging is still used in your code a small optimization can be to leave out the callstack, if not required, by setting <b>Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None)</b> via code."
+            Areas.CPU,
+            "<b>Debug.Log</b> methods take a lot of CPU time, especially if used frequently.",
+            "Remove logging code, or strip it from release builds by using scripting symbols for conditional compilation (#if ... #endif) or the <b>ConditionalAttribute</b> on a custom logging method that calls Debug.Log. Where logging is required in release builds, CPU times can be reduced by disabling stack traces in log messages. You can do this by setting <b>Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None)</b>."
             )
         {
-            messageFormat = "Use of Debug.{0} in '{1}'",
-            defaultSeverity = Severity.Minor
+            DocumentationUrl = "https://docs.unity3d.com/Manual/UnderstandingPerformanceGeneralOptimizations.html",
+            MessageFormat = "Use of Debug.{0} in '{1}'",
+            DefaultSeverity = Severity.Minor
         };
 
         static readonly Descriptor k_DebugLogWarningIssueDescriptor = new Descriptor
             (
             PAC0193,
             "Debug.LogWarning / Debug.LogWarningFormat",
-            Area.CPU,
-            "<b>Debug.LogWarning</b> methods cause slowdowns, especially if used frequently.",
-            "Instead of removing code an option is to strip this code on release builds by using scripting symbols for conditional compilation (#if ... #endif) or the <b>ConditionalAttribute</b> on a method where you call this. When logging is still used in your code a small optimization can be to leave out the callstack, if not required, by setting <b>Application.SetStackTraceLogType(LogType.Warning, StackTraceLogType.None)</b> via code."
+            Areas.CPU,
+            "<b>Debug.LogWarning</b> methods take a lot of CPU time, especially if used frequently.",
+            "Remove logging code, or strip it from release builds by using scripting symbols for conditional compilation (#if ... #endif) or the <b>ConditionalAttribute</b> on a custom logging method that calls Debug.LogWarning. Where logging is required in release builds, CPU times can be reduced by disabling stack traces in log messages. You can do this by setting <b>Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None)</b>."
             )
         {
-            messageFormat = "Use of Debug.{0} in '{1}'",
-            defaultSeverity = Severity.Minor
+            DocumentationUrl = "https://docs.unity3d.com/Manual/UnderstandingPerformanceGeneralOptimizations.html",
+            MessageFormat = "Use of Debug.{0} in '{1}'",
+            DefaultSeverity = Severity.Minor
         };
 
         readonly OpCode[] m_OpCodes =
@@ -51,21 +52,21 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             OpCodes.Callvirt
         };
 
-        public IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
+        public override IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
 
-        public void Initialize(ProjectAuditorModule module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_DebugLogIssueDescriptor);
-            module.RegisterDescriptor(k_DebugLogWarningIssueDescriptor);
+            registerDescriptor(k_DebugLogIssueDescriptor);
+            registerDescriptor(k_DebugLogWarningIssueDescriptor);
         }
 
-        public IssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
+        public override ReportItemBuilder Analyze(InstructionAnalysisContext context)
         {
-            var callee = (MethodReference)inst.Operand;
+            var callee = (MethodReference)context.Instruction.Operand;
             var methodName = callee.Name;
             var declaringType = callee.DeclaringType;
 
-            if (k_TypeHashCode != declaringType.FullName.GetHashCode())
+            if (k_TypeHashCode != declaringType.FastFullName().GetHashCode())
                 return null;
 
             // second check on module name which requires resolving the type
@@ -87,7 +88,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             }
 
             // If we find the ConditionalAttribute, we assume this is intended to be compiled out on release
-            if (methodDefinition.HasCustomAttributes && methodDefinition.CustomAttributes.Any(a =>
+            if (context.MethodDefinition.HasCustomAttributes && context.MethodDefinition.CustomAttributes.Any(a =>
                 a.AttributeType.FullName.GetHashCode() == k_ConditionalAttributeHashCode))
             {
                 return null;
@@ -97,10 +98,10 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             {
                 case "Log":
                 case "LogFormat":
-                    return ProjectIssue.Create(IssueCategory.Code, k_DebugLogIssueDescriptor, methodName, methodDefinition.Name);
+                    return context.CreateIssue(IssueCategory.Code, k_DebugLogIssueDescriptor.Id, methodName, context.MethodDefinition.Name);
                 case "LogWarning":
                 case "LogWarningFormat":
-                    return ProjectIssue.Create(IssueCategory.Code, k_DebugLogWarningIssueDescriptor, methodName, methodDefinition.Name);
+                    return context.CreateIssue(IssueCategory.Code, k_DebugLogWarningIssueDescriptor.Id, methodName, context.MethodDefinition.Name);
                 default:
                     return null;
             }

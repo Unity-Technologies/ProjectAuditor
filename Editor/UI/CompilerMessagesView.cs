@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.UI.Framework;
-using Unity.ProjectAuditor.Editor.AssemblyUtils;
-using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Modules;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,33 +10,21 @@ namespace Unity.ProjectAuditor.Editor.UI
         const string k_Info = @"This view shows compiler error, warning and info messages.
 
 To view Roslyn Analyzer diagnostics, make sure Roslyn Analyzer DLLs use the <b>RoslynAnalyzer</b> label.";
-        const string k_RoslynDisabled = "The UseRoslynAnalyzers option is disabled. To enable Roslyn diagnostics reporting, make sure the corresponding option is enabled in the ProjectAuditor config.";
+        const string k_RoslynDisabled = "The UseRoslynAnalyzers option is disabled. To enable Roslyn diagnostics reporting, make sure the corresponding option is enabled in Preferences > Analysis > " + ProjectAuditor.DisplayName + ".";
         const string k_NotAvailable = "This view is not available when 'CompilationMode' is set to 'CompilationMode.Editor'.";
-
-        CompilationMode m_CompilationMode = CompilationMode.Player;
-        bool m_RoslynAnalysis = false;
 
         bool m_ShowInfo;
         bool m_ShowWarn;
         bool m_ShowError;
+
+        public override string Description => "C# Compiler messages and Roslyn Analyzer diagnostics.";
 
         public CompilerMessagesView(ViewManager viewManager) : base(viewManager)
         {
             m_ShowInfo = m_ShowWarn = m_ShowError = true;
         }
 
-        public override void AddIssues(IEnumerable<ProjectIssue> allIssues)
-        {
-            base.AddIssues(allIssues);
-            var metaData = allIssues.FirstOrDefault(i => i.category == IssueCategory.MetaData && i.description.Equals(MetaDataModule.k_KeyCompilationMode));
-            if (metaData != null)
-                m_CompilationMode = (CompilationMode)Enum.Parse(typeof(CompilationMode), metaData.GetCustomProperty(MetaDataProperty.Value));
-            metaData = allIssues.FirstOrDefault(i => i.category == IssueCategory.MetaData && i.description.Equals(MetaDataModule.k_KeyRoslynAnalysis));
-            if (metaData != null)
-                m_RoslynAnalysis = metaData.GetCustomPropertyBool(MetaDataProperty.Value);
-        }
-
-        public override void DrawDetails(ProjectIssue[] selectedIssues)
+        public override void DrawDetails(ReportItem[] selectedIssues)
         {
             using (new EditorGUILayout.VerticalScope(GUILayout.Width(LayoutSize.FoldoutWidth)))
             {
@@ -51,14 +34,14 @@ To view Roslyn Analyzer diagnostics, make sure Roslyn Analyzer DLLs use the <b>R
                     return;
                 }
 
-                var selectedDescriptors = selectedIssues.Select(i => i.descriptor).Distinct().ToArray();
+                var selectedDescriptors = selectedIssues.Select(i => i.GetCustomProperty(0)).Distinct().ToArray();
                 if (selectedDescriptors.Length > 1)
                 {
                     GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
                     return;
                 }
 
-                GUILayout.TextArea(selectedIssues[0].description, SharedStyles.TextAreaWithDynamicSize,
+                GUILayout.TextArea(selectedIssues[0].Description, SharedStyles.TextAreaWithDynamicSize,
                     GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
         }
@@ -67,13 +50,13 @@ To view Roslyn Analyzer diagnostics, make sure Roslyn Analyzer DLLs use the <b>R
         {
             EditorGUILayout.LabelField(k_Info, SharedStyles.TextArea);
 
-            if (m_CompilationMode == CompilationMode.Editor)
+            if (m_ViewManager.Report.SessionInfo.CompilationMode == CompilationMode.Editor)
             {
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.HelpBox(k_NotAvailable, MessageType.Warning);
                 EditorGUILayout.EndHorizontal();
             }
-            if (!m_RoslynAnalysis)
+            if (!m_ViewManager.Report.SessionInfo.UseRoslynAnalyzers)
             {
                 EditorGUILayout.BeginHorizontal();
                 EditorGUILayout.HelpBox(k_RoslynDisabled, MessageType.Info);
@@ -95,9 +78,9 @@ To view Roslyn Analyzer diagnostics, make sure Roslyn Analyzer DLLs use the <b>R
             }
         }
 
-        public override bool Match(ProjectIssue issue)
+        public override bool Match(ReportItem issue)
         {
-            switch (issue.severity)
+            switch (issue.Severity)
             {
                 case Severity.Info:
                     if (!m_ShowInfo)

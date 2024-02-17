@@ -8,17 +8,37 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
 {
     internal class CallTreeNode : DependencyNode
     {
-        public readonly string m_Name;
+        /// <summary>
+        /// Assembly name
+        /// </summary>
+        public readonly string AssemblyName;
 
-        public readonly string assemblyName;
-        public readonly string methodName;
-        public readonly string typeName;
+        /// <summary>
+        /// Full name of the type, including namespace
+        /// </summary>
+        public readonly string TypeFullName;
+
+        /// <summary>
+        /// Full name of the method, including parameters and return type
+        /// </summary>
+        public readonly string MethodFullName;
+
+        /// <summary>
+        /// User-friendly name of the type
+        /// </summary>
+        public readonly string PrettyTypeName;
+
+        /// <summary>
+        /// User-friendly name of the method
+        /// </summary>
+        public readonly string PrettyMethodName;
 
         public CallTreeNode(MethodReference methodReference, CallTreeNode caller = null)
         {
-            m_Name = methodReference.FullName;
-            methodName = "(anonymous)"; // default value
-            assemblyName = methodReference.Module.Name;
+            MethodFullName = methodReference.FullName;
+            TypeFullName = methodReference.DeclaringType.FullName;
+            PrettyMethodName = "(anonymous)"; // default value
+            AssemblyName = methodReference.Module.Name;
 
             // check if it's a coroutine
             if (methodReference.DeclaringType.FullName.IndexOf("/<", StringComparison.Ordinal) >= 0)
@@ -28,54 +48,54 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
                 if (methodStartIndex > 0)
                 {
                     var length = fullName.IndexOf(">", StringComparison.Ordinal) - methodStartIndex;
-                    typeName = fullName.Substring(0, fullName.IndexOf("/", StringComparison.Ordinal));
+                    PrettyTypeName = fullName.Substring(0, fullName.IndexOf("/", StringComparison.Ordinal));
                     if (length > 0)
                     {
-                        methodName = fullName.Substring(methodStartIndex, length);
+                        PrettyMethodName = fullName.Substring(methodStartIndex, length);
                     }
                     else
                     {
                         // handle example: System.Int32 DelegateTest/<>c::<Update>b__1_0()
-                        methodStartIndex = m_Name.LastIndexOf("<") + 1;
+                        methodStartIndex = MethodFullName.LastIndexOf("<", StringComparison.Ordinal) + 1;
                         if (methodStartIndex > 0)
                         {
-                            length = m_Name.LastIndexOf(">") - methodStartIndex;
-                            methodName = m_Name.Substring(methodStartIndex, length) + ".(anonymous)";
+                            length = MethodFullName.LastIndexOf(">", StringComparison.Ordinal) - methodStartIndex;
+                            PrettyMethodName = MethodFullName.Substring(methodStartIndex, length) + ".(anonymous)";
                         }
                     }
                 }
                 else
                 {
                     // for some reason, some generated types don't have the same syntax
-                    typeName = fullName;
+                    PrettyTypeName = fullName;
                 }
             }
             else
             {
-                typeName = methodReference.DeclaringType.Name;
-                methodName = methodReference.Name;
+                PrettyTypeName = methodReference.DeclaringType.Name;
+                PrettyMethodName = methodReference.Name;
             }
 
             if (caller != null)
                 AddChild(caller);
-            perfCriticalContext = false;
+            PerfCriticalContext = false;
         }
 
         public override string GetName()
         {
-            return m_Name;
+            return MethodFullName;
         }
 
         public override string GetPrettyName()
         {
-            if (string.IsNullOrEmpty(typeName))
-                return m_Name;
-            return string.Format("{0}.{1}", typeName, methodName);
+            if (string.IsNullOrEmpty(PrettyTypeName))
+                return MethodFullName;
+            return $"{PrettyTypeName}.{PrettyMethodName}";
         }
 
         public override bool IsPerfCritical()
         {
-            return perfCriticalContext;
+            return PerfCriticalContext;
         }
     }
 }

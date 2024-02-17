@@ -9,31 +9,28 @@ using UnityEngine.TestTools;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    internal class DocumentationTests : TestFixtureBase
+    class DocumentationTests : TestFixtureBase
     {
         [UnityTest]
         [Ignore("Known failure. This requires a change to be tagged.")]
         public IEnumerator Documentation_Pages_Exist()
         {
             var viewManager = new ViewManager((IssueCategory[])Enum.GetValues(typeof(IssueCategory)));
-            viewManager.Create(new Editor.ProjectAuditor(m_Config), new ViewStates());
-            for (var i = 0; i < viewManager.numViews; i++)
+            viewManager.Create(new AnalysisParams().Rules, new ViewStates());
+
+            for (var i = 0; i < viewManager.NumViews; i++)
             {
-                if (viewManager.GetView(i).desc.category == IssueCategory.MetaData)
+                if (viewManager.GetView(i).Desc.Category == IssueCategory.Metadata)
                     continue;
-                if (viewManager.GetView(i).desc.category == IssueCategory.FirstCustomCategory)
+                if (viewManager.GetView(i).Desc.Category == IssueCategory.FirstCustomCategory)
                     continue;
 
-                var documentationUrl = viewManager.GetView(i).documentationUrl;
+                var documentationUrl = viewManager.GetView(i).DocumentationUrl;
                 var request = UnityWebRequest.Get(documentationUrl);
                 yield return request.SendWebRequest();
 
                 Assert.True(request.isDone);
-#if UNITY_2020_1_OR_NEWER
                 Assert.AreEqual(UnityWebRequest.Result.Success, request.result, $"Page {documentationUrl} not found.");
-#else
-                Assert.IsFalse(request.isNetworkError || request.isHttpError, $"Page {documentationUrl} not found.");
-#endif
             }
         }
     }

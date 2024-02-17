@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.Core;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
@@ -27,13 +27,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         private static void GetComponents<T>(GameObject go, ref List<T> components)
         {
-#if UNITY_2019_3_OR_NEWER
             bool result = go.TryGetComponent(out T comp);
             if (result)
-#else
-            T comp = go.GetComponent<T>();
-            if (comp != null)
-#endif
             {
                 components.Add(comp);
             }
@@ -44,12 +39,12 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             }
         }
 
-#if UNITY_2019_3_OR_NEWER
-        internal static IEnumerable<ProjectIssue> AnalyzeAssets(
-            Func<RenderPipelineAsset, int, IEnumerable<ProjectIssue>> analyze)
+        internal static IEnumerable<ReportItem> AnalyzeAssets(
+            SettingsAnalysisContext context,
+            Func<SettingsAnalysisContext, RenderPipelineAsset, int, IEnumerable<ReportItem>> analyze)
         {
-            IEnumerable<ProjectIssue> issues = analyze(GraphicsSettings.defaultRenderPipeline, -1);
-            foreach (ProjectIssue issue in issues)
+            var issues = analyze(context, GraphicsSettings.defaultRenderPipeline, -1);
+            foreach (var issue in issues)
             {
                 yield return issue;
             }
@@ -59,8 +54,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             {
                 QualitySettings.SetQualityLevel(i);
 
-                issues = analyze(QualitySettings.renderPipeline, i);
-                foreach (ProjectIssue issue in issues)
+                issues = analyze(context, QualitySettings.renderPipeline, i);
+                foreach (var issue in issues)
                 {
                     yield return issue;
                 }
@@ -69,18 +64,18 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             QualitySettings.SetQualityLevel(initialQualityLevel);
         }
 
-        internal static ProjectIssue CreateAssetSettingIssue(int qualityLevel, string name, Descriptor descriptor)
+        internal static ReportItem CreateAssetSettingIssue(AnalysisContext context, int qualityLevel, string name, string id)
         {
             string assetLocation = qualityLevel == -1
                 ? "Default Rendering Pipeline Asset"
                 : $"Rendering Pipeline Asset on Quality Level: '{QualitySettings.names[qualityLevel]}'";
-            return ProjectIssue.Create(IssueCategory.ProjectSetting, descriptor,
+            return context.CreateIssue(IssueCategory.ProjectSetting, id,
                 name, assetLocation)
                 .WithCustomProperties(new object[] { qualityLevel })
                 .WithLocation(qualityLevel == -1 ? "Project/Graphics" : "Project/Quality");
         }
 
-        internal static void FixAssetSetting(ProjectIssue issue, Action<RenderPipelineAsset> setter)
+        internal static void FixAssetSetting(ReportItem issue, Action<RenderPipelineAsset> setter)
         {
             int qualityLevel = issue.GetCustomPropertyInt32(0);
             if (qualityLevel == -1)
@@ -94,7 +89,5 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             setter(QualitySettings.renderPipeline);
             QualitySettings.SetQualityLevel(initialQualityLevel);
         }
-
-#endif
     }
 }

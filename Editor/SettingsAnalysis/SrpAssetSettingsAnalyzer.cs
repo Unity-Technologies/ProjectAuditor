@@ -1,66 +1,59 @@
+using System;
 using System.Collections.Generic;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Modules;
 using UnityEngine.Rendering;
 #if PACKAGE_URP
 using UnityEngine.Rendering.Universal;
-#elif PACKAGE_HDRP
-using System.Reflection;
+#endif
+
+#if PACKAGE_HDRP
 using UnityEngine.Rendering.HighDefinition;
 #endif
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class SrpAssetSettingsAnalyzer : ISettingsModuleAnalyzer
+    class SrpAssetSettingsAnalyzer : SettingsModuleAnalyzer
     {
         internal const string PAS1008 = nameof(PAS1008);
 
         static readonly Descriptor k_SRPBatcherSettingDescriptor = new Descriptor(
             PAS1008,
-            "SRP Asset: SRP Batcher",
-            Area.CPU,
-            "SRP batcher is disabled in Render Pipeline Asset.",
-            "Enable SRP batcher in Render Pipeline Asset. This will reduce the CPU time Unity requires to prepare and dispatch draw calls for materials that use the same shader variant.")
+            "SRP Asset: SRP Batcher is disabled",
+            Areas.CPU,
+            "<b>SRP Batcher</b> is disabled in a Render Pipeline Asset.",
+            "Enable <b>SRP Batcher</b> in Render Pipeline Asset. If the option is hidden, click the vertical ellipsis icon and select <b>Show Additional Properties</b>. Enabling the SRP Batcher will reduce the CPU time Unity requires to prepare and dispatch draw calls for materials that use the same shader variant.")
         {
-            messageFormat = "SRP batcher is disabled in {0}.asset in {1}",
-            fixer = FixSrpBatcherSetting
+            MessageFormat = "SRP batcher is disabled in {0}.asset in {1}",
+            Fixer = FixSrpBatcherSetting
         };
 
-        public void Initialize(ProjectAuditorModule module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_SRPBatcherSettingDescriptor);
+            registerDescriptor(k_SRPBatcherSettingDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
+        public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
-#if UNITY_2019_3_OR_NEWER
-            return RenderPipelineUtils.AnalyzeAssets(Analyze);
-#else
-            yield break;
-#endif
+            return RenderPipelineUtils.AnalyzeAssets(context, Analyze);
         }
 
-        private static void FixSrpBatcherSetting(ProjectIssue issue)
+        static void FixSrpBatcherSetting(ReportItem issue, AnalysisParams analysisParams)
         {
-#if UNITY_2019_3_OR_NEWER
             RenderPipelineUtils.FixAssetSetting(issue, p => SetSrpBatcherSetting(p, true));
-#endif
         }
 
-#if UNITY_2019_3_OR_NEWER
-        private IEnumerable<ProjectIssue> Analyze(RenderPipelineAsset renderPipeline, int qualityLevel)
+        IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context, RenderPipelineAsset renderPipeline, int qualityLevel)
         {
             bool? srpBatcherSetting = GetSrpBatcherSetting(renderPipeline);
             if (srpBatcherSetting != null && !srpBatcherSetting.Value)
             {
-                yield return CreateSrpBatcherIssue(qualityLevel, renderPipeline.name);
+                yield return CreateSrpBatcherIssue(context, qualityLevel, renderPipeline.name);
             }
         }
 
-        private static ProjectIssue CreateSrpBatcherIssue(int qualityLevel, string name)
+        static ReportItem CreateSrpBatcherIssue(AnalysisContext context, int qualityLevel, string name)
         {
-            return RenderPipelineUtils.CreateAssetSettingIssue(qualityLevel, name, k_SRPBatcherSettingDescriptor);
+            return RenderPipelineUtils.CreateAssetSettingIssue(context, qualityLevel, name, k_SRPBatcherSettingDescriptor.Id);
         }
 
         internal static bool? GetSrpBatcherSetting(RenderPipelineAsset renderPipeline)
@@ -72,7 +65,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 return urpAsset.useSRPBatcher;
             }
 #elif PACKAGE_HDRP
-            FieldInfo enableSrpBatcherField = GetSrpBatcherField(renderPipeline,
+            System.Reflection.FieldInfo enableSrpBatcherField = GetSrpBatcherField(renderPipeline,
                 out HDRenderPipelineAsset hdrpAsset);
             if (enableSrpBatcherField != null)
             {
@@ -91,7 +84,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 urpAsset.useSRPBatcher = value;
             }
 #elif PACKAGE_HDRP
-            FieldInfo enableSrpBatcherField = GetSrpBatcherField(renderPipeline,
+            System.Reflection.FieldInfo enableSrpBatcherField = GetSrpBatcherField(renderPipeline,
                 out HDRenderPipelineAsset hdrpAsset);
             if (enableSrpBatcherField != null)
             {
@@ -101,7 +94,7 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
         }
 
 #if PACKAGE_HDRP
-        private static FieldInfo GetSrpBatcherField(RenderPipelineAsset renderPipeline,
+        static System.Reflection.FieldInfo GetSrpBatcherField(RenderPipelineAsset renderPipeline,
             out HDRenderPipelineAsset hdrpAsset)
         {
             hdrpAsset = null;
@@ -109,13 +102,12 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             {
                 hdrpAsset = asset;
                 return hdrpAsset.GetType()
-                    .GetField("enableSRPBatcher", BindingFlags.NonPublic | BindingFlags.Instance);
+                    .GetField("enableSRPBatcher", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             }
 
             return null;
         }
 
-#endif
 #endif
     }
 }

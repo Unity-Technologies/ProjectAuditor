@@ -8,8 +8,22 @@
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
-    "precompiledReferences": [],
+    "precompiledReferences": [
+        "Newtonsoft.Json.dll"
+    ],
     "autoReferenced": false,
     "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "Unity",
+            "expression": "2021.2",
+            "define": "PA_CAN_USE_COMPUTESHADER_KEYWORDSPACE"
+        },
+        {
+            "name": "Unity",
+            "expression": "2022.2",
+            "define": "PA_CAN_USE_COMPUTEMIPCHAINSIZE"
+        }
+    ],
     "noEngineReferences": false
 }

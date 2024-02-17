@@ -1,0 +1,14 @@
+build:
+  name: Build
+  agent:
+    type: Unity::VM
+    image: package-ci/win10:v4
+    flavor: b1.large
+  commands:
+    - git clone git@github.cds.internal.unity3d.com:unity/DomainReloadAnalyzer.git
+    - dotnet build "DomainReloadAnalyzer/src/Domain_Reload_Analyzer/Domain_Reload_Analyzer.csproj" -c Release -o build
+  artifacts:
+    UnityAnalyzers:
+      paths:
+        - "build/**/*.dll"
+        - "build/**/*.pdb"

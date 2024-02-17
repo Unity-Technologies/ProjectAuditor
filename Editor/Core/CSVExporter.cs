@@ -4,38 +4,40 @@ using System.Text;
 
 namespace Unity.ProjectAuditor.Editor.Core
 {
-    class CSVExporter : Exporter
+    class CsvExporter : Exporter
     {
-        public CSVExporter(string path, IssueLayout layout) : base(path, layout) {}
+        readonly StringBuilder m_StringBuilder = new StringBuilder();
 
-        public override void WriteHeader()
+        public CsvExporter(Report report) : base(report) {}
+
+        public override void WriteHeader(IssueLayout layout)
         {
-            var stringBuilder = new StringBuilder();
-            for (var i = 0; i < m_Layout.properties.Length; i++)
+            m_StringBuilder.Clear();
+            for (var i = 0; i < layout.Properties.Length; i++)
             {
-                stringBuilder.Append(m_Layout.properties[i].name);
-                if (i + 1 < m_Layout.properties.Length)
-                    stringBuilder.Append(",");
+                m_StringBuilder.Append(layout.Properties[i].Name);
+                if (i + 1 < layout.Properties.Length)
+                    m_StringBuilder.Append(",");
             }
-            m_StreamWriter.WriteLine(stringBuilder);
+            m_StreamWriter.WriteLine(m_StringBuilder);
         }
 
-        protected override void WriteIssue(ProjectIssue issue)
+        protected override void WriteIssue(IssueLayout layout, ReportItem issue)
         {
-            var stringBuilder = new StringBuilder();
-            for (var i = 0; i < m_Layout.properties.Length; i++)
+            m_StringBuilder.Clear();
+            for (var i = 0; i < layout.Properties.Length; i++)
             {
-                var columnType = m_Layout.properties[i].type;
+                var columnType = layout.Properties[i].Type;
                 var prop = issue.GetProperty(columnType);
 
-                stringBuilder.Append('"');
-                stringBuilder.Append(prop);
-                stringBuilder.Append('"');
+                m_StringBuilder.Append('"');
+                m_StringBuilder.Append(prop);
+                m_StringBuilder.Append('"');
 
-                if (i + 1 < m_Layout.properties.Length)
-                    stringBuilder.Append(",");
+                if (i + 1 < layout.Properties.Length)
+                    m_StringBuilder.Append(",");
             }
-            m_StreamWriter.WriteLine(stringBuilder);
+            m_StreamWriter.WriteLine(m_StringBuilder);
         }
     }
 }

@@ -4,6 +4,7 @@ using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
 using Unity.ProjectAuditor.Editor.Tests.Common;
+using Unity.ProjectAuditor.Editor.UI.Framework;
 using UnityEditor;
 using UnityEngine;
 using Assert = UnityEngine.Assertions.Assert;
@@ -16,10 +17,8 @@ namespace Unity.ProjectAuditor.EditorTests
         TestAsset m_TestAsset;
 #pragma warning restore 0414
 
-        bool m_PrevBakeCollisionMeshes;
-
         [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
             m_TestAsset = new TestAsset("FilterTests.cs", @"
 using UnityEngine;
@@ -41,16 +40,6 @@ class InternalClass
     }
 }
 ");
-            // disabling bakeCollisionMeshes will be reported an issue
-            m_PrevBakeCollisionMeshes = PlayerSettings.bakeCollisionMeshes;
-            PlayerSettings.bakeCollisionMeshes = false;
-        }
-
-        [OneTimeTearDown]
-        public void TearDown()
-        {
-            // restore bakeCollisionMeshes
-            PlayerSettings.bakeCollisionMeshes = m_PrevBakeCollisionMeshes;
         }
 
         [Test]
@@ -107,13 +96,12 @@ class InternalClass
         [Test]
         public void TextFilter_Filename_Matches()
         {
-            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            config.CompilationMode = CompilationMode.Player;
-
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
-
-            var projectReport = projectAuditor.Audit();
-            var issues = projectReport.FindByCategory(IssueCategory.Code);
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            var report = projectAuditor.Audit(new AnalysisParams
+            {
+                CompilationMode = CompilationMode.Player
+            });
+            var issues = report.FindByCategory(IssueCategory.Code);
             var stringFilter = new TextFilter
             {
                 ignoreCase = true,
@@ -127,13 +115,12 @@ class InternalClass
         [Test]
         public void TextFilter_RecursiveSearch_Matches()
         {
-            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            config.CompilationMode = CompilationMode.Player;
-
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
-
-            var projectReport = projectAuditor.Audit();
-            var issues = projectReport.FindByCategory(IssueCategory.Code);
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            var report = projectAuditor.Audit(new AnalysisParams
+            {
+                CompilationMode = CompilationMode.Player
+            });
+            var issues = report.FindByCategory(IssueCategory.Code);
             var stringFilter = new TextFilter
             {
                 ignoreCase = false,

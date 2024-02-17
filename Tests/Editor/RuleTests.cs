@@ -1,13 +1,13 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.Modules;
-using Unity.ProjectAuditor.Editor.CodeAnalysis;
-using Unity.ProjectAuditor.Editor.Diagnostic;
+using Unity.ProjectAuditor.Editor.SettingsAnalysis;
 using Unity.ProjectAuditor.Editor.Tests.Common;
-using Unity.ProjectAuditor.Editor.Utils;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -16,178 +16,293 @@ namespace Unity.ProjectAuditor.EditorTests
     [Serializable]
     class RuleTests : TestFixtureBase
     {
-        TestAsset m_TestAsset;
+        TestAsset m_TestScriptAsset;
 
         [SerializeField]
-        ProjectAuditorConfig m_SerializedConfig;
+        SeverityRules m_SerializedRules;
+
+        SeverityRules m_Rules;
 
         [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
-            m_TestAsset = new TestAsset("MyClass.cs",
+            m_TestScriptAsset = new TestAsset("MyClass.cs",
                 "using UnityEngine; class MyClass : MonoBehaviour { void Start() { Debug.Log(Camera.allCameras.Length.ToString()); } }");
+
+            m_Rules = new SeverityRules();
         }
 
-#if UNITY_2019_4_OR_NEWER
         [UnityTest]
         public IEnumerator Rule_Persist_AfterDomainReload()
         {
-            m_SerializedConfig = m_Config;
+            m_SerializedRules = m_Rules;
 
-            m_SerializedConfig.ClearAllRules();
+            m_SerializedRules.ClearAllRules();
 
-            Assert.AreEqual(0, m_SerializedConfig.NumRules);
+            Assert.AreEqual(0, m_SerializedRules.NumRules);
 
-            // add rule with a filter.
-            m_SerializedConfig.AddRule(new Rule
+            // add rule with a Filter.
+            m_SerializedRules.AddRule(new Rule
             {
-                id = "someid",
-                severity = Severity.None
+                Id = "ABC0001",
+                Severity = Severity.None
             });
 
-            Assert.AreEqual(1, m_SerializedConfig.NumRules);
+            Assert.AreEqual(1, m_SerializedRules.NumRules);
 
             yield return new WaitForDomainReload();
 
-            Assert.AreEqual(1, m_SerializedConfig.NumRules);
+            Assert.AreEqual(1, m_SerializedRules.NumRules);
         }
-
-#endif
 
         [Test]
         public void Rule_MutedIssue_IsNotReported()
         {
-            var issues = AnalyzeAndFindAssetIssues(m_TestAsset);
+            var issues = AnalyzeAndFindAssetIssues(m_TestScriptAsset);
 
-            var allCamerasIssues = issues.Where(i => i.descriptor.id == "PAC0066").ToArray();
+            var allCamerasIssues = issues.Where(i => i.Id == "PAC0066").ToArray();
 
             Assert.AreEqual(1, allCamerasIssues.Count());
 
             var issue = allCamerasIssues.FirstOrDefault();
 
-            m_Config.ClearAllRules();
+            m_Rules.ClearAllRules();
 
             var callingMethod = issue.GetContext();
-            var action = m_Config.GetAction(issue.descriptor, callingMethod);
+            var action = m_Rules.GetAction(issue.Id, callingMethod);
 
             // expect default action specified in descriptor
-            Assert.AreEqual(issue.descriptor.defaultSeverity, action);
+            Assert.AreEqual(Severity.Default, action);
 
-            // add rule with a filter.
-            m_Config.AddRule(new Rule
+            // add rule with a Filter.
+            m_Rules.AddRule(new Rule
             {
-                id = issue.descriptor.id,
-                severity = Severity.None,
-                filter = callingMethod
+                Id = issue.Id,
+                Severity = Severity.None,
+                Filter = callingMethod
             });
 
-            Assert.AreEqual(1, m_Config.NumRules);
+            Assert.AreEqual(1, m_Rules.NumRules);
 
-            action = m_Config.GetAction(issue.descriptor, callingMethod);
+            action = m_Rules.GetAction(issue.Id, callingMethod);
 
             // issue has been muted so it should not be reported
             Assert.AreEqual(Severity.None, action);
         }
 
-#if UNITY_2019_4_OR_NEWER
         [UnityTest]
         public IEnumerator Rule_MutedIssue_IsNotReportedAfterDomainReload()
         {
             Rule_MutedIssue_IsNotReported();
 
-            m_SerializedConfig = m_Config;
+            m_SerializedRules = m_Rules;
             yield return new WaitForDomainReload();
-            m_Config = m_SerializedConfig; // restore config from serialized config
 
-            Assert.AreEqual(1, m_SerializedConfig.NumRules);
+            Assert.AreEqual(1, m_SerializedRules.NumRules);
 
             // retry after domain reload
-            var issues = AnalyzeAndFindAssetIssues(m_TestAsset);
+            var issues = AnalyzeAndFindAssetIssues(m_TestScriptAsset);
 
-            var allCamerasIssues = issues.Where(i => i.descriptor.id == "PAC0066").ToArray();
+            var allCamerasIssues = issues.Where(i => i.Id.Equals("PAC0066")).ToArray();
 
             Assert.AreEqual(1, allCamerasIssues.Count());
 
             var callingMethod = allCamerasIssues[0].GetContext();
-            var action = m_SerializedConfig.GetAction(allCamerasIssues[0].descriptor, callingMethod);
+            var action = m_SerializedRules.GetAction(allCamerasIssues[0].Id, callingMethod);
 
             // issue has been muted so it should not be reported
             Assert.AreEqual(Severity.None, action);
         }
 
-#endif
-
         [Test]
         public void Rule_Test_CanBeAddedAndRemoved()
         {
-            var settingsAuditor = m_ProjectAuditor.GetModule<SettingsModule>();
-            var descriptors = settingsAuditor.supportedDescriptors;
-            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            var firstDescriptor = descriptors.FirstOrDefault();
+            var settingsAuditor = new SettingsModule();
+            var ids = settingsAuditor.SupportedDescriptorIds;
+            var rules = new SeverityRules();
+            var firstID = ids.FirstOrDefault();
 
-            Assert.IsNotNull(firstDescriptor);
+            Assert.IsNotNull(firstID);
 
             // make sure there are no rules
-            var rule = config.GetRule(firstDescriptor);
+            var rule = rules.GetRule(firstID);
             Assert.IsNull(rule);
 
             var filter = "dummy";
 
-            // add rule with a filter.
-            config.AddRule(new Rule
+            // add rule with a Filter.
+            rules.AddRule(new Rule
             {
-                id = firstDescriptor.id,
-                severity = Severity.None,
-                filter = filter
+                Id = firstID,
+                Severity = Severity.None,
+                Filter = filter
             });
 
             // search for non-specific rule for this descriptor
-            rule = config.GetRule(firstDescriptor);
+            rule = rules.GetRule(firstID);
             Assert.IsNull(rule);
 
             // search for specific rule
-            rule = config.GetRule(firstDescriptor, filter);
+            rule = rules.GetRule(firstID, filter);
             Assert.IsNotNull(rule);
 
-            // add rule with no filter, which will replace any specific rule
-            config.AddRule(new Rule
+            // add rule with no Filter, which will replace any specific rule
+            rules.AddRule(new Rule
             {
-                id = firstDescriptor.id,
-                severity = Severity.None
+                Id = firstID,
+                Severity = Severity.None
             });
 
             // search for specific rule again
-            rule = config.GetRule(firstDescriptor, filter);
+            rule = rules.GetRule(firstID, filter);
             Assert.IsNull(rule);
 
             // search for non-specific rule again
-            rule = config.GetRule(firstDescriptor);
+            rule = rules.GetRule(firstID);
             Assert.IsNotNull(rule);
 
             // try to delete specific rule which has been already replaced by non-specific one
-            config.ClearRules(firstDescriptor, filter);
+            rules.ClearRules(firstID, filter);
 
             // generic rule should still exist
-            rule = config.GetRule(firstDescriptor);
+            rule = rules.GetRule(firstID);
             Assert.IsNotNull(rule);
 
             // try to delete non-specific rule
-            config.ClearRules(firstDescriptor);
-            rule = config.GetRule(firstDescriptor);
+            rules.ClearRules(firstID);
+            rule = rules.GetRule(firstID);
             Assert.IsNull(rule);
 
-            Assert.AreEqual(0, config.NumRules);
+            Assert.AreEqual(0, rules.NumRules);
 
-            config.AddRule(new Rule
+            rules.AddRule(new Rule
             {
-                id = firstDescriptor.id,
-                severity = Severity.None
+                Id = firstID,
+                Severity = Severity.None
             });
-            Assert.AreEqual(1, config.NumRules);
+            Assert.AreEqual(1, rules.NumRules);
 
-            config.ClearAllRules();
+            rules.ClearAllRules();
 
-            Assert.AreEqual(0, config.NumRules);
+            Assert.AreEqual(0, rules.NumRules);
+        }
+
+        [Test]
+        public void Rule_CanIgnoreSettingIssue()
+        {
+            var descriptorId = QualitySettingsAnalyzer.PAS1007;
+            var filter = "Project/Quality/Very Low";
+            var issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(descriptorId));
+
+            Assert.GreaterOrEqual(issues.Length, 4);
+            Assert.AreNotEqual(Severity.None, m_Rules.GetAction(descriptorId));
+            Assert.AreNotEqual(Severity.None, m_Rules.GetAction(descriptorId, filter));
+
+            // ignore all issues corresponding to this descriptor
+            m_Rules.AddRule(new Rule
+            {
+                Id = descriptorId,
+                Severity = Severity.None
+            });
+
+            // TODO: once override is implemented, the issue's Severity should be Severity.None
+            //issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(descriptorId));
+
+            Assert.AreEqual(Severity.None, m_Rules.GetAction(descriptorId));
+            Assert.AreEqual(Severity.None, m_Rules.GetAction(descriptorId, filter));
+
+            m_Rules.ClearRules(descriptorId);
+
+            // ignore only issues corresponding to this descriptor and Filter
+            m_Rules.AddRule(new Rule
+            {
+                Id = descriptorId,
+                Severity = Severity.None,
+                Filter = filter
+            });
+
+            // TODO: once override is implemented, the issue's Severity should be Severity.None
+            //issues = Analyze(IssueCategory.ProjectSetting, i => i.Id.Equals(descriptorId));
+
+            Assert.AreNotEqual(Severity.None, m_Rules.GetAction(descriptorId));
+            Assert.AreEqual(Severity.None, m_Rules.GetAction(descriptorId, filter));
+        }
+
+        [Test]
+        public void Rule_CanSerializeAndDeserialize()
+        {
+            const string k_id1 = "ABC0001";
+            const string k_id2 = "ABC0002";
+            const string k_filter = "Project/Quality/Very Low";
+
+            m_Rules.ClearAllRules();
+
+            m_Rules.AddRule(new Rule
+            {
+                Id = k_id1,
+                Severity = Severity.None
+            });
+
+            m_Rules.AddRule(new Rule
+            {
+                Id = k_id2,
+                Severity = Severity.Critical,
+                Filter = k_filter
+            });
+
+            Assert.AreEqual(2, m_Rules.NumRules);
+
+            var jsonString = JsonConvert.SerializeObject(m_Rules, Formatting.None,
+                new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                });
+
+            Assert.NotNull(jsonString);
+
+            m_Rules.ClearAllRules();
+            Assert.AreEqual(0, m_Rules.NumRules);
+
+            m_Rules = JsonConvert.DeserializeObject<SeverityRules>(jsonString, new JsonSerializerSettings
+            {
+                ObjectCreationHandling = ObjectCreationHandling.Replace
+            });
+
+            Assert.AreEqual(2, m_Rules.NumRules);
+
+            var rule1 = m_Rules.GetRule(k_id1);
+            Assert.True(rule1.Id.Equals(k_id1));
+            Assert.AreEqual(rule1.Severity, Severity.None);
+            Assert.AreEqual(rule1.Filter, string.Empty);
+
+            var rule2 = m_Rules.GetRule(k_id2, k_filter);
+            Assert.True(rule2.Id.Equals(k_id2));
+            Assert.AreEqual(rule2.Severity, Severity.Critical);
+            Assert.AreEqual(rule2.Filter, k_filter);
+        }
+
+        [Test]
+        public void Rule_TemporaryRule_IsAdded()
+        {
+            var projectAuditorParams = new AnalysisParams { Platform = m_Platform };
+            var numRules = projectAuditorParams.Rules.NumRules;
+
+            projectAuditorParams.WithAdditionalDiagnosticRules(new List<Rule>(new[] {new Rule()}));
+
+            Assert.AreEqual(numRules + 1, projectAuditorParams.Rules.NumRules);
+        }
+
+        [Test]
+        public void Rule_TemporaryRule_DoesNotPersist()
+        {
+            var projectAuditorParams = new AnalysisParams { Platform = m_Platform };
+            var numRules = ProjectAuditorSettings.instance.Rules.NumRules;
+
+            projectAuditorParams.WithAdditionalDiagnosticRules(new List<Rule>(new[] {new Rule()}));
+
+            m_ProjectAuditor.Audit();
+
+            Assert.AreEqual(numRules, ProjectAuditorSettings.instance.Rules.NumRules);
         }
     }
 }

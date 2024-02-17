@@ -5,16 +5,11 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Modules;
-using Unity.ProjectAuditor.Editor.Utils;
-using UnityEditor;
-using UnityEngine;
 using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    class BuiltinCallAnalyzer : ICodeModuleInstructionAnalyzer
+    class BuiltinCallAnalyzer : CodeModuleInstructionAnalyzer
     {
         Dictionary<string, List<Descriptor>> m_Descriptors; // method name as key, list of type names as value
         Dictionary<string, Descriptor> m_NamespaceOrClassDescriptors; // namespace/class name as key
@@ -25,34 +20,37 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             OpCodes.Callvirt
         };
 
-        public IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
+        public override IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
 
-        public void Initialize(ProjectAuditorModule module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
             var descriptors = DescriptorLoader.LoadFromJson(ProjectAuditor.s_DataPath, "ApiDatabase");
             foreach (var descriptor in descriptors)
             {
-                module.RegisterDescriptor(descriptor);
+                registerDescriptor(descriptor);
             }
 
-            var methodDescriptors = descriptors.Where(descriptor => !descriptor.method.Equals("*") && !string.IsNullOrEmpty(descriptor.type));
+            var methodDescriptors = descriptors.Where(
+                descriptor => !descriptor.Method.Equals("*") &&
+                !string.IsNullOrEmpty(descriptor.Type) &&
+                descriptor.IsSupported());
 
             m_Descriptors = new Dictionary<string, List<Descriptor>>();
             foreach (var d in methodDescriptors)
             {
-                if (!m_Descriptors.ContainsKey(d.method))
+                if (!m_Descriptors.ContainsKey(d.Method))
                 {
-                    m_Descriptors.Add(d.method, new List<Descriptor>());
+                    m_Descriptors.Add(d.Method, new List<Descriptor>());
                 }
-                m_Descriptors[d.method].Add(d);
+                m_Descriptors[d.Method].Add(d);
             }
 
-            m_NamespaceOrClassDescriptors = descriptors.Where(descriptor => descriptor.method.Equals("*")).ToDictionary(d => d.type);
+            m_NamespaceOrClassDescriptors = descriptors.Where(descriptor => descriptor.Method.Equals("*")).ToDictionary(d => d.Type);
         }
 
-        public IssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
+        public override ReportItemBuilder Analyze(InstructionAnalysisContext context)
         {
-            var callee = (MethodReference)inst.Operand;
+            var callee = (MethodReference)context.Instruction.Operand;
             var description = string.Empty;
             var methodName = callee.Name;
 
@@ -60,7 +58,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             var declaringType = callee.DeclaringType;
 
             // first check if type name, then namespace, then method/property name
-            if (m_NamespaceOrClassDescriptors.TryGetValue(declaringType.FullName, out descriptor))
+            if (m_NamespaceOrClassDescriptors.TryGetValue(declaringType.FastFullName(), out descriptor))
             {
                 description = string.Format("'{0}.{1}' usage", declaringType, methodName);
             }
@@ -70,7 +68,7 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             }
             else
             {
-                if (methodName.StartsWith("get_"))
+                if (methodName.StartsWith("get_", StringComparison.Ordinal))
                     methodName = methodName.Substring("get_".Length);
 
                 List<Descriptor> descriptors;
@@ -78,24 +76,26 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
                     return null;
 
                 Profiler.BeginSample("BuiltinCallAnalyzer.FindDescriptor");
-                descriptor = descriptors.Find(d => MonoCecilHelper.IsOrInheritedFrom(declaringType, d.type));
+                descriptor = descriptors.Find(d => MonoCecilHelper.IsOrInheritedFrom(declaringType, d.Type));
                 Profiler.EndSample();
 
                 if (descriptor == null)
                     return null;
 
-                // by default use descriptor issue description
-                description = string.Format("'{0}' usage", descriptor.title);
-
                 var genericInstanceMethod = callee as GenericInstanceMethod;
                 if (genericInstanceMethod != null && genericInstanceMethod.HasGenericArguments)
                 {
                     var genericTypeNames = genericInstanceMethod.GenericArguments.Select(a => a.FullName).ToArray();
-                    description = string.Format("'{0}' usage (with generic argument '{1}')", descriptor.title, string.Join(", ", genericTypeNames));
+                    description = $"'{descriptor.Title}<{string.Join(", ", genericTypeNames)}>' usage";
+                }
+                else
+                {
+                    // by default use descriptor issue description
+                    description = $"'{descriptor.Title}' usage";
                 }
             }
 
-            return ProjectIssue.Create(IssueCategory.Code, descriptor)
+            return context.CreateIssue(IssueCategory.Code, descriptor.Id)
                 .WithDescription(description);
         }
     }

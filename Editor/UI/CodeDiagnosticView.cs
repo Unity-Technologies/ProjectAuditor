@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.UI.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -15,14 +14,14 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
         }
 
-        public override void AddIssues(IEnumerable<ProjectIssue> allIssues)
+        public override void AddIssues(IEnumerable<ReportItem> allIssues)
         {
             base.AddIssues(allIssues);
 
-            if (m_Desc.category == IssueCategory.Code)
+            if (m_Desc.Category == IssueCategory.Code)
             {
-                var compilerMessages = allIssues.Where(i => i.category == IssueCategory.CodeCompilerMessage);
-                m_NumCompilerErrors += compilerMessages.Count(i => i.severity == Severity.Error);
+                var compilerMessages = allIssues.Where(i => i.Category == IssueCategory.CodeCompilerMessage);
+                m_NumCompilerErrors += compilerMessages.Count(i => i.Severity == Severity.Error);
             }
         }
 
@@ -37,7 +36,7 @@ namespace Unity.ProjectAuditor.Editor.UI
         {
             base.DrawInfo();
 
-            if (m_Desc.category == IssueCategory.Code && m_NumCompilerErrors > 0)
+            if (m_Desc.Category == IssueCategory.Code && m_NumCompilerErrors > 0)
             {
                 EditorGUILayout.Space();
                 EditorGUILayout.BeginHorizontal();

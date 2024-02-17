@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.UI.Framework;
-using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,23 +8,24 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     internal class ViewDescriptor
     {
-        public Type type;
-        public IssueCategory category;
-        public string displayName;
-        public string menuLabel;
-        public int menuOrder;
-        public bool descriptionWithIcon;
-        public bool showAssemblySelection;
-        public bool showDependencyView;
-        public bool showFilters;
-        public bool showInfoPanel;
-        public GUIContent dependencyViewGuiContent;
-        public Func<ProjectIssue, string> getAssemblyName;
-        public Action<GenericMenu, ViewManager, ProjectIssue> onContextMenu;
-        public Action<ViewManager> onDrawToolbar;
-        public Action<Location> onOpenIssue;
-        public Action<Descriptor> onOpenManual;
-        public int analyticsEvent;
+        public Type Type;
+        public IssueCategory Category;
+        public string DisplayName;
+        public string MenuLabel;
+        public int MenuOrder;
+        public bool DescriptionWithIcon;
+        public bool ShowAssemblySelection;
+        public bool ShowDependencyView;
+        public bool ShowFilters;
+        public bool ShowInfoPanel;
+        public bool ShowAdditionalInfoPanel;
+        public GUIContent DependencyViewGuiContent;
+        public Func<ReportItem, string> GetAssemblyName;
+        public Action<GenericMenu, ViewManager, ReportItem> OnContextMenu;
+        public Action<ViewManager> OnDrawToolbar;
+        public Action<Location> OnOpenIssue;
+        public Action<Descriptor> OnOpenManual;
+        public int AnalyticsEventId;
 
         static readonly Dictionary<int, ViewDescriptor> s_ViewDescriptorsRegistry = new Dictionary<int, ViewDescriptor>();
 
@@ -37,10 +35,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         /// <returns> Returns 'true' on success, 'false' otherwise</returns>
         public static bool Register(ViewDescriptor descriptor)
         {
-            if (s_ViewDescriptorsRegistry.ContainsKey((int)descriptor.category))
+            if (s_ViewDescriptorsRegistry.ContainsKey((int)descriptor.Category))
                 return false;
 
-            s_ViewDescriptorsRegistry.Add((int)descriptor.category, descriptor);
+            s_ViewDescriptorsRegistry.Add((int)descriptor.Category, descriptor);
             return true;
         }
 

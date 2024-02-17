@@ -8,19 +8,21 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     [Serializable]
     internal class ViewStates
     {
-        public const int k_MinFontSize = 12;
-        public const int k_MaxFontSize = 22;
+        public const int DefaultMinFontSize = 12;
+        public const int DefaultMaxFontSize = 22;
 
         // foldout preferences
         public bool info = true;
+        public bool info2 = true;
         public bool filters = true;
-        public bool actions = true;
         public bool dependencies = true;
 
         // diagnostic preferences
         public bool onlyCriticalIssues;
-        public bool mutedIssues;
+        // TODO: we used to have mutedIssues as a global-state but now it's view-specific
+        // does it make sense to go back to use this?
+        //public bool mutedIssues;
 
-        public int fontSize = k_MinFontSize;
+        public int fontSize = DefaultMinFontSize;
     }
 }

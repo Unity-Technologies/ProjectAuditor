@@ -1,16 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Modules;
 using UnityEditor;
-using UnityEditor.Rendering;
-using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class GraphicsApiAnalyzer : ISettingsModuleAnalyzer
+    class GraphicsApiAnalyzer : SettingsModuleAnalyzer
     {
         const string documentationUrl = "https://docs.unity3d.com/Manual/GraphicsAPIs.html";
 
@@ -20,63 +17,58 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         static readonly Descriptor k_OpenGLESAndMetalDescriptor = new Descriptor(
             PAS0005,
-            "Player (iOS): Metal & OpenGLES APIs",
-            new[] { Area.BuildSize },
+            "Player (iOS): Metal & OpenGLES APIs are both enabled",
+            Areas.BuildSize,
             "In the iOS Player Settings, both Metal and OpenGLES graphics APIs are enabled.",
             "To reduce build size, remove OpenGLES graphics API if the minimum spec target device supports Metal.")
         {
-            documentationUrl = documentationUrl,
-            platforms = new[] { BuildTarget.iOS.ToString() }
+            DocumentationUrl = documentationUrl,
+            Platforms = new[] { BuildTarget.iOS },
+            MaximumVersion = "2022.3"
         };
 
         static readonly Descriptor k_MetalDescriptor = new Descriptor(
             PAS0006,
-            "Player (iOS): Metal API",
-            new[] { Area.CPU },
+            "Player (iOS): Metal API is not enabled",
+            Areas.CPU,
             "In the iOS Player Settings, Metal is not enabled.",
             "Enable Metal graphics API for better CPU Performance.")
         {
-            documentationUrl = documentationUrl,
-            platforms = new[] { BuildTarget.iOS.ToString() }
+            DocumentationUrl = documentationUrl,
+            Platforms = new[] { BuildTarget.iOS }
         };
 
         static readonly Descriptor k_VulkanDescriptor = new Descriptor(
             PAS0031,
-            "Player (Android): Vulkan API",
-            new[] { Area.CPU, Area.GPU },
+            "Player (Android): Vulkan API is not enabled",
+            Areas.CPU | Areas.GPU,
             "In the Android Player Settings, Vulkan graphics API is not enabled.",
             "Enable Vulkan graphics API for better CPU Performance.")
         {
-            documentationUrl = documentationUrl,
-            platforms = new[] { BuildTarget.Android.ToString() }
+            DocumentationUrl = documentationUrl,
+            Platforms = new[] { BuildTarget.Android }
         };
 
-        public void Initialize(ProjectAuditorModule module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_OpenGLESAndMetalDescriptor);
-            module.RegisterDescriptor(k_MetalDescriptor);
-            module.RegisterDescriptor(k_VulkanDescriptor);
+            registerDescriptor(k_OpenGLESAndMetalDescriptor);
+            registerDescriptor(k_MetalDescriptor);
+            registerDescriptor(k_VulkanDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
+        public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
-            if (projectAuditorParams.platform == BuildTarget.iOS)
-            {
-                if (IsUsingOpenGLESAndMetal())
-                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_OpenGLESAndMetalDescriptor)
-                        .WithLocation("Project/Player");
+            if (k_OpenGLESAndMetalDescriptor.IsApplicable(context.Params) && IsUsingOpenGlesAndMetal())
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_OpenGLESAndMetalDescriptor.Id)
+                    .WithLocation("Project/Player");
 
-                if (IsNotUsingMetal())
-                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_MetalDescriptor)
-                        .WithLocation("Project/Player");
-            }
+            if (k_MetalDescriptor.IsApplicable(context.Params) && IsNotUsingMetal())
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_MetalDescriptor.Id)
+                    .WithLocation("Project/Player");
 
-            if (projectAuditorParams.platform == BuildTarget.Android)
-            {
-                if (IsNotUsingVulkan())
-                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_VulkanDescriptor)
-                        .WithLocation("Project/Player");
-            }
+            if (k_VulkanDescriptor.IsApplicable(context.Params) && IsNotUsingVulkan())
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_VulkanDescriptor.Id)
+                    .WithLocation("Project/Player");
         }
 
         static bool IsNotUsingMetal()
@@ -88,14 +80,18 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             return !hasMetal;
         }
 
-        static bool IsUsingOpenGLESAndMetal()
+        static bool IsUsingOpenGlesAndMetal()
         {
+#if UNITY_2023_1_OR_NEWER
+            return false;
+#else
             var graphicsAPIs = PlayerSettings.GetGraphicsAPIs(BuildTarget.iOS);
 
-            var hasOpenGLES = graphicsAPIs.Contains(GraphicsDeviceType.OpenGLES2) ||
+            var hasOpenGles = graphicsAPIs.Contains(GraphicsDeviceType.OpenGLES2) ||
                 graphicsAPIs.Contains(GraphicsDeviceType.OpenGLES3);
 
-            return graphicsAPIs.Contains(GraphicsDeviceType.Metal) && hasOpenGLES;
+            return graphicsAPIs.Contains(GraphicsDeviceType.Metal) && hasOpenGles;
+#endif
         }
 
         static bool IsNotUsingVulkan()

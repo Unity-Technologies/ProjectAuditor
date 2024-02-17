@@ -1,15 +1,11 @@
+using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Modules;
-using UnityEditor;
 using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 {
-    class QualitySettingsAnalyzer : ISettingsModuleAnalyzer
+    class QualitySettingsAnalyzer : SettingsModuleAnalyzer
     {
         internal const string PAS0018 = nameof(PAS0018);
         internal const string PAS0019 = nameof(PAS0019);
@@ -19,90 +15,94 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
 
         static readonly Descriptor k_DefaultSettingsDescriptor = new Descriptor(
             PAS0018,
-            "Quality: Quality Levels",
-            new[] { Area.CPU, Area.GPU, Area.BuildSize, Area.LoadTime },
-            "This project is using the default set of quality levels defined in <b>Project Settings ➔ Quality</b>.",
+            "Quality: Using default Quality Levels",
+            Areas.CPU | Areas.GPU | Areas.BuildSize | Areas.LoadTime,
+            "This project is using the default set of <b>Quality Levels</b> defined in Quality Settings. This can make it difficult to understand the range of rendering settings used in the project, and can result in an unnecessarily large number of shader variants, impacting build times and runtime memory usage.",
             "Check the quality setting for each platform the project supports in the grid - it's the level with the green tick. Remove quality levels you are not using, to make the Quality Settings simpler to see and edit. Adjust the setting for each platform if necessary, then select the appropriate levels to examine their settings in the panel below.");
 
         static readonly Descriptor k_UsingLowQualityTexturesDescriptor = new Descriptor(
             PAS0019,
-            "Quality: Texture Quality",
-            new[] { Area.GPU, Area.BuildSize },
-            "One or more of the quality levels in the project's Quality Settings has <b>Texture Quality</b> set to something other than Full Res. This option can save memory on lower-spec devices and platforms by discarding higher-resolution mip levels on mipmapped textures before uploading them to the GPU. However, this option has no effect on textures which don't have mipmaps enabled (as is frequently the case with UI textures, for instance), does nothing to reduce download or install size, and gives you no control over the texture resize algorithm.",
+            "Quality: Texture Quality is not set to Full Res",
+            Areas.GPU | Areas.BuildSize,
+            "One or more of the <b>Quality Levels</b> in the project's Quality Settings has <b>Texture Quality</b> set to something other than <b>Full Res</b>. This option can save memory on lower-spec devices and platforms by discarding higher-resolution mip levels on mipmapped textures before uploading them to the GPU. However, this option has no effect on textures which don't have mipmaps enabled (as is frequently the case with UI textures, for instance), does nothing to reduce download or install size, and gives you no control over the texture resize algorithm.",
             "For devices which must use lower-resolution versions of textures, consider creating these lower resolution textures separately, and choosing the appropriate content to load at runtime using AssetBundle variants.");
 
         static readonly Descriptor k_DefaultAsyncUploadTimeSliceDescriptor = new Descriptor(
             PAS0020,
-            "Quality: Async Upload Time Slice",
-            Area.LoadTime,
-            "The <b>Async Upload Time Slice</b> option for one or more quality levels in the project's Quality Settings is set to the default value of 2ms.",
+            "Quality: Async Upload Time Slice is set to default value",
+            Areas.LoadTime,
+            "The <b>Async Upload Time Slice</b> option for one or more <b>Quality Levels</b> in the project's Quality Settings is set to the default value of <b>2ms</b>.",
             "If the project encounters long loading times when loading large amount of texture and/or mesh data, experiment with increasing this value to see if it allows content to be uploaded to the GPU more quickly.");
 
         static readonly Descriptor k_DefaultAsyncUploadBufferSizeSliceDescriptor = new Descriptor(
             PAS0021,
-            "Quality: Async Upload Buffer Size",
-            Area.LoadTime,
-            "The <b>Async Upload Buffer Size</b> option for one or more quality levels in the project's Quality Settings is set to the default value.",
+            "Quality: Async Upload Buffer Size is set to default value",
+            Areas.LoadTime,
+            "The <b>Async Upload Buffer Size</b> option for one or more <b>Quality Levels</b> in the project's Quality Settings is set to the default value.",
             "If the project encounters long loading times when loading large amount of texture and/or mesh data, experiment with increasing this value to see if it allows content to be uploaded to the GPU more quickly. This is most likely to help if you are loading large textures. Note that this setting controls a buffer size in megabytes, so exercise caution if memory is limited in your application.");
 
         static readonly Descriptor k_TextureStreamingDisabledDescriptor = new Descriptor(
             PAS1007,
-            "Quality: Texture streaming disabled",
-            Area.Memory,
-            "<b>Texture Streaming</b> is disabled. Texture memory utilization on GPU might be suboptimal.",
-            "If your project contains many high resolution textures, enable Texture Streaming in <b>Project Settings ➔ Quality</b> ")
+            "Quality: Texture streaming is disabled",
+            Areas.Memory,
+            "<b>Texture Streaming</b> is disabled in Quality Settings. As a result, all mip levels for all loaded textures are loaded into GPU memory, potentially resulting in excessive texture memory usage.",
+            "If your project contains many high resolution mipmapped textures, enable <b>Texture Streaming</b> in Quality Settings.")
         {
-            fixer = (issue =>
+            Fixer = (issue, analysisParams) =>
             {
                 EnableStreamingMipmap(issue.GetCustomPropertyInt32(0));
-            }),
+            },
 
-            documentationUrl = "https://docs.unity3d.com/Manual/TextureStreaming.html",
-            messageFormat = "Quality: Texture streaming on Quality Level '{0}' is turned off"
+            DocumentationUrl = "https://docs.unity3d.com/Manual/TextureStreaming.html",
+            MessageFormat = "Quality: Texture streaming on Quality Level '{0}' is turned off"
         };
 
-        public void Initialize(ProjectAuditorModule module)
+        static readonly string k_QualityLocation = "Project/Quality";
+
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_DefaultSettingsDescriptor);
-            module.RegisterDescriptor(k_UsingLowQualityTexturesDescriptor);
-            module.RegisterDescriptor(k_DefaultAsyncUploadTimeSliceDescriptor);
-            module.RegisterDescriptor(k_DefaultAsyncUploadBufferSizeSliceDescriptor);
-            module.RegisterDescriptor(k_TextureStreamingDisabledDescriptor);
+            registerDescriptor(k_DefaultSettingsDescriptor);
+            registerDescriptor(k_UsingLowQualityTexturesDescriptor);
+            registerDescriptor(k_DefaultAsyncUploadTimeSliceDescriptor);
+            registerDescriptor(k_DefaultAsyncUploadBufferSizeSliceDescriptor);
+            registerDescriptor(k_TextureStreamingDisabledDescriptor);
         }
 
-        public IEnumerable<ProjectIssue> Analyze(ProjectAuditorParams projectAuditorParams)
+        public override IEnumerable<ReportItem> Analyze(SettingsAnalysisContext context)
         {
             if (IsUsingDefaultSettings())
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_DefaultSettingsDescriptor)
-                    .WithLocation("Project/Quality");
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_DefaultSettingsDescriptor.Id)
+                    .WithLocation(k_QualityLocation);
             }
 
             if (IsUsingLowQualityTextures())
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_UsingLowQualityTexturesDescriptor)
-                    .WithLocation("Project/Quality");
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_UsingLowQualityTexturesDescriptor.Id)
+                    .WithLocation(k_QualityLocation);
             }
 
             if (IsDefaultAsyncUploadTimeSlice())
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_DefaultAsyncUploadTimeSliceDescriptor)
-                    .WithLocation("Project/Quality");
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_DefaultAsyncUploadTimeSliceDescriptor.Id)
+                    .WithLocation(k_QualityLocation);
             }
 
             if (IsDefaultAsyncUploadBufferSize())
             {
-                yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_DefaultAsyncUploadBufferSizeSliceDescriptor)
-                    .WithLocation("Project/Quality");
+                yield return context.CreateIssue(IssueCategory.ProjectSetting, k_DefaultAsyncUploadBufferSizeSliceDescriptor.Id)
+                    .WithLocation(k_QualityLocation);
             }
 
             if (GetTextureStreamingDisabledQualityLevelsIndex().Count != 0)
             {
                 var qualityLevels = GetTextureStreamingDisabledQualityLevelsIndex();
-                for (int i = 0; i < qualityLevels.Count; i++)
+                foreach (var levelIndex in qualityLevels)
                 {
-                    yield return ProjectIssue.Create(IssueCategory.ProjectSetting, k_TextureStreamingDisabledDescriptor, QualitySettings.names[qualityLevels[i]]).
-                        WithCustomProperties(new object[] {qualityLevels[i]}).WithLocation("Project/Quality");
+                    var levelName = QualitySettings.names[levelIndex];
+                    yield return context.CreateIssue(IssueCategory.ProjectSetting, k_TextureStreamingDisabledDescriptor.Id, levelName)
+                        .WithCustomProperties(new object[] {levelIndex})
+                        .WithLocation(k_QualityLocation);
                 }
             }
         }
@@ -138,7 +138,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 }
             }
 
-            QualitySettings.SetQualityLevel(initialQualityLevel);
+            if (initialQualityLevel != QualitySettings.GetQualityLevel())
+                QualitySettings.SetQualityLevel(initialQualityLevel);
             return usingLowTextureQuality;
         }
 
@@ -158,7 +159,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 }
             }
 
-            QualitySettings.SetQualityLevel(initialQualityLevel);
+            if (initialQualityLevel != QualitySettings.GetQualityLevel())
+                QualitySettings.SetQualityLevel(initialQualityLevel);
             return usingDefaultAsyncUploadTimeslice;
         }
 
@@ -178,7 +180,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 }
             }
 
-            QualitySettings.SetQualityLevel(initialQualityLevel);
+            if (initialQualityLevel != QualitySettings.GetQualityLevel())
+                QualitySettings.SetQualityLevel(initialQualityLevel);
             return usingDefaultAsyncUploadBufferSize;
         }
 
@@ -197,7 +200,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
                 }
             }
 
-            QualitySettings.SetQualityLevel(initialQualityLevel);
+            if (initialQualityLevel != QualitySettings.GetQualityLevel())
+                QualitySettings.SetQualityLevel(initialQualityLevel);
             return qualityIndexes;
         }
 
@@ -208,7 +212,8 @@ namespace Unity.ProjectAuditor.Editor.SettingsAnalysis
             QualitySettings.SetQualityLevel(qualityLevelIndex);
             QualitySettings.streamingMipmapsActive = true;
 
-            QualitySettings.SetQualityLevel(initialQualityLevel);
+            if (initialQualityLevel != QualitySettings.GetQualityLevel())
+                QualitySettings.SetQualityLevel(initialQualityLevel);
         }
     }
 }

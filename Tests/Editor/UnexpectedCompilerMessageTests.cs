@@ -1,40 +1,32 @@
-using System;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Tests.Common;
 using UnityEditor;
-using UnityEngine;
-using UnityEngine.TestTools;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
     class UnexpectedCompilerMessageTests : TestFixtureBase
     {
-#pragma warning disable 0414
-        private TestAsset m_TestMcsRsp;
         TestAsset m_ScriptWithWarning;
-        private TestAsset m_ScriptWithDiagnostic;
-#pragma warning restore 0414
+        TestAsset m_ScriptWithDiagnostic;
 
-        private const string k_rspPath = "Assets/mcs.rsp";
+        const string k_RspPath = "Assets/mcs.rsp";
 
         [OneTimeSetUp]
         public void SetUp()
         {
             // mcs.rsp can't be a TestAsset because it has to live directly in the root of Assets
-            if (!File.Exists(k_rspPath))
-                Directory.CreateDirectory(Path.GetDirectoryName(k_rspPath));
+            if (!File.Exists(k_RspPath))
+                Directory.CreateDirectory(Path.GetDirectoryName(k_RspPath));
 
-            File.WriteAllText(k_rspPath, "");
-            Assert.True(File.Exists(k_rspPath));
+            File.WriteAllText(k_RspPath, "");
+            Assert.True(File.Exists(k_RspPath));
 
-            AssetDatabase.ImportAsset(k_rspPath, ImportAssetOptions.ForceUpdate);
+            AssetDatabase.ImportAsset(k_RspPath, ImportAssetOptions.ForceUpdate);
 
             m_ScriptWithWarning = new TestAsset("ScriptWithWarning.cs", @"
 class ScriptWithWarning {
@@ -60,9 +52,9 @@ class MyClass
         [OneTimeTearDown]
         public void TearDown()
         {
-            if (File.Exists(k_rspPath))
+            if (File.Exists(k_RspPath))
             {
-                AssetDatabase.DeleteAsset(k_rspPath);
+                AssetDatabase.DeleteAsset(k_RspPath);
                 AssetDatabase.Refresh();
             }
         }
@@ -87,15 +79,15 @@ class MyClass
 
             var issue = issues.First();
 
-            // check descriptor
-            Assert.IsNull(issue.descriptor);
+            // check ID
+            Assert.IsFalse(issue.Id.IsValid());
 
             // check issue
-            Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessage));
-            Assert.AreEqual("The variable 'i' is assigned but its value is never used", issue.description);
-            Assert.True(issue.relativePath.StartsWith("Assets/"), "Relative path: " + issue.relativePath);
-            Assert.That(issue.line, Is.EqualTo(5));
-            Assert.That(issue.severity, Is.EqualTo(Severity.Warning));
+            Assert.That(issue.Category, Is.EqualTo(IssueCategory.CodeCompilerMessage));
+            Assert.AreEqual("The variable 'i' is assigned but its value is never used", issue.Description);
+            Assert.True(issue.RelativePath.StartsWith("Assets/"), "Relative path: " + issue.RelativePath);
+            Assert.That(issue.Line, Is.EqualTo(5));
+            Assert.That(issue.Severity, Is.EqualTo(Severity.Warning));
 
             // check properties
             Assert.AreEqual((int)CompilerMessageProperty.Num, issue.GetNumCustomProperties());
@@ -113,19 +105,20 @@ class MyClass
             var myIssue = issues.FirstOrDefault();
 
             Assert.NotNull(myIssue);
-            Assert.NotNull(myIssue.descriptor);
+            var descriptor = myIssue.Id.GetDescriptor();
+            Assert.NotNull(descriptor);
 
-            Assert.AreEqual(Severity.Moderate, myIssue.descriptor.defaultSeverity);
-            Assert.AreEqual(typeof(string), myIssue.descriptor.id.GetType());
-            Assert.AreEqual("PAC0066", myIssue.descriptor.id);
-            Assert.AreEqual("UnityEngine.Camera", myIssue.descriptor.type);
-            Assert.AreEqual("allCameras", myIssue.descriptor.method);
+            Assert.AreEqual(Severity.Moderate, descriptor.DefaultSeverity);
+            Assert.AreEqual(typeof(DescriptorId), myIssue.Id.GetType());
+            Assert.AreEqual("PAC0066", myIssue.Id.ToString());
+            Assert.AreEqual("UnityEngine.Camera", descriptor.Type);
+            Assert.AreEqual("allCameras", descriptor.Method);
 
-            Assert.AreEqual(m_ScriptWithDiagnostic.fileName, myIssue.filename);
-            Assert.AreEqual("'UnityEngine.Camera.allCameras' usage", myIssue.description);
+            Assert.AreEqual(m_ScriptWithDiagnostic.FileName, myIssue.Filename);
+            Assert.AreEqual("'UnityEngine.Camera.allCameras' usage", myIssue.Description);
             Assert.AreEqual("System.Void MyClass::Dummy()", myIssue.GetContext());
-            Assert.AreEqual(7, myIssue.line);
-            Assert.AreEqual(IssueCategory.Code, myIssue.category);
+            Assert.AreEqual(7, myIssue.Line);
+            Assert.AreEqual(IssueCategory.Code, myIssue.Category);
 
             // check custom property
             Assert.AreEqual((int)CodeProperty.Num, myIssue.GetNumCustomProperties());

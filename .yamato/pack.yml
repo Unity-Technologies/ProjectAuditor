@@ -1,0 +1,27 @@
+pack:
+  name: Pack
+  agent:
+    type: Unity::VM
+    image: package-ci/win10:v4
+    flavor: b1.large
+  commands:
+    - unity-downloader-cli -u 2018.4 -c editor --path .Editor --wait --fast
+    - .\.Editor\Unity.exe -quit -batchmode -createProject "temp/project"
+    - mkdir temp\project\Assets\Editor
+    - copy utils\* temp\project\Assets\Editor
+    - .\.Editor\Unity.exe -quit -batchmode -executeMethod Unity.ProjectAuditor.Editor.Internal.RoslynAnalyzerUtil.ImportDLL -sourcePath=../build_artifacts/build -logFile temp\Editor.log
+    - mkdir com.unity.project-auditor\RoslynAnalyzers
+    - xcopy temp\project\Assets\RoslynAnalyzers com.unity.project-auditor\RoslynAnalyzers /H
+    - xcopy temp\project\Assets\RoslynAnalyzers.meta com.unity.project-auditor /H
+    - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+    - upm-ci package pack --package-path com.unity.project-auditor
+  artifacts:
+    packages:
+      paths:
+        - "upm-ci~/packages/**/*"
+    logs:
+      paths:
+        - "temp/Editor.log"
+  dependencies:
+    - path: .yamato/build.yml#build
+      location: temp/build_artifacts

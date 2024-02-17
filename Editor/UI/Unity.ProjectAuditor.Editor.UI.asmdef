@@ -1,5 +1,6 @@
 {
     "name": "Unity.ProjectAuditor.Editor.UI",
+    "rootNamespace": "",
     "references": [
         "Unity.ProjectAuditor.Editor",
         "Unity.ProjectAuditor.Editor.UI.Framework",
@@ -19,6 +20,11 @@
             "name": "com.unity.build-report-inspector",
             "expression": "",
             "define": "PACKAGE_BUILD_REPORT_INSPECTOR"
+        },
+        {
+            "name": "Unity",
+            "expression": "[2020.3,2023.2)",
+            "define": "PA_OLD_ANALYTICS_API"
         }
     ],
     "noEngineReferences": false

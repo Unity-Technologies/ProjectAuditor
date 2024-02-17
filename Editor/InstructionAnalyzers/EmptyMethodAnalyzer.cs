@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
-using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Unity.ProjectAuditor.Editor.CodeAnalysis;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Modules;
 
 namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
 {
-    class EmptyMethodAnalyzer : ICodeModuleInstructionAnalyzer
+    class EmptyMethodAnalyzer : CodeModuleInstructionAnalyzer
     {
         internal const string PAC2001 = nameof(PAC2001);
 
@@ -17,12 +14,12 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             (
             PAC2001,
             "Empty MonoBehaviour Method",
-            Area.CPU,
-            "Any empty MonoBehaviour magic method will be included in the build and executed anyway.",
+            Areas.CPU,
+            "Any empty MonoBehaviour message handling method (for example, Awake(), Start(), Update()) will be included in the build and executed even if it is empty. Every message handling method on every instance of a MonoBehaviour takes a small amount of CPU time.",
             "Remove any empty MonoBehaviour methods."
             )
         {
-            messageFormat = "MonoBehaviour method '{0}' is empty"
+            MessageFormat = "MonoBehaviour method '{0}' is empty"
         };
 
         readonly OpCode[] m_OpCodes =
@@ -30,17 +27,17 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             OpCodes.Ret
         };
 
-        public IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
+        public override IReadOnlyCollection<OpCode> opCodes => m_OpCodes;
 
-        public void Initialize(ProjectAuditorModule module)
+        public override void Initialize(Action<Descriptor> registerDescriptor)
         {
-            module.RegisterDescriptor(k_Descriptor);
+            registerDescriptor(k_Descriptor);
         }
 
-        public IssueBuilder Analyze(MethodDefinition methodDefinition, Instruction inst)
+        public override ReportItemBuilder Analyze(InstructionAnalysisContext context)
         {
             // skip any no-op
-            var previousIL = inst.Previous;
+            var previousIL = context.Instruction.Previous;
             while (previousIL != null && previousIL.OpCode == OpCodes.Nop)
                 previousIL = previousIL.Previous;
 
@@ -48,18 +45,18 @@ namespace Unity.ProjectAuditor.Editor.InstructionAnalyzers
             if (previousIL != null)
                 return null;
 
-            if (!MonoBehaviourAnalysis.IsMonoBehaviour(methodDefinition.DeclaringType))
+            if (!MonoBehaviourAnalysis.IsMonoBehaviour(context.MethodDefinition.DeclaringType))
                 return null;
 
-            if (!MonoBehaviourAnalysis.IsMonoBehaviourEvent(methodDefinition))
+            if (!MonoBehaviourAnalysis.IsMonoBehaviourEvent(context.MethodDefinition))
                 return null;
 
-            return ProjectIssue.Create(IssueCategory.Code, k_Descriptor, methodDefinition.Name);
+            return context.CreateIssue(IssueCategory.Code, k_Descriptor.Id, context.MethodDefinition.Name);
         }
 
-        internal static Descriptor GetDescriptor()
+        internal static string GetDescriptorID()
         {
-            return k_Descriptor;
+            return k_Descriptor.Id;
         }
     }
 }

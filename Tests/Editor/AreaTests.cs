@@ -1,10 +1,7 @@
-using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Tests.Common;
-using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 
 namespace Unity.ProjectAuditor.EditorTests
@@ -14,23 +11,14 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void Area_Name_IsValid()
         {
-            // disabling stripUnusedMeshComponents will be reported as an issue
-            var stripUnusedMeshComponents = PlayerSettings.stripUnusedMeshComponents;
-            PlayerSettings.stripUnusedMeshComponents = false;
-
-            var issues = Analyze(IssueCategory.ProjectSetting, i => i.descriptor.method.Equals("stripUnusedMeshComponents"));
+            var issues = Analyze(IssueCategory.ProjectSetting, i =>
+                i.Id.GetDescriptor().Method.Equals(nameof(PlayerSettings.bakeCollisionMeshes)));
 
             var issue = issues.FirstOrDefault();
             Assert.NotNull(issue);
 
-            var areas = issue.descriptor.GetAreas();
-            Assert.AreEqual(3, areas.Length);
-            Assert.Contains(Area.BuildSize, areas);
-            Assert.Contains(Area.GPU, areas);
-            Assert.Contains(Area.LoadTime, areas);
-
-            // restore stripUnusedMeshComponents
-            PlayerSettings.stripUnusedMeshComponents = stripUnusedMeshComponents;
+            var descriptor = issue.Id.GetDescriptor();
+            Assert.AreEqual((Areas.BuildSize | Areas.LoadTime), descriptor.Areas);
         }
     }
 }

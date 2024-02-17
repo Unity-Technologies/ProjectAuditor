@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using UnityEditor;
+using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
@@ -16,55 +16,103 @@ namespace Unity.ProjectAuditor.Editor.Modules
         Num
     }
 
-    class MeshModule : ProjectAuditorModuleWithAnalyzers<IMeshModuleAnalyzer>
+    class MeshModule : ModuleWithAnalyzers<MeshModuleAnalyzer>
     {
         static readonly IssueLayout k_MeshLayout = new IssueLayout
         {
-            category = IssueCategory.Mesh,
-            properties = new[]
+            Category = IssueCategory.Mesh,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, format = PropertyFormat.String, name = "Name", longName = "Mesh Name" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(MeshProperty.VertexCount), format = PropertyFormat.String, name = "Vertex Count" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(MeshProperty.TriangleCount), format = PropertyFormat.String, name = "Triangle Count" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(MeshProperty.MeshCompression), format = PropertyFormat.String, name = "Compression", longName = "Mesh Compression" },
-                new PropertyDefinition { type = PropertyTypeUtil.FromCustom(MeshProperty.SizeOnDisk), format = PropertyFormat.Bytes, name = "Size", longName = "Mesh Size" },
-                new PropertyDefinition { type = PropertyType.Path, name = "Path"}
+                new PropertyDefinition { Type = PropertyType.Description, Format = PropertyFormat.String, Name = "Name", LongName = "Mesh Name", MaxAutoWidth = 500 },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(MeshProperty.VertexCount), Format = PropertyFormat.String, Name = "Vertex Count" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(MeshProperty.TriangleCount), Format = PropertyFormat.String, Name = "Triangle Count" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(MeshProperty.MeshCompression), Format = PropertyFormat.String, Name = "Compression", LongName = "Mesh Compression" },
+                new PropertyDefinition { Type = PropertyTypeUtil.FromCustom(MeshProperty.SizeOnDisk), Format = PropertyFormat.Bytes, Name = "Size", LongName = "Mesh Size" },
+                new PropertyDefinition { Type = PropertyType.Path, Name = "Path", MaxAutoWidth = 500 }
             }
         };
 
-        public override string name => "Meshes";
+        public override string Name => "Meshes";
 
-        public override bool isEnabledByDefault => false;
-
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[]
+        public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[]
         {
             k_MeshLayout,
             AssetsModule.k_IssueLayout
         };
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
-            var analyzers = GetPlatformAnalyzers(projectAuditorParams.platform);
-            var allMeshes = AssetDatabase.FindAssets("t:mesh, a:assets");
+            var analyzers = GetCompatibleAnalyzers(analysisParams);
 
-            progress?.Start("Finding Meshes", "Search in Progress...", allMeshes.Length);
-
-            foreach (var guid in allMeshes)
+            var context = new MeshAnalysisContext()
             {
-                var assetPath = AssetDatabase.GUIDToAssetPath(guid);
-                var importer = AssetImporter.GetAtPath(assetPath);
+                // Importer is set in the loop
+                Params = analysisParams
+            };
 
-                foreach (var analyzer in analyzers)
+            var assetPaths = GetAssetPathsByFilter("t:mesh, a:assets", context);
+
+            progress?.Start("Finding Meshes", "Search in Progress...", assetPaths.Length);
+
+            var issues = new List<ReportItem>();
+
+            foreach (var assetPath in assetPaths)
+            {
+                if (progress?.IsCancelled ?? false)
+                    return AnalysisResult.Cancelled;
+
+                var assetImporter = AssetImporter.GetAtPath(assetPath);
+                // Not all meshes use the ModelImporter, which is why we just pass the AssetImporter to the analyzers to figure out.
+                var modelImporter = assetImporter as ModelImporter;
+                context.Importer = assetImporter;
+
+                var subAssets = AssetDatabase.LoadAllAssetsAtPath(assetPath);
+
+                foreach (var subAsset in subAssets)
                 {
-                    projectAuditorParams.onIncomingIssues(analyzer.Analyze(projectAuditorParams, importer));
+                    var mesh = subAsset as Mesh;
+                    if (mesh == null)
+                        continue;
+
+                    var meshName = mesh.name;
+                    if (string.IsNullOrEmpty(meshName))
+                        meshName = Path.GetFileNameWithoutExtension(assetPath);
+
+                    // TODO: the size returned by the profiler is not the exact size on the target platform. Needs to be fixed.
+                    var size = Profiler.GetRuntimeMemorySizeLong(mesh);
+
+                    context.Name = meshName;
+                    context.Mesh = mesh;
+                    context.Size = size;
+
+                    issues.Add(context.CreateInsight(IssueCategory.Mesh, meshName)
+                        .WithCustomProperties(
+                            new object[((int)MeshProperty.Num)]
+                            {
+                                mesh.vertexCount,
+                                mesh.triangles.Length / 3,
+                                modelImporter != null
+                                ? modelImporter.meshCompression
+                                : ModelImporterMeshCompression.Off,
+                                size
+                            })
+                        .WithLocation(new Location(assetPath)));
+
+                    foreach (var analyzer in analyzers)
+                    {
+                        analysisParams.OnIncomingIssues(analyzer.Analyze(context));
+                    }
                 }
 
                 progress?.Advance();
             }
 
+            if (issues.Count > 0)
+                context.Params.OnIncomingIssues(issues);
+
             progress?.Clear();
 
-            projectAuditorParams.onModuleCompleted?.Invoke();
+            return AnalysisResult.Success;
         }
     }
 }

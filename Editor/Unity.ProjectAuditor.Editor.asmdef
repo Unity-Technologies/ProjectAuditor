@@ -13,15 +13,21 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "Mono.Cecil.dll"
+        "Mono.Cecil.dll",
+        "Newtonsoft.Json.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [
         {
             "name": "Unity",
-            "expression": "2019.4",
-            "define": "BUILD_REPORT_API_SUPPORT"
+            "expression": "2021.2",
+            "define": "PA_CAN_USE_COMPUTESHADER_KEYWORDSPACE"
+        },
+        {
+            "name": "Unity",
+            "expression": "2022.2",
+            "define": "PA_CAN_USE_COMPUTEMIPCHAINSIZE"
         },
         {
             "name": "com.unity.render-pipelines.high-definition",
@@ -39,14 +45,14 @@
             "define": "PACKAGE_ENTITIES"
         },
         {
-            "name": "com.unity.nuget.mono-cecil",
-            "expression": "1.11.4",
-            "define": "UNITY_MONO_CECIL_1_11_4_OR_NEWER"
-        },
-        {
             "name": "com.unity.render-pipelines.universal",
             "expression": "7.0",
             "define": "PACKAGE_URP"
+        },
+        {
+            "name": "com.unity.entities.graphics",
+            "expression": "",
+            "define": "PACKAGE_ENTITIES_GRAPHICS"
         }
     ],
     "noEngineReferences": false

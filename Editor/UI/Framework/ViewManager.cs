@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
 using Unity.ProjectAuditor.Editor.Core;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Profiling;
 
@@ -13,32 +10,41 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
     [Serializable]
     internal sealed class ViewManager
     {
-        class NullFilter : IProjectIssueFilter
+        class NullFilter : IIssueFilter
         {
-            public bool Match(ProjectIssue issue)
+            public bool Match(ReportItem issue)
             {
                 return true;
             }
         }
 
+        Report m_Report;
         AnalysisView[] m_Views;
 
         [SerializeField] IssueCategory[] m_Categories;
         [SerializeField] int m_ActiveViewIndex;
 
-        public int activeViewIndex
-        {
-            get { return m_ActiveViewIndex; }
-        }
+        public Report Report => m_Report;
 
-        public int numViews => m_Views != null ? m_Views.Length : 0;
+        public int NumViews => m_Views != null ? m_Views.Length : 0;
 
-        public Action<IssueCategory> onAnalyze;
-        public Action onViewExported;
-        public Action<int> onViewChanged;
+        // user interactions
+        public Action<int> OnActiveViewChanged { get; set; }
+        public Action<bool> OnMajorOrCriticalIssuesVisibilityChanged { get; set; }
+        public Action<bool> OnIgnoredIssuesVisibilityChanged { get; set; }
+
+        // events that trigger future operations
+        public Action<IssueCategory> OnAnalysisRequested { get; set; }
+        public Action<ReportItem[]>  OnSelectedIssuesIgnoreRequested { get; set; }
+        public Action<ReportItem[]>  OnSelectedIssuesDisplayRequested { get; set; }
+        public Action<ReportItem[]>  OnSelectedIssuesQuickFixRequested { get; set; }
+        public Action<ReportItem[]>  OnSelectedIssuesDocumentationRequested { get; set; }
+
+        // events based on past operations
+        public Action OnViewExportCompleted { get; set; }
 
         public ViewManager()
-            : this(ViewDescriptor.GetAll().Select(d => d.category).ToArray())
+            : this(ViewDescriptor.GetAll().Select(d => d.Category).ToArray())
         {
         }
 
@@ -53,7 +59,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return m_Views != null && m_Views.Length > 0;
         }
 
-        public void AddIssues(IReadOnlyCollection<ProjectIssue> issues)
+        public void AddIssues(IReadOnlyCollection<ReportItem> issues)
         {
             Profiler.BeginSample("ViewManager.AddIssues");
             foreach (var view in m_Views)
@@ -72,7 +78,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
-        public void Create(ProjectAuditor projectAuditor, ViewStates viewStates, Action<ViewDescriptor, bool> onCreateView = null, IProjectIssueFilter filter = null)
+        public void Create(SeverityRules rules, ViewStates viewStates, Action<ViewDescriptor, bool> onCreateView = null, IIssueFilter filter = null)
         {
             if (filter == null)
                 filter = new NullFilter();
@@ -81,13 +87,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             var views = new List<AnalysisView>();
             foreach (var category in m_Categories)
             {
-                var desc = ViewDescriptor.GetAll().FirstOrDefault(d => d.category == category);
+                var desc = ViewDescriptor.GetAll().FirstOrDefault(d => d.Category == category);
                 if (desc == null)
                 {
-                    Debug.LogWarning("[Project Auditor] Descriptor for " + ProjectAuditor.GetCategoryName(category) + " was not registered.");
+                    Debug.LogWarning($"[{ProjectAuditor.DisplayName}] Descriptor for " + ProjectAuditor.GetCategoryName(category) + " was not registered.");
                     continue;
                 }
-                var layout = projectAuditor.GetLayout(category);
+                var layout = IssueLayout.GetLayout(category);
                 var isSupported = layout != null;
 
                 if (onCreateView != null)
@@ -95,12 +101,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
                 if (!isSupported)
                 {
-                    Debug.LogWarning("[Project Auditor] Layout for category " + ProjectAuditor.GetCategoryName(category) + " was not found.");
+                    Debug.LogWarning($"[{ProjectAuditor.DisplayName}] Layout for category " + ProjectAuditor.GetCategoryName(category) + " was not found.");
                     continue;
                 }
 
-                var view = desc.type != null ? (AnalysisView)Activator.CreateInstance(desc.type, this) : new AnalysisView(this);
-                view.Create(desc, layout, projectAuditor.config, viewStates, filter);
+                var view = desc.Type != null ? (AnalysisView)Activator.CreateInstance(desc.Type, this) : new AnalysisView(this);
+                view.Create(desc, layout, rules, viewStates, filter);
                 view.OnEnable();
                 views.Add(view);
             }
@@ -135,13 +141,13 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public AnalysisView GetView(IssueCategory category)
         {
-            return m_Views.FirstOrDefault(v => v.desc.category == category);
+            return m_Views.FirstOrDefault(v => v.Desc.Category == category);
         }
 
         public void ChangeView(IssueCategory category)
         {
             var activeView = GetActiveView();
-            if (activeView.desc.category == category)
+            if (activeView.Desc.Category == category)
             {
                 return;
             }
@@ -160,8 +166,8 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 m_ActiveViewIndex = index;
 
-                if (onViewChanged != null)
-                    onViewChanged(m_ActiveViewIndex);
+                if (OnActiveViewChanged != null)
+                    OnActiveViewChanged(m_ActiveViewIndex);
             }
         }
 
@@ -174,6 +180,29 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 view.MarkDirty();
             }
+        }
+
+        /// <summary>
+        /// Mark all views as dirty. Use this to reload their tables.
+        /// </summary>
+        public void MarkViewColumnWidthsAsDirty()
+        {
+            foreach (var view in m_Views)
+            {
+                view.MarkColumnWidthsDirty();
+            }
+        }
+
+        public void OnAnalysisCompleted(Report report)
+        {
+            m_Report = report;
+            MarkViewColumnWidthsAsDirty();
+        }
+
+        public void OnAnalysisRestored(Report report)
+        {
+            AddIssues(report.GetAllIssues());
+            m_Report = report;
         }
 
         public void LoadSettings()

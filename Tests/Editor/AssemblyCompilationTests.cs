@@ -12,13 +12,8 @@ namespace Unity.ProjectAuditor.EditorTests
     class AssemblyCompilationTests : TestFixtureBase
     {
 #pragma warning disable 0414
-        TestAsset m_TestAsset; // this is required to generate Assembly-CSharp.dll
-#pragma warning restore 0414
-
-        [OneTimeSetUp]
-        public void SetUp()
-        {
-            m_TestAsset = new TestAsset("MyClass.cs", @"
+        // this is required to generate Assembly-CSharp.dll
+        TestAsset m_TestAsset = new TestAsset("MyClass.cs", @"
 class MyClass
 {
     object myObj;
@@ -32,17 +27,16 @@ class MyClass
     void PlayerMethod()
     { myObj = 9; }
 #endif
-}
-");
-        }
+}");
+#pragma warning restore 0414
 
         [Test]
         public void AssemblyCompilation_DefaultSettings_AreCorrect()
         {
             using (var compilationHelper = new AssemblyCompilation())
             {
-                Assert.AreEqual(CompilationMode.Player, compilationHelper.compilationMode);
-                Assert.AreEqual(EditorUserBuildSettings.activeBuildTarget, compilationHelper.platform);
+                Assert.AreEqual(CompilationMode.Player, compilationHelper.CompilationMode);
+                Assert.AreEqual(EditorUserBuildSettings.activeBuildTarget, compilationHelper.Platform);
             }
         }
 
@@ -54,7 +48,7 @@ class MyClass
                 var assemblyInfos = compilationHelper.Compile();
 
                 Assert.Positive(assemblyInfos.Count());
-                Assert.NotNull(assemblyInfos.FirstOrDefault(info => info.name.Equals(AssemblyInfo.DefaultAssemblyName)));
+                Assert.NotNull(assemblyInfos.FirstOrDefault(info => info.Name.Equals(AssemblyInfo.DefaultAssemblyName)));
             }
         }
 
@@ -63,10 +57,10 @@ class MyClass
         {
             using (var compilationHelper = new AssemblyCompilation
                {
-                   compilationMode =  CompilationMode.Editor
+                   CompilationMode =  CompilationMode.Editor
                })
             {
-                var assemblyInfo = compilationHelper.Compile().FirstOrDefault(a => a.name.Equals("Unity.ProjectAuditor.Editor"));
+                var assemblyInfo = compilationHelper.Compile().FirstOrDefault(a => a.Name.Equals("Unity.ProjectAuditor.Editor"));
 
                 Assert.NotNull(assemblyInfo);
             }
@@ -77,10 +71,10 @@ class MyClass
         {
             using (var compilationHelper = new AssemblyCompilation
                {
-                   compilationMode =  CompilationMode.EditorPlayMode
+                   CompilationMode =  CompilationMode.EditorPlayMode
                })
             {
-                var assemblyInfo = compilationHelper.Compile().FirstOrDefault(a => a.name.Equals("Unity.ProjectAuditor.Editor"));
+                var assemblyInfo = compilationHelper.Compile().FirstOrDefault(a => a.Name.Equals("Unity.ProjectAuditor.Editor"));
 
                 Assert.Null(assemblyInfo);
             }
@@ -93,17 +87,17 @@ class MyClass
         //[TestCase(CompilationMode.Editor, "Editor")]
         public void AssemblyCompilation_Player_IsCompiled(CompilationMode mode, string methodName)
         {
-            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            config.CompilationMode = mode;
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            var report = projectAuditor.Audit(new AnalysisParams
+            {
+                CompilationMode = mode
+            });
 
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
-            var projectReport = projectAuditor.Audit();
-
-            var issues = projectReport.FindByCategory(IssueCategory.Code);
-            var codeIssue = issues.FirstOrDefault(i => i.relativePath.Equals(m_TestAsset.relativePath));
+            var issues = report.FindByCategory(IssueCategory.Code);
+            var codeIssue = issues.FirstOrDefault(i => i.RelativePath.Equals(m_TestAsset.RelativePath));
 
             Assert.NotNull(codeIssue);
-            Assert.AreEqual("MyClass." + methodName, codeIssue.dependencies.prettyName);
+            Assert.AreEqual("MyClass." + methodName, codeIssue.Dependencies.PrettyName);
         }
     }
 }

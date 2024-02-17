@@ -1,8 +1,7 @@
-using System;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
@@ -18,6 +17,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             Major,
             Moderate,
             Minor,
+            Ignored,
 
             Help,
             Refresh,
@@ -34,6 +34,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             View,
             WhiteCheckMark,
             GreenCheckMark,
+            CopyToClipboard,
+            AdditionalAnalysis,
+            FoldoutExpanded,
+            FoldoutFolded
         }
 
         // Log level
@@ -46,6 +50,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static readonly string k_MajorIconName = "Major";
         static readonly string k_ModerateIconName = "Moderate";
         static readonly string k_MinorIconName = "Minor";
+        static readonly string k_IgnoredIconName = "Ignored";
 
         static readonly string k_HelpIconName = "_Help";
         static readonly string k_RefreshIconName = "Refresh";
@@ -61,13 +66,30 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         static readonly string k_SaveIconName = "SaveAs";
         static readonly string k_TrashIconName = "TreeEditor.Trash";
         static readonly string k_ViewIconName = "ViewToolOrbit";
+        static readonly string k_DisplayedIgnoredIssuesIconName = "animationvisibilitytoggleon";
+        static readonly string k_HiddenIgnoredIssuesIconName = "animationvisibilitytoggleoff";
+        static readonly string k_IgnoredIssuesLabel = " Ignored Issues";
+        static readonly string k_CopyToClipboardIconName = "CopyToClipboard";
+        static readonly string k_AdditionalAnalysisIconName = "AdditionalAnalysis";
+        static readonly string k_FoldoutExpandedIconName = "ClassicFoldoutArrow-Open";
+        static readonly string k_FoldoutFoldedIconName = "ClassicFoldoutArrow-Close";
 
         static Texture2D s_CriticalIcon;
         static Texture2D s_MajorIcon;
         static Texture2D s_ModerateIcon;
         static Texture2D s_MinorIcon;
+        static Texture2D s_IgnoredIcon;
+
+        static Texture2D s_CopyToClipboardIcon;
+        static Texture2D s_AdditionalAnalysisIcon;
+        static Texture2D s_FoldoutExpandedIcon;
+        static Texture2D s_FoldoutFoldedIcon;
 
         static GUIContent[] s_StatusWheel;
+
+        static byte[] s_LetterWidths;
+        static GUIStyle s_Style;
+        static GUIContent s_GUIContent;
 
         public static readonly GUIContent ClearSelection = new GUIContent("Clear Selection");
         public static readonly GUIContent CopyToClipboard = new GUIContent("Copy to Clipboard");
@@ -139,24 +161,18 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public static void DrawSelectedText(string text)
         {
-#if UNITY_2019_1_OR_NEWER
             var treeViewSelectionStyle = (GUIStyle)"TV Selection";
             var backgroundStyle = new GUIStyle(treeViewSelectionStyle);
 
             var treeViewLineStyle = (GUIStyle)"TV Line";
             var textStyle = new GUIStyle(treeViewLineStyle);
-#else
-            var textStyle = GUI.skin.label;
-#endif
 
             var content = new GUIContent(text, text);
             var size = textStyle.CalcSize(content);
             var rect = EditorGUILayout.GetControlRect(GUILayout.MaxWidth(size.x), GUILayout.Height(size.y));
             if (Event.current.type == EventType.Repaint)
             {
-#if UNITY_2019_1_OR_NEWER
                 backgroundStyle.Draw(rect, false, false, true, true);
-#endif
                 GUI.Label(rect, content, textStyle);
             }
         }
@@ -194,11 +210,10 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return $"BuildSettings.{platformName}.Small";
         }
 
-        public static GUIContent GetPlatformIcon(BuildTargetGroup buildTargetGroup)
+        public static GUIContent GetPlatformIconWithName(BuildTargetGroup buildTargetGroup)
         {
             var iconName = GetPlatformIconName(buildTargetGroup);
-
-            return EditorGUIUtility.IconContent(iconName);
+            return EditorGUIUtility.TrTextContentWithIcon(buildTargetGroup.ToString(), iconName);
         }
 
         public static GUIContent GetIcon(IconType iconType, string tooltip = null)
@@ -219,7 +234,7 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                         tooltip = "Error";
                     return EditorGUIUtility.TrIconContent(k_ErrorIconName, tooltip);
 
-                // severity icons
+                // Severity icons
                 case IconType.Critical:
                     if (string.IsNullOrEmpty(tooltip))
                         tooltip = "Critical";
@@ -244,6 +259,33 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
                     if (s_MinorIcon == null)
                         s_MinorIcon = LoadIcon(k_MinorIconName);
                     return EditorGUIUtility.TrIconContent(s_MinorIcon, tooltip);
+                case IconType.Ignored:
+                    if (string.IsNullOrEmpty(tooltip))
+                        tooltip = "Ignored";
+                    if (s_IgnoredIcon == null)
+                        s_IgnoredIcon = LoadIcon(k_IgnoredIconName);
+                    return EditorGUIUtility.TrIconContent(s_IgnoredIcon, tooltip);
+
+                case IconType.CopyToClipboard:
+                    if (string.IsNullOrEmpty(tooltip))
+                        tooltip = "Copy to Clipboard";
+                    if (s_CopyToClipboardIcon == null)
+                        s_CopyToClipboardIcon = LoadIcon(k_CopyToClipboardIconName);
+                    return EditorGUIUtility.TrIconContent(s_CopyToClipboardIcon, tooltip);
+                case IconType.AdditionalAnalysis:
+                    if (string.IsNullOrEmpty(tooltip))
+                        tooltip = "Not Analyzed";
+                    if (s_AdditionalAnalysisIcon == null)
+                        s_AdditionalAnalysisIcon = LoadIcon(k_AdditionalAnalysisIconName);
+                    return EditorGUIUtility.TrIconContent(s_AdditionalAnalysisIcon, tooltip);
+                case IconType.FoldoutExpanded:
+                    if (s_FoldoutExpandedIcon == null)
+                        s_FoldoutExpandedIcon = LoadIcon(k_FoldoutExpandedIconName);
+                    return EditorGUIUtility.TrIconContent(s_FoldoutExpandedIcon);
+                case IconType.FoldoutFolded:
+                    if (s_FoldoutFoldedIcon == null)
+                        s_FoldoutFoldedIcon = LoadIcon(k_FoldoutFoldedIconName);
+                    return EditorGUIUtility.TrIconContent(s_FoldoutFoldedIcon);
 
                 case IconType.Hierarchy:
                     return EditorGUIUtility.TrIconContent(k_HierarchyIconName, tooltip);
@@ -278,50 +320,44 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return null;
         }
 
-        public static GUIContent GetLogLevelIcon(Core.LogLevel logLevel, string tooltip = null)
+        public static GUIContent GetIconWithText(IconType iconType, string displayName, string tooltip = null)
+        {
+            switch (iconType)
+            {
+                case IconType.Refresh:
+                    return EditorGUIUtility.TrTextContentWithIcon(displayName, tooltip, k_RefreshIconName);
+            }
+
+            return null;
+        }
+
+        public static GUIContent GetLogLevelIcon(LogLevel logLevel, string tooltip = null)
         {
             switch (logLevel)
             {
-                case Core.LogLevel.Info:
+                case LogLevel.Info:
                     return GetIcon(IconType.Info, tooltip);
-                case Core.LogLevel.Warning:
+                case LogLevel.Warning:
                     return GetIcon(IconType.Warning, tooltip);
-                case Core.LogLevel.Error:
+                case LogLevel.Error:
                     return GetIcon(IconType.Error, tooltip);
                 default:
                     return GetIcon(IconType.Help, tooltip);
             }
         }
 
-        public static GUIContent GetTextWithLogLevelIcon(string text, string tooltip, Severity severity)
+        public static GUIContent GetSeverityIcon(Severity severity)
         {
             switch (severity)
             {
-                case Severity.Info:
-                    return EditorGUIUtility.TrTextContentWithIcon(text, tooltip, MessageType.Info);
-                case Severity.Warning:
-                    return EditorGUIUtility.TrTextContentWithIcon(text, tooltip, MessageType.Warning);
-                case Severity.Error:
-                    return EditorGUIUtility.TrTextContentWithIcon(text, tooltip, MessageType.Error);
-                default:
-                    return EditorGUIUtility.TrTextContentWithIcon(text, tooltip, MessageType.None);
-            }
-        }
-
-        public static GUIContent GetSeverityIcon(Severity severity, string tooltip = null)
-        {
-            switch (severity)
-            {
-                case Severity.Minor:
-                    return GetIcon(IconType.Minor, tooltip);
-                case Severity.Moderate:
-                    return GetIcon(IconType.Moderate, tooltip);
-                case Severity.Major:
-                    return GetIcon(IconType.Major, tooltip);
                 case Severity.Critical:
-                    return GetIcon(IconType.Critical, tooltip);
+                    return GetIcon(IconType.Critical);
+                case Severity.Major:
+                    return GetIcon(IconType.Major);
+                case Severity.Moderate:
+                    return GetIcon(IconType.Moderate);
                 default:
-                    return GetIcon(IconType.Help, tooltip);
+                    return GetIcon(IconType.Minor);
             }
         }
 
@@ -350,6 +386,31 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             }
         }
 
+        public static GUIContent GetSeverityIconWithCustomText(Severity severity, string text)
+        {
+            switch (severity)
+            {
+                case Severity.Minor:
+                    if (s_MinorIcon == null)
+                        s_MinorIcon = LoadIcon(k_MinorIconName);
+                    return EditorGUIUtility.TrTextContentWithIcon(text, s_MinorIcon);
+                case Severity.Moderate:
+                    if (s_ModerateIcon == null)
+                        s_ModerateIcon = LoadIcon(k_ModerateIconName);
+                    return EditorGUIUtility.TrTextContentWithIcon(text, s_ModerateIcon);
+                case Severity.Major:
+                    if (s_MajorIcon == null)
+                        s_MajorIcon = LoadIcon(k_MajorIconName);
+                    return EditorGUIUtility.TrTextContentWithIcon(text, s_MajorIcon);
+                case Severity.Critical:
+                    if (s_CriticalIcon == null)
+                        s_CriticalIcon = LoadIcon(k_CriticalIconName);
+                    return EditorGUIUtility.TrTextContentWithIcon(text, s_CriticalIcon);
+                default:
+                    return EditorGUIUtility.TrTextContentWithIcon("Unknown", MessageType.None);
+            }
+        }
+
         static GUIContent GetStatusWheel()
         {
             if (s_StatusWheel == null)
@@ -369,9 +430,23 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             return EditorGUIUtility.TrTextContentWithIcon(displayName, assetPath, icon);
         }
 
+        internal static GUIContent GetDisplayIgnoredIssuesIconWithLabel()
+        {
+            var guiContent = EditorGUIUtility.TrIconContent(k_DisplayedIgnoredIssuesIconName);
+            guiContent.text = k_IgnoredIssuesLabel;
+            return guiContent;
+        }
+
+        internal static GUIContent GetHiddenIgnoredIssuesIconWithLabel()
+        {
+            var guiContent = EditorGUIUtility.TrIconContent(k_HiddenIgnoredIssuesIconName);
+            guiContent.text = k_IgnoredIssuesLabel;
+            return guiContent;
+        }
+
         static Texture2D LoadIcon(string iconName)
         {
-            return AssetDatabase.LoadAssetAtPath<Texture2D>($"{ProjectAuditor.s_PackagePath}/Editor/Icons/{iconName}.png");
+            return AssetDatabase.LoadAssetAtPath<Texture2D>($"{ProjectAuditorPackage.Path}/Editor/Icons/{iconName}.png");
         }
 
         public static Texture2D MakeColorTexture(Color col)
@@ -384,6 +459,63 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             result.Apply();
 
             return result;
+        }
+
+        // A quick and dirty way to get a rough width of a string, in comparison to other strings that also get passed to this method.
+        // Used to find the widest string in a column. Pass that string to GetWidth_SlowButAccurate to get an actual width that includes kerning.
+        public static float EstimateWidth(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return 0;
+
+            Profiler.BeginSample("Utility.EstimateWidth");
+
+            if (s_LetterWidths == null)
+                s_LetterWidths = new byte[256];
+
+            var style = GUI.skin.box;
+            int totalWidth = 0;
+            int len = text.Length;
+            for (int i = 0; i < len; ++i)
+            {
+                var currChar = text[i];
+                // Yes, we are crunching a 16-bit Unicode character down to a single byte, and will likely end up with
+                // the wrong widths for non-English characters as a result. Why? Because the error will probably be
+                // comparatively small, and because we want s_LetterWidths to fit into a cache-friendly 64 bytes rather than
+                // a whole 16KB. We're in an extremely hot code path here, and speed is more important than accuracy.
+                var charByte = (byte)currChar;
+                byte charWidth = s_LetterWidths[charByte];
+                if (charWidth == 0)
+                {
+                    var content = new GUIContent(currChar.ToString());
+                    charWidth = (byte)((int)style.CalcSize(content).x);
+                    s_LetterWidths[charByte] = charWidth;
+                }
+
+                totalWidth += charWidth;
+            }
+
+            Profiler.EndSample();
+            return totalWidth;
+        }
+
+        public static float GetWidth_SlowButAccurate(string text, int fontSize)
+        {
+            Profiler.BeginSample("Utility.GetWidth_SlowButAccurate");
+
+            if (s_Style == null)
+                s_Style = EditorStyles.label;
+
+            if (s_GUIContent == null)
+                s_GUIContent = new GUIContent();
+
+            s_Style.fontSize = fontSize;
+            s_GUIContent.text = text;
+            var width = s_Style.CalcSize(s_GUIContent).x;
+
+            Profiler.EndSample();
+
+            return width;
         }
     }
 }

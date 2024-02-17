@@ -7,15 +7,21 @@ using UnityEngine;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
-    class MetaDataTests : TestFixtureBase
+    class MetadataTests : TestFixtureBase
     {
         [Test]
-        public void MetaData_IsReported()
+        public void Metadata_IsReported()
         {
-            var matchingIssue = Analyze(IssueCategory.MetaData, issue => issue.description.Equals("Unity Version")).FirstOrDefault();
+            var report = m_ProjectAuditor.Audit(new AnalysisParams
+            {
+                Categories = new[]
+                {
+                    IssueCategory.ProjectSetting,
+                }
+            });
 
-            Assert.NotNull(matchingIssue);
-            Assert.AreEqual(Application.unityVersion, matchingIssue.GetCustomProperty(MetaDataProperty.Value));
+            Assert.IsNotNull(report.SessionInfo);
+            Assert.AreEqual(Application.unityVersion, report.SessionInfo.UnityVersion);
         }
     }
 }

@@ -6,12 +6,12 @@ namespace Unity.ProjectAuditor.Editor.Core
     {
         public override string GetName()
         {
-            return location.Filename;
+            return Location.Filename;
         }
 
         public override string GetPrettyName()
         {
-            return location.Path;
+            return Location.Path;
         }
 
         public override bool IsPerfCritical()

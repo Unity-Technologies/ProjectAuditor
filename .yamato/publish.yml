@@ -1,0 +1,28 @@
+{% metadata_file .yamato/config.metadata %}
+---
+
+publish:
+  name: Publish to Internal Registry
+  agent:
+    type: Unity::VM
+    image: package-ci/win10:stable
+    flavor: b1.large
+  commands:
+    - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+    - upm-ci package publish --package-path com.unity.project-auditor
+  triggers:
+    tags:
+      only:
+        - /^[Rr][Cc]-(0\.\d+\.\d+|[1-9]\d*\.\d+\.\d+(-preview(\.\d+)?|-exp(\.\d+|-\w+\.\d+)|-pre\.\d+)?)$/
+  artifacts:
+    artifacts:
+      paths:
+        - "upm-ci~/packages/*.tgz"
+  dependencies:
+    - .yamato/pack.yml#pack
+{% for editor in test_editors -%}
+{% for platform in test_platforms -%}
+    - .yamato/test.yml#test_{{ platform.name }}_{{ editor.version }}
+    - .yamato/test.yml#validate_{{ platform.name }}_{{ editor.version }}
+{% endfor -%}
+{% endfor -%}

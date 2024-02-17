@@ -1,14 +1,9 @@
-using System;
 using System.Linq;
 using NUnit.Framework;
 using Unity.ProjectAuditor.Editor;
 using Unity.ProjectAuditor.Editor.AssemblyUtils;
-using Unity.ProjectAuditor.Editor.Diagnostic;
 using Unity.ProjectAuditor.Editor.Modules;
 using Unity.ProjectAuditor.Editor.Tests.Common;
-using Unity.ProjectAuditor.Editor.Utils;
-using UnityEngine;
-using UnityEngine.TestTools;
 
 namespace Unity.ProjectAuditor.EditorTests
 {
@@ -19,7 +14,7 @@ namespace Unity.ProjectAuditor.EditorTests
 #pragma warning restore 0414
 
         [OneTimeSetUp]
-        public void SetUp()
+        public void OneTimeSetUp()
         {
             m_ScriptWithWarning = new TestAsset("ScriptWithWarning.cs", @"
 class ScriptWithWarning {
@@ -40,15 +35,15 @@ class ScriptWithWarning {
 
             var issue = issues.First();
 
-            // check descriptor
-            Assert.IsNull(issue.descriptor);
+            // check ID
+            Assert.IsFalse(issue.Id.IsValid());
 
             // check issue
-            Assert.That(issue.category, Is.EqualTo(IssueCategory.CodeCompilerMessage));
-            Assert.AreEqual("The variable 'i' is assigned but its value is never used", issue.description);
-            Assert.True(issue.relativePath.StartsWith("Assets/"), "Relative path: " + issue.relativePath);
-            Assert.That(issue.line, Is.EqualTo(5));
-            Assert.That(issue.severity, Is.EqualTo(Severity.Warning));
+            Assert.That(issue.Category, Is.EqualTo(IssueCategory.CodeCompilerMessage));
+            Assert.AreEqual("The variable 'i' is assigned but its value is never used", issue.Description);
+            Assert.True(issue.RelativePath.StartsWith("Assets/"), "Relative path: " + issue.RelativePath);
+            Assert.That(issue.Line, Is.EqualTo(5));
+            Assert.That(issue.Severity, Is.EqualTo(Severity.Warning));
 
             // check properties
             Assert.AreEqual((int)CompilerMessageProperty.Num, issue.GetNumCustomProperties());

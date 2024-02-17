@@ -19,11 +19,7 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProjectAuditor_Module_IsSupported()
         {
-#if BUILD_REPORT_API_SUPPORT
             Assert.True(m_ProjectAuditor.IsModuleSupported(IssueCategory.BuildFile));
-#else
-            Assert.False(m_ProjectAuditor.IsModuleSupported(IssueCategory.BuildFile));
-#endif
         }
 
         [Test]
@@ -52,84 +48,73 @@ namespace Unity.ProjectAuditor.EditorTests
         [Test]
         public void ProjectAuditor_Params_DefaultsAreCorrect()
         {
-            var projectAuditorParams = new ProjectAuditorParams();
+            var analysisParams = new AnalysisParams();
 
-            Assert.IsNull(projectAuditorParams.categories);
-            Assert.IsNull(projectAuditorParams.assemblyNames);
-            Assert.AreEqual(EditorUserBuildSettings.activeBuildTarget, projectAuditorParams.platform);
-            Assert.AreEqual(CodeOptimization.Release, projectAuditorParams.codeOptimization);
+            Assert.IsNull(analysisParams.Categories);
+            Assert.IsNull(analysisParams.AssemblyNames);
+            // analysisParams.Platform defaults to NoTarget because we can't call EditorUserBuildSettings.activeBuildTarget
+            // during construction/serialization. Platform gets set when params is passed to an instance of ProjectAuditor
+            Assert.AreEqual(BuildTarget.NoTarget, analysisParams.Platform);
+            Assert.AreEqual(CodeOptimization.Release, analysisParams.CodeOptimization);
         }
 
         [Test]
         public void ProjectAuditor_Params_AreCopied()
         {
-            var settingsProvider = new ProjectAuditorSettingsProvider();
-            var settings = settingsProvider.GetCurrentSettings();
+            var rules = new SeverityRules();
 
-            var originalParams = new ProjectAuditorParams
+            var originalParams = new AnalysisParams
             {
-                categories = new[] { IssueCategory.Code },
-                assemblyNames = new[] { "Test" },
-                platform = BuildTarget.Android,
-                codeOptimization = CodeOptimization.Debug,
-                settings = settings
+                Categories = new[] { IssueCategory.Code },
+                AssemblyNames = new[] { "Test" },
+                Platform = BuildTarget.Android,
+                CodeOptimization = CodeOptimization.Debug,
+                Rules = rules
             };
 
-            var projectAuditorParams = new ProjectAuditorParams(originalParams);
+            var analysisParams = new AnalysisParams(originalParams);
 
-            Assert.IsNotNull(projectAuditorParams.categories);
-            Assert.IsNotNull(projectAuditorParams.assemblyNames);
-            Assert.AreEqual(BuildTarget.Android, projectAuditorParams.platform);
-            Assert.AreEqual(CodeOptimization.Debug, projectAuditorParams.codeOptimization);
-            Assert.AreEqual(settings, projectAuditorParams.settings);
+            Assert.IsNotNull(analysisParams.Categories);
+            Assert.IsNotNull(analysisParams.AssemblyNames);
+            Assert.AreEqual(BuildTarget.Android, analysisParams.Platform);
+            Assert.AreEqual(CodeOptimization.Debug, analysisParams.CodeOptimization);
+            Assert.AreEqual(rules, analysisParams.Rules);
         }
 
         [Test]
         public void ProjectAuditor_Params_CallbacksAreInvoked()
         {
-            var config = ScriptableObject.CreateInstance<ProjectAuditorConfig>();
-            config.CompilationMode = CompilationMode.Player;
-
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(config);
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
 
             int numModules = 0;
-            ProjectReport projectReport = null;
+            Report report = null;
 
-            var settingsProvider = new ProjectAuditorSettingsProvider();
-            settingsProvider.Initialize();
-
-            projectAuditor.Audit(new ProjectAuditorParams
+            projectAuditor.Audit(new AnalysisParams
             {
-                categories = new[] { IssueCategory.ProjectSetting },
-                onModuleCompleted = () => numModules++,
-                onCompleted = report =>
+                Categories = new[] { IssueCategory.ProjectSetting },
+                OnModuleCompleted = (analysisResult) => numModules++,
+                OnCompleted = completedReport =>
                 {
-                    Assert.Null(projectReport);
-                    Assert.NotNull(report);
+                    Assert.Null(report);
+                    Assert.NotNull(completedReport);
 
-                    projectReport = report;
+                    report = completedReport;
                 },
-                settings = settingsProvider.GetCurrentSettings()
+                CompilationMode = CompilationMode.Player
             });
 
-            Assert.AreEqual(1, numModules);
-            Assert.NotNull(projectReport);
+            // we have 2 modules reporting ProjectSetting issues
+            Assert.AreEqual(2, numModules);
+            Assert.NotNull(report);
         }
 
         [Test]
         public void ProjectAuditor_Report_IsUpdated()
         {
-            var savedSetting = PlayerSettings.bakeCollisionMeshes;
-            PlayerSettings.bakeCollisionMeshes = false;
-
-            var settingsProvider = new ProjectAuditorSettingsProvider();
-            settingsProvider.Initialize();
-
-            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor(m_Config);
-            var report = projectAuditor.Audit(new ProjectAuditorParams
+            var projectAuditor = new Unity.ProjectAuditor.Editor.ProjectAuditor();
+            var report = projectAuditor.Audit(new AnalysisParams
             {
-                categories = new[] { IssueCategory.ProjectSetting},
-                settings = settingsProvider.GetCurrentSettings()
+                Categories = new[] { IssueCategory.ProjectSetting}
             });
 
             Assert.True(report.HasCategory(IssueCategory.ProjectSetting));
@@ -140,17 +125,14 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.False(report.HasCategory(IssueCategory.ProjectSetting));
             Assert.Zero(report.FindByCategory(IssueCategory.ProjectSetting).Count);
 
-            projectAuditor.Audit(new ProjectAuditorParams
+            projectAuditor.Audit(new AnalysisParams
             {
-                categories = new[] { IssueCategory.ProjectSetting},
-                existingReport = report,
-                settings = settingsProvider.GetCurrentSettings()
+                Categories = new[] { IssueCategory.ProjectSetting},
+                ExistingReport = report
             });
 
             Assert.True(report.HasCategory(IssueCategory.ProjectSetting));
             Assert.Positive(report.FindByCategory(IssueCategory.ProjectSetting).Count);
-
-            PlayerSettings.bakeCollisionMeshes = savedSetting;
         }
     }
 }

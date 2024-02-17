@@ -15,23 +15,13 @@ namespace Unity.ProjectAuditor.EditorTests
     class AssemblyInfoTests : TestFixtureBase
     {
 #pragma warning disable 0414
-        TestAsset m_TestAsset;
+        // this is required so the default assembly is generated when testing on an empty project (i.e: on Yamato)
+        TestAsset m_TestAsset = new TestAsset("MyClass.cs", "class MyClass { void MyMethod() { UnityEngine.Debug.Log(666); } }");
 #pragma warning restore 0414
 
-        [OneTimeSetUp]
-        public void SetUp()
-        {
-            // this is required so the default assembly is generated when testing on an empty project (i.e: on Yamato)
-            m_TestAsset = new TestAsset("MyClass.cs", "class MyClass { void MyMethod() { UnityEngine.Debug.Log(666); } }");
-        }
-
         [Test]
-#if UNITY_2020_2_OR_NEWER
         [TestCase("/Managed/UnityEngine/UnityEditor.dll")]
         [TestCase("/Managed/UnityEngine/UnityEditor.CoreModule.dll")]
-#else
-        [TestCase("/Managed/UnityEditor.dll")]
-#endif
         public void AssemblyInfo_UnityEditorAssemblyPath_IsFound(string assemblyRelativePath)
         {
             var paths = AssemblyInfoProvider.GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.UnityEditor);
@@ -53,33 +43,6 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.NotNull(result);
         }
 
-#if !UNITY_2019_2_OR_NEWER
-        [Test]
-        [TestCase("UnityEditor.Networking.dll")]
-        [TestCase("UnityEditor.UI.dll")]
-        [TestCase("UnityEditor.Timeline.dll")]
-        public void AssemblyInfo_UnityEditorExtensionAssemblyPath_IsFound(string assemblyName)
-        {
-            var paths = AssemblyInfoProvider.GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.All);
-            var result = paths.FirstOrDefault(path => path.EndsWith(assemblyName));
-
-            Assert.NotNull(result);
-        }
-
-        [Test]
-        [TestCase("UnityEngine.Networking.dll")]
-        [TestCase("UnityEngine.UI.dll")]
-        [TestCase("UnityEngine.Timeline.dll")]
-        public void AssemblyInfo_UnityEngineExtensionAssemblyPath_IsFound(string assemblyName)
-        {
-            var paths = AssemblyInfoProvider.GetPrecompiledAssemblyPaths(PrecompiledAssemblyTypes.UnityEngine);
-            var result = paths.FirstOrDefault(path => path.EndsWith(assemblyName));
-
-            Assert.NotNull(result);
-        }
-
-#endif
-
         [Test]
         public void AssemblyInfo_PackageAssemblyPath_IsFound()
         {
@@ -95,22 +58,20 @@ namespace Unity.ProjectAuditor.EditorTests
         {
             var acceptablePrefixes = new[]
             {
-#if !UNITY_2019_1_OR_NEWER
-                "Library/PackageCache/",
-#endif
                 "Assets/",
                 "Packages/",
                 "Resources/unity_builtin_extra",
                 "Unity.SourceGenerators/",
-                PathUtils.Combine(AssemblyInfoProvider.s_ProjectPath, "Unity.SourceGenerators"),
+                PathUtils.Combine(Editor.ProjectAuditor.ProjectPath, "Unity.SourceGenerators"),
+                PathUtils.Combine(Editor.ProjectAuditor.ProjectPath, "Unity.Entities.SourceGen"),
                 "Built-in",                        // prefix for built-in resources such as textures (not a real prefix path)
             };
 
-            var issues = AnalyzeBuild(i => i.category != IssueCategory.ProjectSetting && i.category != IssueCategory.PrecompiledAssembly);
+            var issues = AnalyzeBuild(i => i.Category != IssueCategory.ProjectSetting && i.Category != IssueCategory.PrecompiledAssembly);
             foreach (var issue in issues)
             {
-                var relativePath = issue.relativePath;
-                Assert.True(string.IsNullOrEmpty(relativePath) || acceptablePrefixes.Any(prefix => relativePath.StartsWith(prefix)), "Path: " + relativePath + " Category: " + issue.category);
+                var relativePath = issue.RelativePath;
+                Assert.True(string.IsNullOrEmpty(relativePath) || acceptablePrefixes.Any(prefix => relativePath.StartsWith(prefix)), "Path: " + relativePath + " Category: " + issue.Category);
             }
         }
 
@@ -136,9 +97,9 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
 
-            Assert.AreEqual($"Library/ScriptAssemblies/{AssemblyInfo.DefaultAssemblyFileName}", assemblyInfo.path);
-            Assert.IsNull(assemblyInfo.asmDefPath);
-            Assert.IsFalse(assemblyInfo.packageReadOnly);
+            Assert.AreEqual($"Library/ScriptAssemblies/{AssemblyInfo.DefaultAssemblyFileName}", assemblyInfo.Path);
+            Assert.AreEqual("Built-in", assemblyInfo.AsmDefPath);
+            Assert.IsFalse(assemblyInfo.IsPackageReadOnly);
         }
 
         [Test]
@@ -150,9 +111,9 @@ namespace Unity.ProjectAuditor.EditorTests
 
             var assemblyInfo = AssemblyInfoProvider.GetAssemblyInfoFromAssemblyPath(assembly.outputPath);
 
-            Assert.AreEqual("Library/ScriptAssemblies/Unity.ProjectAuditor.Editor.dll", assemblyInfo.path);
-            Assert.AreEqual(Unity.ProjectAuditor.Editor.ProjectAuditor.s_PackagePath + "/Editor/Unity.ProjectAuditor.Editor.asmdef", assemblyInfo.asmDefPath);
-            Assert.AreEqual(Unity.ProjectAuditor.Editor.ProjectAuditor.s_PackagePath, assemblyInfo.relativePath);
+            Assert.AreEqual("Library/ScriptAssemblies/Unity.ProjectAuditor.Editor.dll", assemblyInfo.Path);
+            Assert.AreEqual(ProjectAuditorPackage.Path + "/Editor/Unity.ProjectAuditor.Editor.asmdef", assemblyInfo.AsmDefPath);
+            Assert.AreEqual(ProjectAuditorPackage.Path, assemblyInfo.RelativePath);
         }
 
         [Test]
@@ -166,13 +127,10 @@ namespace Unity.ProjectAuditor.EditorTests
             Assert.AreEqual("Packages/com.unity.ugui/Runtime/UI/Core/AnimationTriggers.cs", path, "Resolved Path is: " + path);
         }
 
-#if UNITY_2019_1_OR_NEWER
         [Test]
         public void AssemblyInfo_RegistryPackageAssembly_IsReadOnly()
         {
             Assert.IsTrue(AssemblyInfoProvider.IsReadOnlyAssembly("UnityEngine.TestRunner"));
         }
-
-#endif
     }
 }

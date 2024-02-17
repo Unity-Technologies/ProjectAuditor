@@ -1,7 +1,5 @@
 using System;
 using System.IO;
-using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.Utils;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -10,17 +8,19 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 {
     internal static class EditorInterop
     {
+        public static void CopyToClipboard(string text)
+        {
+            EditorGUIUtility.systemCopyBuffer = text;
+        }
+
         public static void OpenCodeDescriptor(Descriptor descriptor)
         {
-            var unityVersion = InternalEditorUtility.GetUnityVersion();
-            if (unityVersion.Major < 2017)
-                return;
-
             const string prefix = "UnityEngine.";
-            if (descriptor.type.StartsWith(prefix))
+            if (descriptor.Type.StartsWith(prefix))
             {
-                var type = descriptor.type.Substring(prefix.Length);
-                var method = descriptor.method;
+                var unityVersion = InternalEditorUtility.GetUnityVersion();
+                var type = descriptor.Type.Substring(prefix.Length);
+                var method = descriptor.Method;
                 var url = string.Format("https://docs.unity3d.com/{0}.{1}/Documentation/ScriptReference/{2}{3}{4}.html",
                     unityVersion.Major, unityVersion.Minor, type, Char.IsUpper(method[0]) ? "." : "-", method);
                 Application.OpenURL(url);
@@ -31,9 +31,9 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
         {
             const string prefix = "CS";
             const string baseURL = "https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-messages/";
-            if (descriptor.title.StartsWith(prefix))
+            if (descriptor.Title.StartsWith(prefix))
             {
-                Application.OpenURL(baseURL + descriptor.title);
+                Application.OpenURL(baseURL + descriptor.Title);
             }
         }
 
@@ -49,16 +49,22 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
 
         public static void OpenPackage(Location location)
         {
-#if UNITY_2019_1_OR_NEWER
             var packageName = Path.GetFileName(location.Path);
             UnityEditor.PackageManager.UI.Window.Open(packageName);
-#endif
         }
 
         public static void OpenProjectSettings(Location location)
         {
-            var window = SettingsService.OpenProjectSettings(location.Path);
-            window.Repaint();
+            if (location.Path.Equals("Project/Build"))
+                BuildPlayerWindow.ShowBuildPlayerWindow();
+            else
+            {
+                // Some Quality setting issue paths will end with the quality level name to identify a specific level
+                // However, the SettingsService API does not support this, so we need to strip the level name
+                var path = location.Path.StartsWith("Project/Quality") ? "Project/Quality" : location.Path;
+                var window = SettingsService.OpenProjectSettings(path);
+                window.Repaint();
+            }
         }
 
         public static void FocusOnAssetInProjectWindow(Location location)
@@ -74,6 +80,12 @@ namespace Unity.ProjectAuditor.Editor.UI.Framework
             {
                 ProjectWindowUtil.ShowCreatedAsset(obj);
             }
+        }
+
+        public static void OpenProjectAuditorPreferences()
+        {
+            var window = UserPreferences.OpenPreferencesWindow();
+            window.Repaint();
         }
     }
 }

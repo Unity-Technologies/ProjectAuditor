@@ -9,7 +9,7 @@ namespace Unity.ProjectAuditor.Editor.CodeAnalysis
     static class ComponentSystemAnalysis
     {
         static readonly int k_EntitiesModuleHashCode = "Unity.Entities.dll".GetHashCode();
-        static readonly int[] k_ClassNameHashCodes = {"Unity.Entities.ComponentSystem".GetHashCode(), "Unity.Entities.JobComponentSystem".GetHashCode()};
+        static readonly int[] k_ClassNameHashCodes = {"Unity.Entities.SystemBase".GetHashCode(), "Unity.Entities.ISystem".GetHashCode()};
         static readonly int k_ILPostProcessorHashCode = "Unity.CompilationPipeline.Common.ILPostProcessing.ILPostProcessor".GetHashCode();
 
         static readonly string[] k_UpdateMethodNames = {"OnUpdate"};

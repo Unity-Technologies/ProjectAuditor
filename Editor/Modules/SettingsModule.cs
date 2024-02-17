@@ -1,53 +1,54 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.ProjectAuditor.Editor.Core;
-using Unity.ProjectAuditor.Editor.Diagnostic;
-using Unity.ProjectAuditor.Editor.SettingsAnalysis;
-using Unity.ProjectAuditor.Editor.Utils;
-using UnityEditor;
-using UnityEngine;
 
 namespace Unity.ProjectAuditor.Editor.Modules
 {
-    class SettingsModule : ProjectAuditorModuleWithAnalyzers<ISettingsModuleAnalyzer>
+    class SettingsModule : ModuleWithAnalyzers<SettingsModuleAnalyzer>
     {
-        static readonly IssueLayout k_IssueLayout = new IssueLayout
+        internal static readonly IssueLayout k_IssueLayout = new IssueLayout
         {
-            category = IssueCategory.ProjectSetting,
-            properties = new[]
+            Category = IssueCategory.ProjectSetting,
+            Properties = new[]
             {
-                new PropertyDefinition { type = PropertyType.Description, name = "Issue", longName = "Issue description"},
-                new PropertyDefinition { type = PropertyType.Severity, format = PropertyFormat.String, name = "Severity"},
-                new PropertyDefinition { type = PropertyType.Area, name = "Area", longName = "The area the issue might have an impact on"},
-                new PropertyDefinition { type = PropertyType.Filename, name = "System", defaultGroup = true},
-                new PropertyDefinition { type = PropertyType.Platform, name = "Platform"}
+                new PropertyDefinition { Type = PropertyType.Description, Name = "Issue", LongName = "Issue description", MaxAutoWidth = 800 },
+                new PropertyDefinition { Type = PropertyType.Severity, Format = PropertyFormat.String, Name = "Severity"},
+                new PropertyDefinition { Type = PropertyType.Areas, Name = "Areas", LongName = "The areas the issue might have an impact on"},
+                new PropertyDefinition { Type = PropertyType.Filename, Name = "System", IsDefaultGroup = true},
+                new PropertyDefinition { Type = PropertyType.Platform, Name = "Platform"}
             }
         };
 
-        public override string name => "Settings";
+        public override string Name => "Settings";
 
-        public override IReadOnlyCollection<IssueLayout> supportedLayouts => new IssueLayout[] {k_IssueLayout};
+        public override IReadOnlyCollection<IssueLayout> SupportedLayouts => new IssueLayout[] {k_IssueLayout};
 
-        public override void Audit(ProjectAuditorParams projectAuditorParams, IProgress progress = null)
+        public override AnalysisResult Audit(AnalysisParams analysisParams, IProgress progress = null)
         {
-            var analyzers = GetPlatformAnalyzers(projectAuditorParams.platform);
+            var analyzers = GetCompatibleAnalyzers(analysisParams);
+            var context = new SettingsAnalysisContext
+            {
+                Params = analysisParams
+            };
+
             if (progress != null)
                 progress.Start("Analyzing Settings", "Analyzing project settings", analyzers.Length);
 
-
             foreach (var analyzer in analyzers)
             {
+                if (progress?.IsCancelled ?? false)
+                    return AnalysisResult.Cancelled;
+
                 if (progress != null)
                     progress.Advance();
 
-                var issues = analyzer.Analyze(projectAuditorParams).ToArray();
+                var issues = analyzer.Analyze(context).ToArray();
                 if (issues.Any())
-                    projectAuditorParams.onIncomingIssues(issues);
+                    analysisParams.OnIncomingIssues(issues);
             }
 
             progress?.Clear();
-            projectAuditorParams.onModuleCompleted?.Invoke();
+            return AnalysisResult.Success;
         }
     }
 }

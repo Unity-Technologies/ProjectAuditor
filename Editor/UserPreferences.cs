@@ -1,69 +1,155 @@
+//#define PA_WELCOME_VIEW_OPTIONS
+
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
 
+
 namespace Unity.ProjectAuditor.Editor
 {
-    internal class UserPreferences
+    [Flags]
+    enum ProjectAreaFlags
     {
+        None = 0,
+        Code = 1 << 0,
+        ProjectSettings = 1 << 1,
+        Assets = 1 << 2,
+        Shaders = 1 << 3,
+        Build = 1 << 4,
+
+        // this is just helper enum to display All instead of Every
+        All = ~None
+    }
+
+    internal static class UserPreferences
+    {
+        public static string Path => k_PreferencesKey;
         static readonly string k_PreferencesKey = "Preferences/Analysis/Project Auditor";
 
         static readonly string k_EditorPrefsPrefix = "ProjectAuditor";
-        static readonly string k_LogTimingsInfoKey = k_EditorPrefsPrefix + ".logTimingsInfo";
+
+        static readonly GUIContent ProjectAreaSelection =
+            new GUIContent("Project Areas", $"Select project areas to analyze.");
+        static readonly GUIContent PlatformSelection =
+            new GUIContent("Platform", "Select the target platform.");
+        static readonly GUIContent CompilationModeSelection =
+            new GUIContent("Compilation Mode", "Select the compilation mode.");
+
+        static readonly string k_UseRoslynAnalyzersLabel = "Use Roslyn Analyzers";
+        static readonly bool k_UseRoslynAnalyzersDefault = false;
+
         static readonly string k_LogTimingsInfoLabel = "Log timing information";
+        static readonly bool k_LogTimingsInfoDefault = false;
 
-        static readonly string k_DeveloperModeKey = k_EditorPrefsPrefix + ".developerMode";
-        static readonly string k_DeveloperModeLabel = "Enable Developer Mode";
+        static readonly string k_AnalyzeAfterBuildLabel = "Auto Analyze after Build";
+        static readonly bool k_AnalyzeAfterBuildDefault = false;
 
-        static string k_BuildReportAutoSaveKey = k_EditorPrefsPrefix + ".buildReportAutoSave";
-        static string k_BuildReportAutoSaveLabel = "Auto Save Last Report";
-        static bool k_BuildReportAutoSaveDefault = false;
+        static readonly string k_FailBuildOnIssuesLabel = "Fail Build on Issues";
+        static readonly bool k_FailBuildOnIssuesDefault = false;
 
-        static string k_BuildReportPathKey = k_EditorPrefsPrefix + ".buildReportPath";
-        static string k_BuildReportPathLabel = "Library Path";
-        static string k_BuildReportPathDefault = "Assets/BuildReports";
+        static readonly string k_PrettifyJSONOutputLabel = "Prettify saved JSON files";
+        static readonly bool k_PrettifyJSONOutputDefault = false;
 
-        static readonly string k_EditorPrefsSettingsKey = k_EditorPrefsPrefix + ".settingsAsset";
+        internal static string LoadSavePath = string.Empty;
 
-        internal static string loadSavePath = string.Empty;
-
-        public static string Path => k_PreferencesKey;
+        static BuildTarget[] s_SupportedBuildTargets;
+        static GUIContent[] s_PlatformContents;
 
         /// <summary>
-        /// If enabled, the BuildReport is automatically saved as asset after each build
+        /// If enabled, ProjectAuditor will re-run the BuildReport analysis every time the project is built.
         /// </summary>
-        public static bool buildReportAutoSave
+        public static bool AnalyzeAfterBuild
         {
-            get => EditorPrefs.GetBool(k_BuildReportAutoSaveKey, k_BuildReportAutoSaveDefault);
-            set => EditorPrefs.SetBool(k_BuildReportAutoSaveKey, value);
+            get => EditorPrefs.GetBool(MakeKey(nameof(AnalyzeAfterBuild)), k_AnalyzeAfterBuildDefault);
+            set => EditorPrefs.SetBool(MakeKey(nameof(AnalyzeAfterBuild)), value);
         }
 
         /// <summary>
-        /// Customizable path to save the BuildReport
+        /// If enabled, ProjectAuditor will use Roslyn Analyzer DLLs that are present in the project
         /// </summary>
-        public static string buildReportPath
+        public static bool UseRoslynAnalyzers
         {
-            get => EditorPrefs.GetString(k_BuildReportPathKey, k_BuildReportPathDefault);
-            set => EditorPrefs.SetString(k_BuildReportPathKey, value);
+            get => EditorPrefs.GetBool(MakeKey(nameof(UseRoslynAnalyzers)), k_UseRoslynAnalyzersDefault);
+            set => EditorPrefs.SetBool(MakeKey(nameof(UseRoslynAnalyzers)), value);
         }
 
-        public static bool developerMode
+        /// <summary>
+        /// If enabled, any issue reported by ProjectAuditor will cause the build to fail.
+        /// </summary>
+        public static bool FailBuildOnIssues
         {
-            get => EditorPrefs.GetBool(k_DeveloperModeKey, false);
-            set => EditorPrefs.SetBool(k_DeveloperModeKey, value);
+            get => EditorPrefs.GetBool(MakeKey(nameof(FailBuildOnIssues)), k_FailBuildOnIssuesDefault);
+            set => EditorPrefs.SetBool(MakeKey(nameof(FailBuildOnIssues)), value);
         }
 
-        public static bool logTimingsInfo
+        public static bool PrettifyJsonOutput
         {
-            get => EditorPrefs.GetBool(k_LogTimingsInfoKey, false);
-            set => EditorPrefs.SetBool(k_LogTimingsInfoKey, value);
+            get => EditorPrefs.GetBool(MakeKey(nameof(PrettifyJsonOutput)), k_PrettifyJSONOutputDefault);
+            set => EditorPrefs.SetBool(MakeKey(nameof(PrettifyJsonOutput)), value);
         }
 
-        public static string settingsAsset
+        public static bool LogTimingsInfo
         {
-            get => EditorPrefs.GetString(k_EditorPrefsSettingsKey, "");
-            set => EditorPrefs.SetString(k_EditorPrefsSettingsKey, value);
+            get => EditorPrefs.GetBool(MakeKey(nameof(LogTimingsInfo)), k_LogTimingsInfoDefault);
+            set => EditorPrefs.SetBool(MakeKey(nameof(LogTimingsInfo)), value);
+        }
+#if !PA_WELCOME_VIEW_OPTIONS
+        static readonly ProjectAreaFlags k_ProjectAreasToAnalyzeDefault = ProjectAreaFlags.All;
+        static readonly BuildTarget k_AnalysisTargetPlatformDefault = BuildTarget.NoTarget;
+        // stephenm TODO: Still think it'd be great to default this to EditorPlayMode or the proposed "hybrid" option
+        static readonly CompilationMode k_CompilationModeDefault = CompilationMode.Player;
+
+        // stephenm TODO: Not a big fan of the ProjectAreaFlags enum, which is an abstraction of the Tabs, which each
+        // contain references to one or more Modules, which reference Analyzers, which report issues in IssueCategories...
+        // I think it would be simpler here to just have a list of Modules with checkboxes. But that probably won't
+        // play nicely with the current tab navigation and incremental report handling, so it's not worth doing unless
+        // we definitely want to go this way with analysis configuration...
+        public static ProjectAreaFlags ProjectAreasToAnalyze
+        {
+            get => (ProjectAreaFlags)EditorPrefs.GetInt(
+                MakeKey(nameof(ProjectAreasToAnalyze)), (int)k_ProjectAreasToAnalyzeDefault);
+            set => EditorPrefs.SetInt(MakeKey(nameof(ProjectAreasToAnalyze)), (int)value);
+        }
+
+        public static BuildTarget AnalysisTargetPlatform
+        {
+            get => (BuildTarget)EditorPrefs.GetInt(
+                MakeKey(nameof(AnalysisTargetPlatform)), (int)k_AnalysisTargetPlatformDefault);
+            set => EditorPrefs.SetInt(MakeKey(nameof(AnalysisTargetPlatform)), (int)value);
+        }
+
+        public static CompilationMode CompilationMode
+        {
+            get => (CompilationMode)EditorPrefs.GetInt(
+                MakeKey(nameof(CompilationMode)), (int)k_CompilationModeDefault);
+            set => EditorPrefs.SetInt(MakeKey(nameof(CompilationMode)), (int)value);
+        }
+
+#endif
+
+        static UserPreferences()
+        {
+            var buildTargets = Enum.GetValues(typeof(BuildTarget)).Cast<BuildTarget>();
+            var supportedBuildTargets = buildTargets.Where(bt =>
+                BuildPipeline.IsBuildTargetSupported(BuildPipeline.GetBuildTargetGroup(bt), bt)).ToList();
+            supportedBuildTargets.Sort((t1, t2) =>
+                String.Compare(t1.ToString(), t2.ToString(), StringComparison.Ordinal));
+
+            // Add at the beginning of the list, after sorting the other options
+            supportedBuildTargets.Insert(0, BuildTarget.NoTarget);
+
+            s_SupportedBuildTargets = supportedBuildTargets.ToArray();
+
+            s_PlatformContents = s_SupportedBuildTargets
+                .Select(t => new GUIContent((t == BuildTarget.NoTarget) ? "Use Build Settings" : t.ToString())).ToArray();
+        }
+
+        public static EditorWindow OpenPreferencesWindow()
+        {
+            return SettingsService.OpenUserPreferences(k_PreferencesKey);
         }
 
         [SettingsProvider]
@@ -77,52 +163,67 @@ namespace Unity.ProjectAuditor.Editor
             return settings;
         }
 
+        static string MakeKey(string key)
+        {
+            return $"{k_EditorPrefsPrefix}.{key}";
+        }
+
         static void PreferencesGUI(string searchContext)
         {
             const float labelWidth = 300f;
 
             EditorGUIUtility.labelWidth = labelWidth;
 
+#if !PA_WELCOME_VIEW_OPTIONS
+
+            EditorGUILayout.LabelField("Analysis", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
 
-            var value = EditorGUILayout.Toggle(k_DeveloperModeLabel, developerMode);
-            if (value != developerMode)
-            {
-                developerMode = value;
+            ProjectAreasToAnalyze = (ProjectAreaFlags)EditorGUILayout.EnumFlagsField(ProjectAreaSelection, ProjectAreasToAnalyze, GUILayout.ExpandWidth(true));
 
-                // need to trigger domain reload so that Views are re-registered
-                AssetDatabase.ImportAsset(ProjectAuditor.s_PackagePath + "/Editor/UserPreferences.cs");
+            var selectedTarget = Array.IndexOf(s_SupportedBuildTargets, AnalysisTargetPlatform);
+
+            // AnalysisTargetPlatform is not supported in this Unity Editor. Perhaps it was selected in a different Editor version.
+            // Reset it to "Use Build Settings"
+            if (selectedTarget < 0)
+            {
+                selectedTarget = 0;
             }
-            logTimingsInfo = EditorGUILayout.Toggle(k_LogTimingsInfoLabel, logTimingsInfo);
+
+            selectedTarget = EditorGUILayout.Popup(PlatformSelection, selectedTarget, s_PlatformContents);
+            AnalysisTargetPlatform = s_SupportedBuildTargets[selectedTarget];
+
+            CompilationMode = (CompilationMode)EditorGUILayout.EnumPopup(CompilationModeSelection, CompilationMode);
 
             GUILayout.Space(10f);
+#endif
+            UseRoslynAnalyzers = EditorGUILayout.Toggle(k_UseRoslynAnalyzersLabel, UseRoslynAnalyzers);
+            LogTimingsInfo = EditorGUILayout.Toggle(k_LogTimingsInfoLabel, LogTimingsInfo);
 
-            EditorGUILayout.LabelField("Build Report", EditorStyles.boldLabel);
+            EditorGUI.indentLevel--;
+            GUILayout.Space(10f);
+
+            EditorGUILayout.LabelField("Build", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
 
-            buildReportAutoSave = EditorGUILayout.Toggle(k_BuildReportAutoSaveLabel, buildReportAutoSave);
-
-            GUI.enabled = buildReportAutoSave;
-
-            EditorGUILayout.BeginHorizontal();
-            var newPath = EditorGUILayout.DelayedTextField(k_BuildReportPathLabel, buildReportPath);
-            if (!string.IsNullOrEmpty(newPath))
-                buildReportPath = newPath;
-            if (GUILayout.Button("Browse...", GUILayout.Width(80)))
+            AnalyzeAfterBuild = EditorGUILayout.Toggle(k_AnalyzeAfterBuildLabel, AnalyzeAfterBuild);
+            using (new EditorGUI.DisabledScope(!AnalyzeAfterBuild))
             {
-                newPath = EditorUtility.OpenFolderPanel("Select Build Report destination", buildReportPath, "");
-                if (!string.IsNullOrEmpty(newPath))
-                {
-                    buildReportPath = FileUtil.GetProjectRelativePath(newPath);
-                    InternalEditorUtility.RepaintAllViews();
-                }
+                EditorGUI.indentLevel++;
+                FailBuildOnIssues = EditorGUILayout.Toggle(k_FailBuildOnIssuesLabel, FailBuildOnIssues);
+                EditorGUI.indentLevel--;
             }
-            EditorGUILayout.EndHorizontal();
-
-            GUI.enabled = true;
 
             EditorGUI.indentLevel--;
+            GUILayout.Space(10f);
+
+            EditorGUILayout.LabelField("Report", EditorStyles.boldLabel);
+            EditorGUI.indentLevel++;
+
+            PrettifyJsonOutput = EditorGUILayout.Toggle(k_PrettifyJSONOutputLabel, PrettifyJsonOutput);
+
             EditorGUI.indentLevel--;
+            GUILayout.Space(10f);
         }
     }
 }

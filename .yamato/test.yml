@@ -1,0 +1,104 @@
+{% metadata_file .yamato/config.metadata %}
+---
+
+{% for editor in test_editors -%}
+{% for platform in test_platforms -%}
+test_{{ platform.name }}_{{ editor.version }}:
+  name : Test {{ editor.version }} on {{ platform.name }}
+  agent:
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor}}
+  commands:
+    - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+    - unity-downloader-cli -u {{ editor.version }} -c editor -c WebGL -c Android --path .Editor --wait --fast
+    - upm-ci package test --package-path com.unity.project-auditor -u .Editor --type package-tests --platform editmode
+  artifacts:
+    logs:
+      paths:
+        - "upm-ci~/test-results/**/*"
+  dependencies:
+    - .yamato/pack.yml#pack
+{% endfor -%}
+{% endfor -%}
+
+# Validate the package on each editor version and each platform
+# Validation only occurs in editmode.
+{% for editor in test_editors -%}
+{% for platform in test_platforms -%}
+validate_{{ platform.name }}_{{ editor.version }}:
+  name : Validate {{ editor.version }} on {{ platform.name }}
+  agent:
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor}}
+  commands:
+    - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+    - upm-ci package test --package-path com.unity.project-auditor -u {{ editor.version }} --type vetting-tests --platform editmode --warnings-as-errors
+  artifacts:
+    logs:
+      paths:
+        - "upm-ci~/test-results/**/*"
+  dependencies:
+    - .yamato/pack.yml#pack
+{% endfor -%}
+{% endfor -%}
+
+# This trigger runs tests and validations on all editor versions and platforms but only on the 'master' branch and its pull requests.
+test_trigger:
+  name: Package Tests Trigger
+  triggers:
+    branches:
+      only:
+        - master
+    pull_requests:
+      - targets:
+          only:
+            - master
+  dependencies:
+    - .yamato/pack.yml#pack
+{% for editor in test_editors -%}
+{% for platform in test_platforms -%}
+    - .yamato/test.yml#test_{{ platform.name }}_{{editor.version }}
+    - .yamato/test.yml#validate_{{ platform.name }}_{{editor.version }}
+{% endfor -%}
+{% endfor -%}
+    - .yamato/coverage.yml#test_coverage_mac_2023.2
+
+# This lightweight trigger runs tests only on LTS versions and only on Mac. It excludes the 'master' branch.
+test_trigger_lightweight:
+  name: Package Tests Trigger - Lightweight
+  triggers:
+    branches:
+      only:
+        - "/.*/"
+      except:
+        - master
+  dependencies:
+    - .yamato/pack.yml#pack
+{% for editor in test_editors_lts -%}
+{% for platform in test_platforms -%}
+{% if platform.name == "mac" -%}
+    - .yamato/test.yml#test_{{ platform.name }}_{{ editor.version }}
+{% endif -%}
+{% endfor -%}
+{% endfor -%}
+
+# This trigger runs tests, validations and test coverage on the 'master' branch every night.
+test_trigger_nightly:
+  name: Package Tests Trigger - Nightly
+  triggers:
+    recurring:
+      - branch: master
+        frequency: daily
+  dependencies:
+    - .yamato/pack.yml#pack
+{% for editor in test_editors -%}
+{% if editor.version != "2018.4" -%}
+{% for platform in test_platforms -%}
+    - .yamato/test.yml#test_{{ platform.name }}_{{editor.version }}
+    - .yamato/test.yml#validate_{{ platform.name }}_{{editor.version }}
+    - .yamato/coverage.yml#test_coverage_{{ platform.name }}_{{ editor.version }}
+{% endfor -%}
+{% endif -%}
+{% endfor -%}

@@ -90,18 +90,12 @@ namespace Unity.ProjectAuditor.Editor.Utils
 
         public static int GetSRPBatcherCompatibilityCode(Shader shader, int subShaderIdx)
         {
-#if UNITY_2019_1_OR_NEWER
             if (s_TypeShaderUtil == null)
                 Init();
 
             if (s_MethodGetSRPBatcherCompatibilityCode == null)
                 return -1;
-            if (RenderPipelineManager.currentPipeline == null)
-                return -1;
             return (int)s_MethodGetSRPBatcherCompatibilityCode.Invoke(null, new object[] { shader, subShaderIdx});
-#else
-            return -1;
-#endif
         }
 
         public static ulong GetVariantCount(Shader shader)
@@ -135,6 +129,26 @@ namespace Unity.ProjectAuditor.Editor.Utils
                 return false;
 
             return (bool)s_MethodHasSurfaceShaders.Invoke(null, new object[] { shader});
+        }
+
+        public static int GetPropertyCount(Shader shader)
+        {
+            return shader.GetPropertyCount();
+        }
+
+        public static int GetTexturePropertyCount(Shader shader)
+        {
+            var texturePropertyCount = 0;
+            var propertyCount = GetPropertyCount(shader);
+            for (int i = 0; i < propertyCount; ++i)
+            {
+                if (shader.GetPropertyType(i) == ShaderPropertyType.Texture)
+                {
+                    ++texturePropertyCount;
+                }
+            }
+
+            return texturePropertyCount;
         }
     }
 }

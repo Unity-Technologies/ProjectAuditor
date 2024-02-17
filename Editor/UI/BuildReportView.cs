@@ -11,106 +11,56 @@ namespace Unity.ProjectAuditor.Editor.UI
 {
     class BuildReportView : AnalysisView
     {
-        struct GroupStats
-        {
-            public string assetGroup;
-            public int count;
-            public long size;
-        }
+        public virtual string InfoTitle => $"";
+        const string k_BulletPointUnicode = " \u2022";
+        static readonly string k_BuildInstructions =
+            $@"To create a clean build, follow these steps:
+{k_BulletPointUnicode} Open the <b>Build Settings</b> window.
+{k_BulletPointUnicode} Next to the <b>Build button</b>, select the drop-down.
+{k_BulletPointUnicode} Select <b>Clean Build</b>.
 
-        const int k_MaxGroupCount = 10;
+If your project uses a custom build script, ensure that it passes the <b>BuildOptions.CleanBuildCache</b> option to <b>BuildPipeline.BuildPlayer</b>.";
+        static readonly string k_CleanBuildInfoBox = $"A clean build is important for capturing accurate information about build times and steps. For this reason, {ProjectAuditor.DisplayName} does not display the results of incremental builds.";
 
-        GroupStats[] m_GroupStats;
-        List<ProjectIssue> m_MetaData = new List<ProjectIssue>();
+        List<ReportItem> m_MetaData = new List<ReportItem>();
 
         public BuildReportView(ViewManager viewManager) :
             base(viewManager)
         {
         }
 
-        public override void AddIssues(IEnumerable<ProjectIssue> allIssues)
+        public override void AddIssues(IEnumerable<ReportItem> allIssues)
         {
             base.AddIssues(allIssues);
-            if (m_Desc.category == IssueCategory.BuildFile)
-            {
-                var list = m_Issues.GroupBy(i => i.GetCustomProperty(BuildReportFileProperty.RuntimeType)).Select(g => new GroupStats
-                {
-                    assetGroup = g.Key,
-                    count = g.Count(),
-                    size = g.Sum(s => s.GetCustomPropertyInt64(BuildReportFileProperty.Size))
-                }).ToList();
-                list.Sort((a, b) => b.size.CompareTo(a.size));
-                m_GroupStats = list.Take(k_MaxGroupCount).ToArray();
-            }
-
-            m_MetaData.AddRange(allIssues.Where(i => i.category == IssueCategory.BuildSummary));
+            m_MetaData.AddRange(allIssues.Where(i => i.Category == IssueCategory.BuildSummary));
         }
 
         public override void Clear()
         {
             base.Clear();
-
-            m_GroupStats = null;
             m_MetaData.Clear();
         }
 
         protected override void DrawInfo()
         {
-            if (m_Issues.Any(i => i.category == IssueCategory.BuildSummary))
+            EditorGUILayout.LabelField(InfoTitle);
+
+            if (m_Issues.Count == 0)
             {
-                EditorGUILayout.LabelField("Build Report is not available. Please build your project and try again.");
+                EditorGUILayout.LabelField(k_BuildInstructions, SharedStyles.TextArea);
+                EditorGUILayout.HelpBox(k_CleanBuildInfoBox, MessageType.Warning);
                 return;
             }
 
             EditorGUILayout.BeginVertical();
             foreach (var issue in m_MetaData)
             {
-                DrawKeyValue(issue.description, issue.GetCustomProperty(BuildReportMetaData.Value));
+                DrawKeyValue(issue.Description, issue.GetCustomProperty(BuildReportMetaData.Value));
             }
             EditorGUILayout.EndVertical();
-
-            if (m_Desc.category == IssueCategory.BuildFile && m_GroupStats != null && m_GroupStats.Length > 0)
-            {
-                EditorGUILayout.Space();
-
-                var width = 180;
-                var dataSize = m_GroupStats.Sum(g => g.size);
-                EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.LabelField("Size of Data (Uncompressed)", SharedStyles.Label, GUILayout.Width(width));
-                EditorGUILayout.LabelField(Formatting.FormatSize((ulong)dataSize), SharedStyles.Label);
-                EditorGUILayout.EndHorizontal();
-                EditorGUILayout.LabelField($"Size By Runtime Type (Top {k_MaxGroupCount})", SharedStyles.BoldLabel);
-                EditorGUI.indentLevel++;
-
-                EditorGUILayout.BeginVertical();
-
-                var barColor = new Color(0.0f, 0.6f, 0.6f);
-                var maxGroupSize = (float)m_GroupStats.Max(g => g.size);
-                foreach (var group in m_GroupStats)
-                {
-                    var groupSize = group.size;
-                    EditorGUILayout.BeginHorizontal();
-
-                    EditorGUILayout.LabelField(string.Format("{0} ({1}):", group.assetGroup, group.count), SharedStyles.Label, GUILayout.Width(260));
-
-                    var rect = EditorGUILayout.GetControlRect(GUILayout.Width(width));
-                    if (m_2D.DrawStart(rect))
-                    {
-                        m_2D.DrawFilledBox(0, 1, Math.Max(1, rect.width * groupSize / maxGroupSize), rect.height - 1, barColor);
-                        m_2D.DrawEnd();
-                    }
-
-                    EditorGUILayout.LabelField(string.Format("{0} / {1:0.0}%", Formatting.FormatSize((ulong)group.size), 100 * groupSize / (float)dataSize), SharedStyles.Label);
-                    EditorGUILayout.Space();
-                    EditorGUILayout.EndHorizontal();
-                }
-                EditorGUILayout.EndVertical();
-
-                EditorGUI.indentLevel--;
-            }
         }
 
-        public override void DrawDetails(ProjectIssue[] selectedIssues)
+        public override void DrawDetails(ReportItem[] selectedIssues)
         {
             EditorGUILayout.BeginVertical();
 
@@ -120,20 +70,16 @@ namespace Unity.ProjectAuditor.Editor.UI
                 GUILayout.TextArea(k_MultipleSelectionText, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             else // if (selectedDescriptors.Length == 1)
             {
-                var description = selectedIssues[0].description;
-                if (m_Desc.category == IssueCategory.BuildStep)
-                {
-                    description = selectedIssues[0].GetCustomProperty(BuildReportStepProperty.Message);
-                }
-                else if (m_Desc.category == IssueCategory.BuildFile)
-                {
-                    description = selectedIssues[0].relativePath;
-                }
-
+                var description = GetIssueDescription(selectedIssues[0]);
                 GUILayout.TextArea(description, SharedStyles.TextAreaWithDynamicSize, GUILayout.MaxHeight(LayoutSize.FoldoutMaxHeight));
             }
 
             EditorGUILayout.EndVertical();
+        }
+
+        public virtual string GetIssueDescription(ReportItem issue)
+        {
+            return issue.Description;
         }
 
         void DrawKeyValue(string key, string value)
