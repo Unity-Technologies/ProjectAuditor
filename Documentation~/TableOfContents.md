@@ -1,4 +1,5 @@
 * [Index](./index.md)
+* [Installing](./Installing.md)
 * [Getting started](./GettingStarted.md)
 * [Configuring Project Auditor analysis](Configuration.md)
 * Welcome/Summary

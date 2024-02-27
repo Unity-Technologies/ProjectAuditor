@@ -2,6 +2,9 @@
 # Getting started with Project Auditor
 This guide provides a brief overview on how to use Project Auditor.
 
+## Installation
+See the [Installation](./Installing.md) page for installation instructions.
+
 ## User interface
 To open the Project Auditor window in Unity, go to **Window > Analysis > Project Auditor**.
 

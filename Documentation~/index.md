@@ -21,40 +21,7 @@ This package is available as an experimental package, so it is not ready for pro
 documentation in this package might change before it is verified for release. 
 
 ## Installation
-To install this package, refer to the instructions that match your Unity Editor version. In either case, when prompted
-for the package name, use `com.unity.project-auditor`. 
-
-### Version 2021.1 and later
-
-To install this package, follow the instructions for [adding a package by name](https://docs.unity3d.com/2021.1/Documentation/Manual/upm-ui-quick.html) in the Unity Editor.
-
-### Version 2020.3
-
-To install this package, follow the instructions for [installing hidden packages](https://docs.unity3d.com/Packages/Installation/manual/upm-ui-quick.html). 
-
-### Installation troubleshooting
-Under rare and specific circumstances, installing the Project Auditor package may result in a console error similar to
-the following:
-
-```
-error CS0433: The type 'MethodAttributes' exists in both 'Mono.Cecil, Version=0.11.4.0, Culture=neutral, PublicKeyToken=50cebf1cceb9d05e'
-and 'Unity.Burst.Cecil, Version=0.10.0.0, Culture=neutral, PublicKeyToken=fc15b93552389f74'
-```
-Project Auditor uses a library called
-[Mono.Cecil](https://www.mono-project.com/docs/tools+libraries/libraries/Mono.Cecil/) in order to perform static
-analysis of C# code. Project Auditor specifies Mono.Cecil as a dependency, meaning that Mono.Cecil is automatically
-installed alongside the Project Auditor package, unless some other package has already installed it as a dependency.
-This allows multiple packages that use Mono.Cecil to coexist in a Unity project. However, some older versions of other
-Unity packages include Mono.Cecil directly rather than as a dependency. If these package versions are installed in a
-project, and if any user code assemblies also make explicit use of Mono.Cecil, namespace clashes can occur. The error
-message above was generated from a project which included Burst 1.8.3 and the following code in a user script:
-
-```
-using MethodAttributes = Mono.Cecil.MethodAttributes;
-```
-
-The solution in this situation is to either update Burst to 1.8.4 or above, or to remove any user code which uses
-Mono.Cecil.
+See the [Installation](./Installing.md) page for installation instructions. 
 
 ## How to use
 In the Unity Editor, the Project Auditor window can be opened via **Window > Analysis > Project Auditor**.
