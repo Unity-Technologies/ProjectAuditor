@@ -1,4 +1,7 @@
 # Project Auditor
+> [!CAUTION]
+> This version of Project Auditor isn't supported. For information about installing the latest version, refer to [Project Auditor package](https://docs.unity3d.com/Packages/com.unity.project-auditor@0.10/manual/index.html).
+
 Project Auditor is an experimental static analysis tool that analyzes assets, settings, and scripts of the Unity project and produces a report containing: Code and Settings diagnostics, the last BuildReport, and assets information.
 
 ## Disclaimer
